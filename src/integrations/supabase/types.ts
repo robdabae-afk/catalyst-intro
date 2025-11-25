@@ -298,6 +298,30 @@ export type Database = {
           },
         ]
       }
+      swipes: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          swiped_id: string
+          swiper_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          swiped_id: string
+          swiper_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          swiped_id?: string
+          swiper_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
