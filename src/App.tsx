@@ -7,6 +7,7 @@ import Landing from "./pages/Landing";
 import FounderOnboarding from "./pages/FounderOnboarding";
 import InvestorOnboarding from "./pages/InvestorOnboarding";
 import Dashboard from "./pages/Dashboard";
+import Matches from "./pages/Matches";
 import CoffeeChat from "./pages/CoffeeChat";
 import SafeGenerator from "./pages/SafeGenerator";
 import CapTable from "./pages/CapTable";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/onboarding/founder" element={<FounderOnboarding />} />
           <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/matches" element={<Matches />} />
           <Route path="/coffeechat" element={<CoffeeChat />} />
           <Route path="/safe" element={<SafeGenerator />} />
           <Route path="/captable" element={<CapTable />} />
