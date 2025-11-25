@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, MapPin, TrendingUp, LogOut, Search } from "lucide-react";
+import { LogOut, RotateCcw } from "lucide-react";
+import { SwipeCard } from "@/components/SwipeCard";
+import { MatchModal } from "@/components/MatchModal";
 
 interface Profile {
   id: string;
@@ -32,10 +32,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
-  const [founders, setFounders] = useState<any[]>([]);
-  const [investors, setInvestors] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [profiles, setProfiles] = useState<any[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [matchModalOpen, setMatchModalOpen] = useState(false);
+  const [matchedProfile, setMatchedProfile] = useState<any>(null);
 
   useEffect(() => {
     checkUser();
@@ -59,25 +60,32 @@ const Dashboard = () => {
   };
 
   const loadProfiles = async () => {
-    try {
-      const { data: foundersData } = await supabase
-        .from('profiles')
-        .select(`
-          *,
-          founder_profiles (*)
-        `)
-        .eq('user_type', 'founder');
+    if (!currentUser) return;
 
-      const { data: investorsData } = await supabase
+    try {
+      // Load profiles of opposite type
+      const targetType = currentUser.user_type === 'founder' ? 'investor' : 'founder';
+      
+      const { data: profilesData } = await supabase
         .from('profiles')
         .select(`
           *,
+          founder_profiles (*),
           investor_profiles (*)
         `)
-        .eq('user_type', 'investor');
+        .eq('user_type', targetType)
+        .neq('id', currentUser.id);
 
-      setFounders(foundersData || []);
-      setInvestors(investorsData || []);
+      // Get user's swipes to filter out already swiped profiles
+      const { data: swipesData } = await supabase
+        .from('swipes')
+        .select('swiped_id')
+        .eq('swiper_id', currentUser.id);
+
+      const swipedIds = new Set(swipesData?.map(s => s.swiped_id) || []);
+      const unswipedProfiles = profilesData?.filter(p => !swipedIds.has(p.id)) || [];
+
+      setProfiles(unswipedProfiles);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -94,23 +102,57 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  const filterProfiles = (profiles: any[]) => {
-    if (!searchTerm) return profiles;
-    
-    return profiles.filter(profile => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        profile.name.toLowerCase().includes(searchLower) ||
-        (profile.founder_profiles?.[0]?.startup_name?.toLowerCase().includes(searchLower)) ||
-        (profile.founder_profiles?.[0]?.industry?.toLowerCase().includes(searchLower)) ||
-        (profile.investor_profiles?.[0]?.firm_name?.toLowerCase().includes(searchLower))
-      );
-    });
+  const handleSwipe = async (direction: 'like' | 'pass') => {
+    if (!currentUser || currentIndex >= profiles.length) return;
+
+    const swipedProfile = profiles[currentIndex];
+
+    try {
+      // Record the swipe
+      await supabase.from('swipes').insert({
+        swiper_id: currentUser.id,
+        swiped_id: swipedProfile.id,
+        action: direction
+      });
+
+      // Check if it's a match (they liked us back)
+      if (direction === 'like') {
+        const { data: matchData } = await supabase
+          .from('swipes')
+          .select('*')
+          .eq('swiper_id', swipedProfile.id)
+          .eq('swiped_id', currentUser.id)
+          .eq('action', 'like')
+          .single();
+
+        if (matchData) {
+          setMatchedProfile(swipedProfile);
+          setMatchModalOpen(true);
+        }
+      }
+
+      // Move to next profile
+      setCurrentIndex(prev => prev + 1);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error recording swipe",
+        description: error.message
+      });
+    }
+  };
+
+  const handleReset = () => {
+    setCurrentIndex(0);
+    loadProfiles();
   };
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
+
+  const currentProfile = profiles[currentIndex];
+  const noMoreProfiles = currentIndex >= profiles.length;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -129,121 +171,47 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, startup, industry, or firm..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="mb-8 text-center">
+          <h2 className="text-3xl font-bold mb-2">
+            {currentUser?.user_type === 'investor' ? 'Discover Founders' : 'Discover Investors'}
+          </h2>
+          <p className="text-muted-foreground">
+            Swipe right to like, left to pass
+          </p>
         </div>
 
-        {currentUser?.user_type === 'investor' && (
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-foreground">Founders</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filterProfiles(founders).map((founder) => (
-                <FounderCard key={founder.id} founder={founder} />
-              ))}
+        {noMoreProfiles ? (
+          <div className="max-w-md mx-auto text-center py-20">
+            <div className="bg-muted/50 rounded-lg p-8 space-y-4">
+              <h3 className="text-2xl font-bold">No More Profiles</h3>
+              <p className="text-muted-foreground">
+                You've seen all available {currentUser?.user_type === 'investor' ? 'founders' : 'investors'}!
+              </p>
+              <Button onClick={handleReset} className="mt-4">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset & View Again
+              </Button>
             </div>
-          </section>
-        )}
-
-        {currentUser?.user_type === 'founder' && (
-          <section>
-            <h2 className="text-3xl font-bold mb-6 text-foreground">Investors</h2>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filterProfiles(investors).map((investor) => (
-                <InvestorCard key={investor.id} investor={investor} />
-              ))}
-            </div>
-          </section>
-        )}
+          </div>
+        ) : currentProfile ? (
+          <div className="pt-8 pb-32">
+            <SwipeCard
+              profile={currentProfile}
+              onSwipe={handleSwipe}
+              userType={currentUser?.user_type || 'founder'}
+            />
+          </div>
+        ) : null}
       </div>
+
+      <MatchModal
+        isOpen={matchModalOpen}
+        onClose={() => setMatchModalOpen(false)}
+        matchedProfile={matchedProfile}
+        userType={currentUser?.user_type || 'founder'}
+      />
     </div>
-  );
-};
-
-const FounderCard = ({ founder }: { founder: any }) => {
-  const navigate = useNavigate();
-  const profile = founder.founder_profiles?.[0];
-
-  return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <CardTitle className="flex items-start justify-between">
-          <span>{profile?.startup_name}</span>
-          <Building2 className="w-5 h-5 text-muted-foreground" />
-        </CardTitle>
-        <CardDescription>{founder.name}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm text-foreground">{profile?.one_liner}</p>
-        {profile?.industry && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <TrendingUp className="w-4 h-4" />
-            {profile.industry}
-          </div>
-        )}
-        {profile?.preferred_city && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            {profile.preferred_city}
-          </div>
-        )}
-        <Button 
-          className="w-full mt-4"
-          onClick={() => navigate(`/coffeechat?founderId=${founder.id}`)}
-        >
-          Invite to Coffee Chat
-        </Button>
-      </CardContent>
-    </Card>
-  );
-};
-
-const InvestorCard = ({ investor }: { investor: any }) => {
-  const navigate = useNavigate();
-  const profile = investor.investor_profiles?.[0];
-
-  return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <CardTitle className="flex items-start justify-between">
-          <span>{profile?.firm_name || investor.name}</span>
-          <Building2 className="w-5 h-5 text-muted-foreground" />
-        </CardTitle>
-        <CardDescription>{investor.name}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {profile?.typical_check_size && (
-          <div className="text-sm">
-            <span className="font-medium">Check Size:</span> {profile.typical_check_size}
-          </div>
-        )}
-        {profile?.preferred_stage && (
-          <div className="text-sm">
-            <span className="font-medium">Stage:</span> {profile.preferred_stage}
-          </div>
-        )}
-        {profile?.location && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="w-4 h-4" />
-            {profile.location}
-          </div>
-        )}
-        <Button 
-          className="w-full mt-4"
-          onClick={() => navigate(`/coffeechat?investorId=${investor.id}`)}
-        >
-          Invite to Coffee Chat
-        </Button>
-      </CardContent>
-    </Card>
   );
 };
 
