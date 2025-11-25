@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { LogOut, RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
+import { NavLink } from "@/components/NavLink";
 
 interface Profile {
   id: string;
@@ -158,8 +159,17 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">Catalyst Connect</h1>
-          <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold text-foreground">InvestorMatch</h1>
+          <div className="flex items-center gap-6">
+            <NavLink to="/dashboard" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
+              Dashboard
+            </NavLink>
+            <NavLink to="/matches" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
+              Matches
+            </NavLink>
+            <NavLink to="/coffeechat" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
+              Coffee Chats
+            </NavLink>
             <span className="text-sm text-muted-foreground">
               {currentUser?.name} ({currentUser?.user_type})
             </span>
