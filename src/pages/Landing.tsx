@@ -54,13 +54,13 @@ const Landing = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <FeatureCard
               icon={<Users className="w-8 h-8" />}
-              title="Create Profile"
+              title="Create a Profile"
               description="Share your startup story or investment thesis"
             />
             <FeatureCard
               icon={<Coffee className="w-8 h-8" />}
               title="Coffee Chats"
-              description="Schedule meaningful conversations over coffee"
+              description="Connect with founders and investors building the next big thing"
             />
             <FeatureCard
               icon={<FileText className="w-8 h-8" />}
