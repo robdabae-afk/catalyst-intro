@@ -70,7 +70,22 @@ const SafeGenerator = () => {
         description: "SAFE agreement has been created.",
       });
 
-      navigate('/captable');
+      // Get the created SAFE ID to navigate to it
+      const { data: createdSafe } = await supabase
+        .from('safes')
+        .select('id')
+        .eq('founder_id', currentUserId)
+        .eq('investor_id', formData.investorId)
+        .eq('amount', parseFloat(formData.amount))
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (createdSafe) {
+        navigate(`/safe/${createdSafe.id}`);
+      } else {
+        navigate('/captable');
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",

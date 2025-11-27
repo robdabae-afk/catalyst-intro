@@ -176,7 +176,7 @@ const Dashboard = () => {
               </NavLink>
               {currentUser?.user_type === 'founder' && (
                 <>
-                  <NavLink to="/safe">
+                  <NavLink to="/safes">
                     <FileText className="w-5 h-5" />
                     <span className="hidden sm:inline">SAFEs</span>
                   </NavLink>

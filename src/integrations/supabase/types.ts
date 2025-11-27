@@ -128,6 +128,9 @@ export type Database = {
       }
       founder_profiles: {
         Row: {
+          company_address: string | null
+          company_name: string | null
+          company_state: string | null
           created_at: string | null
           id: string
           industry: string | null
@@ -139,6 +142,9 @@ export type Database = {
           traction: string | null
         }
         Insert: {
+          company_address?: string | null
+          company_name?: string | null
+          company_state?: string | null
           created_at?: string | null
           id?: string
           industry?: string | null
@@ -150,6 +156,9 @@ export type Database = {
           traction?: string | null
         }
         Update: {
+          company_address?: string | null
+          company_name?: string | null
+          company_state?: string | null
           created_at?: string | null
           id?: string
           industry?: string | null
@@ -276,8 +285,12 @@ export type Database = {
           document_url: string | null
           execution_date: string | null
           founder_id: string
+          founder_signature_data: string | null
+          founder_signed_at: string | null
           id: string
           investor_id: string
+          investor_signature_data: string | null
+          investor_signed_at: string | null
           status: string | null
           updated_at: string | null
           valuation_cap: number | null
@@ -289,8 +302,12 @@ export type Database = {
           document_url?: string | null
           execution_date?: string | null
           founder_id: string
+          founder_signature_data?: string | null
+          founder_signed_at?: string | null
           id?: string
           investor_id: string
+          investor_signature_data?: string | null
+          investor_signed_at?: string | null
           status?: string | null
           updated_at?: string | null
           valuation_cap?: number | null
@@ -302,8 +319,12 @@ export type Database = {
           document_url?: string | null
           execution_date?: string | null
           founder_id?: string
+          founder_signature_data?: string | null
+          founder_signed_at?: string | null
           id?: string
           investor_id?: string
+          investor_signature_data?: string | null
+          investor_signed_at?: string | null
           status?: string | null
           updated_at?: string | null
           valuation_cap?: number | null
@@ -354,7 +375,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_safe_content: { Args: { safe_id: string }; Returns: Json }
     }
     Enums: {
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
