@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Matches from "./pages/Matches";
 import CoffeeChat from "./pages/CoffeeChat";
 import SafeGenerator from "./pages/SafeGenerator";
+import SafeDetail from "./pages/SafeDetail";
+import SafesList from "./pages/SafesList";
 import CapTable from "./pages/CapTable";
 import NotFound from "./pages/NotFound";
 
@@ -28,7 +30,9 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/matches" element={<Matches />} />
           <Route path="/coffeechat" element={<CoffeeChat />} />
+          <Route path="/safes" element={<SafesList />} />
           <Route path="/safe" element={<SafeGenerator />} />
+          <Route path="/safe/:id" element={<SafeDetail />} />
           <Route path="/captable" element={<CapTable />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

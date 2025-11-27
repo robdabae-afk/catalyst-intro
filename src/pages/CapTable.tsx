@@ -105,7 +105,7 @@ const CapTable = () => {
                 </TableHeader>
                 <TableBody>
                   {entries.map((entry) => (
-                    <TableRow key={entry.id}>
+                    <TableRow key={entry.id} className="cursor-pointer hover:bg-muted/50" onClick={() => entry.safe_id && navigate(`/safe/${entry.safe_id}`)}>
                       <TableCell className="font-medium">{entry.investor?.name}</TableCell>
                       <TableCell>{entry.investor?.investor_profiles?.[0]?.firm_name || '-'}</TableCell>
                       <TableCell className="text-right">{formatCurrency(entry.investment_amount)}</TableCell>

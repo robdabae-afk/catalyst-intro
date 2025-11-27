@@ -21,7 +21,9 @@ const FounderOnboarding = () => {
     industry: "",
     traction: "",
     pitchDeckUrl: "",
-    preferredCity: ""
+    preferredCity: "",
+    companyState: "",
+    companyAddress: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,11 +64,14 @@ const FounderOnboarding = () => {
         .insert({
           profile_id: authData.user.id,
           startup_name: formData.startupName,
+          company_name: formData.startupName, // Default company name to startup name
           one_liner: formData.oneLiner,
           industry: formData.industry || null,
           traction: formData.traction || null,
           pitch_deck_url: formData.pitchDeckUrl || null,
-          preferred_city: formData.preferredCity || null
+          preferred_city: formData.preferredCity || null,
+          company_state: formData.companyState || null,
+          company_address: formData.companyAddress || null
         });
 
       if (founderError) throw founderError;
@@ -190,6 +195,26 @@ const FounderOnboarding = () => {
                   placeholder="e.g., San Francisco, New York"
                   value={formData.preferredCity}
                   onChange={(e) => setFormData({ ...formData, preferredCity: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="companyState">Company State/Region</Label>
+                <Input
+                  id="companyState"
+                  placeholder="e.g., Delaware, California"
+                  value={formData.companyState}
+                  onChange={(e) => setFormData({ ...formData, companyState: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="companyAddress">Company Address</Label>
+                <Textarea
+                  id="companyAddress"
+                  placeholder="Full company address"
+                  value={formData.companyAddress}
+                  onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
                 />
               </div>
 
