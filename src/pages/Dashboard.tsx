@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { LogOut, RotateCcw } from "lucide-react";
+import { Heart, Coffee, FileText, TrendingUp, Users, RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { NavLink } from "@/components/NavLink";
@@ -98,7 +98,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
+  const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
@@ -148,69 +148,99 @@ const Dashboard = () => {
     loadProfiles();
   };
 
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
-  const currentProfile = profiles[currentIndex];
+  const remainingProfiles = profiles.length - currentIndex;
   const noMoreProfiles = currentIndex >= profiles.length;
+  const currentProfile = profiles[currentIndex];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      <header className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">InvestorMatch</h1>
-          <div className="flex items-center gap-6">
-            <NavLink to="/dashboard" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
-              Dashboard
-            </NavLink>
-            <NavLink to="/matches" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
-              Matches
-            </NavLink>
-            <NavLink to="/coffeechat" className="text-sm font-medium hover:text-primary" activeClassName="text-primary">
-              Coffee Chats
-            </NavLink>
-            <span className="text-sm text-muted-foreground">
-              {currentUser?.name} ({currentUser?.user_type})
-            </span>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              FundMatch
+            </h1>
+            <div className="flex gap-2 sm:gap-4">
+              <NavLink to="/dashboard">
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Discover</span>
+              </NavLink>
+              <NavLink to="/matches">
+                <Heart className="w-5 h-5" />
+                <span className="hidden sm:inline">Matches</span>
+              </NavLink>
+              <NavLink to="/coffeechat">
+                <Coffee className="w-5 h-5" />
+                <span className="hidden sm:inline">Coffee Chats</span>
+              </NavLink>
+              {currentUser?.user_type === 'founder' && (
+                <>
+                  <NavLink to="/safe">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden sm:inline">SAFEs</span>
+                  </NavLink>
+                  <NavLink to="/captable">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="hidden sm:inline">Cap Table</span>
+                  </NavLink>
+                </>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:flex">
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
-      </header>
+      </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold mb-2">
-            {currentUser?.user_type === 'investor' ? 'Discover Founders' : 'Discover Investors'}
-          </h2>
-          <p className="text-muted-foreground">
-            Swipe right to like, left to pass
-          </p>
-        </div>
-
-        {noMoreProfiles ? (
-          <div className="max-w-md mx-auto text-center py-20">
-            <div className="bg-muted/50 rounded-lg p-8 space-y-4">
-              <h3 className="text-2xl font-bold">No More Profiles</h3>
-              <p className="text-muted-foreground">
-                You've seen all available {currentUser?.user_type === 'investor' ? 'founders' : 'investors'}!
-              </p>
-              <Button onClick={handleReset} className="mt-4">
+      {/* Main Content - Swipe Interface */}
+      <div className="max-w-md mx-auto px-4 py-8">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading profiles...</p>
+            </div>
+          </div>
+        ) : noMoreProfiles ? (
+          <div className="text-center py-12 px-6">
+            <div className="mb-6 text-6xl">🎉</div>
+            <h3 className="text-2xl font-bold mb-3 text-foreground">You're All Caught Up!</h3>
+            <p className="text-muted-foreground mb-6">
+              Check back later for new {currentUser?.user_type === 'founder' ? 'investors' : 'founders'} to connect with
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button onClick={handleReset} variant="outline" size="lg">
                 <RotateCcw className="w-4 h-4 mr-2" />
-                Reset & View Again
+                Review Again
+              </Button>
+              <Button onClick={() => navigate('/matches')} size="lg">
+                View Your Matches
               </Button>
             </div>
           </div>
         ) : currentProfile ? (
-          <div className="pt-8 pb-32">
+          <div>
+            <div className="mb-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <span>👈 Pass</span>
+                  <span className="mx-2">•</span>
+                  <span>Interested 👉</span>
+                </span>
+              </p>
+            </div>
             <SwipeCard
               profile={currentProfile}
               onSwipe={handleSwipe}
               userType={currentUser?.user_type || 'founder'}
             />
+            <div className="mt-6 text-center">
+              <p className="text-xs text-muted-foreground">
+                {remainingProfiles} profile{remainingProfiles !== 1 ? 's' : ''} remaining
+              </p>
+            </div>
           </div>
         ) : null}
       </div>
