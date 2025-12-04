@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, MapPin, TrendingUp, Heart, X } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Building2, MapPin, TrendingUp, Heart, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SwipeCardProps {
@@ -52,7 +53,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
     <div className="relative w-full max-w-md mx-auto h-[600px] perspective-1000">
       <Card
         ref={cardRef}
-        className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl"
+        className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl overflow-hidden"
         style={{
           transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
           opacity,
@@ -66,37 +67,60 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         onTouchMove={(e) => isDragging && handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
         onTouchEnd={handleDragEnd}
       >
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-start justify-between text-2xl">
-            <span>
-              {userType === 'investor' 
-                ? profileData?.startup_name 
-                : profileData?.firm_name || profile.name}
-            </span>
-            <Building2 className="w-6 h-6 text-muted-foreground flex-shrink-0" />
-          </CardTitle>
-          <p className="text-lg text-muted-foreground">{profile.name}</p>
+        {/* Profile Image Section */}
+        <div className="relative h-48 bg-gradient-to-br from-primary/20 to-accent/20">
+          {profile.avatar_url ? (
+            <img 
+              src={profile.avatar_url} 
+              alt={profile.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <User className="w-24 h-24 text-muted-foreground/30" />
+            </div>
+          )}
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card to-transparent" />
+        </div>
+
+        <CardHeader className="pb-2 pt-4">
+          <div className="flex items-center gap-4">
+            <Avatar className="w-16 h-16 border-4 border-background -mt-12 relative z-10">
+              <AvatarImage src={profile.avatar_url} alt={profile.name} />
+              <AvatarFallback className="bg-primary/20 text-primary text-xl">
+                {profile.name?.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <CardTitle className="text-xl">
+                {userType === 'investor' 
+                  ? profileData?.startup_name 
+                  : profileData?.firm_name || profile.name}
+              </CardTitle>
+              <p className="text-muted-foreground">{profile.name}</p>
+            </div>
+          </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 pt-2">
           {userType === 'investor' && (
             <>
-              <p className="text-base leading-relaxed">{profileData?.one_liner}</p>
+              <p className="text-sm leading-relaxed">{profileData?.one_liner}</p>
               {profileData?.industry && (
                 <div className="flex items-center gap-2 text-sm">
-                  <TrendingUp className="w-5 h-5 text-primary" />
+                  <TrendingUp className="w-4 h-4 text-primary" />
                   <span className="font-medium">{profileData.industry}</span>
                 </div>
               )}
               {profileData?.traction && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-1">Traction</p>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs font-medium mb-1 text-muted-foreground">Traction</p>
                   <p className="text-sm">{profileData.traction}</p>
                 </div>
               )}
               {profileData?.preferred_city && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-5 h-5" />
+                  <MapPin className="w-4 h-4" />
                   {profileData.preferred_city}
                 </div>
               )}
@@ -106,22 +130,22 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
           {userType === 'founder' && (
             <>
               {profileData?.typical_check_size && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-1">Check Size</p>
-                  <p className="text-base">{profileData.typical_check_size}</p>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs font-medium mb-1 text-muted-foreground">Check Size</p>
+                  <p className="text-sm font-medium">{profileData.typical_check_size}</p>
                 </div>
               )}
               {profileData?.preferred_stage && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-1">Stage</p>
-                  <p className="text-base">{profileData.preferred_stage}</p>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs font-medium mb-1 text-muted-foreground">Stage</p>
+                  <p className="text-sm font-medium">{profileData.preferred_stage}</p>
                 </div>
               )}
               {profileData?.sectors_of_interest && profileData.sectors_of_interest.length > 0 && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <p className="text-sm font-medium mb-2">Sectors of Interest</p>
-                  <div className="flex flex-wrap gap-2">
-                    {profileData.sectors_of_interest.map((sector: string) => (
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs font-medium mb-2 text-muted-foreground">Sectors of Interest</p>
+                  <div className="flex flex-wrap gap-1">
+                    {profileData.sectors_of_interest.slice(0, 5).map((sector: string) => (
                       <span key={sector} className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
                         {sector}
                       </span>
@@ -131,7 +155,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               )}
               {profileData?.location && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-5 h-5" />
+                  <MapPin className="w-4 h-4" />
                   {profileData.location}
                 </div>
               )}
@@ -141,13 +165,13 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
 
         {/* Swipe indicators */}
         <div 
-          className="absolute top-8 left-8 text-6xl font-bold text-red-500 opacity-0 rotate-[-30deg] pointer-events-none"
+          className="absolute top-24 left-4 text-4xl font-bold text-red-500 opacity-0 rotate-[-20deg] pointer-events-none"
           style={{ opacity: dragOffset.x < -50 ? Math.min(Math.abs(dragOffset.x) / 150, 1) : 0 }}
         >
           PASS
         </div>
         <div 
-          className="absolute top-8 right-8 text-6xl font-bold text-green-500 opacity-0 rotate-[30deg] pointer-events-none"
+          className="absolute top-24 right-4 text-4xl font-bold text-green-500 opacity-0 rotate-[20deg] pointer-events-none"
           style={{ opacity: dragOffset.x > 50 ? Math.min(dragOffset.x / 150, 1) : 0 }}
         >
           LIKE
