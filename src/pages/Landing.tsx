@@ -41,6 +41,16 @@ const Landing = () => {
               I'm an Investor
             </Button>
           </div>
+          
+          <p className="mt-8 text-gray-300">
+            Already have an account?{" "}
+            <button 
+              onClick={() => navigate('/auth')}
+              className="text-white underline hover:text-gray-200 transition-colors"
+            >
+              Sign in
+            </button>
+          </p>
         </div>
       </section>
 
