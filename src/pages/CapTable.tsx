@@ -218,22 +218,24 @@ const CapTable = () => {
             <CardContent>
               {getOwnershipData().length > 0 ? (
                 <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
+                  <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <Pie
                       data={getOwnershipData()}
                       dataKey="value"
                       nameKey="name"
                       cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+                      cy="45%"
+                      outerRadius={80}
+                      labelLine={false}
                     >
                       {getOwnershipData().map((_, index) => (
                         <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip formatter={(value: number) => `${value.toFixed(2)}%`} />
-                    <Legend />
+                    <Legend 
+                      formatter={(value, entry: any) => `${value}: ${entry.payload.value.toFixed(1)}%`}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
