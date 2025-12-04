@@ -13,20 +13,7 @@ interface Profile {
   user_type: 'founder' | 'investor';
   name: string;
   email: string;
-}
-
-interface FounderProfile {
-  startup_name: string;
-  one_liner: string;
-  industry: string | null;
-  preferred_city: string | null;
-}
-
-interface InvestorProfile {
-  firm_name: string | null;
-  typical_check_size: string | null;
-  preferred_stage: string | null;
-  location: string | null;
+  avatar_url?: string;
 }
 
 const Dashboard = () => {
@@ -40,32 +27,35 @@ const Dashboard = () => {
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
 
   useEffect(() => {
-    checkUser();
-    loadProfiles();
-  }, []);
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/');
+        return;
+      }
 
-  const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate('/');
-      return;
-    }
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
+      if (!profile) {
+        navigate('/');
+        return;
+      }
 
-    setCurrentUser(profile);
-  };
+      setCurrentUser(profile);
+      await loadProfiles(profile);
+    };
 
-  const loadProfiles = async () => {
-    if (!currentUser) return;
+    init();
+  }, [navigate]);
 
+  const loadProfiles = async (user: Profile) => {
     try {
       // Load profiles of opposite type
-      const targetType = currentUser.user_type === 'founder' ? 'investor' : 'founder';
+      const targetType = user.user_type === 'founder' ? 'investor' : 'founder';
       
       const { data: profilesData } = await supabase
         .from('profiles')
@@ -75,13 +65,13 @@ const Dashboard = () => {
           investor_profiles (*)
         `)
         .eq('user_type', targetType)
-        .neq('id', currentUser.id);
+        .neq('id', user.id);
 
       // Get user's swipes to filter out already swiped profiles
       const { data: swipesData } = await supabase
         .from('swipes')
         .select('swiped_id')
-        .eq('swiper_id', currentUser.id);
+        .eq('swiper_id', user.id);
 
       const swipedIds = new Set(swipesData?.map(s => s.swiped_id) || []);
       const unswipedProfiles = profilesData?.filter(p => !swipedIds.has(p.id)) || [];
@@ -143,9 +133,12 @@ const Dashboard = () => {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setCurrentIndex(0);
-    loadProfiles();
+    if (currentUser) {
+      setLoading(true);
+      await loadProfiles(currentUser);
+    }
   };
 
   const remainingProfiles = profiles.length - currentIndex;
@@ -172,7 +165,7 @@ const Dashboard = () => {
               </NavLink>
               <NavLink to="/coffeechat">
                 <Coffee className="w-5 h-5" />
-                <span className="hidden sm:inline">Coffee Chats</span>
+                <span className="hidden sm:inline">Invites</span>
               </NavLink>
               {currentUser?.user_type === 'founder' && (
                 <>
@@ -208,7 +201,10 @@ const Dashboard = () => {
             <div className="mb-6 text-6xl">🎉</div>
             <h3 className="text-2xl font-bold mb-3 text-foreground">You're All Caught Up!</h3>
             <p className="text-muted-foreground mb-6">
-              Check back later for new {currentUser?.user_type === 'founder' ? 'investors' : 'founders'} to connect with
+              {profiles.length === 0 
+                ? `No ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} have signed up yet. Check back later!`
+                : `Check back later for new ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} to connect with`
+              }
             </p>
             <div className="flex flex-col gap-3">
               <Button onClick={handleReset} variant="outline" size="lg">
