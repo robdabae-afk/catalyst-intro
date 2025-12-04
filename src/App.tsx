@@ -14,6 +14,7 @@ import SafeGenerator from "./pages/SafeGenerator";
 import SafeDetail from "./pages/SafeDetail";
 import SafesList from "./pages/SafesList";
 import CapTable from "./pages/CapTable";
+import Investments from "./pages/Investments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/safe" element={<SafeGenerator />} />
           <Route path="/safe/:id" element={<SafeDetail />} />
           <Route path="/captable" element={<CapTable />} />
+          <Route path="/investments" element={<Investments />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

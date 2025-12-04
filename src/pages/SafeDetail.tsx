@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, FileText, CheckCircle, Clock } from "lucide-react";
+import { ArrowLeft, FileText, CheckCircle, Clock, Send, Printer } from "lucide-react";
 import { SignaturePad } from "@/components/SignaturePad";
 
 interface SAFEDetails {
@@ -80,31 +81,84 @@ const SafeDetail = () => {
     }
   };
 
-  const generateDocument = async () => {
+  const sendToInvestor = async () => {
     if (!id) return;
 
     setGenerating(true);
     try {
-      const { error } = await supabase.functions.invoke('generate-safe-pdf', {
+      // First generate the document
+      const { error: genError } = await supabase.functions.invoke('generate-safe-pdf', {
         body: { safeId: id }
       });
 
-      if (error) throw error;
+      if (genError) throw genError;
+
+      // Then update status to 'sent'
+      const { error: updateError } = await supabase
+        .from('safes')
+        .update({ status: 'sent' })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
 
       toast({
-        title: "Success!",
-        description: "SAFE document generated successfully",
+        title: "SAFE Sent!",
+        description: "The investor has been notified and can now review and sign.",
       });
 
       await loadSafe();
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error generating document",
+        title: "Error sending SAFE",
         description: error.message
       });
     } finally {
       setGenerating(false);
+    }
+  };
+
+  const handlePrint = () => {
+    const printWindow = window.open('', '_blank');
+    if (printWindow && safe?.document_url) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>SAFE Agreement - ${safe.investor.name}</title>
+            <style>
+              body { font-family: 'Times New Roman', serif; padding: 40px; line-height: 1.6; }
+              pre { white-space: pre-wrap; font-family: 'Times New Roman', serif; }
+              .signature-section { margin-top: 40px; display: flex; gap: 40px; }
+              .signature-box { flex: 1; }
+              .signature-box img { max-width: 200px; height: auto; }
+              @media print { body { padding: 20px; } }
+            </style>
+          </head>
+          <body>
+            <pre>${safe.document_url}</pre>
+            ${safe.founder_signature_data || safe.investor_signature_data ? `
+              <div class="signature-section">
+                ${safe.founder_signature_data ? `
+                  <div class="signature-box">
+                    <p><strong>Founder Signature:</strong></p>
+                    <img src="${safe.founder_signature_data}" alt="Founder Signature" />
+                    <p>Signed: ${new Date(safe.founder_signed_at!).toLocaleDateString()}</p>
+                  </div>
+                ` : ''}
+                ${safe.investor_signature_data ? `
+                  <div class="signature-box">
+                    <p><strong>Investor Signature:</strong></p>
+                    <img src="${safe.investor_signature_data}" alt="Investor Signature" />
+                    <p>Signed: ${new Date(safe.investor_signed_at!).toLocaleDateString()}</p>
+                  </div>
+                ` : ''}
+              </div>
+            ` : ''}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
     }
   };
 
@@ -172,8 +226,18 @@ const SafeDetail = () => {
 
   const isFounder = currentUserId === safe.founder_id;
   const isInvestor = currentUserId === safe.investor_id;
-  const canSign = (isFounder && !safe.founder_signed_at) || (isInvestor && !safe.investor_signed_at);
+  const canSign = (isFounder && !safe.founder_signed_at && safe.status !== 'draft') || 
+                  (isInvestor && !safe.investor_signed_at && safe.status !== 'draft');
   const bothSigned = safe.founder_signed_at && safe.investor_signed_at;
+  const isDraft = safe.status === 'draft';
+  const isSent = safe.status === 'sent' || safe.status === 'pending_signatures';
+
+  const getStatusBadge = () => {
+    if (bothSigned) return <Badge className="bg-green-500">Executed</Badge>;
+    if (safe.status === 'sent' || safe.status === 'pending_signatures') 
+      return <Badge variant="secondary">Pending Signatures</Badge>;
+    return <Badge variant="outline">Draft</Badge>;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
@@ -197,17 +261,13 @@ const SafeDetail = () => {
                 </CardTitle>
                 <CardDescription>Simple Agreement for Future Equity</CardDescription>
               </div>
-              <div className="text-right">
-                {bothSigned ? (
-                  <div className="flex items-center gap-2 text-green-600">
-                    <CheckCircle className="w-6 h-6" />
-                    <span className="font-semibold">Fully Executed</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 text-yellow-600">
-                    <Clock className="w-6 h-6" />
-                    <span className="font-semibold">Pending Signatures</span>
-                  </div>
+              <div className="text-right flex items-center gap-2">
+                {getStatusBadge()}
+                {bothSigned && (
+                  <Button variant="outline" size="sm" onClick={handlePrint}>
+                    <Printer className="w-4 h-4 mr-2" />
+                    Print PDF
+                  </Button>
                 )}
               </div>
             </div>
@@ -275,20 +335,26 @@ const SafeDetail = () => {
               </div>
             </div>
 
-            {!safe.document_url && isFounder && (
+            {/* Founder actions for draft SAFE */}
+            {isDraft && isFounder && (
               <div className="pt-4 border-t">
                 <Button 
-                  onClick={generateDocument} 
+                  onClick={sendToInvestor} 
                   disabled={generating}
                   size="lg"
                   className="w-full"
                 >
-                  {generating ? "Generating..." : "Generate SAFE Document"}
+                  <Send className="w-4 h-4 mr-2" />
+                  {generating ? "Sending..." : "Send SAFE to Investor"}
                 </Button>
+                <p className="text-sm text-muted-foreground mt-2 text-center">
+                  This will generate the document and notify the investor for signing.
+                </p>
               </div>
             )}
 
-            {safe.document_url && (
+            {/* Document preview for sent SAFEs */}
+            {isSent && safe.document_url && (
               <>
                 <div className="pt-4 border-t">
                   <h3 className="font-semibold text-lg mb-3">Document Preview</h3>
@@ -320,6 +386,18 @@ const SafeDetail = () => {
                   </div>
                 )}
               </>
+            )}
+
+            {/* Show document for executed SAFEs */}
+            {bothSigned && safe.document_url && (
+              <div className="pt-4 border-t">
+                <h3 className="font-semibold text-lg mb-3">Executed Document</h3>
+                <div className="bg-muted/30 p-6 rounded-lg max-h-96 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-sm font-mono">
+                    {safe.document_url}
+                  </pre>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
