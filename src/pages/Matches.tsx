@@ -236,6 +236,7 @@ export default function Matches() {
               <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/matches">Matches</NavLink>
               <NavLink to="/coffeechat">Coffee Chats</NavLink>
+              <NavLink to="/investments">Investments</NavLink>
             </div>
           </div>
         </div>
