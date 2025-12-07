@@ -8,9 +8,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee } from "lucide-react";
+import { Calendar, Send, Coffee, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
   id: string;
@@ -42,12 +43,14 @@ interface CoffeeChat {
 }
 
 export default function Matches() {
+  const navigate = useNavigate();
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [coffeeChats, setCoffeeChats] = useState<CoffeeChat[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserType, setCurrentUserType] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -88,6 +91,17 @@ export default function Matches() {
       if (!user) return;
       
       setCurrentUserId(user.id);
+
+      // Get user type
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_type")
+        .eq("id", user.id)
+        .single();
+      
+      if (profile) {
+        setCurrentUserType(profile.user_type);
+      }
 
       // Get all users I've liked
       const { data: myLikes } = await supabase
@@ -232,11 +246,19 @@ export default function Matches() {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               InvestorMatch
             </h1>
-            <div className="flex gap-6">
+            <div className="flex items-center gap-4">
               <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/matches">Matches</NavLink>
               <NavLink to="/coffeechat">Coffee Chats</NavLink>
-              <NavLink to="/investments">Investments</NavLink>
+              {currentUserType === 'investor' && (
+                <Button 
+                  onClick={() => navigate('/investments')}
+                  className="flex items-center gap-2"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  My Investments
+                </Button>
+              )}
             </div>
           </div>
         </div>

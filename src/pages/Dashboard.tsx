@@ -180,10 +180,14 @@ const Dashboard = () => {
                 </>
               )}
               {currentUser?.user_type === 'investor' && (
-                <NavLink to="/investments">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="hidden sm:inline">Investments</span>
-                </NavLink>
+                <Button 
+                  onClick={() => navigate('/investments')}
+                  className="flex items-center gap-2"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Investments</span>
+                  <span className="sm:hidden">Portfolio</span>
+                </Button>
               )}
               <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:flex">
                 Logout

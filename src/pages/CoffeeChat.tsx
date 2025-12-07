@@ -286,10 +286,14 @@ const CoffeeChat = () => {
                 <span className="hidden sm:inline">Invites</span>
               </NavLink>
               {currentUserType === 'investor' && (
-                <NavLink to="/investments">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="hidden sm:inline">Investments</span>
-                </NavLink>
+                <Button 
+                  onClick={() => navigate('/investments')}
+                  className="flex items-center gap-2"
+                  size="sm"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Investments</span>
+                </Button>
               )}
             </div>
           </div>
