@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, Coffee, FileText, TrendingUp, Users, RotateCcw } from "lucide-react";
+import { Heart, Coffee, FileText, TrendingUp, Users, RotateCcw, Inbox } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { NavLink } from "@/components/NavLink";
+import { usePendingRequests } from "@/hooks/usePendingRequests";
 
 interface Profile {
   id: string;
@@ -19,6 +20,7 @@ interface Profile {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const pendingRequests = usePendingRequests();
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -167,6 +169,10 @@ const Dashboard = () => {
                 <Coffee className="w-5 h-5" />
                 <span className="hidden sm:inline">Invites</span>
               </NavLink>
+              <NavLink to="/requests" badge={pendingRequests}>
+                <Inbox className="w-5 h-5" />
+                <span className="hidden sm:inline">Requests</span>
+              </NavLink>
               {currentUser?.user_type === 'founder' && (
                 <>
                   <NavLink to="/safes">
@@ -180,14 +186,10 @@ const Dashboard = () => {
                 </>
               )}
               {currentUser?.user_type === 'investor' && (
-                <Button 
-                  onClick={() => navigate('/investments')}
-                  className="flex items-center gap-2"
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Investments</span>
-                  <span className="sm:hidden">Portfolio</span>
-                </Button>
+                <NavLink to="/investments">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="hidden sm:inline">Investments</span>
+                </NavLink>
               )}
               <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:flex">
                 Logout
