@@ -12,9 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp } from "lucide-react";
+import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
+import { usePendingRequests } from "@/hooks/usePendingRequests";
 
 interface CoffeeChatInvite {
   id: string;
@@ -40,6 +41,7 @@ interface Match {
 const CoffeeChat = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const pendingRequests = usePendingRequests();
   const [loading, setLoading] = useState(true);
   const [sendingInvite, setSendingInvite] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -285,15 +287,15 @@ const CoffeeChat = () => {
                 <Coffee className="w-5 h-5" />
                 <span className="hidden sm:inline">Invites</span>
               </NavLink>
+              <NavLink to="/requests" badge={pendingRequests}>
+                <Inbox className="w-5 h-5" />
+                <span className="hidden sm:inline">Requests</span>
+              </NavLink>
               {currentUserType === 'investor' && (
-                <Button 
-                  onClick={() => navigate('/investments')}
-                  className="flex items-center gap-2"
-                  size="sm"
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline">My Investments</span>
-                </Button>
+                <NavLink to="/investments">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="hidden sm:inline">Investments</span>
+                </NavLink>
               )}
             </div>
           </div>

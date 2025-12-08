@@ -8,11 +8,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee, TrendingUp } from "lucide-react";
+import { Calendar, Send, Coffee, TrendingUp, Inbox } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { RequestMenu } from "@/components/RequestMenu";
+import { usePendingRequests } from "@/hooks/usePendingRequests";
 
 interface Profile {
   id: string;
@@ -45,6 +46,7 @@ interface CoffeeChat {
 
 export default function Matches() {
   const navigate = useNavigate();
+  const pendingRequests = usePendingRequests();
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -251,14 +253,12 @@ export default function Matches() {
               <NavLink to="/dashboard">Dashboard</NavLink>
               <NavLink to="/matches">Matches</NavLink>
               <NavLink to="/coffeechat">Coffee Chats</NavLink>
+              <NavLink to="/requests" badge={pendingRequests}>Requests</NavLink>
               {currentUserType === 'investor' && (
-                <Button 
-                  onClick={() => navigate('/investments')}
-                  className="flex items-center gap-2"
-                >
+                <NavLink to="/investments">
                   <TrendingUp className="w-4 h-4" />
-                  My Investments
-                </Button>
+                  Investments
+                </NavLink>
               )}
             </div>
           </div>
