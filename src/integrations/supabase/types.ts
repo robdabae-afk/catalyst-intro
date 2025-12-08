@@ -126,6 +126,45 @@ export type Database = {
           },
         ]
       }
+      document_requests: {
+        Row: {
+          created_at: string
+          file_url: string | null
+          id: string
+          message: string | null
+          request_type: string
+          requester_id: string
+          response_message: string | null
+          status: string
+          target_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          message?: string | null
+          request_type: string
+          requester_id: string
+          response_message?: string | null
+          status?: string
+          target_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          message?: string | null
+          request_type?: string
+          requester_id?: string
+          response_message?: string | null
+          status?: string
+          target_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       founder_profiles: {
         Row: {
           company_address: string | null
