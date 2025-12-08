@@ -12,6 +12,7 @@ import { Calendar, Send, Coffee, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
+import { RequestMenu } from "@/components/RequestMenu";
 
 interface Profile {
   id: string;
@@ -323,20 +324,28 @@ export default function Matches() {
             <CardHeader>
               <CardTitle>
                 {selectedMatch ? (
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarFallback className="bg-primary/20 text-primary">
-                        {selectedMatch.profile.name.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p>{selectedMatch.profile.name}</p>
-                      <p className="text-sm font-normal text-muted-foreground">
-                        {selectedMatch.founderProfile?.one_liner || 
-                         selectedMatch.investorProfile?.firm_name ||
-                         "Start a conversation"}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarFallback className="bg-primary/20 text-primary">
+                          {selectedMatch.profile.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p>{selectedMatch.profile.name}</p>
+                        <p className="text-sm font-normal text-muted-foreground">
+                          {selectedMatch.founderProfile?.one_liner || 
+                           selectedMatch.investorProfile?.firm_name ||
+                           "Start a conversation"}
+                        </p>
+                      </div>
                     </div>
+                    {currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder' && (
+                      <RequestMenu 
+                        targetId={selectedMatch.profile.id} 
+                        targetName={selectedMatch.profile.name} 
+                      />
+                    )}
                   </div>
                 ) : (
                   "Select a match to start chatting"

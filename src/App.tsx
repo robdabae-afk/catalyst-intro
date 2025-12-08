@@ -15,6 +15,7 @@ import SafeDetail from "./pages/SafeDetail";
 import SafesList from "./pages/SafesList";
 import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
+import Requests from "./pages/Requests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/safe/:id" element={<SafeDetail />} />
           <Route path="/captable" element={<CapTable />} />
           <Route path="/investments" element={<Investments />} />
+          <Route path="/requests" element={<Requests />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
