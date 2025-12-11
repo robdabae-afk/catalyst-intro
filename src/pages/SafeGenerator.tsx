@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,13 +11,16 @@ import { ArrowLeft } from "lucide-react";
 
 const SafeGenerator = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [investors, setInvestors] = useState<any[]>([]);
+  
+  // Pre-fill from URL params (from funding request approval)
   const [formData, setFormData] = useState({
-    investorId: "",
-    amount: "",
+    investorId: searchParams.get('investor_id') || "",
+    amount: searchParams.get('amount') || "",
     valuationCap: "",
     discountRate: "",
     executionDate: ""
