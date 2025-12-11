@@ -119,7 +119,14 @@ export default function Requests() {
     setLoading(false);
   };
 
-  const handleResponse = async (requestId: string, status: 'approved' | 'denied') => {
+  // Extract funding amount from message
+  const extractFundingAmount = (message: string | null): number | null => {
+    if (!message) return null;
+    const match = message.match(/Funding Amount: \$(\d+)/);
+    return match ? parseInt(match[1]) : null;
+  };
+
+  const handleResponse = async (requestId: string, status: 'approved' | 'denied', request?: DocumentRequest) => {
     const { error } = await supabase
       .from('document_requests')
       .update({ status })
@@ -129,6 +136,14 @@ export default function Requests() {
       toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } else {
       toast({ title: status === 'approved' ? 'Approved' : 'Denied' });
+      
+      // If approving a funding interest request, redirect to SAFE creation
+      if (status === 'approved' && request?.request_type === 'funding_interest') {
+        const amount = extractFundingAmount(request.message);
+        navigate(`/safe?investor_id=${request.requester_id}&amount=${amount || ''}`);
+        return;
+      }
+      
       if (userId) fetchRequests(userId);
     }
   };
@@ -257,10 +272,11 @@ export default function Requests() {
                               />
                             </div>
                           )}
-                          <Button size="sm" onClick={() => handleResponse(req.id, 'approved')}>
-                            <Check className="h-4 w-4 mr-1" /> Approve
+                          <Button size="sm" onClick={() => handleResponse(req.id, 'approved', req)}>
+                            <Check className="h-4 w-4 mr-1" /> 
+                            {req.request_type === 'funding_interest' ? 'Accept & Create SAFE' : 'Approve'}
                           </Button>
-                          <Button size="sm" variant="destructive" onClick={() => handleResponse(req.id, 'denied')}>
+                          <Button size="sm" variant="destructive" onClick={() => handleResponse(req.id, 'denied', req)}>
                             <X className="h-4 w-4 mr-1" /> Deny
                           </Button>
                         </div>

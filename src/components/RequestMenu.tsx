@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,6 +16,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal } from 'lucide-react';
@@ -34,12 +37,19 @@ const REQUEST_TYPES = [
 ] as const;
 
 export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [fundingAmount, setFundingAmount] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleRequest = (type: string) => {
+    // Navigate to coffee chat for meeting requests
+    if (type === 'meeting') {
+      navigate('/coffeechat');
+      return;
+    }
     setSelectedType(type);
     setDialogOpen(true);
   };
@@ -52,11 +62,17 @@ export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      // Include funding amount in message for funding_interest requests
+      let finalMessage = message.trim() || null;
+      if (selectedType === 'funding_interest' && fundingAmount) {
+        finalMessage = `Funding Amount: $${fundingAmount}${message.trim() ? `\n\n${message.trim()}` : ''}`;
+      }
+
       const { error } = await supabase.from('document_requests').insert({
         requester_id: user.id,
         target_id: targetId,
         request_type: selectedType,
-        message: message.trim() || null,
+        message: finalMessage,
       });
 
       if (error) throw error;
@@ -68,6 +84,7 @@ export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
       
       setDialogOpen(false);
       setMessage('');
+      setFundingAmount('');
       setSelectedType(null);
     } catch (error: any) {
       toast({
@@ -115,10 +132,22 @@ export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
               {selectedTypeInfo?.label}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground mb-4">
+          <div className="py-4 space-y-4">
+            <p className="text-sm text-muted-foreground">
               Send a {selectedTypeInfo?.label.toLowerCase()} request to {targetName}
             </p>
+            {selectedType === 'funding_interest' && (
+              <div className="space-y-2">
+                <Label htmlFor="funding-amount">Investment Amount ($)</Label>
+                <Input
+                  id="funding-amount"
+                  type="number"
+                  placeholder="e.g., 50000"
+                  value={fundingAmount}
+                  onChange={(e) => setFundingAmount(e.target.value)}
+                />
+              </div>
+            )}
             <Textarea
               placeholder="Add a message (optional)..."
               value={message}

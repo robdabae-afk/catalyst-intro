@@ -36,6 +36,17 @@ const Dashboard = () => {
         return;
       }
 
+      // Check if user is approved (has any role)
+      const { data: roles } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+
+      if (!roles || roles.length === 0) {
+        navigate('/pending-approval');
+        return;
+      }
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
