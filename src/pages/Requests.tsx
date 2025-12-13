@@ -9,7 +9,9 @@ import { NavLink } from '@/components/NavLink';
 import { toast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X } from 'lucide-react';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Users, Heart, Coffee, TrendingUp, Inbox, Shield } from 'lucide-react';
+import { usePendingRequests } from '@/hooks/usePendingRequests';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 interface DocumentRequest {
   id: string;
@@ -45,6 +47,8 @@ const REQUEST_LABELS: Record<string, string> = {
 
 export default function Requests() {
   const navigate = useNavigate();
+  const pendingRequests = usePendingRequests();
+  const { isAdmin } = useIsAdmin();
   const [userId, setUserId] = useState<string | null>(null);
   const [userType, setUserType] = useState<string | null>(null);
   const [incomingRequests, setIncomingRequests] = useState<DocumentRequest[]>([]);
@@ -194,18 +198,53 @@ export default function Requests() {
 
   return (
     <div className="min-h-screen bg-background">
-      <nav className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               CATALYST
             </h1>
             <div className="flex gap-2 sm:gap-4">
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/matches">Matches</NavLink>
-              <NavLink to="/requests">Requests</NavLink>
-              {userType === 'investor' && <NavLink to="/investments">Investments</NavLink>}
-              {userType === 'founder' && <NavLink to="/safes">SAFEs</NavLink>}
+              <NavLink to="/dashboard">
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Discover</span>
+              </NavLink>
+              <NavLink to="/matches">
+                <Heart className="w-5 h-5" />
+                <span className="hidden sm:inline">Matches</span>
+              </NavLink>
+              <NavLink to="/coffeechat">
+                <Coffee className="w-5 h-5" />
+                <span className="hidden sm:inline">Invites</span>
+              </NavLink>
+              <NavLink to="/requests" badge={pendingRequests}>
+                <Inbox className="w-5 h-5" />
+                <span className="hidden sm:inline">Requests</span>
+              </NavLink>
+              {userType === 'founder' && (
+                <>
+                  <NavLink to="/safes">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden sm:inline">SAFEs</span>
+                  </NavLink>
+                  <NavLink to="/captable">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="hidden sm:inline">Cap Table</span>
+                  </NavLink>
+                </>
+              )}
+              {userType === 'investor' && (
+                <NavLink to="/investments">
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="hidden sm:inline">Investments</span>
+                </NavLink>
+              )}
+              {isAdmin && (
+                <NavLink to="/admin">
+                  <Shield className="w-5 h-5" />
+                  <span className="hidden sm:inline">Admin</span>
+                </NavLink>
+              )}
             </div>
           </div>
         </div>

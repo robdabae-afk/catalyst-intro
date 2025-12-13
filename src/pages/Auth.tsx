@@ -138,7 +138,7 @@ const Auth = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate("/founder-onboarding")}
+                  onClick={() => navigate("/onboarding/founder")}
                   className="w-full"
                 >
                   Sign up as Founder
@@ -146,7 +146,7 @@ const Auth = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate("/investor-onboarding")}
+                  onClick={() => navigate("/onboarding/investor")}
                   className="w-full"
                 >
                   Sign up as Investor

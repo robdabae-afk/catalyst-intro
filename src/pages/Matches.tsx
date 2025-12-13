@@ -8,11 +8,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee, TrendingUp, Inbox } from "lucide-react";
+import { Calendar, Send, Coffee, TrendingUp, Inbox, Users, Heart, FileText, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
 import { RequestMenu } from "@/components/RequestMenu";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
 
 interface Profile {
@@ -46,6 +47,7 @@ interface CoffeeChat {
 
 export default function Matches() {
   const navigate = useNavigate();
+  const { isAdmin } = useIsAdmin();
   const pendingRequests = usePendingRequests();
   const [matches, setMatches] = useState<Match[]>([]);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -243,21 +245,51 @@ export default function Matches() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/20">
-      <nav className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <div className="flex justify-between items-center h-16">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               CATALYST
             </h1>
-            <div className="flex items-center gap-4">
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/matches">Matches</NavLink>
-              <NavLink to="/coffeechat">Coffee Chats</NavLink>
-              <NavLink to="/requests" badge={pendingRequests}>Requests</NavLink>
+            <div className="flex gap-2 sm:gap-4">
+              <NavLink to="/dashboard">
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Discover</span>
+              </NavLink>
+              <NavLink to="/matches">
+                <Heart className="w-5 h-5" />
+                <span className="hidden sm:inline">Matches</span>
+              </NavLink>
+              <NavLink to="/coffeechat">
+                <Coffee className="w-5 h-5" />
+                <span className="hidden sm:inline">Invites</span>
+              </NavLink>
+              <NavLink to="/requests" badge={pendingRequests}>
+                <Inbox className="w-5 h-5" />
+                <span className="hidden sm:inline">Requests</span>
+              </NavLink>
+              {currentUserType === 'founder' && (
+                <>
+                  <NavLink to="/safes">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden sm:inline">SAFEs</span>
+                  </NavLink>
+                  <NavLink to="/captable">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="hidden sm:inline">Cap Table</span>
+                  </NavLink>
+                </>
+              )}
               {currentUserType === 'investor' && (
                 <NavLink to="/investments">
-                  <TrendingUp className="w-4 h-4" />
-                  Investments
+                  <TrendingUp className="w-5 h-5" />
+                  <span className="hidden sm:inline">Investments</span>
+                </NavLink>
+              )}
+              {isAdmin && (
+                <NavLink to="/admin">
+                  <Shield className="w-5 h-5" />
+                  <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
             </div>
