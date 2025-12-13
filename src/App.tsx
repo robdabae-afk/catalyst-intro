@@ -18,6 +18,7 @@ import Investments from "./pages/Investments";
 import Requests from "./pages/Requests";
 import PendingApproval from "./pages/PendingApproval";
 import Admin from "./pages/Admin";
+import ProfileView from "./pages/ProfileView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/requests" element={<Requests />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/profile/:id" element={<ProfileView />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
