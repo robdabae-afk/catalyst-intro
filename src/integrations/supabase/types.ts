@@ -167,6 +167,7 @@ export type Database = {
       }
       founder_profiles: {
         Row: {
+          banner_url: string | null
           company_address: string | null
           company_name: string | null
           company_state: string | null
@@ -181,6 +182,7 @@ export type Database = {
           traction: string | null
         }
         Insert: {
+          banner_url?: string | null
           company_address?: string | null
           company_name?: string | null
           company_state?: string | null
@@ -195,6 +197,7 @@ export type Database = {
           traction?: string | null
         }
         Update: {
+          banner_url?: string | null
           company_address?: string | null
           company_name?: string | null
           company_state?: string | null
@@ -220,6 +223,7 @@ export type Database = {
       }
       investor_profiles: {
         Row: {
+          banner_url: string | null
           created_at: string | null
           firm_name: string | null
           id: string
@@ -231,6 +235,7 @@ export type Database = {
           typical_check_size: string | null
         }
         Insert: {
+          banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string
@@ -242,6 +247,7 @@ export type Database = {
           typical_check_size?: string | null
         }
         Update: {
+          banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string

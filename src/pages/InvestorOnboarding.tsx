@@ -8,15 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, User } from "lucide-react";
+import { Camera, User, ImagePlus } from "lucide-react";
 
 const InvestorOnboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -45,6 +48,22 @@ const InvestorOnboarding = () => {
     }
   };
 
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please select an image under 5MB",
+        });
+        return;
+      }
+      setBannerFile(file);
+      setBannerPreview(URL.createObjectURL(file));
+    }
+  };
+
   const uploadAvatar = async (userId: string): Promise<string | null> => {
     if (!avatarFile) return null;
 
@@ -57,6 +76,28 @@ const InvestorOnboarding = () => {
 
     if (uploadError) {
       console.error('Avatar upload error:', uploadError);
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const uploadBanner = async (userId: string): Promise<string | null> => {
+    if (!bannerFile) return null;
+
+    const fileExt = bannerFile.name.split('.').pop();
+    const filePath = `${userId}/banner.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, bannerFile, { upsert: true });
+
+    if (uploadError) {
+      console.error('Banner upload error:', uploadError);
       return null;
     }
 
@@ -87,8 +128,9 @@ const InvestorOnboarding = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create user");
 
-      // Upload avatar if selected
+      // Upload avatar and banner if selected
       const avatarUrl = await uploadAvatar(authData.user.id);
+      const bannerUrl = await uploadBanner(authData.user.id);
 
       // Create profile
       const { error: profileError } = await supabase
@@ -113,7 +155,8 @@ const InvestorOnboarding = () => {
           preferred_stage: formData.preferredStage || null,
           sectors_of_interest: formData.sectors ? formData.sectors.split(',').map(s => s.trim()) : null,
           location: formData.location || null,
-          portfolio_link: formData.portfolioLink || null
+          portfolio_link: formData.portfolioLink || null,
+          banner_url: bannerUrl
         });
 
       if (investorError) throw investorError;
@@ -145,6 +188,34 @@ const InvestorOnboarding = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Banner Upload */}
+              <div className="space-y-2">
+                <Label>Banner Photo (optional)</Label>
+                <div 
+                  className="relative cursor-pointer group w-full h-32 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
+                  onClick={() => bannerInputRef.current?.click()}
+                >
+                  {bannerPreview ? (
+                    <img src={bannerPreview} alt="Banner preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                      <ImagePlus className="w-8 h-8 mb-2" />
+                      <span className="text-sm">Click to upload banner</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ImagePlus className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <input
+                  ref={bannerInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBannerChange}
+                  className="hidden"
+                />
+              </div>
+
               {/* Avatar Upload */}
               <div className="flex flex-col items-center gap-4">
                 <div 

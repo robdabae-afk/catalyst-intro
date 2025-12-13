@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee, TrendingUp, Inbox, Users, Heart, FileText, Shield } from "lucide-react";
+import { Calendar, Send, Coffee, TrendingUp, Inbox, Users, Heart, FileText, Shield, Eye } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
@@ -372,12 +372,22 @@ export default function Matches() {
                         </p>
                       </div>
                     </div>
-                    {currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder' && (
-                      <RequestMenu 
-                        targetId={selectedMatch.profile.id} 
-                        targetName={selectedMatch.profile.name} 
-                      />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/profile/${selectedMatch.profile.id}`)}
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        View Profile
+                      </Button>
+                      {currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder' && (
+                        <RequestMenu 
+                          targetId={selectedMatch.profile.id} 
+                          targetName={selectedMatch.profile.name} 
+                        />
+                      )}
+                    </div>
                   </div>
                 ) : (
                   "Select a match to start chatting"
