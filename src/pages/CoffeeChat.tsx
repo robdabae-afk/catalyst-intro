@@ -12,10 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox } from "lucide-react";
+import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox, FileText, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 interface CoffeeChatInvite {
   id: string;
@@ -42,6 +43,7 @@ const CoffeeChat = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const pendingRequests = usePendingRequests();
+  const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
   const [sendingInvite, setSendingInvite] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
@@ -291,10 +293,28 @@ const CoffeeChat = () => {
                 <Inbox className="w-5 h-5" />
                 <span className="hidden sm:inline">Requests</span>
               </NavLink>
+              {currentUserType === 'founder' && (
+                <>
+                  <NavLink to="/safes">
+                    <FileText className="w-5 h-5" />
+                    <span className="hidden sm:inline">SAFEs</span>
+                  </NavLink>
+                  <NavLink to="/captable">
+                    <TrendingUp className="w-5 h-5" />
+                    <span className="hidden sm:inline">Cap Table</span>
+                  </NavLink>
+                </>
+              )}
               {currentUserType === 'investor' && (
                 <NavLink to="/investments">
                   <TrendingUp className="w-5 h-5" />
                   <span className="hidden sm:inline">Investments</span>
+                </NavLink>
+              )}
+              {isAdmin && (
+                <NavLink to="/admin">
+                  <Shield className="w-5 h-5" />
+                  <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
             </div>
