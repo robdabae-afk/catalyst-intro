@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox, FileText, Shield } from "lucide-react";
+import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox, FileText, Shield, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
@@ -317,6 +317,10 @@ const CoffeeChat = () => {
                   <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
+              <NavLink to="/settings">
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Settings</span>
+              </NavLink>
             </div>
           </div>
         </div>

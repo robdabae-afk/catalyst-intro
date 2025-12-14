@@ -9,7 +9,7 @@ import { NavLink } from '@/components/NavLink';
 import { toast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Users, Heart, Coffee, TrendingUp, Inbox, Shield } from 'lucide-react';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Users, Heart, Coffee, TrendingUp, Inbox, Shield, Settings } from 'lucide-react';
 import { usePendingRequests } from '@/hooks/usePendingRequests';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 
@@ -245,6 +245,10 @@ export default function Requests() {
                   <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
+              <NavLink to="/settings">
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Settings</span>
+              </NavLink>
             </div>
           </div>
         </div>

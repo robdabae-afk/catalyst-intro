@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface SwipeCardProps {
   profile: any;
@@ -45,9 +46,14 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
   const rotation = dragOffset.x / 20;
   const opacity = 1 - Math.abs(dragOffset.x) / 300;
 
-  const profileData = userType === 'founder' 
-    ? profile.investor_profiles?.[0] 
-    : profile.founder_profiles?.[0];
+  // userType is the CURRENT user's type, so we need to show the OPPOSITE type's profile
+  const founderProfile = profile.founder_profiles?.[0];
+  const investorProfile = profile.investor_profiles?.[0];
+  
+  // If current user is investor, show founder profiles; if founder, show investor profiles
+  const isShowingFounder = userType === 'investor';
+  const profileData = isShowingFounder ? founderProfile : investorProfile;
+  const bannerUrl = profileData?.banner_url;
 
   return (
     <div className="relative w-full max-w-md mx-auto h-[600px] perspective-1000">
@@ -67,9 +73,15 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         onTouchMove={(e) => isDragging && handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
         onTouchEnd={handleDragEnd}
       >
-        {/* Profile Image Section */}
-        <div className="relative h-48 bg-gradient-to-br from-primary/20 to-accent/20">
-          {profile.avatar_url ? (
+        {/* Banner/Profile Image Section */}
+        <div className="relative h-44 bg-gradient-to-br from-primary/20 to-accent/20">
+          {bannerUrl ? (
+            <img 
+              src={bannerUrl} 
+              alt="Banner"
+              className="w-full h-full object-cover"
+            />
+          ) : profile.avatar_url ? (
             <img 
               src={profile.avatar_url} 
               alt={profile.name}
@@ -91,72 +103,136 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                 {profile.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
-              <CardTitle className="text-xl">
-                {userType === 'investor' 
-                  ? profileData?.startup_name 
-                  : profileData?.firm_name || profile.name}
+            <div className="flex-1 min-w-0">
+              <CardTitle className="text-xl truncate">
+                {isShowingFounder 
+                  ? founderProfile?.startup_name || profile.name
+                  : investorProfile?.firm_name || profile.name}
               </CardTitle>
-              <p className="text-muted-foreground">{profile.name}</p>
+              <p className="text-muted-foreground text-sm truncate">{profile.name}</p>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3 pt-2">
-          {userType === 'investor' && (
+        <CardContent className="space-y-3 pt-2 overflow-y-auto max-h-[320px]">
+          {/* Founder Profile Display (shown to investors) */}
+          {isShowingFounder && founderProfile && (
             <>
-              <p className="text-sm leading-relaxed">{profileData?.one_liner}</p>
-              {profileData?.industry && (
+              {/* One-liner */}
+              {founderProfile.one_liner && (
+                <p className="text-sm leading-relaxed text-foreground">{founderProfile.one_liner}</p>
+              )}
+
+              {/* Industry */}
+              {founderProfile.industry && (
                 <div className="flex items-center gap-2 text-sm">
-                  <TrendingUp className="w-4 h-4 text-primary" />
-                  <span className="font-medium">{profileData.industry}</span>
+                  <Briefcase className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span className="font-medium">{founderProfile.industry}</span>
                 </div>
               )}
-              {profileData?.traction && (
+
+              {/* Traction */}
+              {founderProfile.traction && (
                 <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-medium mb-1 text-muted-foreground">Traction</p>
-                  <p className="text-sm">{profileData.traction}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="w-4 h-4 text-primary" />
+                    <p className="text-xs font-medium text-muted-foreground">Traction</p>
+                  </div>
+                  <p className="text-sm">{founderProfile.traction}</p>
                 </div>
               )}
-              {profileData?.preferred_city && (
+
+              {/* Preferred City */}
+              {founderProfile.preferred_city && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  {profileData.preferred_city}
+                  <MapPin className="w-4 h-4 flex-shrink-0" />
+                  <span>{founderProfile.preferred_city}</span>
+                </div>
+              )}
+
+              {/* Company Info */}
+              {(founderProfile.company_name || founderProfile.company_state) && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Building2 className="w-4 h-4 flex-shrink-0" />
+                  <span>
+                    {founderProfile.company_name}
+                    {founderProfile.company_state && ` (${founderProfile.company_state})`}
+                  </span>
                 </div>
               )}
             </>
           )}
 
-          {userType === 'founder' && (
+          {/* Investor Profile Display (shown to founders) */}
+          {!isShowingFounder && investorProfile && (
             <>
-              {profileData?.typical_check_size && (
-                <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-medium mb-1 text-muted-foreground">Check Size</p>
-                  <p className="text-sm font-medium">{profileData.typical_check_size}</p>
+              {/* Firm Name */}
+              {investorProfile.firm_name && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Building2 className="w-4 h-4 text-primary flex-shrink-0" />
+                  <span className="font-medium">{investorProfile.firm_name}</span>
                 </div>
               )}
-              {profileData?.preferred_stage && (
+
+              {/* Check Size */}
+              {investorProfile.typical_check_size && (
                 <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-medium mb-1 text-muted-foreground">Stage</p>
-                  <p className="text-sm font-medium">{profileData.preferred_stage}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <DollarSign className="w-4 h-4 text-primary" />
+                    <p className="text-xs font-medium text-muted-foreground">Check Size</p>
+                  </div>
+                  <p className="text-sm font-medium">{investorProfile.typical_check_size}</p>
                 </div>
               )}
-              {profileData?.sectors_of_interest && profileData.sectors_of_interest.length > 0 && (
+
+              {/* Preferred Stage */}
+              {investorProfile.preferred_stage && (
                 <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-medium mb-2 text-muted-foreground">Sectors of Interest</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Target className="w-4 h-4 text-primary" />
+                    <p className="text-xs font-medium text-muted-foreground">Preferred Stage</p>
+                  </div>
+                  <p className="text-sm font-medium capitalize">
+                    {investorProfile.preferred_stage.replace('-', ' ')}
+                  </p>
+                </div>
+              )}
+
+              {/* Sectors of Interest */}
+              {investorProfile.sectors_of_interest && investorProfile.sectors_of_interest.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Sectors of Interest</p>
                   <div className="flex flex-wrap gap-1">
-                    {profileData.sectors_of_interest.slice(0, 5).map((sector: string) => (
-                      <span key={sector} className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                    {investorProfile.sectors_of_interest.map((sector: string) => (
+                      <Badge key={sector} variant="secondary" className="text-xs">
                         {sector}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>
               )}
-              {profileData?.location && (
+
+              {/* Location */}
+              {investorProfile.location && (
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  {profileData.location}
+                  <MapPin className="w-4 h-4 flex-shrink-0" />
+                  <span>{investorProfile.location}</span>
+                </div>
+              )}
+
+              {/* Portfolio Link */}
+              {investorProfile.portfolio_link && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <LinkIcon className="w-4 h-4 flex-shrink-0" />
+                  <a 
+                    href={investorProfile.portfolio_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline truncate"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Portfolio
+                  </a>
                 </div>
               )}
             </>
