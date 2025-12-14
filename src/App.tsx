@@ -5,20 +5,21 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import FounderOnboarding from "./pages/FounderOnboarding";
 import InvestorOnboarding from "./pages/InvestorOnboarding";
-import Dashboard from "./pages/Dashboard";
 import Matches from "./pages/Matches";
 import CoffeeChat from "./pages/CoffeeChat";
-import SafeGenerator from "./pages/SafeGenerator";
-import SafeDetail from "./pages/SafeDetail";
+import Requests from "./pages/Requests";
 import SafesList from "./pages/SafesList";
+import SafeDetail from "./pages/SafeDetail";
+import SafeGenerator from "./pages/SafeGenerator";
 import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
-import Requests from "./pages/Requests";
-import PendingApproval from "./pages/PendingApproval";
 import Admin from "./pages/Admin";
+import PendingApproval from "./pages/PendingApproval";
 import ProfileView from "./pages/ProfileView";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile/:id" element={<ProfileView />} />
+          <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

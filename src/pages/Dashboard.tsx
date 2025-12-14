@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, Coffee, FileText, TrendingUp, Users, RotateCcw, Inbox, Shield } from "lucide-react";
+import { Heart, Coffee, FileText, TrendingUp, Users, RotateCcw, Inbox, Shield, Settings } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { NavLink } from "@/components/NavLink";
@@ -210,6 +210,10 @@ const Dashboard = () => {
                   <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
+              <NavLink to="/settings">
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Settings</span>
+              </NavLink>
               <Button variant="ghost" size="sm" onClick={handleLogout} className="hidden sm:flex">
                 Logout
               </Button>

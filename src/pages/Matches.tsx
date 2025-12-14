@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee, TrendingUp, Inbox, Users, Heart, FileText, Shield, Eye } from "lucide-react";
+import { Calendar, Send, Coffee, TrendingUp, Inbox, Users, Heart, FileText, Shield, Eye, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { NavLink } from "@/components/NavLink";
 import { useNavigate } from "react-router-dom";
@@ -292,6 +292,10 @@ export default function Matches() {
                   <span className="hidden sm:inline">Admin</span>
                 </NavLink>
               )}
+              <NavLink to="/settings">
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Settings</span>
+              </NavLink>
             </div>
           </div>
         </div>
