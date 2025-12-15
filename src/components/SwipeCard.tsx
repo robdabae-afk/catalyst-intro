@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -158,6 +158,22 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                     {founderProfile.company_name}
                     {founderProfile.company_state && ` (${founderProfile.company_state})`}
                   </span>
+                </div>
+              )}
+
+              {/* Pitch Deck Link */}
+              {founderProfile.pitch_deck_url && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <FileText className="w-4 h-4 flex-shrink-0" />
+                  <a 
+                    href={founderProfile.pitch_deck_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline truncate"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Pitch Deck
+                  </a>
                 </div>
               )}
             </>

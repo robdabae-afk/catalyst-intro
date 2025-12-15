@@ -72,15 +72,45 @@ const Dashboard = () => {
       // Load profiles of opposite type
       const targetType = user.user_type === 'founder' ? 'investor' : 'founder';
       
+      // Fetch base profiles
       const { data: profilesData } = await supabase
         .from('profiles')
-        .select(`
-          *,
-          founder_profiles (*),
-          investor_profiles (*)
-        `)
+        .select('*')
         .eq('user_type', targetType)
         .neq('id', user.id);
+
+      if (!profilesData || profilesData.length === 0) {
+        setProfiles([]);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch related profile data based on target type
+      const profileIds = profilesData.map(p => p.id);
+      
+      let founderProfiles: any[] = [];
+      let investorProfiles: any[] = [];
+
+      if (targetType === 'founder') {
+        const { data } = await supabase
+          .from('founder_profiles')
+          .select('*')
+          .in('profile_id', profileIds);
+        founderProfiles = data || [];
+      } else {
+        const { data } = await supabase
+          .from('investor_profiles')
+          .select('*')
+          .in('profile_id', profileIds);
+        investorProfiles = data || [];
+      }
+
+      // Merge profile data
+      const mergedProfiles = profilesData.map(profile => ({
+        ...profile,
+        founder_profiles: founderProfiles.filter(fp => fp.profile_id === profile.id),
+        investor_profiles: investorProfiles.filter(ip => ip.profile_id === profile.id)
+      }));
 
       // Get user's swipes to filter out already swiped profiles
       const { data: swipesData } = await supabase
@@ -89,7 +119,7 @@ const Dashboard = () => {
         .eq('swiper_id', user.id);
 
       const swipedIds = new Set(swipesData?.map(s => s.swiped_id) || []);
-      const unswipedProfiles = profilesData?.filter(p => !swipedIds.has(p.id)) || [];
+      const unswipedProfiles = mergedProfiles.filter(p => !swipedIds.has(p.id));
 
       setProfiles(unswipedProfiles);
     } catch (error: any) {
