@@ -24,7 +24,7 @@ interface Investment {
   founder_profile: {
     startup_name: string;
     company_name: string | null;
-    industry: string | null;
+    industry: string[] | null;
   } | null;
 }
 
