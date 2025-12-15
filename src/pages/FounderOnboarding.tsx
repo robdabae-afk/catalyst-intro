@@ -326,7 +326,7 @@ const FounderOnboarding = () => {
 
               <div className="space-y-2">
                 <Label>Industries * (select at least one)</Label>
-                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                <div className="grid grid-cols-2 gap-2 border rounded-md p-4">
                   {INDUSTRIES.map((industry) => (
                     <div key={industry} className="flex items-center space-x-2">
                       <Checkbox
