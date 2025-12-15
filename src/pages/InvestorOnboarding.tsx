@@ -6,9 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, User, ImagePlus } from "lucide-react";
+import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 
 const InvestorOnboarding = () => {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const InvestorOnboarding = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,10 +30,17 @@ const InvestorOnboarding = () => {
     firmName: "",
     checkSize: "",
     preferredStage: "" as "pre-seed" | "seed" | "series-a" | "series-b" | "",
-    sectors: "",
     location: "",
     portfolioLink: ""
   });
+
+  const handleSectorToggle = (sector: string) => {
+    setSelectedSectors(prev => 
+      prev.includes(sector)
+        ? prev.filter(s => s !== sector)
+        : [...prev, sector]
+    );
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,6 +120,16 @@ const InvestorOnboarding = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (selectedSectors.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Sectors required",
+        description: "Please select at least one sector of interest",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -153,7 +173,7 @@ const InvestorOnboarding = () => {
           firm_name: formData.firmName || null,
           typical_check_size: formData.checkSize || null,
           preferred_stage: formData.preferredStage || null,
-          sectors_of_interest: formData.sectors ? formData.sectors.split(',').map(s => s.trim()) : null,
+          sectors_of_interest: selectedSectors,
           location: formData.location || null,
           portfolio_link: formData.portfolioLink || null,
           banner_url: bannerUrl
@@ -302,22 +322,39 @@ const InvestorOnboarding = () => {
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pre-seed">Pre-seed</SelectItem>
-                    <SelectItem value="seed">Seed</SelectItem>
-                    <SelectItem value="series-a">Series A</SelectItem>
-                    <SelectItem value="series-b">Series B</SelectItem>
+                    {FUNDING_STAGES.map((stage) => (
+                      <SelectItem key={stage.value} value={stage.value}>
+                        {stage.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="sectors">Sectors of Interest</Label>
-                <Input
-                  id="sectors"
-                  placeholder="e.g., FinTech, AI, SaaS (comma-separated)"
-                  value={formData.sectors}
-                  onChange={(e) => setFormData({ ...formData, sectors: e.target.value })}
-                />
+                <Label>Sectors of Interest * (select at least one)</Label>
+                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                  {INDUSTRIES.map((sector) => (
+                    <div key={sector} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`sector-${sector}`}
+                        checked={selectedSectors.includes(sector)}
+                        onCheckedChange={() => handleSectorToggle(sector)}
+                      />
+                      <label
+                        htmlFor={`sector-${sector}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {sector}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {selectedSectors.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Selected: {selectedSectors.join(", ")}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">

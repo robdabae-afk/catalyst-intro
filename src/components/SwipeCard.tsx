@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { FUNDING_STAGES } from "@/lib/constants";
 
 interface SwipeCardProps {
   profile: any;
@@ -123,11 +124,30 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                 <p className="text-sm leading-relaxed text-foreground">{founderProfile.one_liner}</p>
               )}
 
-              {/* Industry */}
-              {founderProfile.industry && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Briefcase className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span className="font-medium">{founderProfile.industry}</span>
+              {/* Stage */}
+              {founderProfile.stage && (
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Rocket className="w-4 h-4 text-primary" />
+                    <p className="text-xs font-medium text-muted-foreground">Stage</p>
+                  </div>
+                  <p className="text-sm font-medium capitalize">
+                    {founderProfile.stage.replace('-', ' ')}
+                  </p>
+                </div>
+              )}
+
+              {/* Industries */}
+              {founderProfile.industry && founderProfile.industry.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground">Industries</p>
+                  <div className="flex flex-wrap gap-1">
+                    {founderProfile.industry.map((ind: string) => (
+                      <Badge key={ind} variant="secondary" className="text-xs">
+                        {ind}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
 

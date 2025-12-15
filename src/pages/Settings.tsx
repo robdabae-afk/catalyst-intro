@@ -8,15 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, User, Camera, Loader2 } from "lucide-react";
-
-const INDUSTRIES = [
-  "SaaS", "AI", "Fintech", "HealthTech", "EdTech", "Consumer", 
-  "Marketplace", "Robotics", "Biotech", "CleanTech", "Web3", "Other"
-];
-
-const FUNDING_STAGES = ["pre-seed", "seed", "series-a", "series-b"] as const;
+import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -36,7 +31,7 @@ const Settings = () => {
   // Founder fields
   const [startupName, setStartupName] = useState("");
   const [oneLiner, setOneLiner] = useState("");
-  const [industry, setIndustry] = useState("");
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [traction, setTraction] = useState("");
   const [preferredCity, setPreferredCity] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -89,7 +84,7 @@ const Settings = () => {
         if (founderProfile) {
           setStartupName(founderProfile.startup_name || "");
           setOneLiner(founderProfile.one_liner || "");
-          setIndustry(founderProfile.industry || "");
+          setSelectedIndustries(founderProfile.industry || []);
           setTraction(founderProfile.traction || "");
           setPreferredCity(founderProfile.preferred_city || "");
           setCompanyName(founderProfile.company_name || "");
@@ -200,7 +195,7 @@ const Settings = () => {
           .update({
             startup_name: startupName,
             one_liner: oneLiner,
-            industry,
+            industry: selectedIndustries,
             traction,
             preferred_city: preferredCity,
             company_name: companyName,
@@ -377,17 +372,27 @@ const Settings = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="industry">Industry</Label>
-                  <Select value={industry} onValueChange={setIndustry}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select industry" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {INDUSTRIES.map(ind => (
-                        <SelectItem key={ind} value={ind}>{ind}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Industries</Label>
+                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                    {INDUSTRIES.map((ind) => (
+                      <div key={ind} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`settings-industry-${ind}`}
+                          checked={selectedIndustries.includes(ind)}
+                          onCheckedChange={() => {
+                            setSelectedIndustries(prev =>
+                              prev.includes(ind)
+                                ? prev.filter(i => i !== ind)
+                                : [...prev, ind]
+                            );
+                          }}
+                        />
+                        <label htmlFor={`settings-industry-${ind}`} className="text-sm cursor-pointer">
+                          {ind}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -486,8 +491,8 @@ const Settings = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {FUNDING_STAGES.map(stage => (
-                        <SelectItem key={stage} value={stage}>
-                          {stage.charAt(0).toUpperCase() + stage.slice(1).replace('-', ' ')}
+                        <SelectItem key={stage.value} value={stage.value}>
+                          {stage.label}
                         </SelectItem>
                       ))}
                     </SelectContent>

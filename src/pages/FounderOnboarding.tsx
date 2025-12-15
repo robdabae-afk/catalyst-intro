@@ -6,9 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, User, ImagePlus } from "lucide-react";
+import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 
 const FounderOnboarding = () => {
   const navigate = useNavigate();
@@ -20,19 +23,28 @@ const FounderOnboarding = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     startupName: "",
     oneLiner: "",
-    industry: "",
+    stage: "" as "pre-seed" | "seed" | "series-a" | "series-b" | "",
     traction: "",
     pitchDeckUrl: "",
     preferredCity: "",
     companyState: "",
     companyAddress: ""
   });
+
+  const handleIndustryToggle = (industry: string) => {
+    setSelectedIndustries(prev => 
+      prev.includes(industry)
+        ? prev.filter(i => i !== industry)
+        : [...prev, industry]
+    );
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -109,8 +121,19 @@ const FounderOnboarding = () => {
 
     return publicUrl;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (selectedIndustries.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Industry required",
+        description: "Please select at least one industry",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -154,7 +177,8 @@ const FounderOnboarding = () => {
           startup_name: formData.startupName,
           company_name: formData.startupName,
           one_liner: formData.oneLiner,
-          industry: formData.industry || null,
+          industry: selectedIndustries,
+          stage: formData.stage || null,
           traction: formData.traction || null,
           pitch_deck_url: formData.pitchDeckUrl || null,
           preferred_city: formData.preferredCity || null,
@@ -301,13 +325,45 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="industry">Industry</Label>
-                <Input
-                  id="industry"
-                  placeholder="e.g., FinTech, HealthTech, SaaS"
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                />
+                <Label>Industries * (select at least one)</Label>
+                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                  {INDUSTRIES.map((industry) => (
+                    <div key={industry} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`industry-${industry}`}
+                        checked={selectedIndustries.includes(industry)}
+                        onCheckedChange={() => handleIndustryToggle(industry)}
+                      />
+                      <label
+                        htmlFor={`industry-${industry}`}
+                        className="text-sm cursor-pointer"
+                      >
+                        {industry}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {selectedIndustries.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Selected: {selectedIndustries.join(", ")}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="stage">Stage</Label>
+                <Select value={formData.stage} onValueChange={(value: any) => setFormData({ ...formData, stage: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your current stage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FUNDING_STAGES.map((stage) => (
+                      <SelectItem key={stage.value} value={stage.value}>
+                        {stage.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
