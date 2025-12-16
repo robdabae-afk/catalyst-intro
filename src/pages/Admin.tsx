@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 
 interface UserWithStatus {
   id: string;
@@ -193,138 +195,157 @@ const Admin = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Pending Approvals */}
-        {pendingUsers.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-              <UserCheck className="w-5 h-5 text-amber-500" />
-              Pending Approvals ({pendingUsers.length})
-            </h2>
-            <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Signed Up</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pendingUsers.map(user => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="capitalize">
-                          {user.user_type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          size="sm"
-                          onClick={() => approveUser(user.id)}
-                          disabled={actionLoading === user.id}
-                        >
-                          <UserCheck className="w-4 h-4 mr-1" />
-                          Approve
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        )}
+        <Tabs defaultValue="users" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="users" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              User Management
+            </TabsTrigger>
+            <TabsTrigger value="support" className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4" />
+              Support Requests
+            </TabsTrigger>
+          </TabsList>
 
-        {/* All Users */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-            <Shield className="w-5 h-5" />
-            All Users ({users.length})
-          </h2>
-          <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Signed Up</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map(user => {
-                  const status = getStatus(user.roles);
-                  return (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="capitalize">
-                          {user.user_type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : 'destructive'}
-                          className="capitalize"
-                        >
-                          {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
-                          {status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        {status === 'pending' && (
-                          <Button
-                            size="sm"
-                            onClick={() => approveUser(user.id)}
-                            disabled={actionLoading === user.id}
-                          >
-                            <UserCheck className="w-4 h-4 mr-1" />
-                            Approve
-                          </Button>
-                        )}
-                        {status === 'approved' && (
-                          <>
+          <TabsContent value="users" className="space-y-8">
+            {/* Pending Approvals */}
+            {pendingUsers.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
+                  <UserCheck className="w-5 h-5 text-amber-500" />
+                  Pending Approvals ({pendingUsers.length})
+                </h2>
+                <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Signed Up</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pendingUsers.map(user => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="capitalize">
+                              {user.user_type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Date(user.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right">
                             <Button
                               size="sm"
-                              variant="outline"
-                              onClick={() => makeAdmin(user.id)}
+                              onClick={() => approveUser(user.id)}
                               disabled={actionLoading === user.id}
                             >
-                              <Crown className="w-4 h-4 mr-1" />
-                              Make Admin
+                              <UserCheck className="w-4 h-4 mr-1" />
+                              Approve
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => revokeAccess(user.id)}
-                              disabled={actionLoading === user.id}
-                            >
-                              <UserX className="w-4 h-4 mr-1" />
-                              Revoke
-                            </Button>
-                          </>
-                        )}
-                      </TableCell>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            )}
+
+            {/* All Users */}
+            <div>
+              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
+                <Shield className="w-5 h-5" />
+                All Users ({users.length})
+              </h2>
+              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Signed Up</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+                  </TableHeader>
+                  <TableBody>
+                    {users.map(user => {
+                      const status = getStatus(user.roles);
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="capitalize">
+                              {user.user_type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : 'destructive'}
+                              className="capitalize"
+                            >
+                              {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
+                              {status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Date(user.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-right space-x-2">
+                            {status === 'pending' && (
+                              <Button
+                                size="sm"
+                                onClick={() => approveUser(user.id)}
+                                disabled={actionLoading === user.id}
+                              >
+                                <UserCheck className="w-4 h-4 mr-1" />
+                                Approve
+                              </Button>
+                            )}
+                            {status === 'approved' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => makeAdmin(user.id)}
+                                  disabled={actionLoading === user.id}
+                                >
+                                  <Crown className="w-4 h-4 mr-1" />
+                                  Make Admin
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => revokeAccess(user.id)}
+                                  disabled={actionLoading === user.id}
+                                >
+                                  <UserX className="w-4 h-4 mr-1" />
+                                  Revoke
+                                </Button>
+                              </>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="support">
+            <AdminSupportPanel />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
