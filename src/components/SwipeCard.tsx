@@ -57,7 +57,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
   const bannerUrl = profileData?.banner_url;
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[600px] perspective-1000">
+    <div className="relative w-full max-w-md mx-auto h-[420px] sm:h-[600px] perspective-1000">
       <Card
         ref={cardRef}
         className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl overflow-hidden"
@@ -75,7 +75,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         onTouchEnd={handleDragEnd}
       >
         {/* Banner/Profile Image Section */}
-        <div className="relative h-44 bg-gradient-to-br from-primary/20 to-accent/20">
+        <div className="relative h-28 sm:h-44 bg-gradient-to-br from-primary/20 to-accent/20">
           {bannerUrl ? (
             <img 
               src={bannerUrl} 
@@ -90,32 +90,32 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <User className="w-24 h-24 text-muted-foreground/30" />
+              <User className="w-16 h-16 sm:w-24 sm:h-24 text-muted-foreground/30" />
             </div>
           )}
-          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-card to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-12 sm:h-20 bg-gradient-to-t from-card to-transparent" />
         </div>
 
-        <CardHeader className="pb-2 pt-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16 border-4 border-background -mt-12 relative z-10">
+        <CardHeader className="pb-1 sm:pb-2 pt-2 sm:pt-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 sm:border-4 border-background -mt-8 sm:-mt-12 relative z-10">
               <AvatarImage src={profile.avatar_url} alt={profile.name} />
-              <AvatarFallback className="bg-primary/20 text-primary text-xl">
+              <AvatarFallback className="bg-primary/20 text-primary text-base sm:text-xl">
                 {profile.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <CardTitle className="text-xl truncate">
+              <CardTitle className="text-base sm:text-xl truncate">
                 {isShowingFounder 
                   ? founderProfile?.startup_name || profile.name
                   : investorProfile?.firm_name || profile.name}
               </CardTitle>
-              <p className="text-muted-foreground text-sm truncate">{profile.name}</p>
+              <p className="text-muted-foreground text-xs sm:text-sm truncate">{profile.name}</p>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-3 pt-2 overflow-y-auto max-h-[320px]">
+        <CardContent className="space-y-2 sm:space-y-3 pt-1 sm:pt-2 overflow-y-auto max-h-[180px] sm:max-h-[320px]">
           {/* Founder Profile Display (shown to investors) */}
           {isShowingFounder && founderProfile && (
             <>
@@ -291,22 +291,22 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
       </Card>
 
       {/* Action buttons */}
-      <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 flex gap-6">
+      <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2 flex gap-4 sm:gap-6">
         <Button
           size="lg"
           variant="outline"
-          className="w-16 h-16 rounded-full border-2 hover:border-red-500 hover:text-red-500"
+          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-red-500 hover:text-red-500"
           onClick={() => onSwipe('pass')}
         >
-          <X className="w-8 h-8" />
+          <X className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
         <Button
           size="lg"
           variant="outline"
-          className="w-16 h-16 rounded-full border-2 hover:border-green-500 hover:text-green-500"
+          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-green-500 hover:text-green-500"
           onClick={() => onSwipe('like')}
         >
-          <Heart className="w-8 h-8" />
+          <Heart className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
       </div>
     </div>
