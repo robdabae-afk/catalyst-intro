@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coffee, FileText, TrendingUp, Users, Banknote } from "lucide-react";
+import { Coffee, FileText, TrendingUp, Users, Banknote, ArrowRight } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 const Landing = () => {
   const navigate = useNavigate();
@@ -81,10 +81,15 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => <div className="p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow">
-    <div className="flex gap-3 mb-6">
+    <div className="flex items-center gap-2 mb-6">
       {icons.map((icon, index) => (
-        <div key={index} className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-          {icon}
+        <div key={index} className="contents">
+          <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            {icon}
+          </div>
+          {index < icons.length - 1 && (
+            <ArrowRight className="w-5 h-5 text-muted-foreground/50" />
+          )}
         </div>
       ))}
     </div>
