@@ -466,6 +466,17 @@ export default function Requests() {
                       {req.message && (
                         <p className="text-sm mb-4 p-2 bg-muted rounded">{req.message}</p>
                       )}
+                      {req.file_url && req.status === 'approved' && (
+                        <a 
+                          href={req.file_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-sm text-primary underline mb-4"
+                        >
+                          <FileText className="h-4 w-4" />
+                          View Attached Document
+                        </a>
+                      )}
                       <p className="text-xs text-muted-foreground mb-4">
                         {new Date(req.created_at).toLocaleDateString()}
                       </p>
