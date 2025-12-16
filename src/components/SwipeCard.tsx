@@ -115,13 +115,13 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[300px] sm:max-h-[320px]">
+        <CardContent className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[320px] sm:max-h-[340px]">
           {/* Founder Profile Display (shown to investors) */}
           {isShowingFounder && founderProfile && (
             <>
               {/* One-liner */}
               {founderProfile.one_liner && (
-                <p className="text-xs sm:text-sm leading-snug text-foreground line-clamp-2">{founderProfile.one_liner}</p>
+                <p className="text-xs sm:text-sm leading-snug text-foreground">{founderProfile.one_liner}</p>
               )}
 
               {/* Stage & Industries inline */}
@@ -131,7 +131,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                     {founderProfile.stage.replace('-', ' ')}
                   </Badge>
                 )}
-                {founderProfile.industry?.slice(0, 2).map((ind: string) => (
+                {founderProfile.industry?.map((ind: string) => (
                   <Badge key={ind} variant="secondary" className="text-[10px] sm:text-xs">
                     {ind}
                   </Badge>
@@ -142,10 +142,10 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               {founderProfile.traction && (
                 <div className="bg-muted/50 rounded-md p-2 sm:p-3">
                   <div className="flex items-center gap-1.5 mb-0.5">
-                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                    <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
                     <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">Traction</p>
                   </div>
-                  <p className="text-xs sm:text-sm line-clamp-2">{founderProfile.traction}</p>
+                  <p className="text-xs sm:text-sm">{founderProfile.traction}</p>
                 </div>
               )}
 
@@ -154,13 +154,13 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                 {founderProfile.preferred_city && (
                   <div className="flex items-center gap-1.5">
                     <MapPin className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">{founderProfile.preferred_city}</span>
+                    <span>{founderProfile.preferred_city}</span>
                   </div>
                 )}
                 {(founderProfile.company_name || founderProfile.company_state) && (
                   <div className="flex items-center gap-1.5">
                     <Building2 className="w-3 h-3 flex-shrink-0" />
-                    <span className="truncate">
+                    <span>
                       {founderProfile.company_name}
                       {founderProfile.company_state && ` (${founderProfile.company_state})`}
                     </span>
@@ -176,7 +176,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                     href={founderProfile.pitch_deck_url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline truncate"
+                    className="text-primary hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     View Pitch Deck
@@ -193,7 +193,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               {investorProfile.firm_name && (
                 <div className="flex items-center gap-1.5 text-xs sm:text-sm">
                   <Building2 className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-                  <span className="font-medium truncate">{investorProfile.firm_name}</span>
+                  <span className="font-medium">{investorProfile.firm_name}</span>
                 </div>
               )}
 
@@ -205,7 +205,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                       <DollarSign className="w-3 h-3 text-primary" />
                       <p className="text-[10px] font-medium text-muted-foreground">Check</p>
                     </div>
-                    <p className="text-xs font-medium truncate">{investorProfile.typical_check_size}</p>
+                    <p className="text-xs font-medium">{investorProfile.typical_check_size}</p>
                   </div>
                 )}
                 {investorProfile.preferred_stage && (
@@ -214,7 +214,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                       <Target className="w-3 h-3 text-primary" />
                       <p className="text-[10px] font-medium text-muted-foreground">Stage</p>
                     </div>
-                    <p className="text-xs font-medium capitalize truncate">
+                    <p className="text-xs font-medium capitalize">
                       {investorProfile.preferred_stage.replace('-', ' ')}
                     </p>
                   </div>
@@ -224,16 +224,11 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               {/* Sectors of Interest */}
               {investorProfile.sectors_of_interest && investorProfile.sectors_of_interest.length > 0 && (
                 <div className="flex flex-wrap gap-1">
-                  {investorProfile.sectors_of_interest.slice(0, 3).map((sector: string) => (
+                  {investorProfile.sectors_of_interest.map((sector: string) => (
                     <Badge key={sector} variant="secondary" className="text-[10px] sm:text-xs">
                       {sector}
                     </Badge>
                   ))}
-                  {investorProfile.sectors_of_interest.length > 3 && (
-                    <Badge variant="outline" className="text-[10px] sm:text-xs">
-                      +{investorProfile.sectors_of_interest.length - 3}
-                    </Badge>
-                  )}
                 </div>
               )}
 
@@ -241,7 +236,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               {investorProfile.location && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <MapPin className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{investorProfile.location}</span>
+                  <span>{investorProfile.location}</span>
                 </div>
               )}
 
@@ -253,7 +248,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                     href={investorProfile.portfolio_link} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline truncate"
+                    className="text-primary hover:underline"
                     onClick={(e) => e.stopPropagation()}
                   >
                     View Portfolio
