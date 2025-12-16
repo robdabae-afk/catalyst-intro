@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X } from 'lucide-react';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Wallet, Briefcase, FileCheck } from 'lucide-react';
 import { AppNavigation } from '@/components/AppNavigation';
 
 interface DocumentRequest {
@@ -31,6 +31,10 @@ const REQUEST_ICONS: Record<string, any> = {
   cap_table: Table,
   funding_interest: DollarSign,
   meeting: Calendar,
+  proof_of_funds: Wallet,
+  investment_portfolio: Briefcase,
+  term_sheet: FileCheck,
+  safe_request: FileText,
   other: MoreHorizontal,
 };
 
@@ -40,6 +44,10 @@ const REQUEST_LABELS: Record<string, string> = {
   cap_table: 'Cap Table',
   funding_interest: 'Funding Interest',
   meeting: 'Meeting Request',
+  proof_of_funds: 'Proof of Funds',
+  investment_portfolio: 'Investment Portfolio',
+  term_sheet: 'Term Sheet',
+  safe_request: 'SAFE Signature Request',
   other: 'Other',
 };
 
