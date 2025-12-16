@@ -388,19 +388,19 @@ export default function Matches() {
                             : "bg-secondary/50 border border-border/50"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <Avatar>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="flex-shrink-0">
                             <AvatarFallback className="bg-primary/20 text-primary">
                               {match.profile.name.charAt(0)}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 overflow-hidden">
                             <p className="font-semibold truncate">{match.profile.name}</p>
                             <p className="text-sm text-muted-foreground truncate">
                               {match.founderProfile?.startup_name || match.investorProfile?.firm_name || match.profile.user_type}
                             </p>
                           </div>
-                          <Badge variant="outline" className="capitalize flex-shrink-0 text-[10px] px-1.5 py-0.5 whitespace-nowrap">
+                          <Badge variant="outline" className="capitalize shrink-0 text-[10px] px-2 py-0.5 whitespace-nowrap min-w-fit">
                             {match.profile.user_type}
                           </Badge>
                         </div>
