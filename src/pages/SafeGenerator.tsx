@@ -27,24 +27,73 @@ const SafeGenerator = () => {
   });
 
   useEffect(() => {
-    checkUser();
-    loadInvestors();
+    checkUserAndLoadMatches();
   }, []);
 
-  const checkUser = async () => {
+  const checkUserAndLoadMatches = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       navigate('/');
       return;
     }
+    
+    // Check if user is a founder - only founders can create SAFEs
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('user_type')
+      .eq('id', user.id)
+      .single();
+    
+    if (profile?.user_type !== 'founder') {
+      toast({
+        variant: "destructive",
+        title: "Access Denied",
+        description: "Only founders can create SAFEs. Investors can request SAFEs through the Requests page.",
+      });
+      navigate('/dashboard');
+      return;
+    }
+    
     setCurrentUserId(user.id);
+    await loadMatchedInvestors(user.id);
   };
 
-  const loadInvestors = async () => {
+  const loadMatchedInvestors = async (userId: string) => {
+    // Get investors I've liked
+    const { data: myLikes } = await supabase
+      .from('swipes')
+      .select('swiped_id')
+      .eq('swiper_id', userId)
+      .eq('action', 'like');
+
+    if (!myLikes || myLikes.length === 0) {
+      setInvestors([]);
+      return;
+    }
+
+    const likedIds = myLikes.map(like => like.swiped_id);
+
+    // Get investors who liked me back (mutual matches)
+    const { data: mutualLikes } = await supabase
+      .from('swipes')
+      .select('swiper_id')
+      .eq('action', 'like')
+      .in('swiper_id', likedIds)
+      .eq('swiped_id', userId);
+
+    if (!mutualLikes || mutualLikes.length === 0) {
+      setInvestors([]);
+      return;
+    }
+
+    const matchedIds = mutualLikes.map(like => like.swiper_id);
+
+    // Fetch only matched investor profiles
     const { data } = await supabase
       .from('profiles')
       .select('*, investor_profiles(*)')
-      .eq('user_type', 'investor');
+      .eq('user_type', 'investor')
+      .in('id', matchedIds);
     
     setInvestors(data || []);
   };
