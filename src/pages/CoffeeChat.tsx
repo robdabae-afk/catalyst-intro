@@ -128,24 +128,19 @@ const CoffeeChat = () => {
   };
 
   const fetchInvites = async (userId: string, userType: string) => {
-    const isFounder = userType === 'founder';
-    
-    // Fetch received invites
-    const receivedField = isFounder ? 'founder_id' : 'investor_id';
+    // Fetch received invites (where sender is NOT the current user)
     const { data: received } = await supabase
       .from('coffee_chats')
       .select('*')
-      .eq(receivedField, userId)
-      .neq(isFounder ? 'investor_id' : 'founder_id', userId)
+      .or(`founder_id.eq.${userId},investor_id.eq.${userId}`)
+      .neq('sender_id', userId)
       .order('created_at', { ascending: false });
 
-    // Fetch sent invites  
-    const sentField = isFounder ? 'investor_id' : 'founder_id';
+    // Fetch sent invites (where sender IS the current user)
     const { data: sent } = await supabase
       .from('coffee_chats')
       .select('*')
-      .eq(isFounder ? 'founder_id' : 'investor_id', userId)
-      .neq(sentField, userId)
+      .eq('sender_id', userId)
       .order('created_at', { ascending: false });
 
     // Fetch profiles for invites
@@ -163,16 +158,20 @@ const CoffeeChat = () => {
 
     const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
-    // Attach profiles to invites
+    // Attach profiles to invites - sender is the other person for received
     const receivedWithProfiles = (received || []).map(invite => ({
       ...invite,
-      sender_profile: profileMap.get(isFounder ? invite.investor_id : invite.founder_id)
+      sender_profile: profileMap.get(invite.sender_id)
     }));
 
-    const sentWithProfiles = (sent || []).map(invite => ({
-      ...invite,
-      receiver_profile: profileMap.get(isFounder ? invite.investor_id : invite.founder_id)
-    }));
+    // For sent invites, receiver is the other person
+    const sentWithProfiles = (sent || []).map(invite => {
+      const receiverId = invite.founder_id === userId ? invite.investor_id : invite.founder_id;
+      return {
+        ...invite,
+        receiver_profile: profileMap.get(receiverId)
+      };
+    });
 
     setReceivedInvites(receivedWithProfiles);
     setSentInvites(sentWithProfiles);
@@ -193,6 +192,7 @@ const CoffeeChat = () => {
         .insert({
           founder_id: isFounder ? currentUserId : formData.selectedMatch,
           investor_id: isFounder ? formData.selectedMatch : currentUserId,
+          sender_id: currentUserId,
           proposed_date: formData.proposedDate || null,
           meeting_location: formData.meetingLocation || null,
           notes: formData.notes || null,

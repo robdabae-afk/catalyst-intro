@@ -84,6 +84,7 @@ export type Database = {
           meeting_location: string | null
           notes: string | null
           proposed_date: string | null
+          sender_id: string | null
           status: string | null
           updated_at: string | null
         }
@@ -95,6 +96,7 @@ export type Database = {
           meeting_location?: string | null
           notes?: string | null
           proposed_date?: string | null
+          sender_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
@@ -106,6 +108,7 @@ export type Database = {
           meeting_location?: string | null
           notes?: string | null
           proposed_date?: string | null
+          sender_id?: string | null
           status?: string | null
           updated_at?: string | null
         }
