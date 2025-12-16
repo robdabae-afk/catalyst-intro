@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -264,6 +264,7 @@ export default function Matches() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <Avatar className="h-10 w-10">
+              <AvatarImage src={selectedMatch.profile.avatar_url} alt={selectedMatch.profile.name} />
               <AvatarFallback className="bg-primary/20 text-primary">
                 {selectedMatch.profile.name.charAt(0)}
               </AvatarFallback>
@@ -392,6 +393,7 @@ export default function Matches() {
                       >
                         <div className="flex items-center gap-2">
                           <Avatar className="flex-shrink-0">
+                            <AvatarImage src={match.profile.avatar_url} alt={match.profile.name} />
                             <AvatarFallback className="bg-primary/20 text-primary">
                               {match.profile.name.charAt(0)}
                             </AvatarFallback>
@@ -423,6 +425,7 @@ export default function Matches() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar>
+                          <AvatarImage src={selectedMatch.profile.avatar_url} alt={selectedMatch.profile.name} />
                           <AvatarFallback className="bg-primary/20 text-primary">
                             {selectedMatch.profile.name.charAt(0)}
                           </AvatarFallback>
