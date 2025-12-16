@@ -308,6 +308,8 @@ export type Database = {
           email: string
           id: string
           name: string
+          stripe_account_id: string | null
+          stripe_onboarding_completed: boolean | null
           updated_at: string | null
           user_type: Database["public"]["Enums"]["user_type"]
         }
@@ -317,6 +319,8 @@ export type Database = {
           email: string
           id: string
           name: string
+          stripe_account_id?: string | null
+          stripe_onboarding_completed?: boolean | null
           updated_at?: string | null
           user_type: Database["public"]["Enums"]["user_type"]
         }
@@ -326,6 +330,8 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          stripe_account_id?: string | null
+          stripe_onboarding_completed?: boolean | null
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"]
         }
@@ -345,6 +351,7 @@ export type Database = {
           investor_id: string
           investor_signature_data: string | null
           investor_signed_at: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
           status: string | null
           updated_at: string | null
           valuation_cap: number | null
@@ -362,6 +369,7 @@ export type Database = {
           investor_id: string
           investor_signature_data?: string | null
           investor_signed_at?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
           status?: string | null
           updated_at?: string | null
           valuation_cap?: number | null
@@ -379,6 +387,7 @@ export type Database = {
           investor_id?: string
           investor_signature_data?: string | null
           investor_signed_at?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
           status?: string | null
           updated_at?: string | null
           valuation_cap?: number | null
@@ -463,6 +472,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
+      payment_status: "pending" | "processing" | "completed"
       user_type: "founder" | "investor"
     }
     CompositeTypes: {
@@ -593,6 +603,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
+      payment_status: ["pending", "processing", "completed"],
       user_type: ["founder", "investor"],
     },
   },
