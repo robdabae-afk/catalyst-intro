@@ -12,11 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Send, Check, X, Calendar, MapPin, Clock, Coffee, Users, Heart, TrendingUp, Inbox, FileText, Shield, Settings } from "lucide-react";
+import { Send, Check, X, Calendar, MapPin, Clock, Coffee } from "lucide-react";
 import { format } from "date-fns";
-import { NavLink } from "@/components/NavLink";
-import { usePendingRequests } from "@/hooks/usePendingRequests";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { AppNavigation } from "@/components/AppNavigation";
 
 interface CoffeeChatInvite {
   id: string;
@@ -42,12 +40,12 @@ interface Match {
 const CoffeeChat = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const pendingRequests = usePendingRequests();
-  const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
   const [sendingInvite, setSendingInvite] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [currentUserType, setCurrentUserType] = useState<string | null>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+  const [currentUserAvatar, setCurrentUserAvatar] = useState<string | null>(null);
   const [receivedInvites, setReceivedInvites] = useState<CoffeeChatInvite[]>([]);
   const [sentInvites, setSentInvites] = useState<CoffeeChatInvite[]>([]);
   const [matches, setMatches] = useState<Match[]>([]);
@@ -83,6 +81,8 @@ const CoffeeChat = () => {
 
     setCurrentUserId(user.id);
     setCurrentUserType(profile.user_type);
+    setCurrentUserName(profile.name);
+    setCurrentUserAvatar(profile.avatar_url);
     
     await Promise.all([
       fetchInvites(user.id, profile.user_type),
@@ -269,62 +269,12 @@ const CoffeeChat = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              CATALYST
-            </h1>
-            <div className="flex gap-2 sm:gap-4">
-              <NavLink to="/dashboard">
-                <Users className="w-5 h-5" />
-                <span className="hidden sm:inline">Discover</span>
-              </NavLink>
-              <NavLink to="/matches">
-                <Heart className="w-5 h-5" />
-                <span className="hidden sm:inline">Matches</span>
-              </NavLink>
-              <NavLink to="/coffeechat">
-                <Coffee className="w-5 h-5" />
-                <span className="hidden sm:inline">Invites</span>
-              </NavLink>
-              <NavLink to="/requests" badge={pendingRequests}>
-                <Inbox className="w-5 h-5" />
-                <span className="hidden sm:inline">Requests</span>
-              </NavLink>
-              {currentUserType === 'founder' && (
-                <>
-                  <NavLink to="/safes">
-                    <FileText className="w-5 h-5" />
-                    <span className="hidden sm:inline">SAFEs</span>
-                  </NavLink>
-                  <NavLink to="/captable">
-                    <TrendingUp className="w-5 h-5" />
-                    <span className="hidden sm:inline">Cap Table</span>
-                  </NavLink>
-                </>
-              )}
-              {currentUserType === 'investor' && (
-                <NavLink to="/investments">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="hidden sm:inline">Investments</span>
-                </NavLink>
-              )}
-              {isAdmin && (
-                <NavLink to="/admin">
-                  <Shield className="w-5 h-5" />
-                  <span className="hidden sm:inline">Admin</span>
-                </NavLink>
-              )}
-              <NavLink to="/settings">
-                <Settings className="w-5 h-5" />
-                <span className="hidden sm:inline">Settings</span>
-              </NavLink>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <AppNavigation 
+        userType={currentUserType as 'founder' | 'investor' | null}
+        userName={currentUserName || undefined}
+        avatarUrl={currentUserAvatar || undefined}
+        pageTitle="Coffee Chat"
+      />
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">

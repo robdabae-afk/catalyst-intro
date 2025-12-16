@@ -3,20 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Heart, FileText, TrendingUp, Users, RotateCcw, Inbox, Shield, Settings, LogOut, ChevronDown } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
-import { NavLink } from "@/components/NavLink";
-import { usePendingRequests } from "@/hooks/usePendingRequests";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { AppNavigation } from "@/components/AppNavigation";
 
 interface Profile {
   id: string;
@@ -29,8 +19,6 @@ interface Profile {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const pendingRequests = usePendingRequests();
-  const { isAdmin } = useIsAdmin();
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
   const [profiles, setProfiles] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -141,11 +129,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-  };
-
   const handleSwipe = async (direction: 'like' | 'pass') => {
     if (!currentUser || currentIndex >= profiles.length) return;
 
@@ -200,96 +183,11 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              CATALYST
-            </h1>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <NavLink to="/dashboard">
-                <Users className="w-5 h-5" />
-                <span className="hidden sm:inline">Discover</span>
-              </NavLink>
-              <NavLink to="/matches">
-                <Heart className="w-5 h-5" />
-                <span className="hidden sm:inline">Matches</span>
-              </NavLink>
-              <NavLink to="/requests" badge={pendingRequests}>
-                <Inbox className="w-5 h-5" />
-                <span className="hidden sm:inline">Inbox</span>
-              </NavLink>
-              
-              {/* Founder: Fundraising dropdown */}
-              {currentUser?.user_type === 'founder' && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
-                      <FileText className="w-5 h-5" />
-                      <span className="hidden sm:inline">Fundraising</span>
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-background border">
-                    <DropdownMenuItem onClick={() => navigate('/safes')}>
-                      <FileText className="w-4 h-4 mr-2" />
-                      SAFEs
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate('/captable')}>
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      Cap Table
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              
-              {/* Investor: Investments link */}
-              {currentUser?.user_type === 'investor' && (
-                <NavLink to="/investments">
-                  <TrendingUp className="w-5 h-5" />
-                  <span className="hidden sm:inline">Investments</span>
-                </NavLink>
-              )}
-              
-              {/* Spacer */}
-              <div className="flex-1" />
-              
-              {/* User Avatar Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={currentUser?.avatar_url || ''} alt={currentUser?.name} />
-                      <AvatarFallback>{currentUser?.name?.charAt(0) || 'U'}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-background border w-48">
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuItem onClick={() => navigate('/admin')}>
-                        <Shield className="w-4 h-4 mr-2" />
-                        Admin
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  <DropdownMenuItem onClick={() => navigate('/settings')}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <AppNavigation 
+        userType={currentUser?.user_type}
+        userName={currentUser?.name}
+        avatarUrl={currentUser?.avatar_url}
+      />
 
       {/* Main Content - Swipe Interface */}
       <div className="max-w-md mx-auto px-4 py-8">

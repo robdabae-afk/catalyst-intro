@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, TrendingUp, DollarSign, Building2, FileText, CheckCircle, Clock } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, FileText, CheckCircle, Clock } from "lucide-react";
+import { AppNavigation } from "@/components/AppNavigation";
 
 interface Investment {
   id: string;
@@ -33,6 +34,8 @@ const Investments = () => {
   const { toast } = useToast();
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     loadInvestments();
@@ -49,7 +52,7 @@ const Investments = () => {
       // Check if user is an investor
       const { data: profile } = await supabase
         .from('profiles')
-        .select('user_type')
+        .select('user_type, name, avatar_url')
         .eq('id', user.id)
         .single();
 
@@ -57,6 +60,9 @@ const Investments = () => {
         navigate('/dashboard');
         return;
       }
+
+      setUserName(profile.name);
+      setUserAvatar(profile.avatar_url);
 
       // Load SAFEs where user is the investor
       const { data, error } = await supabase
@@ -131,17 +137,15 @@ const Investments = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/dashboard')}
-          className="mb-6"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Dashboard
-        </Button>
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      <AppNavigation 
+        userType="investor"
+        userName={userName || undefined}
+        avatarUrl={userAvatar || undefined}
+        pageTitle="Investments"
+      />
 
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
             <TrendingUp className="w-8 h-8" />
