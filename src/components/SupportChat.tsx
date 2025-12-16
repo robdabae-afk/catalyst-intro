@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Send, Loader2, MessageCircle, X } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useUnreadSupportReplies } from "@/hooks/useUnreadSupportReplies";
 
 interface Message {
   id: string;
@@ -30,6 +31,7 @@ interface SupportChatProps {
 
 export function SupportChat({ open, onOpenChange, userId }: SupportChatProps) {
   const { toast } = useToast();
+  const { markAsViewed } = useUnreadSupportReplies();
   const [ticket, setTicket] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -39,9 +41,10 @@ export function SupportChat({ open, onOpenChange, userId }: SupportChatProps) {
 
   useEffect(() => {
     if (open && userId) {
+      markAsViewed();
       loadOrCreateTicket();
     }
-  }, [open, userId]);
+  }, [open, userId, markAsViewed]);
 
   useEffect(() => {
     if (!ticket) return;
