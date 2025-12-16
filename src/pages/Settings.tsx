@@ -11,9 +11,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { BankingSettings } from "@/components/BankingSettings";
+import { SupportChat } from "@/components/SupportChat";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [supportChatOpen, setSupportChatOpen] = useState(false);
   
   const [userId, setUserId] = useState<string | null>(null);
   const [userType, setUserType] = useState<'founder' | 'investor' | null>(null);
@@ -583,6 +585,27 @@ const Settings = () => {
         {/* Banking Settings */}
         {userId && <BankingSettings userId={userId} />}
 
+        {/* Contact Support */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5" />
+              Help & Support
+            </CardTitle>
+            <CardDescription>Get help from our support team</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              onClick={() => setSupportChatOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Contact Support
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Save Button */}
         <div className="flex justify-end">
           <Button onClick={handleSave} disabled={saving} size="lg">
@@ -596,6 +619,15 @@ const Settings = () => {
             )}
           </Button>
         </div>
+
+        {/* Support Chat Dialog */}
+        {userId && (
+          <SupportChat 
+            open={supportChatOpen} 
+            onOpenChange={setSupportChatOpen} 
+            userId={userId} 
+          />
+        )}
       </main>
     </div>
   );
