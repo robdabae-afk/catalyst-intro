@@ -8,7 +8,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Wallet, Briefcase, FileCheck } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Wallet, Briefcase, FileCheck, Plus } from 'lucide-react';
 import { AppNavigation } from '@/components/AppNavigation';
 
 interface DocumentRequest {
@@ -23,6 +38,12 @@ interface DocumentRequest {
   created_at: string;
   requester?: { name: string; email: string };
   target?: { name: string; email: string };
+}
+
+interface MatchedProfile {
+  id: string;
+  name: string;
+  user_type: string;
 }
 
 const REQUEST_ICONS: Record<string, any> = {
@@ -51,6 +72,24 @@ const REQUEST_LABELS: Record<string, string> = {
   other: 'Other',
 };
 
+// Investor requesting from Founder
+const INVESTOR_REQUEST_TYPES = [
+  { value: 'pitch_deck', label: 'Pitch Deck', icon: FileText },
+  { value: 'financials', label: 'Financials', icon: BarChart3 },
+  { value: 'cap_table', label: 'Cap Table', icon: Table },
+  { value: 'funding_interest', label: 'Express Funding Interest', icon: DollarSign },
+  { value: 'other', label: 'Other Request', icon: MoreHorizontal },
+];
+
+// Founder requesting from Investor
+const FOUNDER_REQUEST_TYPES = [
+  { value: 'proof_of_funds', label: 'Proof of Funds', icon: Wallet },
+  { value: 'investment_portfolio', label: 'Investment Portfolio', icon: Briefcase },
+  { value: 'term_sheet', label: 'Term Sheet', icon: FileCheck },
+  { value: 'safe_request', label: 'Request SAFE Signature', icon: FileText },
+  { value: 'other', label: 'Other Request', icon: MoreHorizontal },
+];
+
 export default function Requests() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
@@ -59,8 +98,17 @@ export default function Requests() {
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
   const [incomingRequests, setIncomingRequests] = useState<DocumentRequest[]>([]);
   const [outgoingRequests, setOutgoingRequests] = useState<DocumentRequest[]>([]);
+  const [matchedProfiles, setMatchedProfiles] = useState<MatchedProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  
+  // New request dialog state
+  const [newRequestOpen, setNewRequestOpen] = useState(false);
+  const [selectedTarget, setSelectedTarget] = useState<string>('');
+  const [selectedType, setSelectedType] = useState<string>('');
+  const [requestMessage, setRequestMessage] = useState('');
+  const [fundingAmount, setFundingAmount] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const init = async () => {
@@ -81,9 +129,49 @@ export default function Requests() {
       setUserName(profile?.name || null);
       setUserAvatar(profile?.avatar_url || null);
       await fetchRequests(user.id);
+      await fetchMatchedProfiles(user.id);
     };
     init();
   }, [navigate]);
+
+  const fetchMatchedProfiles = async (uid: string) => {
+    // Get users I've liked
+    const { data: myLikes } = await supabase
+      .from('swipes')
+      .select('swiped_id')
+      .eq('swiper_id', uid)
+      .eq('action', 'like');
+
+    if (!myLikes || myLikes.length === 0) {
+      setMatchedProfiles([]);
+      return;
+    }
+
+    const likedIds = myLikes.map(like => like.swiped_id);
+
+    // Get users who liked me back (mutual matches)
+    const { data: mutualLikes } = await supabase
+      .from('swipes')
+      .select('swiper_id')
+      .eq('action', 'like')
+      .in('swiper_id', likedIds)
+      .eq('swiped_id', uid);
+
+    if (!mutualLikes || mutualLikes.length === 0) {
+      setMatchedProfiles([]);
+      return;
+    }
+
+    const matchedIds = mutualLikes.map(like => like.swiper_id);
+
+    // Fetch matched profiles
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, name, user_type')
+      .in('id', matchedIds);
+
+    setMatchedProfiles(profiles || []);
+  };
 
   const fetchRequests = async (uid: string) => {
     setLoading(true);
@@ -190,6 +278,48 @@ export default function Requests() {
     }
   };
 
+  const submitNewRequest = async () => {
+    if (!selectedTarget || !selectedType || !userId) return;
+    
+    setSubmitting(true);
+    try {
+      let finalMessage = requestMessage.trim() || null;
+      if (selectedType === 'funding_interest' && fundingAmount) {
+        finalMessage = `Funding Amount: $${fundingAmount}${requestMessage.trim() ? `\n\n${requestMessage.trim()}` : ''}`;
+      }
+
+      const { error } = await supabase.from('document_requests').insert({
+        requester_id: userId,
+        target_id: selectedTarget,
+        request_type: selectedType,
+        message: finalMessage,
+      });
+
+      if (error) throw error;
+
+      const targetName = matchedProfiles.find(p => p.id === selectedTarget)?.name || 'user';
+      toast({
+        title: 'Request sent',
+        description: `Your request has been sent to ${targetName}`,
+      });
+      
+      setNewRequestOpen(false);
+      setSelectedTarget('');
+      setSelectedType('');
+      setRequestMessage('');
+      setFundingAmount('');
+      await fetchRequests(userId);
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const Icon = ({ type }: { type: string }) => {
     const IconComponent = REQUEST_ICONS[type] || MoreHorizontal;
     return <IconComponent className="h-4 w-4" />;
@@ -204,6 +334,8 @@ export default function Requests() {
     return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
   };
 
+  const requestTypes = userType === 'founder' ? FOUNDER_REQUEST_TYPES : INVESTOR_REQUEST_TYPES;
+
   return (
     <div className="min-h-screen bg-background">
       <AppNavigation 
@@ -214,7 +346,91 @@ export default function Requests() {
       />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold mb-6">Document Requests</h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold">Document Requests</h2>
+          <Button onClick={() => setNewRequestOpen(true)} disabled={matchedProfiles.length === 0}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Request
+          </Button>
+        </div>
+
+        {/* New Request Dialog */}
+        <Dialog open={newRequestOpen} onOpenChange={setNewRequestOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Send New Request</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Select Contact</Label>
+                <Select value={selectedTarget} onValueChange={setSelectedTarget}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a matched contact" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {matchedProfiles.map((profile) => (
+                      <SelectItem key={profile.id} value={profile.id}>
+                        {profile.name} ({profile.user_type})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Request Type</Label>
+                <Select value={selectedType} onValueChange={setSelectedType}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="What do you need?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {requestTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        <div className="flex items-center gap-2">
+                          <type.icon className="h-4 w-4" />
+                          {type.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedType === 'funding_interest' && (
+                <div className="space-y-2">
+                  <Label>Investment Amount ($)</Label>
+                  <Input
+                    type="number"
+                    placeholder="e.g., 50000"
+                    value={fundingAmount}
+                    onChange={(e) => setFundingAmount(e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Message (optional)</Label>
+                <Textarea
+                  placeholder="Add context or notes..."
+                  value={requestMessage}
+                  onChange={(e) => setRequestMessage(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setNewRequestOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={submitNewRequest} 
+                disabled={submitting || !selectedTarget || !selectedType}
+              >
+                {submitting ? 'Sending...' : 'Send Request'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <Tabs defaultValue="incoming" className="w-full">
           <TabsList className="mb-6">
