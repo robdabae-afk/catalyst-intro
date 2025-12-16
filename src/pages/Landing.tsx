@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coffee, FileText, TrendingUp, Users } from "lucide-react";
+import { Coffee, FileText, TrendingUp, Users, Banknote } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 const Landing = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const Landing = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <FeatureCard icon={<Users className="w-8 h-8" />} title="Create a Profile" description="Share your startup story or investment thesis" />
             <FeatureCard icon={<Coffee className="w-8 h-8" />} title="Swipe & Connect" description="Swipe when you see someone or something you like. If the feeling is mutual? Collaborate & communicate immediately." />
-            <FeatureCard icon={<FileText className="w-8 h-8" />} title="Send SAFEs" description="Streamline investment agreements digitally" />
+            <FeatureCard icon={<><FileText className="w-8 h-8" /><Banknote className="w-8 h-8" /></>} title="Sign SAFEs & Disburse Funds" description="Streamline investment agreements digitally" />
             <FeatureCard icon={<TrendingUp className="w-8 h-8" />} title="Track Cap Table" description="Manage equity and investments in one place" />
           </div>
         </div>
@@ -81,7 +81,7 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => <div className="p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow">
-    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary">
+    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center gap-1 mb-6 text-primary">
       {icon}
     </div>
     <h3 className="text-xl font-semibold mb-3 text-foreground">{title}</h3>
