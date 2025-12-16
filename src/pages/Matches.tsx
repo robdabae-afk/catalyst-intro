@@ -294,7 +294,7 @@ export default function Matches() {
                               {match.founderProfile?.startup_name || match.investorProfile?.firm_name || match.profile.user_type}
                             </p>
                           </div>
-                          <Badge variant="outline" className="capitalize">
+                          <Badge variant="outline" className="capitalize flex-shrink-0 text-xs">
                             {match.profile.user_type}
                           </Badge>
                         </div>
