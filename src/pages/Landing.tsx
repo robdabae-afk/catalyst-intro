@@ -19,7 +19,7 @@ const Landing = () => {
       >
         <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
           <h1 className="text-6xl md:text-7xl font-bold mb-6 text-white tracking-tight">
-            Meet. Connect. Fund.
+            Swipe. Connect. Fund.
           </h1>
           <p className="text-xl md:text-2xl mb-12 text-gray-200 max-w-3xl mx-auto">
             The simplest way for founders and investors to collaborate
