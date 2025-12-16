@@ -169,7 +169,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               </div>
 
               {/* Pitch Deck Link */}
-              {founderProfile.pitch_deck_url && (
+              {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'public' && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <FileText className="w-3 h-3 flex-shrink-0" />
                   <a 
@@ -181,6 +181,12 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
                   >
                     View Pitch Deck
                   </a>
+                </div>
+              )}
+              {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'private' && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <FileText className="w-3 h-3 flex-shrink-0" />
+                  <span className="text-muted-foreground italic">Pitch deck available upon request</span>
                 </div>
               )}
             </>

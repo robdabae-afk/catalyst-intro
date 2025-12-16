@@ -176,6 +176,7 @@ export type Database = {
           industry: string[] | null
           one_liner: string
           pitch_deck_url: string | null
+          pitch_deck_visibility: string
           preferred_city: string | null
           profile_id: string
           stage: Database["public"]["Enums"]["funding_stage"] | null
@@ -192,6 +193,7 @@ export type Database = {
           industry?: string[] | null
           one_liner: string
           pitch_deck_url?: string | null
+          pitch_deck_visibility?: string
           preferred_city?: string | null
           profile_id: string
           stage?: Database["public"]["Enums"]["funding_stage"] | null
@@ -208,6 +210,7 @@ export type Database = {
           industry?: string[] | null
           one_liner?: string
           pitch_deck_url?: string | null
+          pitch_deck_visibility?: string
           preferred_city?: string | null
           profile_id?: string
           stage?: Database["public"]["Enums"]["funding_stage"] | null
