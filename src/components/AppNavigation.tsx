@@ -47,7 +47,7 @@ export const AppNavigation = ({
   const unreadMessages = useUnreadMessages();
   const newMatches = useNewMatches();
   const { isAdmin } = useIsAdmin();
-  const supportReplies = useUnreadSupportReplies();
+  const { count: supportReplies } = useUnreadSupportReplies();
   
   // Hub pages show full navigation (Dashboard/Discover)
   const isHubPage = location.pathname === '/dashboard' || location.pathname === '/discover';
