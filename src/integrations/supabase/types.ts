@@ -230,6 +230,7 @@ export type Database = {
           created_at: string | null
           firm_name: string | null
           id: string
+          investment_thesis: string | null
           location: string | null
           portfolio_link: string | null
           preferred_stage: Database["public"]["Enums"]["funding_stage"] | null
@@ -242,6 +243,7 @@ export type Database = {
           created_at?: string | null
           firm_name?: string | null
           id?: string
+          investment_thesis?: string | null
           location?: string | null
           portfolio_link?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
@@ -254,6 +256,7 @@ export type Database = {
           created_at?: string | null
           firm_name?: string | null
           id?: string
+          investment_thesis?: string | null
           location?: string | null
           portfolio_link?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
