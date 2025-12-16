@@ -44,7 +44,7 @@ const Landing = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <FeatureCard icon={<Users className="w-8 h-8" />} title="Create a Profile" description="Share your startup story or investment thesis" />
-            <FeatureCard icon={<Coffee className="w-8 h-8" />} title="Swipe & Connect" description="Connect with founders and investors building the next big thing" />
+            <FeatureCard icon={<Coffee className="w-8 h-8" />} title="Swipe & Connect" description="Swipe when you see someone or something you like. If the feeling is mutual? Collaborate & communicate immediately." />
             <FeatureCard icon={<FileText className="w-8 h-8" />} title="Send SAFEs" description="Streamline investment agreements digitally" />
             <FeatureCard icon={<TrendingUp className="w-8 h-8" />} title="Track Cap Table" description="Manage equity and investments in one place" />
           </div>
