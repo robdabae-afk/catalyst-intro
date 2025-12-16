@@ -43,10 +43,10 @@ const Landing = () => {
           </h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <FeatureCard icon={<Users className="w-8 h-8" />} title="Create a Profile" description="Share your startup story or investment thesis" />
-            <FeatureCard icon={<Coffee className="w-8 h-8" />} title="Swipe & Connect" description="Swipe when you see someone or something you like. If the feeling is mutual? Collaborate & communicate immediately." />
-            <FeatureCard icon={<><FileText className="w-8 h-8" /><Banknote className="w-8 h-8" /></>} title="Sign SAFEs & Disburse Funds" description="Streamline investment agreements digitally" />
-            <FeatureCard icon={<TrendingUp className="w-8 h-8" />} title="Track Cap Table" description="Manage equity and investments in one place" />
+            <FeatureCard icons={[<Users className="w-8 h-8" />]} title="Create a Profile" description="Share your startup story or investment thesis" />
+            <FeatureCard icons={[<Coffee className="w-8 h-8" />]} title="Swipe & Connect" description="Swipe when you see someone or something you like. If the feeling is mutual? Collaborate & communicate immediately." />
+            <FeatureCard icons={[<FileText className="w-8 h-8" />, <Banknote className="w-8 h-8" />]} title="Sign SAFEs & Disburse Funds" description="Streamline investment agreements digitally" />
+            <FeatureCard icons={[<TrendingUp className="w-8 h-8" />]} title="Track Cap Table" description="Manage equity and investments in one place" />
           </div>
         </div>
       </section>
@@ -73,16 +73,20 @@ const Landing = () => {
     </div>;
 };
 const FeatureCard = ({
-  icon,
+  icons,
   title,
   description
 }: {
-  icon: React.ReactNode;
+  icons: React.ReactNode[];
   title: string;
   description: string;
 }) => <div className="p-8 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-shadow">
-    <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center gap-1 mb-6 text-primary">
-      {icon}
+    <div className="flex gap-3 mb-6">
+      {icons.map((icon, index) => (
+        <div key={index} className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+          {icon}
+        </div>
+      ))}
     </div>
     <h3 className="text-xl font-semibold mb-3 text-foreground">{title}</h3>
     <p className="text-muted-foreground leading-relaxed">{description}</p>
