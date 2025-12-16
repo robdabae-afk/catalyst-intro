@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, User, Camera, Loader2 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
@@ -39,6 +40,8 @@ const Settings = () => {
   const [companyState, setCompanyState] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [founderBannerUrl, setFounderBannerUrl] = useState("");
+  const [pitchDeckUrl, setPitchDeckUrl] = useState("");
+  const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   
   // Investor fields
   const [firmName, setFirmName] = useState("");
@@ -92,6 +95,8 @@ const Settings = () => {
           setCompanyState(founderProfile.company_state || "");
           setCompanyAddress(founderProfile.company_address || "");
           setFounderBannerUrl(founderProfile.banner_url || "");
+          setPitchDeckUrl(founderProfile.pitch_deck_url || "");
+          setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
         }
       } else {
         const { data: investorProfile } = await supabase
@@ -202,7 +207,9 @@ const Settings = () => {
             company_name: companyName,
             company_state: companyState,
             company_address: companyAddress,
-            banner_url: founderBannerUrl
+            banner_url: founderBannerUrl,
+            pitch_deck_url: pitchDeckUrl,
+            pitch_deck_visibility: pitchDeckVisibility
           })
           .eq('profile_id', userId);
         
@@ -451,6 +458,41 @@ const Settings = () => {
                   value={companyAddress} 
                   onChange={(e) => setCompanyAddress(e.target.value)} 
                 />
+              </div>
+              
+              {/* Pitch Deck Section */}
+              <div className="space-y-4 pt-4 border-t">
+                <div className="space-y-2">
+                  <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
+                  <Input 
+                    id="pitchDeckUrl" 
+                    type="url"
+                    value={pitchDeckUrl} 
+                    onChange={(e) => setPitchDeckUrl(e.target.value)} 
+                    placeholder="https://..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Who can see your pitch deck?</Label>
+                  <RadioGroup 
+                    value={pitchDeckVisibility} 
+                    onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
+                    className="flex flex-col gap-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="public" id="settings-visibility-public" />
+                      <Label htmlFor="settings-visibility-public" className="font-normal cursor-pointer">
+                        Public on Discover — visible to all investors
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="private" id="settings-visibility-private" />
+                      <Label htmlFor="settings-visibility-private" className="font-normal cursor-pointer">
+                        Private — share manually or upon request
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
               </div>
             </CardContent>
           </Card>

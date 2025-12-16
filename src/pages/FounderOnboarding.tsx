@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, User, ImagePlus } from "lucide-react";
@@ -24,6 +25,7 @@ const FounderOnboarding = () => {
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -181,6 +183,7 @@ const FounderOnboarding = () => {
           stage: formData.stage || null,
           traction: formData.traction || null,
           pitch_deck_url: formData.pitchDeckUrl || null,
+          pitch_deck_visibility: pitchDeckVisibility,
           preferred_city: formData.preferredCity || null,
           company_state: formData.companyState || null,
           company_address: formData.companyAddress || null,
@@ -376,15 +379,38 @@ const FounderOnboarding = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
-                <Input
-                  id="pitchDeckUrl"
-                  type="url"
-                  placeholder="https://..."
-                  value={formData.pitchDeckUrl}
-                  onChange={(e) => setFormData({ ...formData, pitchDeckUrl: e.target.value })}
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
+                  <Input
+                    id="pitchDeckUrl"
+                    type="url"
+                    placeholder="https://..."
+                    value={formData.pitchDeckUrl}
+                    onChange={(e) => setFormData({ ...formData, pitchDeckUrl: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Who can see your pitch deck?</Label>
+                  <RadioGroup 
+                    value={pitchDeckVisibility} 
+                    onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
+                    className="flex flex-col gap-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="public" id="visibility-public" />
+                      <Label htmlFor="visibility-public" className="font-normal cursor-pointer">
+                        Public on Discover — visible to all investors
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="private" id="visibility-private" />
+                      <Label htmlFor="visibility-private" className="font-normal cursor-pointer">
+                        Private — share manually or upon request
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
               </div>
 
               <div className="space-y-2">
