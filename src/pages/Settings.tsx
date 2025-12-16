@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Upload, User, Camera, Loader2 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
+import { BankingSettings } from "@/components/BankingSettings";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -536,6 +537,9 @@ const Settings = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Banking Settings */}
+        {userId && <BankingSettings userId={userId} />}
 
         {/* Save Button */}
         <div className="flex justify-end">

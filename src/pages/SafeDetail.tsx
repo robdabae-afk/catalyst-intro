@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, FileText, CheckCircle, Clock, Send, Printer } from "lucide-react";
 import { SignaturePad } from "@/components/SignaturePad";
+import { ExecuteTransfer } from "@/components/ExecuteTransfer";
 
 interface SAFEDetails {
   id: string;
@@ -15,6 +16,7 @@ interface SAFEDetails {
   discount_rate: number | null;
   execution_date: string | null;
   status: string;
+  payment_status: 'pending' | 'processing' | 'completed' | null;
   document_url: string | null;
   founder_id: string;
   investor_id: string;
@@ -397,6 +399,21 @@ const SafeDetail = () => {
                     {safe.document_url}
                   </pre>
                 </div>
+              </div>
+            )}
+
+            {/* Fund Disbursement Section - Only show when both have signed */}
+            {bothSigned && (
+              <div className="pt-4 border-t">
+                <ExecuteTransfer
+                  safeId={safe.id}
+                  amount={safe.amount}
+                  investorName={safe.investor.name}
+                  founderName={safe.founder.name}
+                  paymentStatus={safe.payment_status}
+                  isFounder={isFounder}
+                  onPaymentInitiated={loadSafe}
+                />
               </div>
             )}
           </CardContent>
