@@ -284,10 +284,12 @@ export default function Matches() {
               >
                 <Eye className="w-5 h-5" />
               </Button>
-              {currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder' && (
+              {((currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder') ||
+                (currentUserType === 'founder' && selectedMatch.profile.user_type === 'investor')) && (
                 <RequestMenu 
                   targetId={selectedMatch.profile.id} 
-                  targetName={selectedMatch.profile.name} 
+                  targetName={selectedMatch.profile.name}
+                  requesterType={currentUserType as 'founder' | 'investor'}
                 />
               )}
             </div>
@@ -443,10 +445,12 @@ export default function Matches() {
                           <Eye className="w-4 h-4 mr-1" />
                           View Profile
                         </Button>
-                        {currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder' && (
+                        {((currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder') ||
+                          (currentUserType === 'founder' && selectedMatch.profile.user_type === 'investor')) && (
                           <RequestMenu 
                             targetId={selectedMatch.profile.id} 
-                            targetName={selectedMatch.profile.name} 
+                            targetName={selectedMatch.profile.name}
+                            requesterType={currentUserType as 'founder' | 'investor'}
                           />
                         )}
                       </div>

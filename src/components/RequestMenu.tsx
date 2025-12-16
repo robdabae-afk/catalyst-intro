@@ -20,14 +20,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal } from 'lucide-react';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Wallet, Briefcase, FileCheck } from 'lucide-react';
 
 interface RequestMenuProps {
   targetId: string;
   targetName: string;
+  requesterType?: 'founder' | 'investor';
 }
 
-const REQUEST_TYPES = [
+// Investor requesting from Founder
+const INVESTOR_REQUEST_TYPES = [
   { value: 'pitch_deck', label: 'Pitch Deck', icon: FileText },
   { value: 'financials', label: 'Financials', icon: BarChart3 },
   { value: 'cap_table', label: 'Cap Table', icon: Table },
@@ -36,13 +38,25 @@ const REQUEST_TYPES = [
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ] as const;
 
-export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
+// Founder requesting from Investor
+const FOUNDER_REQUEST_TYPES = [
+  { value: 'proof_of_funds', label: 'Proof of Funds', icon: Wallet },
+  { value: 'investment_portfolio', label: 'Investment Portfolio', icon: Briefcase },
+  { value: 'term_sheet', label: 'Term Sheet', icon: FileCheck },
+  { value: 'safe_request', label: 'Request SAFE Signature', icon: FileText },
+  { value: 'meeting', label: 'Request Meeting', icon: Calendar },
+  { value: 'other', label: 'Other Request', icon: MoreHorizontal },
+] as const;
+
+export const RequestMenu = ({ targetId, targetName, requesterType = 'investor' }: RequestMenuProps) => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [fundingAmount, setFundingAmount] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const REQUEST_TYPES = requesterType === 'founder' ? FOUNDER_REQUEST_TYPES : INVESTOR_REQUEST_TYPES;
 
   const handleRequest = (type: string) => {
     // Navigate to coffee chat for meeting requests
@@ -107,7 +121,7 @@ export const RequestMenu = ({ targetId, targetName }: RequestMenuProps) => {
             Request
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-52">
           {REQUEST_TYPES.slice(0, 3).map((type) => (
             <DropdownMenuItem key={type.value} onClick={() => handleRequest(type.value)}>
               <type.icon className="mr-2 h-4 w-4" />
