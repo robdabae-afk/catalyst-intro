@@ -13,6 +13,7 @@ import { usePendingRequests } from "@/hooks/usePendingRequests";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { useNewMatches } from "@/hooks/useNewMatches";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useUnreadSupportReplies } from "@/hooks/useUnreadSupportReplies";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   ArrowLeft, 
@@ -46,6 +47,7 @@ export const AppNavigation = ({
   const unreadMessages = useUnreadMessages();
   const newMatches = useNewMatches();
   const { isAdmin } = useIsAdmin();
+  const supportReplies = useUnreadSupportReplies();
   
   // Hub pages show full navigation (Dashboard/Discover)
   const isHubPage = location.pathname === '/dashboard' || location.pathname === '/discover';
@@ -80,11 +82,16 @@ export const AppNavigation = ({
             {/* Minimal user menu on spoke pages */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full relative">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={avatarUrl || ''} alt={userName} />
                     <AvatarFallback>{userName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
+                  {supportReplies > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive flex items-center justify-center text-[10px] text-destructive-foreground font-medium">
+                      {supportReplies > 9 ? '9+' : supportReplies}
+                    </span>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-background border w-48">
@@ -173,11 +180,16 @@ export const AppNavigation = ({
             {/* User Avatar Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full h-7 w-7 sm:h-8 sm:w-8">
+                <Button variant="ghost" size="icon" className="rounded-full h-7 w-7 sm:h-8 sm:w-8 relative">
                   <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                     <AvatarImage src={avatarUrl || ''} alt={userName} />
                     <AvatarFallback className="text-xs sm:text-sm">{userName?.charAt(0) || 'U'}</AvatarFallback>
                   </Avatar>
+                  {supportReplies > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive flex items-center justify-center text-[10px] text-destructive-foreground font-medium">
+                      {supportReplies > 9 ? '9+' : supportReplies}
+                    </span>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-background border w-48">
