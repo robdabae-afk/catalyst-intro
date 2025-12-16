@@ -28,6 +28,7 @@ const InvestorOnboarding = () => {
     email: "",
     password: "",
     firmName: "",
+    investmentThesis: "",
     checkSize: "",
     preferredStage: "" as "pre-seed" | "seed" | "series-a" | "series-b" | "",
     location: "",
@@ -171,6 +172,7 @@ const InvestorOnboarding = () => {
         .insert({
           profile_id: authData.user.id,
           firm_name: formData.firmName || null,
+          investment_thesis: formData.investmentThesis || null,
           typical_check_size: formData.checkSize || null,
           preferred_stage: formData.preferredStage || null,
           sectors_of_interest: selectedSectors,
@@ -303,6 +305,20 @@ const InvestorOnboarding = () => {
                   value={formData.firmName}
                   onChange={(e) => setFormData({ ...formData, firmName: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="investmentThesis">Investment Thesis One-Liner</Label>
+                <Input
+                  id="investmentThesis"
+                  placeholder="e.g., Backing technical founders solving climate challenges"
+                  value={formData.investmentThesis}
+                  onChange={(e) => setFormData({ ...formData, investmentThesis: e.target.value })}
+                  maxLength={200}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Briefly describe what you look for in investments
+                </p>
               </div>
 
               <div className="space-y-2">
