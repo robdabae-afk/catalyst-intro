@@ -61,10 +61,10 @@ export const AppNavigation = ({
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Dashboard</span>
+              <span>Dashboard</span>
             </Button>
             
             {pageTitle && (
