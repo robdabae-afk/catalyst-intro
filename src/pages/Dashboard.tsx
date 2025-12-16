@@ -234,11 +234,6 @@ const Dashboard = () => {
               onSwipe={handleSwipe}
               userType={currentUser?.user_type || 'founder'}
             />
-            <div className="mt-6 text-center">
-              <p className="text-xs text-muted-foreground">
-                {remainingProfiles} profile{remainingProfiles !== 1 ? 's' : ''} remaining
-              </p>
-            </div>
           </div>
         ) : null}
       </div>
