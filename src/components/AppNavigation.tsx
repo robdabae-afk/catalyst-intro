@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NavLink } from "@/components/NavLink";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { useUnreadMessages } from "@/hooks/useUnreadMessages";
+import { useNewMatches } from "@/hooks/useNewMatches";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -41,6 +43,8 @@ export const AppNavigation = ({
   const navigate = useNavigate();
   const location = useLocation();
   const pendingRequests = usePendingRequests();
+  const unreadMessages = useUnreadMessages();
+  const newMatches = useNewMatches();
   const { isAdmin } = useIsAdmin();
   
   // Hub pages show full navigation (Dashboard/Discover)
@@ -123,11 +127,11 @@ export const AppNavigation = ({
               <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Discover</span>
             </NavLink>
-            <NavLink to="/matches">
+            <NavLink to="/matches" badge={newMatches}>
               <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Matches</span>
             </NavLink>
-            <NavLink to="/requests" badge={pendingRequests}>
+            <NavLink to="/requests" badge={pendingRequests + unreadMessages}>
               <Inbox className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Inbox</span>
             </NavLink>
