@@ -329,17 +329,19 @@ const FounderOnboarding = () => {
 
               <div className="space-y-2">
                 <Label>Industries * (select at least one)</Label>
-                <div className="grid grid-cols-2 gap-2 border rounded-md p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border rounded-md p-4">
                   {INDUSTRIES.map((industry) => (
-                    <div key={industry} className="flex items-center space-x-2">
+                    <div key={industry} className="flex items-center space-x-2 min-w-0">
                       <Checkbox
                         id={`industry-${industry}`}
                         checked={selectedIndustries.includes(industry)}
                         onCheckedChange={() => handleIndustryToggle(industry)}
+                        className="flex-shrink-0"
                       />
                       <label
                         htmlFor={`industry-${industry}`}
-                        className="text-sm cursor-pointer"
+                        className="text-sm cursor-pointer truncate"
+                        title={industry}
                       >
                         {industry}
                       </label>

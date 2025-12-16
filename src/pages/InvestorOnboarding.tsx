@@ -349,17 +349,19 @@ const InvestorOnboarding = () => {
 
               <div className="space-y-2">
                 <Label>Sectors of Interest * (select at least one)</Label>
-                <div className="grid grid-cols-2 gap-2 border rounded-md p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 border rounded-md p-4">
                   {INDUSTRIES.map((sector) => (
-                    <div key={sector} className="flex items-center space-x-2">
+                    <div key={sector} className="flex items-center space-x-2 min-w-0">
                       <Checkbox
                         id={`sector-${sector}`}
                         checked={selectedSectors.includes(sector)}
                         onCheckedChange={() => handleSectorToggle(sector)}
+                        className="flex-shrink-0"
                       />
                       <label
                         htmlFor={`sector-${sector}`}
-                        className="text-sm cursor-pointer"
+                        className="text-sm cursor-pointer truncate"
+                        title={sector}
                       >
                         {sector}
                       </label>
