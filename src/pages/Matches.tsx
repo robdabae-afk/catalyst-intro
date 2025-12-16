@@ -400,7 +400,7 @@ export default function Matches() {
                               {match.founderProfile?.startup_name || match.investorProfile?.firm_name || match.profile.user_type}
                             </p>
                           </div>
-                          <Badge variant="outline" className="capitalize flex-shrink-0 text-xs">
+                          <Badge variant="outline" className="capitalize flex-shrink-0 text-[10px] px-1.5 py-0.5 whitespace-nowrap">
                             {match.profile.user_type}
                           </Badge>
                         </div>
