@@ -90,6 +90,29 @@ const FOUNDER_REQUEST_TYPES = [
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ];
 
+// Helper to get signed URL from storage path
+const getSignedUrl = async (fileUrl: string): Promise<string | null> => {
+  try {
+    // Extract the path from the full URL
+    const url = new URL(fileUrl);
+    const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/documents\/(.+)/);
+    if (!pathMatch) return fileUrl; // Return original if not a storage URL
+    
+    const filePath = decodeURIComponent(pathMatch[1]);
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .createSignedUrl(filePath, 3600); // 1 hour expiry
+    
+    if (error) {
+      console.error('Error creating signed URL:', error);
+      return null;
+    }
+    return data.signedUrl;
+  } catch {
+    return fileUrl; // Return original URL if parsing fails
+  }
+};
+
 export default function Requests() {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
@@ -467,15 +490,20 @@ export default function Requests() {
                         <p className="text-sm mb-4 p-2 bg-muted rounded">{req.message}</p>
                       )}
                       {req.file_url && req.status === 'approved' && (
-                        <a 
-                          href={req.file_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-sm text-primary underline mb-4"
+                        <button 
+                          onClick={async () => {
+                            const signedUrl = await getSignedUrl(req.file_url!);
+                            if (signedUrl) {
+                              window.open(signedUrl, '_blank');
+                            } else {
+                              toast({ title: 'Error', description: 'Could not access document', variant: 'destructive' });
+                            }
+                          }}
+                          className="inline-flex items-center gap-1 text-sm text-primary underline mb-4 hover:text-primary/80"
                         >
                           <FileText className="h-4 w-4" />
                           View Attached Document
-                        </a>
+                        </button>
                       )}
                       <p className="text-xs text-muted-foreground mb-4">
                         {new Date(req.created_at).toLocaleDateString()}
