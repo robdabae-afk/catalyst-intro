@@ -8,6 +8,7 @@ import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { CaughtUpState } from "@/components/CaughtUpState";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -271,25 +272,14 @@ const Dashboard = () => {
             </div>
           </div>
         ) : showAllCaughtUp ? (
-          <div className="text-center py-12 px-6">
-            <div className="mb-6 text-6xl">🎉</div>
-            <h3 className="text-2xl font-bold mb-3 text-foreground">You're All Caught Up!</h3>
-            <p className="text-muted-foreground mb-6">
-              {totalOrganic === 0 
-                ? `No ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} have signed up yet. Check back later!`
-                : `Check back later for new ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} to connect with`
-              }
-            </p>
-            <div className="flex flex-col gap-3">
-              <Button onClick={handleReset} variant="outline" size="lg">
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Review Again
-              </Button>
-              <Button onClick={() => navigate('/matches')} size="lg">
-                View Your Matches
-              </Button>
-            </div>
-          </div>
+          <CaughtUpState
+            userType={currentUser?.user_type || 'founder'}
+            totalOrganic={totalOrganic}
+            isPro={isPro}
+            adProfile={adProfiles.length > 0 ? adProfiles[0] : null}
+            onReset={handleReset}
+            onExpandFilters={() => navigate('/settings')}
+          />
         ) : currentItem ? (
           <div>
             <div className="mb-4 text-center">
