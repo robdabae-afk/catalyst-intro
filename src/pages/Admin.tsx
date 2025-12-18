@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 import { AdminAdPanel } from "@/components/AdminAdPanel";
+import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 
 interface UserWithStatus {
   id: string;
@@ -25,6 +26,10 @@ interface UserWithStatus {
   user_type: 'founder' | 'investor';
   created_at: string;
   roles: { role: string }[];
+  subscription_status: string | null;
+  subscription_plan: string | null;
+  subscription_expires_at: string | null;
+  weekly_spotlight_used_at: string | null;
 }
 
 const Admin = () => {
@@ -34,6 +39,7 @@ const Admin = () => {
   const [users, setUsers] = useState<UserWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -50,7 +56,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at')
+        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -276,6 +282,7 @@ const Admin = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Pro</TableHead>
                       <TableHead>Signed Up</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -297,14 +304,32 @@ const Admin = () => {
                               variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : 'destructive'}
                               className="capitalize"
                             >
-                              {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
+                            {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
                               {status}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {user.subscription_status === 'active' ? (
+                              <Badge className="bg-amber-500 hover:bg-amber-500">
+                                <Crown className="w-3 h-3 mr-1" />
+                                Pro
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline">Free</Badge>
+                            )}
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {new Date(user.created_at).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-right space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setSubscriptionDialogUser(user)}
+                            >
+                              <Sparkles className="w-4 h-4 mr-1" />
+                              Manage
+                            </Button>
                             {status === 'pending' && (
                               <Button
                                 size="sm"
@@ -324,7 +349,7 @@ const Admin = () => {
                                   disabled={actionLoading === user.id}
                                 >
                                   <Crown className="w-4 h-4 mr-1" />
-                                  Make Admin
+                                  Admin
                                 </Button>
                                 <Button
                                   size="sm"
@@ -356,6 +381,19 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Subscription Management Dialog */}
+      {subscriptionDialogUser && (
+        <AdminUserSubscriptions
+          user={subscriptionDialogUser}
+          open={!!subscriptionDialogUser}
+          onOpenChange={(open) => !open && setSubscriptionDialogUser(null)}
+          onUpdate={() => {
+            loadUsers();
+            setSubscriptionDialogUser(null);
+          }}
+        />
+      )}
     </div>
   );
 };
