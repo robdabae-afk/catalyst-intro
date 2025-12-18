@@ -15,6 +15,8 @@ import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle } from "lucide-
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { BankingSettings } from "@/components/BankingSettings";
 import { SupportChat } from "@/components/SupportChat";
+import { SubscriptionSettings } from "@/components/SubscriptionSettings";
+import { SpotlightManager } from "@/components/SpotlightManager";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -580,6 +582,16 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Subscription Settings */}
+        {userId && userType && (
+          <SubscriptionSettings userId={userId} userType={userType} />
+        )}
+
+        {/* Spotlight Manager (Pro users only) */}
+        {userId && userType && (
+          <SpotlightManager userId={userId} userType={userType} />
         )}
 
         {/* Banking Settings */}
