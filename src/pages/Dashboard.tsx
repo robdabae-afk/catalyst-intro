@@ -8,6 +8,7 @@ import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface Profile {
   id: string;
@@ -27,6 +28,9 @@ const Dashboard = () => {
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
 
+  // Check subscription status for ad bypass
+  const { isPro } = useSubscription(currentUser?.id || null);
+
   const {
     currentItem,
     isCurrentItemAd,
@@ -35,7 +39,7 @@ const Dashboard = () => {
     isQueueEmpty,
     hasOnlyAds,
     totalOrganic,
-  } = useSwipeQueue(organicProfiles, adProfiles);
+  } = useSwipeQueue(organicProfiles, adProfiles, isPro);
 
   useEffect(() => {
     const init = async () => {
@@ -272,6 +276,7 @@ const Dashboard = () => {
               onSwipe={handleSwipe}
               userType={currentUser?.user_type || 'founder'}
               isAd={isCurrentItemAd}
+              isPro={isPro}
             />
           </div>
         ) : null}

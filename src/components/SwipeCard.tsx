@@ -12,25 +12,27 @@ interface SwipeCardProps {
   onSwipe: (direction: 'like' | 'pass') => void;
   userType: 'founder' | 'investor';
   isAd?: boolean;
+  isPro?: boolean; // Pro users bypass 3-second ad delay
 }
 
-export const SwipeCard = ({ profile, onSwipe, userType, isAd = false }: SwipeCardProps) => {
+export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = false }: SwipeCardProps) => {
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [adLocked, setAdLocked] = useState(isAd);
+  // PRO BYPASS: Pro users never have ad lock
+  const [adLocked, setAdLocked] = useState(isAd && !isPro);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Reset ad lock when profile changes
+  // Reset ad lock when profile changes (Pro users never locked)
   useEffect(() => {
-    if (isAd) {
+    if (isAd && !isPro) {
       setAdLocked(true);
       const timer = setTimeout(() => setAdLocked(false), 3000);
       return () => clearTimeout(timer);
     } else {
       setAdLocked(false);
     }
-  }, [isAd, profile]);
+  }, [isAd, profile, isPro]);
 
   const handleDragStart = (clientX: number, clientY: number) => {
     if (adLocked) return;

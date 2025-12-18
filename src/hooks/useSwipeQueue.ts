@@ -36,7 +36,11 @@ export type QueueItem = OrganicProfile | AdProfile;
 
 const AD_FREQUENCY = 3; // Insert ad every 3 organic swipes
 
-export function useSwipeQueue(organicProfiles: OrganicProfile[], adProfiles: AdProfile[]) {
+export function useSwipeQueue(
+  organicProfiles: OrganicProfile[], 
+  adProfiles: AdProfile[],
+  isPro: boolean = false // Pro users bypass all ads
+) {
   const [organicIndex, setOrganicIndex] = useState(0);
   const [swipeCount, setSwipeCount] = useState(0);
   const [adIndex, setAdIndex] = useState(0);
@@ -45,6 +49,11 @@ export function useSwipeQueue(organicProfiles: OrganicProfile[], adProfiles: AdP
   const currentItem = useMemo((): QueueItem | null => {
     const hasOrganic = organicIndex < organicProfiles.length;
     const hasAds = adProfiles.length > 0;
+    
+    // PRO BYPASS: Pro users NEVER see ads
+    if (isPro) {
+      return hasOrganic ? organicProfiles[organicIndex] : null;
+    }
     
     // Check if we should show an ad
     const shouldShowAd = swipeCount > 0 && swipeCount % AD_FREQUENCY === 0;
@@ -67,12 +76,19 @@ export function useSwipeQueue(organicProfiles: OrganicProfile[], adProfiles: AdP
     
     // No profiles at all
     return null;
-  }, [organicProfiles, adProfiles, organicIndex, swipeCount, adIndex]);
+  }, [organicProfiles, adProfiles, organicIndex, swipeCount, adIndex, isPro]);
 
-  const isCurrentItemAd = currentItem?.isAd === true;
+  // PRO BYPASS: Pro users never see ads, so isCurrentItemAd is always false for them
+  const isCurrentItemAd = !isPro && currentItem?.isAd === true;
 
   const handleSwipe = useCallback(() => {
     if (!currentItem) return;
+
+    // PRO BYPASS: Pro users only advance organic profiles
+    if (isPro) {
+      setOrganicIndex(prev => prev + 1);
+      return;
+    }
 
     if (currentItem.isAd) {
       // Move to next ad in rotation
@@ -82,7 +98,7 @@ export function useSwipeQueue(organicProfiles: OrganicProfile[], adProfiles: AdP
       setOrganicIndex(prev => prev + 1);
       setSwipeCount(prev => prev + 1);
     }
-  }, [currentItem]);
+  }, [currentItem, isPro]);
 
   const resetQueue = useCallback(() => {
     setOrganicIndex(0);
