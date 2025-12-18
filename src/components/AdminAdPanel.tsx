@@ -445,15 +445,15 @@ export const AdminAdPanel = () => {
                   <Link2 className="w-4 h-4" />
                   Link to Existing Profile (Optional)
                 </Label>
-                <Select
-                  value={formData.linked_profile_id}
-                  onValueChange={(value) => setFormData({ ...formData, linked_profile_id: value })}
+              <Select
+                  value={formData.linked_profile_id || "none"}
+                  onValueChange={(value) => setFormData({ ...formData, linked_profile_id: value === "none" ? "" : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a profile to promote..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None (Manual Ad)</SelectItem>
+                    <SelectItem value="none">None (Manual Ad)</SelectItem>
                     {existingProfiles.map(profile => (
                       <SelectItem key={profile.id} value={profile.id}>
                         {profile.name} ({profile.user_type})
