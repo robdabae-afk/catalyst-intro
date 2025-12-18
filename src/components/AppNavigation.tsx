@@ -25,21 +25,25 @@ import {
   Shield, 
   Settings, 
   LogOut,
-  ChevronDown 
+  ChevronDown,
+  Crown
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface AppNavigationProps {
   userType?: 'founder' | 'investor' | null;
   userName?: string;
   avatarUrl?: string;
   pageTitle?: string;
+  isPro?: boolean;
 }
 
 export const AppNavigation = ({ 
   userType, 
   userName, 
   avatarUrl,
-  pageTitle 
+  pageTitle,
+  isPro = false
 }: AppNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -126,12 +130,20 @@ export const AppNavigation = ({
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <h1 
-            className="text-sm sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer"
-            onClick={() => navigate('/dashboard')}
-          >
-            CATALYST
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 
+              className="text-sm sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer"
+              onClick={() => navigate('/dashboard')}
+            >
+              CATALYST
+            </h1>
+            {isPro && (
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 text-[10px] px-1.5 py-0 h-5">
+                <Crown className="w-3 h-3 mr-0.5" />
+                PRO
+              </Badge>
+            )}
+          </div>
           <div className="flex items-center gap-1 sm:gap-4">
             <NavLink to="/dashboard">
               <Users className="w-4 h-4 sm:w-5 sm:h-5" />
