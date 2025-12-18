@@ -443,9 +443,15 @@ export type Database = {
           id: string
           name: string
           stripe_account_id: string | null
+          stripe_customer_id: string | null
           stripe_onboarding_completed: boolean | null
+          stripe_subscription_id: string | null
+          subscription_expires_at: string | null
+          subscription_plan: string | null
+          subscription_status: string | null
           updated_at: string | null
           user_type: Database["public"]["Enums"]["user_type"]
+          weekly_spotlight_used_at: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -454,9 +460,15 @@ export type Database = {
           id: string
           name: string
           stripe_account_id?: string | null
+          stripe_customer_id?: string | null
           stripe_onboarding_completed?: boolean | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
           user_type: Database["public"]["Enums"]["user_type"]
+          weekly_spotlight_used_at?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -465,9 +477,15 @@ export type Database = {
           id?: string
           name?: string
           stripe_account_id?: string | null
+          stripe_customer_id?: string | null
           stripe_onboarding_completed?: boolean | null
+          stripe_subscription_id?: string | null
+          subscription_expires_at?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"]
+          weekly_spotlight_used_at?: string | null
         }
         Relationships: []
       }
