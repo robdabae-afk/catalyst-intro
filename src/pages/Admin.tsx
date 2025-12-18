@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSupportPanel } from "@/components/AdminSupportPanel";
+import { AdminAdPanel } from "@/components/AdminAdPanel";
 
 interface UserWithStatus {
   id: string;
@@ -196,14 +197,18 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              User Management
+              Users
+            </TabsTrigger>
+            <TabsTrigger value="ads" className="flex items-center gap-2">
+              <Megaphone className="w-4 h-4" />
+              Ad Profiles
             </TabsTrigger>
             <TabsTrigger value="support" className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
-              Support Requests
+              Support
             </TabsTrigger>
           </TabsList>
 
@@ -340,6 +345,10 @@ const Admin = () => {
                 </Table>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="ads">
+            <AdminAdPanel />
           </TabsContent>
 
           <TabsContent value="support">

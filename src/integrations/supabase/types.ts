@@ -14,6 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_profiles: {
+        Row: {
+          ad_type: Database["public"]["Enums"]["ad_profile_type"]
+          banner_url: string | null
+          company_name: string | null
+          created_at: string | null
+          created_by: string | null
+          cta_text: string | null
+          cta_url: string | null
+          description: string | null
+          external_company_name: string | null
+          firm_name: string | null
+          id: string
+          image_url: string | null
+          industry: string[] | null
+          is_active: boolean | null
+          linked_profile_id: string | null
+          name: string
+          one_liner: string | null
+          portfolio_link: string | null
+          sectors_of_interest: string[] | null
+          service_description: string | null
+          spotlight_duration:
+            | Database["public"]["Enums"]["spotlight_duration"]
+            | null
+          spotlight_end_date: string | null
+          spotlight_start_date: string | null
+          stage: string | null
+          typical_check_size: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          ad_type: Database["public"]["Enums"]["ad_profile_type"]
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cta_text?: string | null
+          cta_url?: string | null
+          description?: string | null
+          external_company_name?: string | null
+          firm_name?: string | null
+          id?: string
+          image_url?: string | null
+          industry?: string[] | null
+          is_active?: boolean | null
+          linked_profile_id?: string | null
+          name: string
+          one_liner?: string | null
+          portfolio_link?: string | null
+          sectors_of_interest?: string[] | null
+          service_description?: string | null
+          spotlight_duration?:
+            | Database["public"]["Enums"]["spotlight_duration"]
+            | null
+          spotlight_end_date?: string | null
+          spotlight_start_date?: string | null
+          stage?: string | null
+          typical_check_size?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          ad_type?: Database["public"]["Enums"]["ad_profile_type"]
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cta_text?: string | null
+          cta_url?: string | null
+          description?: string | null
+          external_company_name?: string | null
+          firm_name?: string | null
+          id?: string
+          image_url?: string | null
+          industry?: string[] | null
+          is_active?: boolean | null
+          linked_profile_id?: string | null
+          name?: string
+          one_liner?: string | null
+          portfolio_link?: string | null
+          sectors_of_interest?: string[] | null
+          service_description?: string | null
+          spotlight_duration?:
+            | Database["public"]["Enums"]["spotlight_duration"]
+            | null
+          spotlight_end_date?: string | null
+          spotlight_start_date?: string | null
+          stage?: string | null
+          typical_check_size?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_profiles_linked_profile_id_fkey"
+            columns: ["linked_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cap_table_entries: {
         Row: {
           created_at: string | null
@@ -601,6 +705,31 @@ export type Database = {
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
+      get_active_ad_profiles: {
+        Args: never
+        Returns: {
+          ad_type: Database["public"]["Enums"]["ad_profile_type"]
+          banner_url: string
+          company_name: string
+          cta_text: string
+          cta_url: string
+          description: string
+          external_company_name: string
+          firm_name: string
+          id: string
+          image_url: string
+          industry: string[]
+          linked_profile_id: string
+          name: string
+          one_liner: string
+          portfolio_link: string
+          sectors_of_interest: string[]
+          service_description: string
+          stage: string
+          typical_check_size: string
+          website_url: string
+        }[]
+      }
       get_founder_profile_with_access: {
         Args: { founder_profile_id: string }
         Returns: {
@@ -653,9 +782,11 @@ export type Database = {
       is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      ad_profile_type: "startup" | "investment_fund" | "external"
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
       payment_status: "pending" | "processing" | "completed"
+      spotlight_duration: "1_day" | "1_week" | "1_month"
       ticket_status: "open" | "closed"
       user_type: "founder" | "investor"
     }
@@ -785,9 +916,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_profile_type: ["startup", "investment_fund", "external"],
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
       payment_status: ["pending", "processing", "completed"],
+      spotlight_duration: ["1_day", "1_week", "1_month"],
       ticket_status: ["open", "closed"],
       user_type: ["founder", "investor"],
     },
