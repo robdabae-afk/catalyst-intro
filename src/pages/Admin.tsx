@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
+import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 
 interface UserWithStatus {
   id: string;
@@ -40,6 +41,7 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
+  const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -250,7 +252,15 @@ const Admin = () => {
                           <TableCell className="text-muted-foreground">
                             {new Date(user.created_at).toLocaleDateString()}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setPreviewUser(user)}
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              View
+                            </Button>
                             <Button
                               size="sm"
                               onClick={() => approveUser(user.id)}
@@ -324,6 +334,13 @@ const Admin = () => {
                           <TableCell className="text-right space-x-2">
                             <Button
                               size="sm"
+                              variant="ghost"
+                              onClick={() => setPreviewUser(user)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
                               variant="outline"
                               onClick={() => setSubscriptionDialogUser(user)}
                             >
@@ -392,6 +409,16 @@ const Admin = () => {
             loadUsers();
             setSubscriptionDialogUser(null);
           }}
+        />
+      )}
+
+      {/* Profile Preview Dialog */}
+      {previewUser && (
+        <AdminProfilePreview
+          userId={previewUser.id}
+          userType={previewUser.user_type}
+          open={!!previewUser}
+          onOpenChange={(open) => !open && setPreviewUser(null)}
         />
       )}
     </div>
