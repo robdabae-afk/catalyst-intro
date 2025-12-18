@@ -7,8 +7,10 @@ import { RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
+import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useDailySwipes } from "@/hooks/useDailySwipes";
 
 interface Profile {
   id: string;
@@ -27,9 +29,19 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
+  const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
+  
+  // Track daily swipes for free users
+  const { 
+    remainingSwipes, 
+    canSwipe, 
+    shouldShowUpgradePrompt, 
+    incrementSwipe,
+    FREE_DAILY_SWIPES 
+  } = useDailySwipes(currentUser?.id || null, isPro);
 
   const {
     currentItem,
@@ -163,9 +175,15 @@ const Dashboard = () => {
   const handleSwipe = async (direction: 'like' | 'pass') => {
     if (!currentUser || !currentItem) return;
 
-    // For ad profiles, just advance the queue without recording
+    // For ad profiles, just advance the queue without recording or counting
     if (isCurrentItemAd) {
       advanceQueue();
+      return;
+    }
+
+    // Check swipe limit for non-Pro users (only for organic profiles)
+    if (!canSwipe) {
+      setShowUpgradePrompt(true);
       return;
     }
 
@@ -178,6 +196,9 @@ const Dashboard = () => {
         swiped_id: swipedProfile.id,
         action: direction
       });
+
+      // Increment daily swipe count
+      incrementSwipe();
 
       // Check if it's a match (they liked us back)
       if (direction === 'like') {
@@ -197,6 +218,11 @@ const Dashboard = () => {
 
       // Advance the queue
       advanceQueue();
+
+      // Show upgrade prompt when reaching limit (at 0 remaining)
+      if (!isPro && remainingSwipes <= 1) {
+        setShowUpgradePrompt(true);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -223,7 +249,17 @@ const Dashboard = () => {
         userType={currentUser?.user_type}
         userName={currentUser?.name}
         avatarUrl={currentUser?.avatar_url}
+        isPro={isPro}
       />
+
+      {/* Upgrade Prompt Modal */}
+      {showUpgradePrompt && currentUser && (
+        <UpgradePrompt
+          userType={currentUser.user_type}
+          remainingSwipes={remainingSwipes}
+          onClose={() => setShowUpgradePrompt(false)}
+        />
+      )}
 
       {/* Main Content - Swipe Interface */}
       <div className="max-w-md mx-auto px-4 py-8">
@@ -270,6 +306,14 @@ const Dashboard = () => {
                   </span>
                 )}
               </p>
+              {/* Swipes remaining indicator for free users */}
+              {!isPro && !isCurrentItemAd && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {remainingSwipes > 0 
+                    ? `${remainingSwipes} swipe${remainingSwipes === 1 ? '' : 's'} left today`
+                    : 'Daily limit reached'}
+                </p>
+              )}
             </div>
             <SwipeCard
               profile={currentItem}
