@@ -522,6 +522,24 @@ export type Database = {
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
+      get_public_profile: {
+        Args: { profile_id: string }
+        Returns: {
+          avatar_url: string
+          id: string
+          name: string
+          user_type: string
+        }[]
+      }
+      get_public_profiles: {
+        Args: { profile_ids: string[] }
+        Returns: {
+          avatar_url: string
+          id: string
+          name: string
+          user_type: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
