@@ -7,6 +7,7 @@ import { RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
+import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 
 interface Profile {
   id: string;
@@ -20,11 +21,21 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentUser, setCurrentUser] = useState<Profile | null>(null);
-  const [profiles, setProfiles] = useState<any[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [organicProfiles, setOrganicProfiles] = useState<OrganicProfile[]>([]);
+  const [adProfiles, setAdProfiles] = useState<AdProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
+
+  const {
+    currentItem,
+    isCurrentItemAd,
+    handleSwipe: advanceQueue,
+    resetQueue,
+    isQueueEmpty,
+    hasOnlyAds,
+    totalOrganic,
+  } = useSwipeQueue(organicProfiles, adProfiles);
 
   useEffect(() => {
     const init = async () => {
@@ -68,15 +79,30 @@ const Dashboard = () => {
       // Load profiles of opposite type
       const targetType = user.user_type === 'founder' ? 'investor' : 'founder';
       
-      // Fetch base profiles
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_type', targetType)
-        .neq('id', user.id);
+      // Fetch base profiles and ad profiles in parallel
+      const [profilesResult, adsResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_type', targetType)
+          .neq('id', user.id),
+        supabase.rpc('get_active_ad_profiles')
+      ]);
+
+      const profilesData = profilesResult.data;
+      const adsData = adsResult.data;
+
+      // Process ad profiles
+      if (adsData && adsData.length > 0) {
+        const formattedAds: AdProfile[] = adsData.map((ad: any) => ({
+          ...ad,
+          isAd: true as const,
+        }));
+        setAdProfiles(formattedAds);
+      }
 
       if (!profilesData || profilesData.length === 0) {
-        setProfiles([]);
+        setOrganicProfiles([]);
         setLoading(false);
         return;
       }
@@ -104,6 +130,7 @@ const Dashboard = () => {
       // Merge profile data
       const mergedProfiles = profilesData.map(profile => ({
         ...profile,
+        isAd: false as const,
         founder_profiles: founderProfiles.filter(fp => fp.profile_id === profile.id),
         investor_profiles: investorProfiles.filter(ip => ip.profile_id === profile.id)
       }));
@@ -117,7 +144,7 @@ const Dashboard = () => {
       const swipedIds = new Set(swipesData?.map(s => s.swiped_id) || []);
       const unswipedProfiles = mergedProfiles.filter(p => !swipedIds.has(p.id));
 
-      setProfiles(unswipedProfiles);
+      setOrganicProfiles(unswipedProfiles);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -130,9 +157,15 @@ const Dashboard = () => {
   };
 
   const handleSwipe = async (direction: 'like' | 'pass') => {
-    if (!currentUser || currentIndex >= profiles.length) return;
+    if (!currentUser || !currentItem) return;
 
-    const swipedProfile = profiles[currentIndex];
+    // For ad profiles, just advance the queue without recording
+    if (isCurrentItemAd) {
+      advanceQueue();
+      return;
+    }
+
+    const swipedProfile = currentItem as OrganicProfile;
 
     try {
       // Record the swipe
@@ -158,8 +191,8 @@ const Dashboard = () => {
         }
       }
 
-      // Move to next profile
-      setCurrentIndex(prev => prev + 1);
+      // Advance the queue
+      advanceQueue();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -170,16 +203,15 @@ const Dashboard = () => {
   };
 
   const handleReset = async () => {
-    setCurrentIndex(0);
+    resetQueue();
     if (currentUser) {
       setLoading(true);
       await loadProfiles(currentUser);
     }
   };
 
-  const remainingProfiles = profiles.length - currentIndex;
-  const noMoreProfiles = currentIndex >= profiles.length;
-  const currentProfile = profiles[currentIndex];
+  // Show "all caught up" only when there are no organic profiles AND no ads
+  const showAllCaughtUp = isQueueEmpty && !hasOnlyAds;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -198,12 +230,12 @@ const Dashboard = () => {
               <p className="text-muted-foreground">Loading profiles...</p>
             </div>
           </div>
-        ) : noMoreProfiles ? (
+        ) : showAllCaughtUp ? (
           <div className="text-center py-12 px-6">
             <div className="mb-6 text-6xl">🎉</div>
             <h3 className="text-2xl font-bold mb-3 text-foreground">You're All Caught Up!</h3>
             <p className="text-muted-foreground mb-6">
-              {profiles.length === 0 
+              {totalOrganic === 0 
                 ? `No ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} have signed up yet. Check back later!`
                 : `Check back later for new ${currentUser?.user_type === 'founder' ? 'investors' : 'founders'} to connect with`
               }
@@ -218,21 +250,28 @@ const Dashboard = () => {
               </Button>
             </div>
           </div>
-        ) : currentProfile ? (
+        ) : currentItem ? (
           <div>
             <div className="mb-4 text-center">
               <p className="text-sm text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <span>👈 Pass</span>
-                  <span className="mx-2">•</span>
-                  <span>Interested 👉</span>
-                </span>
+                {isCurrentItemAd ? (
+                  <span className="inline-flex items-center gap-1">
+                    <span>Sponsored Content</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1">
+                    <span>👈 Pass</span>
+                    <span className="mx-2">•</span>
+                    <span>Interested 👉</span>
+                  </span>
+                )}
               </p>
             </div>
             <SwipeCard
-              profile={currentProfile}
+              profile={currentItem}
               onSwipe={handleSwipe}
               userType={currentUser?.user_type || 'founder'}
+              isAd={isCurrentItemAd}
             />
           </div>
         ) : null}

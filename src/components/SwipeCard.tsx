@@ -1,30 +1,45 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FUNDING_STAGES } from "@/lib/constants";
+import type { AdProfile, QueueItem } from "@/hooks/useSwipeQueue";
 
 interface SwipeCardProps {
-  profile: any;
+  profile: QueueItem;
   onSwipe: (direction: 'like' | 'pass') => void;
   userType: 'founder' | 'investor';
+  isAd?: boolean;
 }
 
-export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
+export const SwipeCard = ({ profile, onSwipe, userType, isAd = false }: SwipeCardProps) => {
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [adLocked, setAdLocked] = useState(isAd);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // Reset ad lock when profile changes
+  useEffect(() => {
+    if (isAd) {
+      setAdLocked(true);
+      const timer = setTimeout(() => setAdLocked(false), 3000);
+      return () => clearTimeout(timer);
+    } else {
+      setAdLocked(false);
+    }
+  }, [isAd, profile]);
+
   const handleDragStart = (clientX: number, clientY: number) => {
+    if (adLocked) return;
     setDragStart({ x: clientX, y: clientY });
     setIsDragging(true);
   };
 
   const handleDragMove = (clientX: number, clientY: number) => {
-    if (!dragStart) return;
+    if (!dragStart || adLocked) return;
     
     const deltaX = clientX - dragStart.x;
     const deltaY = clientY - dragStart.y;
@@ -32,7 +47,7 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
   };
 
   const handleDragEnd = () => {
-    if (!dragStart) return;
+    if (!dragStart || adLocked) return;
 
     const threshold = 100;
     if (Math.abs(dragOffset.x) > threshold) {
@@ -47,14 +62,20 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
   const rotation = dragOffset.x / 20;
   const opacity = 1 - Math.abs(dragOffset.x) / 300;
 
+  // Type guards for profile types
+  const isAdProfile = profile.isAd === true;
+  const adProfile = isAdProfile ? (profile as AdProfile) : null;
+  const organicProfile = !isAdProfile ? profile : null;
+
   // userType is the CURRENT user's type, so we need to show the OPPOSITE type's profile
-  const founderProfile = profile.founder_profiles?.[0];
-  const investorProfile = profile.investor_profiles?.[0];
+  const founderProfile = organicProfile?.founder_profiles?.[0];
+  const investorProfile = organicProfile?.investor_profiles?.[0];
   
   // If current user is investor, show founder profiles; if founder, show investor profiles
   const isShowingFounder = userType === 'investor';
   const profileData = isShowingFounder ? founderProfile : investorProfile;
-  const bannerUrl = profileData?.banner_url;
+  const bannerUrl = isAdProfile ? adProfile?.banner_url : profileData?.banner_url;
+  const avatarUrl = organicProfile?.avatar_url;
 
   return (
     <div className="relative w-full max-w-[280px] sm:max-w-md mx-auto h-[480px] sm:h-[600px] perspective-1000">
@@ -74,6 +95,21 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         onTouchMove={(e) => isDragging && handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
         onTouchEnd={handleDragEnd}
       >
+        {/* Ad Badge */}
+        {isAdProfile && (
+          <div className="absolute top-3 right-3 z-20">
+            <Badge className="bg-amber-500 text-white hover:bg-amber-500">
+              <Megaphone className="w-3 h-3 mr-1" />
+              Ad
+            </Badge>
+          </div>
+        )}
+
+        {/* Ad Lock Overlay */}
+        {adLocked && (
+          <div className="absolute inset-0 z-10 bg-transparent" />
+        )}
+
         {/* Banner/Profile Image Section */}
         <div className="relative h-24 sm:h-44 bg-gradient-to-br from-primary/20 to-accent/20">
           {bannerUrl ? (
@@ -82,9 +118,15 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
               alt="Banner"
               className="w-full h-full object-cover"
             />
-          ) : profile.avatar_url ? (
+          ) : isAdProfile && adProfile?.image_url ? (
             <img 
-              src={profile.avatar_url} 
+              src={adProfile.image_url} 
+              alt={adProfile.name}
+              className="w-full h-full object-cover"
+            />
+          ) : avatarUrl ? (
+            <img 
+              src={avatarUrl} 
               alt={profile.name}
               className="w-full h-full object-cover"
             />
@@ -99,16 +141,18 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         <CardHeader className="pb-0 sm:pb-2 pt-1 sm:pt-4 px-3 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-4">
             <Avatar className="w-10 h-10 sm:w-16 sm:h-16 border-2 sm:border-4 border-background -mt-6 sm:-mt-12 relative z-10">
-              <AvatarImage src={profile.avatar_url} alt={profile.name} />
+              <AvatarImage src={isAdProfile ? adProfile?.image_url || '' : avatarUrl} alt={profile.name} />
               <AvatarFallback className="bg-primary/20 text-primary text-sm sm:text-xl">
                 {profile.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-sm sm:text-xl truncate leading-tight">
-                {isShowingFounder 
-                  ? founderProfile?.startup_name || profile.name
-                  : investorProfile?.firm_name || profile.name}
+                {isAdProfile 
+                  ? adProfile?.company_name || adProfile?.firm_name || adProfile?.name
+                  : isShowingFounder 
+                    ? founderProfile?.startup_name || profile.name
+                    : investorProfile?.firm_name || profile.name}
               </CardTitle>
               <p className="text-muted-foreground text-xs truncate">{profile.name}</p>
             </div>
@@ -116,6 +160,80 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         </CardHeader>
 
         <CardContent className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[320px] sm:max-h-[340px]">
+          {/* Ad Profile Display */}
+          {isAdProfile && adProfile && (
+            <>
+              {/* One-liner / Description */}
+              {(adProfile.one_liner || adProfile.description) && (
+                <p className="text-xs sm:text-sm leading-snug text-foreground">
+                  {adProfile.one_liner || adProfile.description}
+                </p>
+              )}
+
+              {/* Stage & Industries/Sectors inline */}
+              <div className="flex flex-wrap items-center gap-1">
+                {adProfile.stage && (
+                  <Badge variant="outline" className="text-[10px] sm:text-xs">
+                    {adProfile.stage.replace('-', ' ')}
+                  </Badge>
+                )}
+                {adProfile.industry?.map((ind: string) => (
+                  <Badge key={ind} variant="secondary" className="text-[10px] sm:text-xs">
+                    {ind}
+                  </Badge>
+                ))}
+                {adProfile.sectors_of_interest?.map((sector: string) => (
+                  <Badge key={sector} variant="secondary" className="text-[10px] sm:text-xs">
+                    {sector}
+                  </Badge>
+                ))}
+              </div>
+
+              {/* Check Size for investment_fund ads */}
+              {adProfile.ad_type === 'investment_fund' && adProfile.typical_check_size && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <div className="flex items-center gap-1 mb-0.5">
+                    <DollarSign className="w-3 h-3 text-primary" />
+                    <p className="text-[10px] font-medium text-muted-foreground">Typical Check</p>
+                  </div>
+                  <p className="text-xs font-medium">{adProfile.typical_check_size}</p>
+                </div>
+              )}
+
+              {/* CTA Button */}
+              {adProfile.cta_url && (
+                <a
+                  href={adProfile.cta_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button className="w-full" size="sm">
+                    <ExternalLink className="w-3 h-3 mr-2" />
+                    {adProfile.cta_text || 'Learn More'}
+                  </Button>
+                </a>
+              )}
+
+              {/* Website/Portfolio Link */}
+              {(adProfile.website_url || adProfile.portfolio_link) && (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <LinkIcon className="w-3 h-3 flex-shrink-0" />
+                  <a 
+                    href={adProfile.website_url || adProfile.portfolio_link || '#'} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Visit Website
+                  </a>
+                </div>
+              )}
+            </>
+          )}
+
           {/* Founder Profile Display (shown to investors) */}
           {isShowingFounder && founderProfile && (
             <>
@@ -285,16 +403,18 @@ export const SwipeCard = ({ profile, onSwipe, userType }: SwipeCardProps) => {
         <Button
           size="lg"
           variant="outline"
-          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-red-500 hover:text-red-500"
-          onClick={() => onSwipe('pass')}
+          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-red-500 hover:text-red-500 ${adLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={() => !adLocked && onSwipe('pass')}
+          disabled={adLocked}
         >
           <X className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
         <Button
           size="lg"
           variant="outline"
-          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-green-500 hover:text-green-500"
-          onClick={() => onSwipe('like')}
+          className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-green-500 hover:text-green-500 ${adLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+          onClick={() => !adLocked && onSwipe('like')}
+          disabled={adLocked}
         >
           <Heart className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
