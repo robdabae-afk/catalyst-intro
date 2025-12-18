@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { BankingSettings } from "@/components/BankingSettings";
 import { SupportChat } from "@/components/SupportChat";
@@ -346,6 +346,27 @@ const Settings = () => {
                 onChange={handleAvatarUpload}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Discovery Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <SlidersHorizontal className="w-5 h-5" />
+              Discovery Filters
+            </CardTitle>
+            <CardDescription>Set preferences for the profiles you want to see</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/filters')}
+              className="w-full sm:w-auto"
+            >
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              Manage Filters
+            </Button>
           </CardContent>
         </Card>
 

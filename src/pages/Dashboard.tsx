@@ -96,18 +96,24 @@ const Dashboard = () => {
       // Load profiles of opposite type
       const targetType = user.user_type === 'founder' ? 'investor' : 'founder';
       
-      // Fetch base profiles and ad profiles in parallel
-      const [profilesResult, adsResult] = await Promise.all([
+      // Fetch base profiles, user's filter preferences, and ad profiles in parallel
+      const [profilesResult, filtersResult, adsResult] = await Promise.all([
         supabase
           .from('profiles')
           .select('*')
           .eq('user_type', targetType)
           .neq('id', user.id),
+        supabase
+          .from('profiles')
+          .select('filter_stages, filter_industries, filter_locations')
+          .eq('id', user.id)
+          .single(),
         supabase.rpc('get_active_ad_profiles')
       ]);
 
       const profilesData = profilesResult.data;
       const adsData = adsResult.data;
+      const filters = filtersResult.data;
 
       // Process ad profiles
       if (adsData && adsData.length > 0) {
@@ -145,12 +151,55 @@ const Dashboard = () => {
       }
 
       // Merge profile data
-      const mergedProfiles = profilesData.map(profile => ({
+      let mergedProfiles = profilesData.map(profile => ({
         ...profile,
         isAd: false as const,
         founder_profiles: founderProfiles.filter(fp => fp.profile_id === profile.id),
         investor_profiles: investorProfiles.filter(ip => ip.profile_id === profile.id)
       }));
+
+      // Apply filter preferences
+      if (filters) {
+        const { filter_stages, filter_industries, filter_locations } = filters;
+
+        mergedProfiles = mergedProfiles.filter(profile => {
+          // Get the target profile data
+          const founderProfile = profile.founder_profiles?.[0];
+          const investorProfile = profile.investor_profiles?.[0];
+
+          // Filter by stages
+          if (filter_stages && filter_stages.length > 0) {
+            const profileStage = founderProfile?.stage || investorProfile?.preferred_stage;
+            if (profileStage && !filter_stages.includes(profileStage)) {
+              return false;
+            }
+          }
+
+          // Filter by industries
+          if (filter_industries && filter_industries.length > 0) {
+            const profileIndustries = founderProfile?.industry || investorProfile?.sectors_of_interest || [];
+            const hasMatchingIndustry = profileIndustries.some((ind: string) => 
+              filter_industries.includes(ind)
+            );
+            if (profileIndustries.length > 0 && !hasMatchingIndustry) {
+              return false;
+            }
+          }
+
+          // Filter by locations
+          if (filter_locations && filter_locations.length > 0) {
+            const profileLocation = founderProfile?.preferred_city || investorProfile?.location || '';
+            const matchesLocation = filter_locations.some(loc => 
+              profileLocation.toLowerCase().includes(loc.toLowerCase())
+            );
+            if (profileLocation && !matchesLocation) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
 
       // Get user's swipes to filter out already swiped profiles
       const { data: swipesData } = await supabase
@@ -278,7 +327,7 @@ const Dashboard = () => {
             isPro={isPro}
             adProfile={adProfiles.length > 0 ? adProfiles[0] : null}
             onReset={handleReset}
-            onExpandFilters={() => navigate('/settings')}
+            onExpandFilters={() => navigate('/filters')}
           />
         ) : currentItem ? (
           <div>
