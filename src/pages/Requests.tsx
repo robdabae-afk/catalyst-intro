@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Wallet, Briefcase, FileCheck, Plus } from 'lucide-react';
+import { FileText, DollarSign, Calendar, BarChart3, Table, MoreHorizontal, Upload, Check, X, Wallet, Briefcase, FileCheck, Plus, MapPin } from 'lucide-react';
 import { AppNavigation } from '@/components/AppNavigation';
 
 interface DocumentRequest {
@@ -56,6 +56,7 @@ const REQUEST_ICONS: Record<string, any> = {
   investment_portfolio: Briefcase,
   term_sheet: FileCheck,
   safe_request: FileText,
+  location_access: MapPin,
   other: MoreHorizontal,
 };
 
@@ -69,6 +70,7 @@ const REQUEST_LABELS: Record<string, string> = {
   investment_portfolio: 'Investment Portfolio',
   term_sheet: 'Term Sheet',
   safe_request: 'SAFE Signature Request',
+  location_access: 'Location Access',
   other: 'Other',
 };
 
@@ -78,6 +80,7 @@ const INVESTOR_REQUEST_TYPES = [
   { value: 'financials', label: 'Financials', icon: BarChart3 },
   { value: 'cap_table', label: 'Cap Table', icon: Table },
   { value: 'funding_interest', label: 'Express Funding Interest', icon: DollarSign },
+  { value: 'location_access', label: 'Request Location Access', icon: MapPin },
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ];
 
@@ -250,24 +253,49 @@ export default function Requests() {
   };
 
   const handleResponse = async (requestId: string, status: 'approved' | 'denied', request?: DocumentRequest) => {
-    const { error } = await supabase
-      .from('document_requests')
-      .update({ status })
-      .eq('id', requestId);
+    try {
+      // If approving a location access request, grant location access
+      if (status === 'approved' && request?.request_type === 'location_access' && userId) {
+        const { error: accessError } = await supabase
+          .from('location_access')
+          .upsert({
+            founder_id: userId,
+            granted_to: request.requester_id,
+            granted_at: new Date().toISOString(),
+            revoked_at: null,
+          }, { onConflict: 'founder_id,granted_to' });
 
-    if (error) {
-      toast({ title: 'Error', description: error.message, variant: 'destructive' });
-    } else {
-      toast({ title: status === 'approved' ? 'Approved' : 'Denied' });
-      
-      // If approving a funding interest request, redirect to SAFE creation
-      if (status === 'approved' && request?.request_type === 'funding_interest') {
-        const amount = extractFundingAmount(request.message);
-        navigate(`/safe?investor_id=${request.requester_id}&amount=${amount || ''}`);
-        return;
+        if (accessError) {
+          toast({ title: 'Error granting location access', description: accessError.message, variant: 'destructive' });
+          return;
+        }
       }
-      
-      if (userId) fetchRequests(userId);
+
+      const { error } = await supabase
+        .from('document_requests')
+        .update({ status })
+        .eq('id', requestId);
+
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      } else {
+        if (status === 'approved' && request?.request_type === 'location_access') {
+          toast({ title: 'Location access granted', description: 'The investor can now view your business address.' });
+        } else {
+          toast({ title: status === 'approved' ? 'Approved' : 'Denied' });
+        }
+        
+        // If approving a funding interest request, redirect to SAFE creation
+        if (status === 'approved' && request?.request_type === 'funding_interest') {
+          const amount = extractFundingAmount(request.message);
+          navigate(`/safe?investor_id=${request.requester_id}&amount=${amount || ''}`);
+          return;
+        }
+        
+        if (userId) fetchRequests(userId);
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     }
   };
 
