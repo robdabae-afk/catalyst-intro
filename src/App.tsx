@@ -21,6 +21,7 @@ import Admin from "./pages/Admin";
 import PendingApproval from "./pages/PendingApproval";
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
+import FilterPreferences from "./pages/FilterPreferences";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
           <Route path="/admin" element={<Admin />} />
           <Route path="/profile/:id" element={<ProfileView />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/filters" element={<FilterPreferences />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

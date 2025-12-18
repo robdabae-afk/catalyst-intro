@@ -440,6 +440,9 @@ export type Database = {
           avatar_url: string | null
           created_at: string | null
           email: string
+          filter_industries: string[] | null
+          filter_locations: string[] | null
+          filter_stages: string[] | null
           id: string
           name: string
           stripe_account_id: string | null
@@ -457,6 +460,9 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           email: string
+          filter_industries?: string[] | null
+          filter_locations?: string[] | null
+          filter_stages?: string[] | null
           id: string
           name: string
           stripe_account_id?: string | null
@@ -474,6 +480,9 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string | null
           email?: string
+          filter_industries?: string[] | null
+          filter_locations?: string[] | null
+          filter_stages?: string[] | null
           id?: string
           name?: string
           stripe_account_id?: string | null
