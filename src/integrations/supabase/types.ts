@@ -280,6 +280,30 @@ export type Database = {
           },
         ]
       }
+      location_access: {
+        Row: {
+          founder_id: string
+          granted_at: string
+          granted_to: string
+          id: string
+          revoked_at: string | null
+        }
+        Insert: {
+          founder_id: string
+          granted_at?: string
+          granted_to: string
+          id?: string
+          revoked_at?: string | null
+        }
+        Update: {
+          founder_id?: string
+          granted_at?: string
+          granted_to?: string
+          id?: string
+          revoked_at?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -518,10 +542,85 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_founder_profiles: {
+        Row: {
+          banner_url: string | null
+          company_name: string | null
+          created_at: string | null
+          id: string | null
+          industry: string[] | null
+          one_liner: string | null
+          pitch_deck_url: string | null
+          pitch_deck_visibility: string | null
+          preferred_city: string | null
+          profile_id: string | null
+          stage: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name: string | null
+          traction: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          industry?: string[] | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          pitch_deck_visibility?: string | null
+          preferred_city?: string | null
+          profile_id?: string | null
+          stage?: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name?: string | null
+          traction?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          industry?: string[] | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          pitch_deck_visibility?: string | null
+          preferred_city?: string | null
+          profile_id?: string | null
+          stage?: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name?: string | null
+          traction?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "founder_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
+      get_founder_profile_with_access: {
+        Args: { founder_profile_id: string }
+        Returns: {
+          banner_url: string
+          company_address: string
+          company_name: string
+          company_state: string
+          created_at: string
+          id: string
+          industry: string[]
+          one_liner: string
+          pitch_deck_url: string
+          pitch_deck_visibility: string
+          preferred_city: string
+          profile_id: string
+          stage: string
+          startup_name: string
+          traction: string
+        }[]
+      }
       get_public_profile: {
         Args: { profile_id: string }
         Returns: {
@@ -539,6 +638,10 @@ export type Database = {
           name: string
           user_type: string
         }[]
+      }
+      has_location_access: {
+        Args: { founder_profile_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
