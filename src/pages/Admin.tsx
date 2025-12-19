@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -20,6 +20,7 @@ import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
+import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 
 interface UserWithStatus {
   id: string;
@@ -272,7 +273,7 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg">
+          <TabsList className="grid w-full grid-cols-4 max-w-xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
@@ -280,6 +281,10 @@ const Admin = () => {
             <TabsTrigger value="ads" className="flex items-center gap-2">
               <Megaphone className="w-4 h-4" />
               Ad Profiles
+            </TabsTrigger>
+            <TabsTrigger value="email" className="flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              Email
             </TabsTrigger>
             <TabsTrigger value="support" className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
@@ -493,6 +498,10 @@ const Admin = () => {
 
           <TabsContent value="ads">
             <AdminAdPanel />
+          </TabsContent>
+
+          <TabsContent value="email">
+            <AdminEmailComposer />
           </TabsContent>
 
           <TabsContent value="support">
