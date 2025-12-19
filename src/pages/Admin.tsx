@@ -22,6 +22,7 @@ import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 import { AdminReferralPanel } from "@/components/AdminReferralPanel";
+import { AdminConciergePanel } from "@/components/AdminConciergePanel";
 
 interface UserWithStatus {
   id: string;
@@ -274,10 +275,14 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
+          <TabsList className="grid w-full grid-cols-6 max-w-3xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="concierge" className="flex items-center gap-2">
+              <Crown className="w-4 h-4" />
+              Concierge
             </TabsTrigger>
             <TabsTrigger value="referrals" className="flex items-center gap-2">
               <Gift className="w-4 h-4" />
@@ -296,6 +301,10 @@ const Admin = () => {
               Support
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="concierge">
+            <AdminConciergePanel />
+          </TabsContent>
 
           <TabsContent value="referrals">
             <AdminReferralPanel />
