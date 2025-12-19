@@ -12,6 +12,58 @@ const logStep = (step: string, details?: any) => {
   console.log(`[VERIFY-CONCIERGE] ${step}${detailsStr}`);
 };
 
+const sendPurchaseConfirmationEmail = async (userId: string, supabaseClient: any) => {
+  try {
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      logStep("RESEND_API_KEY not configured, skipping email");
+      return;
+    }
+
+    // Get user profile
+    const { data: profile, error: profileError } = await supabaseClient
+      .from("profiles")
+      .select("email, name")
+      .eq("id", userId)
+      .single();
+
+    if (profileError || !profile) {
+      logStep("Error fetching profile for email", { error: profileError });
+      return;
+    }
+
+    const emailResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "Catalyst Intro <notifications@catalystintro.com>",
+        to: [profile.email],
+        subject: "Premium Match Purchase Successful!",
+        html: `
+          <h1>Hello ${profile.name},</h1>
+          <p><strong>Purchase successful!</strong></p>
+          <p>In 8-12 hours maximum you will receive your personally curated match.</p>
+          <p>Our team is carefully reviewing profiles to find the perfect match for you. You'll be notified as soon as your match is ready.</p>
+          <p>Thank you for trusting Catalyst Intro with your networking needs!</p>
+          <p>Best regards,<br>The Catalyst Intro Team</p>
+        `,
+      }),
+    });
+
+    const emailResult = await emailResponse.json();
+    if (!emailResponse.ok) {
+      logStep("Error sending confirmation email", { error: emailResult });
+    } else {
+      logStep("Confirmation email sent successfully", { emailId: emailResult.id });
+    }
+  } catch (error) {
+    logStep("Exception sending email", { error: String(error) });
+  }
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -84,6 +136,10 @@ serve(async (req) => {
       }
 
       logStep("Payment verified and match updated");
+
+      // Send confirmation email
+      await sendPurchaseConfirmationEmail(matchRequest.requester_id, supabaseClient);
+
       return new Response(JSON.stringify({ 
         success: true, 
         status: 'paid',

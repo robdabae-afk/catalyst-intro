@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Crown, Clock, Sparkles, Loader2 } from 'lucide-react';
+import { Crown, Clock, Sparkles, Loader2, CheckCircle } from 'lucide-react';
 
 interface ConciergeMatchButtonProps {
   userId: string;
@@ -15,12 +15,9 @@ export const ConciergeMatchButton = ({ userId, userType }: ConciergeMatchButtonP
   const [loading, setLoading] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<any>(null);
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
 
-  useEffect(() => {
-    loadPendingMatch();
-  }, [userId]);
-
-  const loadPendingMatch = async () => {
+  const loadPendingMatch = useCallback(async () => {
     const { data } = await supabase
       .from('manual_matches')
       .select('*')
@@ -32,8 +29,54 @@ export const ConciergeMatchButton = ({ userId, userType }: ConciergeMatchButtonP
 
     if (data) {
       setPendingMatch(data);
+      
+      // If there's a pending match with stripe session, verify payment
+      if (data.payment_status === 'pending' && data.stripe_session_id) {
+        verifyPayment(data.id);
+      }
+    }
+  }, [userId]);
+
+  const verifyPayment = async (matchId: string) => {
+    setVerifying(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('verify-concierge-payment', {
+        body: { matchId }
+      });
+      
+      if (!error && data?.success && data?.status === 'paid') {
+        // Payment was verified - show success notification
+        toast({
+          title: "Purchase Successful!",
+          description: "In 8-12 hours maximum you will receive your personally curated match.",
+          duration: 8000,
+        });
+        
+        // Reload to get updated status
+        loadPendingMatch();
+      }
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+    } finally {
+      setVerifying(false);
     }
   };
+
+  useEffect(() => {
+    loadPendingMatch();
+  }, [loadPendingMatch]);
+
+  // Check for payment completion on focus (user returns from Stripe)
+  useEffect(() => {
+    const handleFocus = () => {
+      if (pendingMatch?.payment_status === 'pending' && pendingMatch?.stripe_session_id) {
+        verifyPayment(pendingMatch.id);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [pendingMatch]);
 
   // Countdown timer for 12 hours from payment
   useEffect(() => {
@@ -71,6 +114,8 @@ export const ConciergeMatchButton = ({ userId, userType }: ConciergeMatchButtonP
       if (error) throw error;
       if (data?.url) {
         window.open(data.url, '_blank');
+        // Set a timeout to reload after user might return from payment
+        setTimeout(() => loadPendingMatch(), 3000);
       }
     } catch (error: any) {
       toast({
@@ -96,8 +141,12 @@ export const ConciergeMatchButton = ({ userId, userType }: ConciergeMatchButtonP
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <div className="flex items-center gap-2 text-green-500 mb-2">
+            <CheckCircle className="w-4 h-4" />
+            <span className="text-sm font-medium">Purchase successful!</span>
+          </div>
           <p className="text-sm text-muted-foreground">
-            Our team is personally reviewing your profile. Your hand-picked match will appear here within 12 hours.
+            In 8-12 hours maximum you will receive your personally curated match. Our team is carefully reviewing profiles to find the perfect fit for you.
           </p>
           {timeRemaining && (
             <div className="flex items-center gap-2 text-amber-500">
@@ -113,15 +162,15 @@ export const ConciergeMatchButton = ({ userId, userType }: ConciergeMatchButtonP
   return (
     <Button
       onClick={handleRequestMatch}
-      disabled={loading}
+      disabled={loading || verifying}
       className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
     >
-      {loading ? (
+      {loading || verifying ? (
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
       ) : (
         <Crown className="w-4 h-4 mr-2" />
       )}
-      Request Premium Match ({price})
+      {verifying ? 'Verifying...' : `Request Premium Match (${price})`}
     </Button>
   );
 };
