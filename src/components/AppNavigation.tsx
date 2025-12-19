@@ -170,10 +170,6 @@ export const AppNavigation = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-background border">
-                  <DropdownMenuItem onClick={() => navigate('/safes')}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    SAFEs
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => navigate('/captable')}>
                     <TrendingUp className="w-4 h-4 mr-2" />
                     Cap Table
