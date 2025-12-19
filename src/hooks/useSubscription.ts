@@ -7,6 +7,7 @@ interface SubscriptionData {
   status: string | null;
   expiresAt: Date | null;
   canUseSpotlight: boolean;
+  hasStripeSubscription: boolean;
   loading: boolean;
 }
 
@@ -17,6 +18,7 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
     status: null,
     expiresAt: null,
     canUseSpotlight: false,
+    hasStripeSubscription: false,
     loading: true,
   });
 
@@ -30,7 +32,7 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('subscription_plan, subscription_status, subscription_expires_at, weekly_spotlight_used_at')
+          .select('subscription_plan, subscription_status, subscription_expires_at, weekly_spotlight_used_at, stripe_customer_id')
           .eq('id', userId)
           .single();
 
@@ -45,12 +47,16 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const canUseSpotlight = isActive && (!spotlightUsedAt || spotlightUsedAt < oneWeekAgo);
 
+        // Check if user has a Stripe customer ID (indicates Stripe-managed subscription)
+        const hasStripeSubscription = !!data?.stripe_customer_id;
+
         setSubscriptionData({
           isPro: isActive,
           plan: isActive ? (data?.subscription_plan as 'investor_pro' | 'startup_pro') : null,
           status: data?.subscription_status,
           expiresAt,
           canUseSpotlight,
+          hasStripeSubscription,
           loading: false,
         });
       } catch (error) {
