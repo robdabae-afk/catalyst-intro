@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Edit, Trash2, Megaphone, Link2, Building2, Briefcase } from "lucide-react";
+import { Plus, Edit, Trash2, Megaphone, Link2, Building2, Briefcase, Upload, X } from "lucide-react";
 
 type AdProfileType = 'startup' | 'investment_fund' | 'external';
 type SpotlightDuration = '1_day' | '1_week' | '1_month';
@@ -66,6 +66,8 @@ interface AdProfile {
 interface ExistingProfile {
   id: string;
   name: string;
+  email: string;
+  avatar_url: string | null;
   user_type: 'founder' | 'investor';
 }
 
@@ -103,6 +105,10 @@ export const AdminAdPanel = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAd, setEditingAd] = useState<AdProfile | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -147,7 +153,7 @@ export const AdminAdPanel = () => {
       // Load existing profiles for linking
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, user_type')
+        .select('id, name, email, avatar_url, user_type')
         .order('name');
 
       if (profilesError) throw profilesError;
@@ -188,6 +194,131 @@ export const AdminAdPanel = () => {
       is_active: false
     });
     setEditingAd(null);
+  };
+
+  const handleProfileSelect = async (profileId: string) => {
+    if (profileId === "none" || !profileId) {
+      setFormData(prev => ({ ...prev, linked_profile_id: '' }));
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, linked_profile_id: profileId }));
+
+    // Find the profile
+    const profile = existingProfiles.find(p => p.id === profileId);
+    if (!profile) return;
+
+    try {
+      if (profile.user_type === 'founder') {
+        // Fetch founder profile data
+        const { data: founderProfile, error } = await supabase
+          .from('founder_profiles')
+          .select('*')
+          .eq('profile_id', profileId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching founder profile:', error);
+          return;
+        }
+
+        if (founderProfile) {
+          setFormData(prev => ({
+            ...prev,
+            ad_type: 'startup',
+            name: profile.name,
+            image_url: profile.avatar_url || '',
+            banner_url: founderProfile.banner_url || '',
+            company_name: founderProfile.company_name || founderProfile.startup_name || '',
+            one_liner: founderProfile.one_liner || '',
+            industry: founderProfile.industry || [],
+            stage: founderProfile.stage || '',
+          }));
+        }
+      } else if (profile.user_type === 'investor') {
+        // Fetch investor profile data
+        const { data: investorProfile, error } = await supabase
+          .from('investor_profiles')
+          .select('*')
+          .eq('profile_id', profileId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching investor profile:', error);
+          return;
+        }
+
+        if (investorProfile) {
+          setFormData(prev => ({
+            ...prev,
+            ad_type: 'investment_fund',
+            name: profile.name,
+            image_url: profile.avatar_url || '',
+            banner_url: investorProfile.banner_url || '',
+            firm_name: investorProfile.firm_name || '',
+            typical_check_size: investorProfile.typical_check_size || '',
+            sectors_of_interest: investorProfile.sectors_of_interest || [],
+            portfolio_link: investorProfile.portfolio_link || '',
+          }));
+        }
+      }
+
+      toast({
+        title: "Profile loaded",
+        description: "Data from the linked profile has been auto-populated."
+      });
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    }
+  };
+
+  const uploadFile = async (file: File, type: 'image' | 'banner'): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `ad-profiles/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: uploadError.message
+      });
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    const url = await uploadFile(file, 'image');
+    if (url) {
+      setFormData(prev => ({ ...prev, image_url: url }));
+    }
+    setUploadingImage(false);
+  };
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingBanner(true);
+    const url = await uploadFile(file, 'banner');
+    if (url) {
+      setFormData(prev => ({ ...prev, banner_url: url }));
+    }
+    setUploadingBanner(false);
   };
 
   const openEditDialog = (ad: AdProfile) => {
@@ -447,7 +578,7 @@ export const AdminAdPanel = () => {
                 </Label>
               <Select
                   value={formData.linked_profile_id || "none"}
-                  onValueChange={(value) => setFormData({ ...formData, linked_profile_id: value === "none" ? "" : value })}
+                  onValueChange={handleProfileSelect}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a profile to promote..." />
@@ -462,28 +593,67 @@ export const AdminAdPanel = () => {
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Link to an existing user to promote their profile, or leave empty for a manual ad.
+                  Select a profile to auto-populate fields. You can override any values after.
                 </p>
               </div>
 
               {/* Basic Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Display Name *</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Company or person name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Image URL</Label>
-                  <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://..."
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Display Name *</Label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Company or person name"
+                />
+              </div>
+
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label>Profile Image</Label>
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                {formData.image_url ? (
+                  <div className="flex items-center gap-3">
+                    <img 
+                      src={formData.image_url} 
+                      alt="Profile" 
+                      className="w-16 h-16 rounded-full object-cover border"
+                    />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={uploadingImage}
+                    >
+                      {uploadingImage ? "Uploading..." : "Change"}
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => imageInputRef.current?.click()}
+                    disabled={uploadingImage}
+                    className="w-full"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadingImage ? "Uploading..." : "Upload Image"}
+                  </Button>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -496,13 +666,56 @@ export const AdminAdPanel = () => {
                 />
               </div>
 
+              {/* Banner Upload */}
               <div className="space-y-2">
-                <Label>Banner URL</Label>
-                <Input
-                  value={formData.banner_url}
-                  onChange={(e) => setFormData({ ...formData, banner_url: e.target.value })}
-                  placeholder="https://..."
+                <Label>Banner Image</Label>
+                <input
+                  type="file"
+                  ref={bannerInputRef}
+                  onChange={handleBannerUpload}
+                  accept="image/*"
+                  className="hidden"
                 />
+                {formData.banner_url ? (
+                  <div className="space-y-2">
+                    <img 
+                      src={formData.banner_url} 
+                      alt="Banner" 
+                      className="w-full h-24 rounded-md object-cover border"
+                    />
+                    <div className="flex gap-2">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => bannerInputRef.current?.click()}
+                        disabled={uploadingBanner}
+                      >
+                        {uploadingBanner ? "Uploading..." : "Change Banner"}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setFormData(prev => ({ ...prev, banner_url: '' }))}
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => bannerInputRef.current?.click()}
+                    disabled={uploadingBanner}
+                    className="w-full"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {uploadingBanner ? "Uploading..." : "Upload Banner"}
+                  </Button>
+                )}
               </div>
 
               {/* Startup-specific fields */}
