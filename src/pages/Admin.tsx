@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 import { AdminProfilePreview } from "@/components/AdminProfilePreview";
+import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
 
 interface UserWithStatus {
   id: string;
@@ -31,6 +32,8 @@ interface UserWithStatus {
   subscription_plan: string | null;
   subscription_expires_at: string | null;
   weekly_spotlight_used_at: string | null;
+  has_pending_update: boolean | null;
+  last_profile_update_at: string | null;
 }
 
 const Admin = () => {
@@ -42,6 +45,7 @@ const Admin = () => {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
+  const [editSuggestionUser, setEditSuggestionUser] = useState<UserWithStatus | null>(null);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -58,7 +62,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at')
+        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -166,6 +170,50 @@ const Admin = () => {
     }
   };
 
+  const denyUser = async (userId: string) => {
+    setActionLoading(userId);
+    try {
+      // Clear any pending update flags when denying
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          has_pending_update: false,
+          admin_edit_suggestion: null,
+          admin_edit_message: null 
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "User denied",
+        description: "The user application has been denied."
+      });
+
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error denying user",
+        description: error.message
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const clearUpdateFlag = async (userId: string) => {
+    try {
+      await supabase
+        .from('profiles')
+        .update({ has_pending_update: false })
+        .eq('id', userId);
+      loadUsers();
+    } catch (error) {
+      console.error('Error clearing update flag:', error);
+    }
+  };
+
   const getStatus = (roles: { role: string }[]) => {
     if (roles.some(r => r.role === 'admin')) return 'admin';
     if (roles.some(r => r.role === 'user')) return 'approved';
@@ -242,7 +290,14 @@ const Admin = () => {
                     <TableBody>
                       {pendingUsers.map(user => (
                         <TableRow key={user.id}>
-                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {user.has_pending_update && (
+                                <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" title="User made updates" />
+                              )}
+                              {user.name}
+                            </div>
+                          </TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
                             <Badge variant="secondary" className="capitalize">
@@ -263,11 +318,28 @@ const Admin = () => {
                             </Button>
                             <Button
                               size="sm"
+                              variant="outline"
+                              onClick={() => setEditSuggestionUser(user)}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Suggest Edit
+                            </Button>
+                            <Button
+                              size="sm"
                               onClick={() => approveUser(user.id)}
                               disabled={actionLoading === user.id}
                             >
                               <UserCheck className="w-4 h-4 mr-1" />
                               Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => denyUser(user.id)}
+                              disabled={actionLoading === user.id}
+                            >
+                              <XCircle className="w-4 h-4 mr-1" />
+                              Deny
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -302,7 +374,18 @@ const Admin = () => {
                       const status = getStatus(user.roles);
                       return (
                         <TableRow key={user.id}>
-                          <TableCell className="font-medium">{user.name}</TableCell>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {user.has_pending_update && (
+                                <span 
+                                  className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse cursor-pointer" 
+                                  title="User made updates - click to clear"
+                                  onClick={() => clearUpdateFlag(user.id)}
+                                />
+                              )}
+                              {user.name}
+                            </div>
+                          </TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
                             <Badge variant="secondary" className="capitalize">
@@ -419,6 +502,20 @@ const Admin = () => {
           userType={previewUser.user_type}
           open={!!previewUser}
           onOpenChange={(open) => !open && setPreviewUser(null)}
+        />
+      )}
+
+      {/* Edit Suggestion Dialog */}
+      {editSuggestionUser && (
+        <AdminEditSuggestion
+          userId={editSuggestionUser.id}
+          userName={editSuggestionUser.name}
+          open={!!editSuggestionUser}
+          onOpenChange={(open) => !open && setEditSuggestionUser(null)}
+          onSent={() => {
+            loadUsers();
+            setEditSuggestionUser(null);
+          }}
         />
       )}
     </div>

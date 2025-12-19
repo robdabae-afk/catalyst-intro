@@ -191,10 +191,15 @@ const Settings = () => {
     
     setSaving(true);
     try {
-      // Update main profile
+      // Update main profile with update tracking
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ name, avatar_url: avatarUrl })
+        .update({ 
+          name, 
+          avatar_url: avatarUrl,
+          has_pending_update: true,
+          last_profile_update_at: new Date().toISOString()
+        })
         .eq('id', userId);
       
       if (profileError) throw profileError;

@@ -437,13 +437,17 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin_edit_message: string | null
+          admin_edit_suggestion: string | null
           avatar_url: string | null
           created_at: string | null
           email: string
           filter_industries: string[] | null
           filter_locations: string[] | null
           filter_stages: string[] | null
+          has_pending_update: boolean | null
           id: string
+          last_profile_update_at: string | null
           name: string
           stripe_account_id: string | null
           stripe_customer_id: string | null
@@ -457,13 +461,17 @@ export type Database = {
           weekly_spotlight_used_at: string | null
         }
         Insert: {
+          admin_edit_message?: string | null
+          admin_edit_suggestion?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
           filter_stages?: string[] | null
+          has_pending_update?: boolean | null
           id: string
+          last_profile_update_at?: string | null
           name: string
           stripe_account_id?: string | null
           stripe_customer_id?: string | null
@@ -477,13 +485,17 @@ export type Database = {
           weekly_spotlight_used_at?: string | null
         }
         Update: {
+          admin_edit_message?: string | null
+          admin_edit_suggestion?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
           filter_stages?: string[] | null
+          has_pending_update?: boolean | null
           id?: string
+          last_profile_update_at?: string | null
           name?: string
           stripe_account_id?: string | null
           stripe_customer_id?: string | null
