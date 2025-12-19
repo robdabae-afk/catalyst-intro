@@ -9,6 +9,7 @@ import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { CaughtUpState } from "@/components/CaughtUpState";
+import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -312,7 +313,15 @@ const Dashboard = () => {
       )}
 
       {/* Main Content - Swipe Interface */}
-      <div className="max-w-md mx-auto px-4 py-8">
+      <div className="max-w-md mx-auto px-4 py-8 space-y-6">
+        {/* Concierge Match Button */}
+        {currentUser && (
+          <ConciergeMatchButton 
+            userId={currentUser.id} 
+            userType={currentUser.user_type} 
+          />
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
