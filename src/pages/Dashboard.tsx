@@ -43,8 +43,8 @@ const Dashboard = () => {
     canSwipe, 
     shouldShowUpgradePrompt, 
     incrementSwipe,
-    FREE_DAILY_SWIPES 
-  } = useDailySwipes(currentUser?.id || null, isPro);
+    baseSwipes 
+  } = useDailySwipes(currentUser?.id || null, isPro, currentUser?.user_type || null);
 
   const {
     currentItem,

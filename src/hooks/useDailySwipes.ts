@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  BASIC_INVESTOR_DAILY_SWIPES,
+  PRO_INVESTOR_DAILY_SWIPES,
+  MAX_REFERRAL_BONUS_SWIPES,
+} from '@/lib/membership-constants';
 
-const FREE_DAILY_SWIPES = 5;
-const MAX_REFERRAL_BONUS = 3;
 const STORAGE_KEY = 'catalyst_daily_swipes';
 
 interface DailySwipeData {
@@ -10,7 +13,11 @@ interface DailySwipeData {
   count: number;
 }
 
-export const useDailySwipes = (userId: string | null, isPro: boolean) => {
+export const useDailySwipes = (
+  userId: string | null, 
+  isPro: boolean,
+  userType: 'founder' | 'investor' | null = 'investor'
+) => {
   const [swipesToday, setSwipesToday] = useState(0);
   const [bonusSwipes, setBonusSwipes] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -19,6 +26,11 @@ export const useDailySwipes = (userId: string | null, isPro: boolean) => {
     const today = new Date();
     return today.toISOString().split('T')[0]; // YYYY-MM-DD
   };
+
+  // Founders have unlimited swipes, investors have tiered limits
+  const baseSwipes = userType === 'founder' 
+    ? Infinity 
+    : (isPro ? PRO_INVESTOR_DAILY_SWIPES : BASIC_INVESTOR_DAILY_SWIPES);
 
   // Load swipe count and bonus swipes on mount
   useEffect(() => {
@@ -43,15 +55,17 @@ export const useDailySwipes = (userId: string | null, isPro: boolean) => {
         }
       }
 
-      // Fetch bonus swipes from approved referrals (capped at 3)
-      const { count: approvedReferrals } = await supabase
-        .from('referrals')
-        .select('*', { count: 'exact', head: true })
-        .eq('referrer_id', userId)
-        .eq('status', 'approved');
+      // Fetch bonus swipes from approved referrals (capped at 3) - only for investors
+      if (userType === 'investor') {
+        const { count: approvedReferrals } = await supabase
+          .from('referrals')
+          .select('*', { count: 'exact', head: true })
+          .eq('referrer_id', userId)
+          .eq('status', 'approved');
 
-      const calculatedBonus = Math.min(approvedReferrals || 0, MAX_REFERRAL_BONUS);
-      setBonusSwipes(calculatedBonus);
+        const calculatedBonus = Math.min(approvedReferrals || 0, MAX_REFERRAL_BONUS_SWIPES);
+        setBonusSwipes(calculatedBonus);
+      }
 
       // Fetch today's swipe count from database
       const startOfDay = new Date();
@@ -76,7 +90,7 @@ export const useDailySwipes = (userId: string | null, isPro: boolean) => {
     };
 
     loadSwipeData();
-  }, [userId]);
+  }, [userId, userType]);
 
   const incrementSwipe = useCallback(() => {
     if (!userId) return;
@@ -91,11 +105,14 @@ export const useDailySwipes = (userId: string | null, isPro: boolean) => {
     );
   }, [userId, swipesToday]);
 
-  // Total daily limit = base swipes + bonus (capped at 3)
-  const dailyLimit = isPro ? Infinity : FREE_DAILY_SWIPES + bonusSwipes;
-  const remainingSwipes = isPro ? Infinity : Math.max(0, dailyLimit - swipesToday);
-  const canSwipe = isPro || swipesToday < dailyLimit;
-  const shouldShowUpgradePrompt = !isPro && swipesToday >= dailyLimit;
+  // Total daily limit = base swipes + bonus (for basic investors only)
+  const dailyLimit = userType === 'founder' 
+    ? Infinity 
+    : (isPro ? PRO_INVESTOR_DAILY_SWIPES : baseSwipes + bonusSwipes);
+  
+  const remainingSwipes = dailyLimit === Infinity ? Infinity : Math.max(0, dailyLimit - swipesToday);
+  const canSwipe = dailyLimit === Infinity || swipesToday < dailyLimit;
+  const shouldShowUpgradePrompt = userType === 'investor' && !isPro && swipesToday >= dailyLimit;
 
   return {
     swipesToday,
@@ -104,7 +121,7 @@ export const useDailySwipes = (userId: string | null, isPro: boolean) => {
     shouldShowUpgradePrompt,
     incrementSwipe,
     loading,
-    FREE_DAILY_SWIPES,
+    baseSwipes,
     bonusSwipes,
     dailyLimit,
   };
