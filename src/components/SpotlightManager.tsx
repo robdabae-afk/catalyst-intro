@@ -1,37 +1,111 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useSubscription } from '@/hooks/useSubscription';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Sparkles, Loader2, Clock, Megaphone, CheckCircle, AlertCircle } from 'lucide-react';
-import { INDUSTRIES } from '@/lib/constants';
 
 interface SpotlightManagerProps {
   userId: string;
   userType: 'founder' | 'investor';
 }
 
+interface ProfileData {
+  name: string;
+  avatar_url: string | null;
+}
+
+interface FounderProfile {
+  startup_name: string;
+  one_liner: string;
+  industry: string[] | null;
+  banner_url: string | null;
+}
+
+interface InvestorProfile {
+  firm_name: string | null;
+  investment_thesis: string | null;
+  sectors_of_interest: string[] | null;
+  banner_url: string | null;
+}
+
 export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) => {
   const { toast } = useToast();
   const { isPro, canUseSpotlight, loading } = useSubscription(userId);
   const [activating, setActivating] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [spotlightActive, setSpotlightActive] = useState(false);
   const [spotlightExpiresAt, setSpotlightExpiresAt] = useState<Date | null>(null);
+  const [profileData, setProfileData] = useState<{
+    base: ProfileData | null;
+    founder: FounderProfile | null;
+    investor: InvestorProfile | null;
+  }>({ base: null, founder: null, investor: null });
 
-  // Form state for spotlight ad
-  const [spotlightName, setSpotlightName] = useState('');
-  const [spotlightDescription, setSpotlightDescription] = useState('');
-  const [spotlightIndustry, setSpotlightIndustry] = useState<string[]>([]);
-  const [spotlightCtaUrl, setSpotlightCtaUrl] = useState('');
-  const [spotlightCtaText, setSpotlightCtaText] = useState('Learn More');
+  // Load profile data on mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      // Load base profile
+      const { data: baseProfile } = await supabase
+        .from('profiles')
+        .select('name, avatar_url')
+        .eq('id', userId)
+        .single();
+
+      if (userType === 'founder') {
+        const { data: founderProfile } = await supabase
+          .from('founder_profiles')
+          .select('startup_name, one_liner, industry, banner_url')
+          .eq('profile_id', userId)
+          .single();
+        
+        setProfileData({ 
+          base: baseProfile, 
+          founder: founderProfile, 
+          investor: null 
+        });
+      } else {
+        const { data: investorProfile } = await supabase
+          .from('investor_profiles')
+          .select('firm_name, investment_thesis, sectors_of_interest, banner_url')
+          .eq('profile_id', userId)
+          .single();
+        
+        setProfileData({ 
+          base: baseProfile, 
+          founder: null, 
+          investor: investorProfile 
+        });
+      }
+    };
+
+    if (userId) {
+      loadProfile();
+    }
+  }, [userId, userType]);
+
+  // Check for existing active spotlight
+  useEffect(() => {
+    const checkActiveSpotlight = async () => {
+      const { data } = await supabase
+        .from('ad_profiles')
+        .select('spotlight_end_date')
+        .eq('linked_profile_id', userId)
+        .eq('is_active', true)
+        .gt('spotlight_end_date', new Date().toISOString())
+        .single();
+
+      if (data?.spotlight_end_date) {
+        setSpotlightActive(true);
+        setSpotlightExpiresAt(new Date(data.spotlight_end_date));
+      }
+    };
+
+    if (userId) {
+      checkActiveSpotlight();
+    }
+  }, [userId]);
 
   const handleActivateSpotlight = async () => {
     if (!canUseSpotlight) {
@@ -39,15 +113,6 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
         variant: 'destructive',
         title: 'Spotlight unavailable',
         description: 'You have already used your weekly spotlight.',
-      });
-      return;
-    }
-
-    if (!spotlightName.trim()) {
-      toast({
-        variant: 'destructive',
-        title: 'Name required',
-        description: 'Please enter a name for your spotlight.',
       });
       return;
     }
@@ -65,18 +130,34 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
 
       const expiresAt = new Date(spotlightResult.spotlight_expires_at);
 
-      // Create the ad profile
+      // Create the ad profile using existing profile data
       const adType = userType === 'founder' ? 'startup' : 'investment_fund';
       
+      const spotlightName = userType === 'founder' 
+        ? profileData.founder?.startup_name || profileData.base?.name || 'Spotlight'
+        : profileData.investor?.firm_name || profileData.base?.name || 'Spotlight';
+      
+      const spotlightDescription = userType === 'founder'
+        ? profileData.founder?.one_liner || null
+        : profileData.investor?.investment_thesis || null;
+
+      const spotlightIndustry = userType === 'founder'
+        ? profileData.founder?.industry || null
+        : profileData.investor?.sectors_of_interest || null;
+
+      const bannerUrl = userType === 'founder'
+        ? profileData.founder?.banner_url
+        : profileData.investor?.banner_url;
+
       const { error: adError } = await supabase.from('ad_profiles').insert({
         ad_type: adType,
         name: spotlightName,
-        description: spotlightDescription || null,
-        one_liner: spotlightDescription || null,
-        industry: spotlightIndustry.length > 0 ? spotlightIndustry : null,
-        sectors_of_interest: spotlightIndustry.length > 0 ? spotlightIndustry : null,
-        cta_url: spotlightCtaUrl || null,
-        cta_text: spotlightCtaText || 'Learn More',
+        description: spotlightDescription,
+        one_liner: spotlightDescription,
+        industry: spotlightIndustry,
+        sectors_of_interest: spotlightIndustry,
+        image_url: profileData.base?.avatar_url || null,
+        banner_url: bannerUrl || null,
         linked_profile_id: userId,
         created_by: userId,
         is_active: true,
@@ -89,7 +170,6 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
 
       setSpotlightActive(true);
       setSpotlightExpiresAt(expiresAt);
-      setDialogOpen(false);
 
       toast({
         title: 'Spotlight activated!',
@@ -123,6 +203,10 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
     return `${days} days`;
   };
 
+  const displayName = userType === 'founder'
+    ? profileData.founder?.startup_name || profileData.base?.name
+    : profileData.investor?.firm_name || profileData.base?.name;
+
   return (
     <Card className="border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-transparent">
       <CardHeader>
@@ -152,11 +236,19 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
             </span>
           </div>
         ) : canUseSpotlight ? (
-          <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-md">
-            <Sparkles className="w-4 h-4 text-green-500" />
-            <span className="text-sm text-green-700 dark:text-green-400">
-              You have 1 spotlight available this week
-            </span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 p-3 bg-green-500/10 rounded-md">
+              <Sparkles className="w-4 h-4 text-green-500" />
+              <span className="text-sm text-green-700 dark:text-green-400">
+                You have 1 spotlight available this week
+              </span>
+            </div>
+            {displayName && (
+              <div className="p-3 bg-muted/50 rounded-md">
+                <p className="text-xs text-muted-foreground mb-1">Will spotlight as:</p>
+                <p className="text-sm font-medium">{displayName}</p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
@@ -167,111 +259,29 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
           </div>
         )}
 
+        {/* Info about automatic data */}
+        {canUseSpotlight && !spotlightActive && (
+          <div className="flex items-start gap-2 p-3 bg-amber-500/10 rounded-md">
+            <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <span className="text-xs text-amber-700 dark:text-amber-400">
+              Your spotlight will automatically use your profile information. Make sure your profile is up to date!
+            </span>
+          </div>
+        )}
+
         {/* Activate Button */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              disabled={!canUseSpotlight || spotlightActive}
-            >
-              <Megaphone className="w-4 h-4 mr-2" />
-              {spotlightActive ? 'Spotlight Active' : canUseSpotlight ? 'Activate Spotlight' : 'Spotlight Used'}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-purple-500" />
-                Create Your Spotlight
-              </DialogTitle>
-              <DialogDescription>
-                Your profile will appear in the discover feed for 8 hours
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="spotlight-name">Display Name *</Label>
-                <Input
-                  id="spotlight-name"
-                  value={spotlightName}
-                  onChange={(e) => setSpotlightName(e.target.value)}
-                  placeholder={userType === 'founder' ? 'Your startup name' : 'Your name or firm'}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="spotlight-description">Description</Label>
-                <Textarea
-                  id="spotlight-description"
-                  value={spotlightDescription}
-                  onChange={(e) => setSpotlightDescription(e.target.value)}
-                  placeholder="A brief description of what you're looking for"
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Industry/Sector</Label>
-                <Select
-                  value={spotlightIndustry[0] || ''}
-                  onValueChange={(val) => setSpotlightIndustry([val])}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {INDUSTRIES.map((ind) => (
-                      <SelectItem key={ind} value={ind}>
-                        {ind}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="spotlight-cta">CTA Button Text</Label>
-                  <Input
-                    id="spotlight-cta"
-                    value={spotlightCtaText}
-                    onChange={(e) => setSpotlightCtaText(e.target.value)}
-                    placeholder="Learn More"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="spotlight-url">Link URL</Label>
-                  <Input
-                    id="spotlight-url"
-                    value={spotlightCtaUrl}
-                    onChange={(e) => setSpotlightCtaUrl(e.target.value)}
-                    placeholder="https://..."
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 bg-amber-500/10 rounded-md">
-                <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                <span className="text-xs text-amber-700 dark:text-amber-400">
-                  Once activated, your spotlight will run for 8 hours and cannot be paused.
-                </span>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleActivateSpotlight}
-              disabled={activating || !spotlightName.trim()}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-            >
-              {activating ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4 mr-2" />
-              )}
-              Activate 8-Hour Spotlight
-            </Button>
-          </DialogContent>
-        </Dialog>
+        <Button
+          onClick={handleActivateSpotlight}
+          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+          disabled={!canUseSpotlight || spotlightActive || activating}
+        >
+          {activating ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Megaphone className="w-4 h-4 mr-2" />
+          )}
+          {spotlightActive ? 'Spotlight Active' : canUseSpotlight ? 'Activate Spotlight' : 'Spotlight Used'}
+        </Button>
       </CardContent>
     </Card>
   );

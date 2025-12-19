@@ -98,12 +98,12 @@ export const SUBSCRIPTION_PLANS = {
     name: 'Investor Pro',
     price: 10000, // cents
     priceDisplay: '$100/month',
-    stripePriceId: '', // Will be set after Stripe setup
+    stripePriceId: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK', // Propel Investor Pass Basic
   },
   startup_pro: {
     name: 'Startup Pro',
     price: 2499, // cents
     priceDisplay: '$24.99/month',
-    stripePriceId: '', // Will be set after Stripe setup
+    stripePriceId: 'price_1SfuSgInI9cm3k8RNN0RE9YI', // Founding Propeller Pass
   },
 } as const;
