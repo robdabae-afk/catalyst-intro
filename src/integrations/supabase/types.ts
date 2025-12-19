@@ -456,6 +456,51 @@ export type Database = {
         }
         Relationships: []
       }
+      matches: {
+        Row: {
+          created_at: string
+          first_message_at: string | null
+          first_message_sender_id: string | null
+          id: string
+          marked_successful_at: string | null
+          marked_successful_by: string | null
+          status: Database["public"]["Enums"]["match_status"]
+          unmatched_at: string | null
+          unmatched_by: string | null
+          updated_at: string
+          user_1_id: string
+          user_2_id: string
+        }
+        Insert: {
+          created_at?: string
+          first_message_at?: string | null
+          first_message_sender_id?: string | null
+          id?: string
+          marked_successful_at?: string | null
+          marked_successful_by?: string | null
+          status?: Database["public"]["Enums"]["match_status"]
+          unmatched_at?: string | null
+          unmatched_by?: string | null
+          updated_at?: string
+          user_1_id: string
+          user_2_id: string
+        }
+        Update: {
+          created_at?: string
+          first_message_at?: string | null
+          first_message_sender_id?: string | null
+          id?: string
+          marked_successful_at?: string | null
+          marked_successful_by?: string | null
+          status?: Database["public"]["Enums"]["match_status"]
+          unmatched_at?: string | null
+          unmatched_by?: string | null
+          updated_at?: string
+          user_1_id?: string
+          user_2_id?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -511,6 +556,8 @@ export type Database = {
           subscription_status: string | null
           updated_at: string | null
           user_type: Database["public"]["Enums"]["user_type"]
+          weekly_initiations_count: number
+          weekly_initiations_reset_at: string | null
           weekly_spotlight_used_at: string | null
         }
         Insert: {
@@ -540,6 +587,8 @@ export type Database = {
           subscription_status?: string | null
           updated_at?: string | null
           user_type: Database["public"]["Enums"]["user_type"]
+          weekly_initiations_count?: number
+          weekly_initiations_reset_at?: string | null
           weekly_spotlight_used_at?: string | null
         }
         Update: {
@@ -569,6 +618,8 @@ export type Database = {
           subscription_status?: string | null
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"]
+          weekly_initiations_count?: number
+          weekly_initiations_reset_at?: string | null
           weekly_spotlight_used_at?: string | null
         }
         Relationships: []
@@ -865,6 +916,10 @@ export type Database = {
           website_url: string
         }[]
       }
+      get_active_conversation_count: {
+        Args: { user_id: string }
+        Returns: number
+      }
       get_approved_investor_referral_count: {
         Args: { user_id: string }
         Returns: number
@@ -919,6 +974,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      investor_sent_first_message: {
+        Args: { founder_id: string; match_id: string }
+        Returns: boolean
+      }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
@@ -926,6 +985,7 @@ export type Database = {
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
       manual_match_status: "pending" | "paid" | "fulfilled" | "cancelled"
+      match_status: "active" | "unmatched" | "successful_collaboration"
       payment_status: "pending" | "processing" | "completed"
       referral_status: "pending" | "approved" | "rejected"
       spotlight_duration: "1_day" | "1_week" | "1_month"
@@ -1062,6 +1122,7 @@ export const Constants = {
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
       manual_match_status: ["pending", "paid", "fulfilled", "cancelled"],
+      match_status: ["active", "unmatched", "successful_collaboration"],
       payment_status: ["pending", "processing", "completed"],
       referral_status: ["pending", "approved", "rejected"],
       spotlight_duration: ["1_day", "1_week", "1_month"],

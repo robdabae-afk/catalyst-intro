@@ -12,11 +12,19 @@ interface UpgradePromptProps {
   onClose: () => void;
 }
 
-const PRO_BENEFITS = [
-  { icon: Zap, text: 'Unlimited swipes every day' },
+const FOUNDER_PRO_BENEFITS = [
+  { icon: Zap, text: 'Initiate up to 10 chats per week' },
+  { icon: UserCheck, text: 'Unlimited active conversations' },
   { icon: Ban, text: 'No ads in your feed' },
   { icon: Eye, text: 'Weekly spotlight promotion' },
-  { icon: Sparkles, text: 'Priority in discovery queue' },
+];
+
+const INVESTOR_PRO_BENEFITS = [
+  { icon: Zap, text: '10 daily swipes (vs 5 for Basic)' },
+  { icon: UserCheck, text: '10 active chats (vs 2 for Basic)' },
+  { icon: Star, text: '"Successful Collaboration" archiving' },
+  { icon: Ban, text: 'No ads in your feed' },
+  { icon: Eye, text: 'Weekly spotlight promotion' },
 ];
 
 export const UpgradePrompt = ({ userType, remainingSwipes, userId, onClose }: UpgradePromptProps) => {
@@ -64,7 +72,7 @@ export const UpgradePrompt = ({ userType, remainingSwipes, userId, onClose }: Up
           <CardContent className="space-y-4">
             {/* Benefits */}
             <div className="space-y-2 py-2">
-              {PRO_BENEFITS.map((benefit, index) => (
+              {(userType === 'founder' ? FOUNDER_PRO_BENEFITS : INVESTOR_PRO_BENEFITS).map((benefit, index) => (
                 <div key={index} className="flex items-center gap-2 text-sm">
                   <benefit.icon className="w-4 h-4 text-amber-500" />
                   <span>{benefit.text}</span>
