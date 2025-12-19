@@ -408,6 +408,54 @@ export type Database = {
         }
         Relationships: []
       }
+      manual_matches: {
+        Row: {
+          amount_paid: number | null
+          created_at: string
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          id: string
+          matched_user_id: string | null
+          payment_status: Database["public"]["Enums"]["manual_match_status"]
+          payment_timestamp: string | null
+          requester_id: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_type: string
+        }
+        Insert: {
+          amount_paid?: number | null
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          id?: string
+          matched_user_id?: string | null
+          payment_status?: Database["public"]["Enums"]["manual_match_status"]
+          payment_timestamp?: string | null
+          requester_id: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_type: string
+        }
+        Update: {
+          amount_paid?: number | null
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          id?: string
+          matched_user_id?: string | null
+          payment_status?: Database["public"]["Enums"]["manual_match_status"]
+          payment_timestamp?: string | null
+          requester_id?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -877,6 +925,7 @@ export type Database = {
       ad_profile_type: "startup" | "investment_fund" | "external"
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
+      manual_match_status: "pending" | "paid" | "fulfilled" | "cancelled"
       payment_status: "pending" | "processing" | "completed"
       referral_status: "pending" | "approved" | "rejected"
       spotlight_duration: "1_day" | "1_week" | "1_month"
@@ -1012,6 +1061,7 @@ export const Constants = {
       ad_profile_type: ["startup", "investment_fund", "external"],
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
+      manual_match_status: ["pending", "paid", "fulfilled", "cancelled"],
       payment_status: ["pending", "processing", "completed"],
       referral_status: ["pending", "approved", "rejected"],
       spotlight_duration: ["1_day", "1_week", "1_month"],

@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,10 +16,13 @@ import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 
 const FounderOnboarding = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
+  const [referralValid, setReferralValid] = useState<boolean | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -39,6 +42,27 @@ const FounderOnboarding = () => {
     companyState: "",
     companyAddress: ""
   });
+
+  // Validate referral code when it changes
+  useEffect(() => {
+    const validateReferralCode = async () => {
+      if (!referralCode || referralCode.length < 4) {
+        setReferralValid(null);
+        return;
+      }
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('referral_code', referralCode.toUpperCase())
+        .maybeSingle();
+      
+      setReferralValid(!!data);
+    };
+    
+    const timeout = setTimeout(validateReferralCode, 500);
+    return () => clearTimeout(timeout);
+  }, [referralCode]);
 
   const handleIndustryToggle = (industry: string) => {
     setSelectedIndustries(prev => 
@@ -166,10 +190,34 @@ const FounderOnboarding = () => {
           user_type: 'founder',
           name: formData.name,
           email: formData.email,
-          avatar_url: avatarUrl
+          avatar_url: avatarUrl,
+          referred_by: referralValid ? (await supabase
+            .from('profiles')
+            .select('id')
+            .eq('referral_code', referralCode.toUpperCase())
+            .single()).data?.id : null
         } as any);
 
       if (profileError) throw profileError;
+
+      // If referred by someone, create the referral record
+      if (referralValid && referralCode) {
+        const { data: referrer } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('referral_code', referralCode.toUpperCase())
+          .single();
+        
+        if (referrer) {
+          await supabase.from('referrals').insert({
+            referrer_id: referrer.id,
+            referred_user_id: authData.user.id,
+            referral_code: referralCode.toUpperCase(),
+            status: 'pending',
+            referred_user_type: 'founder'
+          } as any);
+        }
+      }
 
       // Create founder profile
       const { error: founderError } = await supabase
@@ -304,6 +352,26 @@ const FounderOnboarding = () => {
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="referralCode">Referral Code (optional)</Label>
+                <div className="relative">
+                  <Input
+                    id="referralCode"
+                    placeholder="Enter referral code if you have one"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                    className={referralValid === true ? 'border-green-500 pr-10' : referralValid === false ? 'border-red-500 pr-10' : ''}
+                  />
+                  {referralValid === true && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-sm">✓ Valid</span>
+                  )}
+                  {referralValid === false && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 text-sm">Invalid</span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">You'll earn bonus swipes when your referrer's invite is approved</p>
               </div>
 
               <div className="space-y-2">
