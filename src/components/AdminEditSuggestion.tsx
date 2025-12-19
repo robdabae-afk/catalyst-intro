@@ -57,9 +57,23 @@ export function AdminEditSuggestion({
 
       if (error) throw error;
 
+      // Send email notification
+      try {
+        await supabase.functions.invoke('send-admin-notification', {
+          body: { 
+            userId, 
+            type: 'edit_suggestion',
+            editSuggestion: suggestion,
+            editMessage: message || undefined
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending notification email:', emailError);
+      }
+
       toast({
         title: "Suggestion sent",
-        description: `Edit suggestion sent to ${userName}. They will see it when they log in.`,
+        description: `Edit suggestion sent to ${userName}. They will receive an email notification.`,
       });
 
       setSuggestion("");
