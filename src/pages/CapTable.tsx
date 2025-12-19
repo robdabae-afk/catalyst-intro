@@ -5,9 +5,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Calculator } from "lucide-react";
+import { ArrowLeft, Plus, Calculator, Trash2, AlertTriangle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface CapTableEntry {
@@ -16,11 +18,8 @@ interface CapTableEntry {
   equity_percentage: number | null;
   valuation: number | null;
   investment_date: string | null;
-  safe_id: string | null;
-  investor: {
-    name: string;
-    investor_profiles: { firm_name: string } | null;
-  } | null;
+  investor_name: string;
+  firm_name: string | null;
 }
 
 interface DilutionScenario {
@@ -44,7 +43,17 @@ const CapTable = () => {
   const { toast } = useToast();
   const [entries, setEntries] = useState<CapTableEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [founderEquity, setFounderEquity] = useState(100);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    investor_name: "",
+    firm_name: "",
+    investment_amount: "",
+    equity_percentage: "",
+    valuation: "",
+    investment_date: "",
+  });
   const [dilutionScenario, setDilutionScenario] = useState<DilutionScenario>({
     newInvestment: 1000000,
     preMoneyValuation: 10000000,
@@ -55,7 +64,6 @@ const CapTable = () => {
   }, []);
 
   useEffect(() => {
-    // Calculate founder equity based on total investor equity
     const totalInvestorEquity = entries.reduce((sum, entry) => sum + (entry.equity_percentage || 0), 0);
     setFounderEquity(Math.max(0, 100 - totalInvestorEquity));
   }, [entries]);
@@ -68,20 +76,28 @@ const CapTable = () => {
         return;
       }
 
+      setCurrentUserId(user.id);
+
       const { data, error } = await supabase
         .from('cap_table_entries')
-        .select(`
-          *,
-          investor:profiles!cap_table_entries_investor_id_fkey (
-            name,
-            investor_profiles (firm_name)
-          )
-        `)
+        .select('*')
         .eq('founder_id', user.id)
         .order('investment_date', { ascending: false });
 
       if (error) throw error;
-      setEntries(data || []);
+
+      // Map to simplified structure for manual tracking
+      const mappedEntries = (data || []).map(entry => ({
+        id: entry.id,
+        investment_amount: entry.investment_amount,
+        equity_percentage: entry.equity_percentage,
+        valuation: entry.valuation,
+        investment_date: entry.investment_date,
+        investor_name: 'Investor', // Will be stored in a different way for manual tracking
+        firm_name: null,
+      }));
+
+      setEntries(mappedEntries);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -90,6 +106,71 @@ const CapTable = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddEntry = async () => {
+    if (!currentUserId || !formData.investor_name || !formData.investment_amount) {
+      toast({
+        variant: "destructive",
+        title: "Missing required fields",
+        description: "Investor name and investment amount are required"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('cap_table_entries').insert({
+        founder_id: currentUserId,
+        investor_id: currentUserId, // Self-reference for manual tracking
+        investment_amount: parseFloat(formData.investment_amount),
+        equity_percentage: formData.equity_percentage ? parseFloat(formData.equity_percentage) : null,
+        valuation: formData.valuation ? parseFloat(formData.valuation) : null,
+        investment_date: formData.investment_date || null,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Entry Added",
+        description: "Cap table entry has been recorded"
+      });
+
+      setShowAddDialog(false);
+      setFormData({
+        investor_name: "",
+        firm_name: "",
+        investment_amount: "",
+        equity_percentage: "",
+        valuation: "",
+        investment_date: "",
+      });
+      loadCapTable();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error adding entry",
+        description: error.message
+      });
+    }
+  };
+
+  const handleDeleteEntry = async (id: string) => {
+    try {
+      const { error } = await supabase.from('cap_table_entries').delete().eq('id', id);
+      if (error) throw error;
+
+      toast({
+        title: "Entry Removed",
+        description: "The cap table entry has been deleted"
+      });
+      loadCapTable();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error deleting entry",
+        description: error.message
+      });
     }
   };
 
@@ -102,14 +183,13 @@ const CapTable = () => {
     }).format(amount);
   };
 
-  // Calculate ownership breakdown for pie chart
   const getOwnershipData = () => {
     const data = entries
       .filter(entry => entry.equity_percentage && entry.equity_percentage > 0)
       .map(entry => ({
-        name: entry.investor?.name || 'Unknown',
+        name: entry.investor_name,
         value: entry.equity_percentage || 0,
-        firm: entry.investor?.investor_profiles?.firm_name || '',
+        firm: entry.firm_name || '',
       }));
 
     if (founderEquity > 0) {
@@ -119,7 +199,6 @@ const CapTable = () => {
     return data;
   };
 
-  // Calculate dilution scenario
   const calculateDilution = () => {
     const { newInvestment, preMoneyValuation } = dilutionScenario;
     const postMoneyValuation = preMoneyValuation + newInvestment;
@@ -132,7 +211,7 @@ const CapTable = () => {
       dilutionFactor,
       dilutedFounderEquity: founderEquity * dilutionFactor,
       existingInvestorsDiluted: entries.map(entry => ({
-        name: entry.investor?.name || 'Unknown',
+        name: entry.investor_name,
         originalEquity: entry.equity_percentage || 0,
         dilutedEquity: (entry.equity_percentage || 0) * dilutionFactor,
       })),
@@ -141,7 +220,6 @@ const CapTable = () => {
 
   const dilutionResults = calculateDilution();
 
-  // Data for dilution comparison chart
   const getDilutionComparisonData = () => {
     const data = [
       {
@@ -173,11 +251,24 @@ const CapTable = () => {
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <Button onClick={() => navigate('/safe')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create SAFE
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => navigate('/safe')}>
+              Download SAFE Template
+            </Button>
+            <Button onClick={() => setShowAddDialog(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Entry
+            </Button>
+          </div>
         </div>
+
+        {/* Disclaimer */}
+        <Alert className="border-yellow-500/50 bg-yellow-500/10">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-700 dark:text-yellow-400">
+            <strong>Important:</strong> This is a manual tracking tool only. All SAFE agreements must be executed off-platform via email or other legal means. Do not rely on this platform for legal document execution.
+          </AlertDescription>
+        </Alert>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -209,7 +300,6 @@ const CapTable = () => {
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Ownership Breakdown Pie Chart */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle>Ownership Breakdown</CardTitle>
@@ -246,7 +336,6 @@ const CapTable = () => {
             </CardContent>
           </Card>
 
-          {/* Dilution Modeling */}
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -305,7 +394,6 @@ const CapTable = () => {
           </Card>
         </div>
 
-        {/* Dilution Comparison Chart */}
         {entries.length > 0 && (
           <Card className="shadow-lg">
             <CardHeader>
@@ -328,20 +416,20 @@ const CapTable = () => {
           </Card>
         )}
 
-        {/* Cap Table */}
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="text-3xl">Cap Table</CardTitle>
-            <CardDescription>Track your equity and investments</CardDescription>
+            <CardDescription>Manually track your equity and investments</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8">Loading...</div>
             ) : entries.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No investments yet</p>
-                <Button onClick={() => navigate('/safe')}>
-                  Create Your First SAFE
+                <p className="text-muted-foreground mb-4">No entries yet</p>
+                <Button onClick={() => setShowAddDialog(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Your First Entry
                 </Button>
               </div>
             ) : (
@@ -355,19 +443,16 @@ const CapTable = () => {
                     <TableHead className="text-right">Valuation</TableHead>
                     <TableHead className="text-right">Post-Dilution %</TableHead>
                     <TableHead>Date</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {entries.map((entry) => {
                     const postDilutionEquity = (entry.equity_percentage || 0) * dilutionResults.dilutionFactor;
                     return (
-                      <TableRow 
-                        key={entry.id} 
-                        className="cursor-pointer hover:bg-muted/50" 
-                        onClick={() => entry.safe_id && navigate(`/safe/${entry.safe_id}`)}
-                      >
-                        <TableCell className="font-medium">{entry.investor?.name || '-'}</TableCell>
-                        <TableCell>{entry.investor?.investor_profiles?.firm_name || '-'}</TableCell>
+                      <TableRow key={entry.id}>
+                        <TableCell className="font-medium">{entry.investor_name}</TableCell>
+                        <TableCell>{entry.firm_name || '-'}</TableCell>
                         <TableCell className="text-right">{formatCurrency(entry.investment_amount)}</TableCell>
                         <TableCell className="text-right">
                           {entry.equity_percentage ? `${entry.equity_percentage.toFixed(2)}%` : '-'}
@@ -381,6 +466,15 @@ const CapTable = () => {
                         <TableCell>
                           {entry.investment_date ? new Date(entry.investment_date).toLocaleDateString() : '-'}
                         </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteEntry(entry.id)}
+                          >
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
@@ -390,6 +484,83 @@ const CapTable = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Entry Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Cap Table Entry</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="investor_name">Investor Name *</Label>
+              <Input
+                id="investor_name"
+                value={formData.investor_name}
+                onChange={(e) => setFormData({ ...formData, investor_name: e.target.value })}
+                placeholder="e.g., John Smith"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="firm_name">Firm Name</Label>
+              <Input
+                id="firm_name"
+                value={formData.firm_name}
+                onChange={(e) => setFormData({ ...formData, firm_name: e.target.value })}
+                placeholder="e.g., Acme Ventures"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="investment_amount">Investment Amount ($) *</Label>
+              <Input
+                id="investment_amount"
+                type="number"
+                value={formData.investment_amount}
+                onChange={(e) => setFormData({ ...formData, investment_amount: e.target.value })}
+                placeholder="e.g., 50000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="equity_percentage">Equity Percentage (%)</Label>
+              <Input
+                id="equity_percentage"
+                type="number"
+                step="0.01"
+                value={formData.equity_percentage}
+                onChange={(e) => setFormData({ ...formData, equity_percentage: e.target.value })}
+                placeholder="e.g., 5.5"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="valuation">Valuation ($)</Label>
+              <Input
+                id="valuation"
+                type="number"
+                value={formData.valuation}
+                onChange={(e) => setFormData({ ...formData, valuation: e.target.value })}
+                placeholder="e.g., 5000000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="investment_date">Investment Date</Label>
+              <Input
+                id="investment_date"
+                type="date"
+                value={formData.investment_date}
+                onChange={(e) => setFormData({ ...formData, investment_date: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddEntry}>
+              Add Entry
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

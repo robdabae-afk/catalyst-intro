@@ -33,7 +33,6 @@ const INVESTOR_REQUEST_TYPES = [
   { value: 'pitch_deck', label: 'Pitch Deck', icon: FileText },
   { value: 'financials', label: 'Financials', icon: BarChart3 },
   { value: 'cap_table', label: 'Cap Table', icon: Table },
-  { value: 'funding_interest', label: 'Express Funding Interest', icon: DollarSign },
   { value: 'meeting', label: 'Request Meeting', icon: Calendar },
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ] as const;
@@ -43,7 +42,6 @@ const FOUNDER_REQUEST_TYPES = [
   { value: 'proof_of_funds', label: 'Proof of Funds', icon: Wallet },
   { value: 'investment_portfolio', label: 'Investment Portfolio', icon: Briefcase },
   { value: 'term_sheet', label: 'Term Sheet', icon: FileCheck },
-  { value: 'safe_request', label: 'Request SAFE Signature', icon: FileText },
   { value: 'meeting', label: 'Request Meeting', icon: Calendar },
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ] as const;
@@ -76,11 +74,7 @@ export const RequestMenu = ({ targetId, targetName, requesterType = 'investor' }
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Include funding amount in message for funding_interest requests
-      let finalMessage = message.trim() || null;
-      if (selectedType === 'funding_interest' && fundingAmount) {
-        finalMessage = `Funding Amount: $${fundingAmount}${message.trim() ? `\n\n${message.trim()}` : ''}`;
-      }
+      const finalMessage = message.trim() || null;
 
       const { error } = await supabase.from('document_requests').insert({
         requester_id: user.id,
@@ -150,18 +144,6 @@ export const RequestMenu = ({ targetId, targetName, requesterType = 'investor' }
             <p className="text-sm text-muted-foreground">
               Send a {selectedTypeInfo?.label.toLowerCase()} request to {targetName}
             </p>
-            {selectedType === 'funding_interest' && (
-              <div className="space-y-2">
-                <Label htmlFor="funding-amount">Investment Amount ($)</Label>
-                <Input
-                  id="funding-amount"
-                  type="number"
-                  placeholder="e.g., 50000"
-                  value={fundingAmount}
-                  onChange={(e) => setFundingAmount(e.target.value)}
-                />
-              </div>
-            )}
             <Textarea
               placeholder="Add a message (optional)..."
               value={message}
