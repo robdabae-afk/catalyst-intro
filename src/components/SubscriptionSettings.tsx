@@ -14,7 +14,7 @@ interface SubscriptionSettingsProps {
 
 export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsProps) => {
   const { toast } = useToast();
-  const { isPro, plan, status, expiresAt, loading } = useSubscription(userId);
+  const { isPro, plan, status, expiresAt, hasStripeSubscription, loading } = useSubscription(userId);
   const [processing, setProcessing] = useState(false);
 
   const targetPlan = userType === 'founder' ? 'startup_pro' : 'investor_pro';
@@ -158,19 +158,25 @@ export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsP
         {/* Actions */}
         <div className="flex flex-col gap-2">
           {isPro ? (
-            <Button
-              variant="outline"
-              onClick={handleManageBilling}
-              disabled={processing}
-              className="w-full"
-            >
-              {processing ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <ExternalLink className="w-4 h-4 mr-2" />
-              )}
-              Manage Billing
-            </Button>
+            hasStripeSubscription ? (
+              <Button
+                variant="outline"
+                onClick={handleManageBilling}
+                disabled={processing}
+                className="w-full"
+              >
+                {processing ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                )}
+                Manage Billing
+              </Button>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-2">
+                Your subscription was assigned by an administrator. Contact support for billing inquiries.
+              </p>
+            )
           ) : (
             <Button
               onClick={handleSubscribe}
