@@ -11,9 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
-import { BankingSettings } from "@/components/BankingSettings";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
 import { SpotlightManager } from "@/components/SpotlightManager";
@@ -641,8 +640,20 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* Banking Settings */}
-        {userId && <BankingSettings userId={userId} />}
+        {/* Platform Disclaimer */}
+        <Card className="border-yellow-500/50 bg-yellow-500/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
+              <AlertTriangle className="w-5 h-5" />
+              Important Notice
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-yellow-700 dark:text-yellow-400">
+              <strong>This platform does not handle or facilitate the exchange of funds or securities.</strong> All financial transactions, SAFE agreements, and investment transfers must be conducted off-platform through proper legal and financial channels. This platform is for networking, tracking, and template generation purposes only.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Contact Support */}
         <Card>
