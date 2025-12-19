@@ -90,6 +90,19 @@ const Admin = () => {
     }
   };
 
+  const sendNotification = async (userId: string, type: "approved" | "denied" | "edit_suggestion", editSuggestion?: string, editMessage?: string) => {
+    try {
+      const { error } = await supabase.functions.invoke('send-admin-notification', {
+        body: { userId, type, editSuggestion, editMessage }
+      });
+      if (error) {
+        console.error('Error sending notification:', error);
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
   const approveUser = async (userId: string) => {
     setActionLoading(userId);
     try {
@@ -98,6 +111,9 @@ const Admin = () => {
         .insert({ user_id: userId, role: 'user' });
 
       if (error) throw error;
+
+      // Send approval email
+      await sendNotification(userId, 'approved');
 
       toast({
         title: "User approved",
@@ -184,6 +200,9 @@ const Admin = () => {
         .eq('id', userId);
 
       if (error) throw error;
+
+      // Send denial email
+      await sendNotification(userId, 'denied');
 
       toast({
         title: "User denied",
