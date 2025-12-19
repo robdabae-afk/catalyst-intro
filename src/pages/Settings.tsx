@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { BankingSettings } from "@/components/BankingSettings";
 import { SupportChat } from "@/components/SupportChat";
@@ -619,6 +619,27 @@ const Settings = () => {
         {userId && userType && (
           <SpotlightManager userId={userId} userType={userType} />
         )}
+
+        {/* Referral Program */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Gift className="w-5 h-5 text-primary" />
+              Refer & Earn
+            </CardTitle>
+            <CardDescription>Invite friends and unlock rewards</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/referrals')}
+              className="w-full sm:w-auto"
+            >
+              <Gift className="w-4 h-4 mr-2" />
+              View Referral Dashboard
+            </Button>
+          </CardContent>
+        </Card>
 
         {/* Banking Settings */}
         {userId && <BankingSettings userId={userId} />}

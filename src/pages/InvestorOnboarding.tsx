@@ -162,7 +162,7 @@ const InvestorOnboarding = () => {
           name: formData.name,
           email: formData.email,
           avatar_url: avatarUrl
-        });
+        } as any);
 
       if (profileError) throw profileError;
 
