@@ -178,6 +178,59 @@ serve(async (req) => {
         );
       }
 
+      case 'create_spotlight_checkout': {
+        // One-time spotlight purchase for non-Pro users
+        // Get or create Stripe customer
+        let customerId = profile.stripe_customer_id;
+        
+        if (!customerId) {
+          const customer = await stripe.customers.create({
+            email: profile.email,
+            metadata: { supabase_user_id: user.id },
+          });
+          customerId = customer.id;
+          
+          await supabase
+            .from('profiles')
+            .update({ stripe_customer_id: customerId })
+            .eq('id', user.id);
+        }
+
+        // Spotlight price ID - $9.99 one-time
+        const SPOTLIGHT_PRICE_ID = 'price_spotlight_one_time'; // This should be a real Stripe price ID
+        
+        // Create checkout session for one-time spotlight
+        const session = await stripe.checkout.sessions.create({
+          customer: customerId,
+          mode: 'payment', // One-time payment
+          payment_method_types: ['card'],
+          line_items: [{ 
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'Spotlight Boost',
+                description: 'Boost your profile for 8 hours',
+              },
+              unit_amount: 999, // $9.99
+            },
+            quantity: 1 
+          }],
+          success_url: `${req.headers.get('origin')}/dashboard?spotlight=success`,
+          cancel_url: `${req.headers.get('origin')}/dashboard?spotlight=canceled`,
+          metadata: {
+            supabase_user_id: user.id,
+            type: 'spotlight',
+          },
+        });
+
+        console.log('[MANAGE-SUBSCRIPTION] Spotlight checkout created:', session.id);
+
+        return new Response(
+          JSON.stringify({ url: session.url }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       default:
         return new Response(
           JSON.stringify({ error: 'Invalid action' }),
