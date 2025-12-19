@@ -10,6 +10,7 @@ import { AppNavigation } from "@/components/AppNavigation";
 import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { CaughtUpState } from "@/components/CaughtUpState";
 import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
+import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -308,18 +309,27 @@ const Dashboard = () => {
         <UpgradePrompt
           userType={currentUser.user_type}
           remainingSwipes={remainingSwipes}
+          userId={currentUser.id}
           onClose={() => setShowUpgradePrompt(false)}
         />
       )}
 
       {/* Main Content - Swipe Interface */}
-      <div className="max-w-md mx-auto px-4 py-8 space-y-6">
-        {/* Concierge Match Button */}
+      <div className="max-w-md mx-auto px-4 py-8 space-y-4">
+        {/* Spotlight and Concierge Buttons Row */}
         {currentUser && (
-          <ConciergeMatchButton 
-            userId={currentUser.id} 
-            userType={currentUser.user_type} 
-          />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <SpotlightPurchaseButton userId={currentUser.id} variant="compact" />
+            </div>
+            <div className="flex-1">
+              <ConciergeMatchButton 
+                userId={currentUser.id} 
+                userType={currentUser.user_type}
+                showBenefits={false}
+              />
+            </div>
+          </div>
         )}
 
         {loading ? (

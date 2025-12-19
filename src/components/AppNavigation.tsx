@@ -15,6 +15,7 @@ import { useNewMatches } from "@/hooks/useNewMatches";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useUnreadSupportReplies } from "@/hooks/useUnreadSupportReplies";
 import { supabase } from "@/integrations/supabase/client";
+import { GetProButton } from "@/components/GetProButton";
 import { 
   ArrowLeft, 
   Users, 
@@ -213,6 +214,14 @@ export const AppNavigation = ({
                     <DropdownMenuItem onClick={() => navigate('/admin')}>
                       <Shield className="w-4 h-4 mr-2" />
                       Admin
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                {!isPro && userType && (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <GetProButton userType={userType} variant="menu" />
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>
