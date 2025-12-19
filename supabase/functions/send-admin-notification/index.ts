@@ -7,10 +7,14 @@ const corsHeaders = {
 };
 
 interface NotificationRequest {
-  userId: string;
-  type: "approved" | "denied" | "edit_suggestion";
+  userId?: string;
+  type: "approved" | "denied" | "edit_suggestion" | "custom";
   editSuggestion?: string;
   editMessage?: string;
+  // For custom emails
+  recipientIds?: string[];
+  subject?: string;
+  message?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -29,7 +33,76 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const { userId, type, editSuggestion, editMessage }: NotificationRequest = await req.json();
+    const { userId, type, editSuggestion, editMessage, recipientIds, subject, message }: NotificationRequest = await req.json();
+
+    console.log(`Sending ${type} notification`);
+
+    // Handle custom bulk emails
+    if (type === "custom") {
+      if (!recipientIds || recipientIds.length === 0) {
+        throw new Error("No recipients specified for custom email");
+      }
+      if (!subject || !message) {
+        throw new Error("Subject and message are required for custom emails");
+      }
+
+      // Get all recipient emails
+      const { data: profiles, error: profilesError } = await supabaseClient
+        .from("profiles")
+        .select("email, name")
+        .in("id", recipientIds);
+
+      if (profilesError || !profiles) {
+        console.error("Error fetching profiles:", profilesError);
+        throw new Error("Failed to fetch recipient profiles");
+      }
+
+      // Send emails to all recipients
+      const results = await Promise.allSettled(
+        profiles.map(async (profile) => {
+          const htmlContent = `
+            <h1>Hello ${profile.name},</h1>
+            ${message.split('\n').map(p => `<p>${p}</p>`).join('')}
+            <p>Best regards,<br>The Catalyst Intro Team</p>
+          `;
+
+          const emailResponse = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${resendApiKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Catalyst Intro <notifications@catalystintro.com>",
+              to: [profile.email],
+              subject,
+              html: htmlContent,
+            }),
+          });
+
+          const emailResult = await emailResponse.json();
+          if (!emailResponse.ok) {
+            throw new Error(emailResult.message || "Failed to send email");
+          }
+          return emailResult;
+        })
+      );
+
+      const successful = results.filter(r => r.status === 'fulfilled').length;
+      const failed = results.filter(r => r.status === 'rejected').length;
+
+      console.log(`Custom emails sent: ${successful} successful, ${failed} failed`);
+
+      return new Response(JSON.stringify({ success: true, sent: successful, failed }), {
+        status: 200,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Handle individual notification emails (approved, denied, edit_suggestion)
+    if (!userId) {
+      throw new Error("userId is required for notification emails");
+    }
 
     console.log(`Sending ${type} notification to user ${userId}`);
 
@@ -45,39 +118,39 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("User profile not found");
     }
 
-    let subject = "";
+    let emailSubject = "";
     let htmlContent = "";
 
     switch (type) {
       case "approved":
-        subject = "Your Profile Has Been Approved!";
+        emailSubject = "Your Profile Has Been Approved!";
         htmlContent = `
           <h1>Welcome, ${profile.name}!</h1>
           <p>Great news! Your profile has been approved and you now have full access to the platform.</p>
           <p>You can now start exploring, connecting, and making the most of our community.</p>
-          <p>Best regards,<br>The Team</p>
+          <p>Best regards,<br>The Catalyst Intro Team</p>
         `;
         break;
 
       case "denied":
-        subject = "Profile Application Update";
+        emailSubject = "Profile Application Update";
         htmlContent = `
           <h1>Hello ${profile.name},</h1>
           <p>We regret to inform you that your profile application has not been approved at this time.</p>
           <p>If you believe this was a mistake or would like to discuss this further, please reach out to our support team.</p>
-          <p>Best regards,<br>The Team</p>
+          <p>Best regards,<br>The Catalyst Intro Team</p>
         `;
         break;
 
       case "edit_suggestion":
-        subject = "Action Required: Profile Edit Suggestions";
+        emailSubject = "Action Required: Profile Edit Suggestions";
         htmlContent = `
           <h1>Hello ${profile.name},</h1>
           <p>An admin has reviewed your profile and has some suggestions for improvement before approval.</p>
           ${editMessage ? `<p><strong>Admin Message:</strong> ${editMessage}</p>` : ""}
           ${editSuggestion ? `<p><strong>Suggested Edits:</strong> ${editSuggestion}</p>` : ""}
           <p>Please log in to review these suggestions and update your profile accordingly.</p>
-          <p>Best regards,<br>The Team</p>
+          <p>Best regards,<br>The Catalyst Intro Team</p>
         `;
         break;
 
@@ -95,7 +168,7 @@ const handler = async (req: Request): Promise<Response> => {
       body: JSON.stringify({
         from: "Catalyst Intro <notifications@catalystintro.com>",
         to: [profile.email],
-        subject,
+        subject: emailSubject,
         html: htmlContent,
       }),
     });
