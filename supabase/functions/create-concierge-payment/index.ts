@@ -21,9 +21,15 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(
+  // Use anon key for auth, service role for data operations
+  const supabaseAuth = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
+  );
+  
+  const supabaseAdmin = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
   );
 
   try {
@@ -31,18 +37,22 @@ serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
+    const { data } = await supabaseAuth.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Get user type to determine pricing
-    const { data: profile } = await supabaseClient
+    // Get user type to determine pricing (use admin client to bypass RLS)
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .select('user_type')
       .eq('id', user.id)
       .single();
 
+    if (profileError) {
+      logStep("Profile query error", { error: profileError });
+      throw new Error("User profile not found");
+    }
     if (!profile) throw new Error("User profile not found");
     const userType = profile.user_type;
     const priceId = userType === 'founder' ? FOUNDER_PRICE_ID : INVESTOR_PRICE_ID;
@@ -62,7 +72,7 @@ serve(async (req) => {
     logStep("Customer check", { customerId: customerId || "new customer" });
 
     // Create the manual match request in pending state
-    const { data: matchRequest, error: insertError } = await supabaseClient
+    const { data: matchRequest, error: insertError } = await supabaseAdmin
       .from('manual_matches')
       .insert({
         requester_id: user.id,
@@ -100,7 +110,7 @@ serve(async (req) => {
     logStep("Checkout session created", { sessionId: session.id });
 
     // Update the match request with session ID
-    await supabaseClient
+    await supabaseAdmin
       .from('manual_matches')
       .update({ stripe_session_id: session.id })
       .eq('id', matchRequest.id);
