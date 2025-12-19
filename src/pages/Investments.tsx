@@ -4,10 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { TrendingUp, DollarSign, Building2, FileText, CheckCircle, Clock } from "lucide-react";
+import { TrendingUp, DollarSign, Building2, Plus, Trash2, AlertTriangle } from "lucide-react";
 import { AppNavigation } from "@/components/AppNavigation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Investment {
   id: string;
@@ -16,17 +20,9 @@ interface Investment {
   discount_rate: number | null;
   execution_date: string | null;
   status: string;
-  founder_signed_at: string | null;
-  investor_signed_at: string | null;
   created_at: string;
-  founder: {
-    name: string;
-  };
-  founder_profile: {
-    startup_name: string;
-    company_name: string | null;
-    industry: string[] | null;
-  } | null;
+  company_name: string;
+  founder_name: string;
 }
 
 const Investments = () => {
@@ -36,6 +32,16 @@ const Investments = () => {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string | null>(null);
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    company_name: "",
+    founder_name: "",
+    amount: "",
+    valuation_cap: "",
+    discount_rate: "",
+    execution_date: "",
+  });
 
   useEffect(() => {
     loadInvestments();
@@ -48,6 +54,8 @@ const Investments = () => {
         navigate('/');
         return;
       }
+
+      setCurrentUserId(user.id);
 
       // Check if user is an investor
       const { data: profile } = await supabase
@@ -64,35 +72,29 @@ const Investments = () => {
       setUserName(profile.name);
       setUserAvatar(profile.avatar_url);
 
-      // Load SAFEs where user is the investor
+      // Load manually tracked SAFEs
       const { data, error } = await supabase
         .from('safes')
-        .select(`
-          *,
-          founder:profiles!safes_founder_id_fkey(name)
-        `)
+        .select('*')
         .eq('investor_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Load founder profiles separately
-      const investmentsWithProfiles = await Promise.all(
-        (data || []).map(async (safe) => {
-          const { data: founderProfile } = await supabase
-            .from('founder_profiles')
-            .select('startup_name, company_name, industry')
-            .eq('profile_id', safe.founder_id)
-            .single();
-          
-          return {
-            ...safe,
-            founder_profile: founderProfile
-          };
-        })
-      );
+      // Map to simplified investment structure
+      const mappedInvestments = (data || []).map(safe => ({
+        id: safe.id,
+        amount: safe.amount,
+        valuation_cap: safe.valuation_cap,
+        discount_rate: safe.discount_rate,
+        execution_date: safe.execution_date,
+        status: safe.status || 'tracked',
+        created_at: safe.created_at || '',
+        company_name: safe.document_url?.split('Company: ')[1]?.split('\n')[0] || 'Unknown Company',
+        founder_name: safe.document_url?.split('Founder: ')[1]?.split('\n')[0] || 'Unknown Founder',
+      }));
 
-      setInvestments(investmentsWithProfiles);
+      setInvestments(mappedInvestments);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -101,6 +103,73 @@ const Investments = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddInvestment = async () => {
+    if (!currentUserId || !formData.company_name || !formData.amount) {
+      toast({
+        variant: "destructive",
+        title: "Missing required fields",
+        description: "Company name and amount are required"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('safes').insert({
+        investor_id: currentUserId,
+        founder_id: currentUserId, // Self-reference for manual tracking
+        amount: parseFloat(formData.amount),
+        valuation_cap: formData.valuation_cap ? parseFloat(formData.valuation_cap) : null,
+        discount_rate: formData.discount_rate ? parseFloat(formData.discount_rate) : null,
+        execution_date: formData.execution_date || null,
+        status: 'tracked',
+        document_url: `Company: ${formData.company_name}\nFounder: ${formData.founder_name}`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Investment Added",
+        description: "Your investment has been recorded"
+      });
+
+      setShowAddDialog(false);
+      setFormData({
+        company_name: "",
+        founder_name: "",
+        amount: "",
+        valuation_cap: "",
+        discount_rate: "",
+        execution_date: "",
+      });
+      loadInvestments();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error adding investment",
+        description: error.message
+      });
+    }
+  };
+
+  const handleDeleteInvestment = async (id: string) => {
+    try {
+      const { error } = await supabase.from('safes').delete().eq('id', id);
+      if (error) throw error;
+
+      toast({
+        title: "Investment Removed",
+        description: "The investment record has been deleted"
+      });
+      loadInvestments();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error deleting investment",
+        description: error.message
+      });
     }
   };
 
@@ -113,28 +182,7 @@ const Investments = () => {
     }).format(amount);
   };
 
-  const getStatusBadge = (investment: Investment) => {
-    if (investment.founder_signed_at && investment.investor_signed_at) {
-      return <Badge className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" /> Executed</Badge>;
-    }
-    if (investment.status === 'sent' || investment.status === 'pending_signatures') {
-      return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" /> Pending</Badge>;
-    }
-    return <Badge variant="outline">Draft</Badge>;
-  };
-
-  const totalInvested = investments
-    .filter(i => i.founder_signed_at && i.investor_signed_at)
-    .reduce((sum, i) => sum + i.amount, 0);
-
-  const pendingInvestments = investments.filter(
-    i => (i.status === 'sent' || i.status === 'pending_signatures') && 
-         !(i.founder_signed_at && i.investor_signed_at)
-  );
-
-  const executedInvestments = investments.filter(
-    i => i.founder_signed_at && i.investor_signed_at
-  );
+  const totalInvested = investments.reduce((sum, i) => sum + i.amount, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -146,13 +194,27 @@ const Investments = () => {
       />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-            <TrendingUp className="w-8 h-8" />
-            Investment Portfolio
-          </h1>
-          <p className="text-muted-foreground">Track your SAFE investments and portfolio companies</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
+              <TrendingUp className="w-8 h-8" />
+              Investment Portfolio
+            </h1>
+            <p className="text-muted-foreground">Manually track your SAFE investments</p>
+          </div>
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Investment
+          </Button>
         </div>
+
+        {/* Disclaimer */}
+        <Alert className="mb-6 border-yellow-500/50 bg-yellow-500/10">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-700 dark:text-yellow-400">
+            <strong>Important:</strong> This is a manual tracking tool only. All SAFE agreements must be executed off-platform via email or other legal means. Do not rely on this platform for legal document execution.
+          </AlertDescription>
+        </Alert>
 
         {/* Summary Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -176,85 +238,30 @@ const Investments = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{executedInvestments.length}</p>
+              <p className="text-3xl font-bold">{investments.length}</p>
             </CardContent>
           </Card>
           
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                Pending SAFEs
+                <TrendingUp className="w-4 h-4" />
+                Average Check Size
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{pendingInvestments.length}</p>
+              <p className="text-3xl font-bold">
+                {investments.length > 0 ? formatCurrency(totalInvested / investments.length) : '$0'}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Pending SAFEs requiring action */}
-        {pendingInvestments.length > 0 && (
-          <Card className="shadow-lg mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-yellow-500" />
-                Action Required
-              </CardTitle>
-              <CardDescription>SAFEs waiting for your signature</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Industry</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Valuation Cap</TableHead>
-                    <TableHead>Received</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pendingInvestments.map((investment) => (
-                    <TableRow key={investment.id}>
-                      <TableCell className="font-medium">
-                        {investment.founder_profile?.company_name || 
-                         investment.founder_profile?.startup_name || 
-                         investment.founder.name}
-                      </TableCell>
-                      <TableCell>{investment.founder_profile?.industry || '-'}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(investment.amount)}</TableCell>
-                      <TableCell className="text-right">
-                        {investment.valuation_cap ? formatCurrency(investment.valuation_cap) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(investment.created_at).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell>
-                        <Button 
-                          size="sm"
-                          onClick={() => navigate(`/safe/${investment.id}`)}
-                        >
-                          Review & Sign
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* All Investments */}
+        {/* Investments Table */}
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              All Investments
-            </CardTitle>
-            <CardDescription>Your complete investment history</CardDescription>
+            <CardTitle>All Investments</CardTitle>
+            <CardDescription>Your manually tracked investment history</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -265,12 +272,13 @@ const Investments = () => {
             ) : investments.length === 0 ? (
               <div className="text-center py-12">
                 <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">No investments yet</p>
+                <p className="text-muted-foreground">No investments tracked yet</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Match with founders on the dashboard to start investing
+                  Add your first investment to start tracking your portfolio
                 </p>
-                <Button onClick={() => navigate('/dashboard')} className="mt-4">
-                  Discover Startups
+                <Button onClick={() => setShowAddDialog(true)} className="mt-4">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Investment
                 </Button>
               </div>
             ) : (
@@ -289,17 +297,9 @@ const Investments = () => {
                 </TableHeader>
                 <TableBody>
                   {investments.map((investment) => (
-                    <TableRow 
-                      key={investment.id}
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => navigate(`/safe/${investment.id}`)}
-                    >
-                      <TableCell className="font-medium">
-                        {investment.founder_profile?.company_name || 
-                         investment.founder_profile?.startup_name || 
-                         '-'}
-                      </TableCell>
-                      <TableCell>{investment.founder.name}</TableCell>
+                    <TableRow key={investment.id}>
+                      <TableCell className="font-medium">{investment.company_name}</TableCell>
+                      <TableCell>{investment.founder_name}</TableCell>
                       <TableCell className="text-right">{formatCurrency(investment.amount)}</TableCell>
                       <TableCell className="text-right">
                         {investment.valuation_cap ? formatCurrency(investment.valuation_cap) : '-'}
@@ -312,9 +312,17 @@ const Investments = () => {
                           ? new Date(investment.execution_date).toLocaleDateString()
                           : new Date(investment.created_at).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>{getStatusBadge(investment)}</TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm">View</Button>
+                        <Badge variant="outline">Tracked</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteInvestment(investment.id)}
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -324,6 +332,82 @@ const Investments = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Investment Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Investment</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="company_name">Company Name *</Label>
+              <Input
+                id="company_name"
+                value={formData.company_name}
+                onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
+                placeholder="e.g., Acme Inc."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="founder_name">Founder Name</Label>
+              <Input
+                id="founder_name"
+                value={formData.founder_name}
+                onChange={(e) => setFormData({ ...formData, founder_name: e.target.value })}
+                placeholder="e.g., John Smith"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="amount">Investment Amount ($) *</Label>
+              <Input
+                id="amount"
+                type="number"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                placeholder="e.g., 50000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="valuation_cap">Valuation Cap ($)</Label>
+              <Input
+                id="valuation_cap"
+                type="number"
+                value={formData.valuation_cap}
+                onChange={(e) => setFormData({ ...formData, valuation_cap: e.target.value })}
+                placeholder="e.g., 5000000"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="discount_rate">Discount Rate (%)</Label>
+              <Input
+                id="discount_rate"
+                type="number"
+                value={formData.discount_rate}
+                onChange={(e) => setFormData({ ...formData, discount_rate: e.target.value })}
+                placeholder="e.g., 20"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="execution_date">Investment Date</Label>
+              <Input
+                id="execution_date"
+                type="date"
+                value={formData.execution_date}
+                onChange={(e) => setFormData({ ...formData, execution_date: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddInvestment}>
+              Add Investment
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
