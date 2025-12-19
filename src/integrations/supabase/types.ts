@@ -440,6 +440,7 @@ export type Database = {
           admin_edit_message: string | null
           admin_edit_suggestion: string | null
           avatar_url: string | null
+          bonus_swipes: number
           created_at: string | null
           email: string
           filter_industries: string[] | null
@@ -449,6 +450,10 @@ export type Database = {
           id: string
           last_profile_update_at: string | null
           name: string
+          referral_code: string
+          referred_by: string | null
+          spotlight_active_until: string | null
+          spotlight_credits: number
           stripe_account_id: string | null
           stripe_customer_id: string | null
           stripe_onboarding_completed: boolean | null
@@ -464,6 +469,7 @@ export type Database = {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
           avatar_url?: string | null
+          bonus_swipes?: number
           created_at?: string | null
           email: string
           filter_industries?: string[] | null
@@ -473,6 +479,10 @@ export type Database = {
           id: string
           last_profile_update_at?: string | null
           name: string
+          referral_code: string
+          referred_by?: string | null
+          spotlight_active_until?: string | null
+          spotlight_credits?: number
           stripe_account_id?: string | null
           stripe_customer_id?: string | null
           stripe_onboarding_completed?: boolean | null
@@ -488,6 +498,7 @@ export type Database = {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
           avatar_url?: string | null
+          bonus_swipes?: number
           created_at?: string | null
           email?: string
           filter_industries?: string[] | null
@@ -497,6 +508,10 @@ export type Database = {
           id?: string
           last_profile_update_at?: string | null
           name?: string
+          referral_code?: string
+          referred_by?: string | null
+          spotlight_active_until?: string | null
+          spotlight_credits?: number
           stripe_account_id?: string | null
           stripe_customer_id?: string | null
           stripe_onboarding_completed?: boolean | null
@@ -507,6 +522,39 @@ export type Database = {
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"]
           weekly_spotlight_used_at?: string | null
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          approved_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_user_id: string | null
+          referred_user_type: string | null
+          referrer_id: string
+          status: Database["public"]["Enums"]["referral_status"]
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_user_id?: string | null
+          referred_user_type?: string | null
+          referrer_id: string
+          status?: Database["public"]["Enums"]["referral_status"]
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_user_id?: string | null
+          referred_user_type?: string | null
+          referrer_id?: string
+          status?: Database["public"]["Enums"]["referral_status"]
         }
         Relationships: []
       }
@@ -769,6 +817,10 @@ export type Database = {
           website_url: string
         }[]
       }
+      get_approved_investor_referral_count: {
+        Args: { user_id: string }
+        Returns: number
+      }
       get_founder_profile_with_access: {
         Args: { founder_profile_id: string }
         Returns: {
@@ -807,6 +859,7 @@ export type Database = {
           user_type: string
         }[]
       }
+      get_referral_bonus_swipes: { Args: { user_id: string }; Returns: number }
       has_location_access: {
         Args: { founder_profile_id: string }
         Returns: boolean
@@ -825,6 +878,7 @@ export type Database = {
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
       payment_status: "pending" | "processing" | "completed"
+      referral_status: "pending" | "approved" | "rejected"
       spotlight_duration: "1_day" | "1_week" | "1_month"
       ticket_status: "open" | "closed"
       user_type: "founder" | "investor"
@@ -959,6 +1013,7 @@ export const Constants = {
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
       payment_status: ["pending", "processing", "completed"],
+      referral_status: ["pending", "approved", "rejected"],
       spotlight_duration: ["1_day", "1_week", "1_month"],
       ticket_status: ["open", "closed"],
       user_type: ["founder", "investor"],

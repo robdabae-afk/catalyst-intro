@@ -22,6 +22,7 @@ import PendingApproval from "./pages/PendingApproval";
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
 import FilterPreferences from "./pages/FilterPreferences";
+import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/profile/:id" element={<ProfileView />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/filters" element={<FilterPreferences />} />
+          <Route path="/referrals" element={<ReferralDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

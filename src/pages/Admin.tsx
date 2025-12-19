@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -21,6 +21,7 @@ import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
+import { AdminReferralPanel } from "@/components/AdminReferralPanel";
 
 interface UserWithStatus {
   id: string;
@@ -273,14 +274,18 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-xl">
+          <TabsList className="grid w-full grid-cols-5 max-w-2xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
             </TabsTrigger>
+            <TabsTrigger value="referrals" className="flex items-center gap-2">
+              <Gift className="w-4 h-4" />
+              Referrals
+            </TabsTrigger>
             <TabsTrigger value="ads" className="flex items-center gap-2">
               <Megaphone className="w-4 h-4" />
-              Ad Profiles
+              Ads
             </TabsTrigger>
             <TabsTrigger value="email" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
@@ -291,6 +296,10 @@ const Admin = () => {
               Support
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="referrals">
+            <AdminReferralPanel />
+          </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
             {/* Pending Approvals */}
