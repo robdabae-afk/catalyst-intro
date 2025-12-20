@@ -19,9 +19,11 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [dragDirection, setDragDirection] = useState<'horizontal' | 'vertical' | null>(null);
   // PRO BYPASS: Pro users never have ad lock
   const [adLocked, setAdLocked] = useState(isAd && !isPro);
   const cardRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Reset ad lock when profile changes (Pro users never locked)
   // Non-pro users must wait 5 seconds before swiping ads
@@ -35,9 +37,30 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
     }
   }, [isAd, profile, isPro]);
 
-  const handleDragStart = (clientX: number, clientY: number) => {
+  // Reset drag direction on profile change
+  useEffect(() => {
+    setDragDirection(null);
+    setDragOffset({ x: 0, y: 0 });
+    setDragStart(null);
+    setIsDragging(false);
+  }, [profile]);
+
+  const handleDragStart = (clientX: number, clientY: number, target: EventTarget) => {
     if (adLocked) return;
+    
+    // Check if the touch started inside the scrollable content area
+    const contentElement = contentRef.current;
+    if (contentElement && contentElement.contains(target as Node)) {
+      // Check if content is scrollable
+      const isScrollable = contentElement.scrollHeight > contentElement.clientHeight;
+      if (isScrollable) {
+        // Let the scroll happen naturally, don't start drag
+        return;
+      }
+    }
+    
     setDragStart({ x: clientX, y: clientY });
+    setDragDirection(null);
     setIsDragging(true);
   };
 
@@ -46,11 +69,37 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
     
     const deltaX = clientX - dragStart.x;
     const deltaY = clientY - dragStart.y;
-    setDragOffset({ x: deltaX, y: deltaY });
+    
+    // Determine direction lock on first significant movement (10+ pixels)
+    if (!dragDirection && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+      // Calculate angle - if more than ~15 degrees from horizontal, it's vertical
+      const angle = Math.abs(Math.atan2(deltaY, deltaX) * (180 / Math.PI));
+      const isHorizontal = angle < 30 || angle > 150;
+      setDragDirection(isHorizontal ? 'horizontal' : 'vertical');
+      
+      // If vertical, cancel the drag and let native scroll take over
+      if (!isHorizontal) {
+        setIsDragging(false);
+        setDragStart(null);
+        setDragOffset({ x: 0, y: 0 });
+        return;
+      }
+    }
+    
+    // Only apply horizontal offset if direction is confirmed horizontal
+    if (dragDirection === 'horizontal') {
+      setDragOffset({ x: deltaX, y: 0 });
+    }
   };
 
   const handleDragEnd = () => {
-    if (!dragStart || adLocked) return;
+    if (!dragStart || adLocked || dragDirection !== 'horizontal') {
+      setDragStart(null);
+      setDragOffset({ x: 0, y: 0 });
+      setIsDragging(false);
+      setDragDirection(null);
+      return;
+    }
 
     const threshold = 100;
     if (Math.abs(dragOffset.x) > threshold) {
@@ -60,6 +109,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
     setDragStart(null);
     setDragOffset({ x: 0, y: 0 });
     setIsDragging(false);
+    setDragDirection(null);
   };
 
   const rotation = dragOffset.x / 20;
@@ -86,16 +136,22 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         ref={cardRef}
         className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl overflow-hidden"
         style={{
-          transform: `translateX(${dragOffset.x}px) translateY(${dragOffset.y}px) rotate(${rotation}deg)`,
+          transform: `translateX(${dragOffset.x}px) rotate(${rotation}deg)`,
           opacity,
-          transition: isDragging ? 'none' : 'transform 0.3s ease-out, opacity 0.3s ease-out'
+          transition: isDragging && dragDirection === 'horizontal' ? 'none' : 'transform 0.3s ease-out, opacity 0.3s ease-out',
+          touchAction: 'pan-y' // Allow vertical scrolling, prevent horizontal browser gestures
         }}
-        onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
+        onMouseDown={(e) => handleDragStart(e.clientX, e.clientY, e.target)}
         onMouseMove={(e) => isDragging && handleDragMove(e.clientX, e.clientY)}
         onMouseUp={handleDragEnd}
         onMouseLeave={handleDragEnd}
-        onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
-        onTouchMove={(e) => isDragging && handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+        onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY, e.target)}
+        onTouchMove={(e) => {
+          if (isDragging && dragDirection === 'horizontal') {
+            e.preventDefault(); // Only prevent default for horizontal swipes
+          }
+          handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+        }}
         onTouchEnd={handleDragEnd}
       >
         {/* Ad Badge */}
@@ -162,7 +218,11 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[320px] sm:max-h-[340px]">
+        <CardContent 
+          ref={contentRef}
+          className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[320px] sm:max-h-[340px]"
+          style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
+        >
           {/* Ad Profile Display */}
           {isAdProfile && adProfile && (
             <>
