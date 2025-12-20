@@ -142,7 +142,11 @@ export const WelcomeBillboard = ({ isOpen, onClose, userId, userType }: WelcomeB
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-600/10 border border-amber-500/20">
                   <Handshake className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
                   <div>
-                    <p className="font-medium text-amber-700">Concierge Match</p>
+                    <p className="font-medium text-amber-700">
+                      {userType === 'founder' 
+                        ? 'Concierge Match - Guaranteed Investor Connection'
+                        : 'Concierge Match - Guaranteed Founder Connection'}
+                    </p>
                     <p className="text-sm text-muted-foreground">
                       {userType === 'founder' 
                         ? 'For $25, our team will hand-select and personally introduce you to the perfect investor within 12 hours.'
