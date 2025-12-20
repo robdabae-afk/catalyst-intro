@@ -11,6 +11,7 @@ import { UpgradePrompt } from "@/components/UpgradePrompt";
 import { CaughtUpState } from "@/components/CaughtUpState";
 import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
+import { WelcomeBillboard } from "@/components/WelcomeBillboard";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -21,6 +22,7 @@ interface Profile {
   name: string;
   email: string;
   avatar_url?: string;
+  has_seen_welcome?: boolean;
 }
 
 const Dashboard = () => {
@@ -33,6 +35,7 @@ const Dashboard = () => {
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
@@ -87,6 +90,12 @@ const Dashboard = () => {
       }
 
       setCurrentUser(profile);
+      
+      // Show welcome billboard if user hasn't seen it yet
+      if (!profile.has_seen_welcome) {
+        setShowWelcomeBillboard(true);
+      }
+      
       await loadProfiles(profile);
     };
 
@@ -303,6 +312,16 @@ const Dashboard = () => {
         avatarUrl={currentUser?.avatar_url}
         isPro={isPro}
       />
+
+      {/* Welcome Billboard Modal */}
+      {showWelcomeBillboard && currentUser && (
+        <WelcomeBillboard
+          isOpen={showWelcomeBillboard}
+          onClose={() => setShowWelcomeBillboard(false)}
+          userId={currentUser.id}
+          userType={currentUser.user_type}
+        />
+      )}
 
       {/* Upgrade Prompt Modal */}
       {showUpgradePrompt && currentUser && (
