@@ -13,6 +13,7 @@ import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
 import { WelcomeBillboard } from "@/components/WelcomeBillboard";
 import LegalAcceptanceNotice from "@/components/LegalAcceptanceNotice";
+import { TractionLimitBanner } from "@/components/TractionLimitBanner";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -354,6 +355,9 @@ const Dashboard = () => {
 
       {/* Main Content - Swipe Interface */}
       <div className="max-w-md mx-auto px-4 py-8 space-y-4">
+        {/* Traction Limit Banner for Founders */}
+        {currentUser?.user_type === 'founder' && <TractionLimitBanner />}
+        
         {/* Spotlight and Concierge Buttons Row */}
         {currentUser && (
           <div className="flex gap-2">

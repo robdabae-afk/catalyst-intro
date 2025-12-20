@@ -467,8 +467,16 @@ const FounderOnboarding = () => {
                   id="traction"
                   placeholder="Revenue, users, key milestones..."
                   value={formData.traction}
-                  onChange={(e) => setFormData({ ...formData, traction: e.target.value })}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 250) {
+                      setFormData({ ...formData, traction: e.target.value });
+                    }
+                  }}
+                  maxLength={250}
                 />
+                <p className={`text-xs ${formData.traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
+                  {formData.traction.length}/250 characters
+                </p>
               </div>
 
               <div className="space-y-4">
