@@ -540,6 +540,7 @@ export type Database = {
           filter_locations: string[] | null
           filter_stages: string[] | null
           has_pending_update: boolean | null
+          has_seen_welcome: boolean
           id: string
           last_profile_update_at: string | null
           name: string
@@ -571,6 +572,7 @@ export type Database = {
           filter_locations?: string[] | null
           filter_stages?: string[] | null
           has_pending_update?: boolean | null
+          has_seen_welcome?: boolean
           id: string
           last_profile_update_at?: string | null
           name: string
@@ -602,6 +604,7 @@ export type Database = {
           filter_locations?: string[] | null
           filter_stages?: string[] | null
           has_pending_update?: boolean | null
+          has_seen_welcome?: boolean
           id?: string
           last_profile_update_at?: string | null
           name?: string
