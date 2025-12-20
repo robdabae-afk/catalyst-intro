@@ -153,9 +153,9 @@ export const ConciergeMatchButton = ({
       
       if (error) throw error;
       if (data?.url) {
-        window.open(data.url, '_blank');
-        // Set a timeout to reload after user might return from payment
-        setTimeout(() => loadPendingMatch(), 3000);
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
       }
     } catch (error: any) {
       toast({
