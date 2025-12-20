@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Crown, Sparkles, Ban, Zap, Eye } from 'lucide-react';
-import { SUBSCRIPTION_PLANS } from '@/hooks/useSubscription';
+import { getProPrice } from '@/lib/stripe-constants';
 
 interface GetProButtonProps {
   userType: 'founder' | 'investor';
@@ -28,7 +28,7 @@ const PRO_BENEFITS = [
 export const GetProButton = ({ userType, variant = 'button', className }: GetProButtonProps) => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const plan = userType === 'founder' ? SUBSCRIPTION_PLANS.startup_pro : SUBSCRIPTION_PLANS.investor_pro;
+  const plan = getProPrice(userType);
 
   const handleUpgrade = () => {
     setDialogOpen(false);
@@ -68,7 +68,7 @@ export const GetProButton = ({ userType, variant = 'button', className }: GetPro
               ))}
             </div>
             <div className="text-center py-2 border-t border-b border-border">
-              <span className="text-3xl font-bold">{plan.priceDisplay.split('/')[0]}</span>
+              <span className="text-3xl font-bold">{plan.displayPrice.split('/')[0]}</span>
               <span className="text-muted-foreground">/month</span>
             </div>
             <Button
@@ -114,7 +114,7 @@ export const GetProButton = ({ userType, variant = 'button', className }: GetPro
             ))}
           </div>
           <div className="text-center py-2 border-t border-b border-border">
-            <span className="text-3xl font-bold">{plan.priceDisplay.split('/')[0]}</span>
+            <span className="text-3xl font-bold">{plan.displayPrice.split('/')[0]}</span>
             <span className="text-muted-foreground">/month</span>
           </div>
           <Button

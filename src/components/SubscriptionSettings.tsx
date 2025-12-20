@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useSubscription, SUBSCRIPTION_PLANS } from '@/hooks/useSubscription';
+import { useSubscription } from '@/hooks/useSubscription';
+import { getProPrice } from '@/lib/stripe-constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Crown, Loader2, Check, Sparkles, Ban, ExternalLink } from 'lucide-react';
@@ -18,7 +19,7 @@ export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsP
   const [processing, setProcessing] = useState(false);
 
   const targetPlan = userType === 'founder' ? 'startup_pro' : 'investor_pro';
-  const planDetails = SUBSCRIPTION_PLANS[targetPlan];
+  const planDetails = getProPrice(userType);
 
   const handleSubscribe = async () => {
     setProcessing(true);
@@ -33,7 +34,6 @@ export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsP
         body: {
           action: 'create_checkout',
           plan: targetPlan,
-          priceId: planDetails.stripePriceId,
         },
       });
 
@@ -140,7 +140,7 @@ export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsP
         {/* Pricing */}
         {!isPro && (
           <div className="flex items-baseline gap-1 py-2">
-            <span className="text-3xl font-bold">{planDetails.priceDisplay.split('/')[0]}</span>
+            <span className="text-3xl font-bold">{planDetails.displayPrice.split('/')[0]}</span>
             <span className="text-muted-foreground">/month</span>
           </div>
         )}

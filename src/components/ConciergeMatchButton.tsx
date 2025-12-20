@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { getConciergePrice } from '@/lib/stripe-constants';
 import { Crown, Clock, Sparkles, Loader2, CheckCircle, Check, UserCheck, Zap, Star, ChevronDown } from 'lucide-react';
 
 interface ConciergeMatchButtonProps {
@@ -171,7 +172,8 @@ export const ConciergeMatchButton = ({
     setShowExplanationModal(true);
   };
 
-  const price = userType === 'founder' ? '$50' : '$25';
+  const conciergePrice = getConciergePrice(userType);
+  const price = conciergePrice.displayPrice;
 
   // Explanation modal component
   const ExplanationModal = () => (
