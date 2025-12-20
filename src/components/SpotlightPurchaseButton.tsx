@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { STRIPE_PRICES } from '@/lib/stripe-constants';
 import { Sparkles, Loader2, TrendingUp, Eye, Users } from 'lucide-react';
 
 interface SpotlightPurchaseButtonProps {
@@ -84,6 +85,10 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
                 </div>
               ))}
             </div>
+            <div className="text-center py-2 border-t border-b border-border">
+              <span className="text-2xl font-bold">{STRIPE_PRICES.SPOTLIGHT_BOOST.displayPrice}</span>
+              <span className="text-muted-foreground text-sm"> for 8 hours</span>
+            </div>
             <Button
               onClick={handlePurchase}
               disabled={loading}
@@ -94,7 +99,7 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
               ) : (
                 <Sparkles className="w-4 h-4 mr-2" />
               )}
-              Purchase Spotlight
+              Purchase Spotlight ({STRIPE_PRICES.SPOTLIGHT_BOOST.displayPrice})
             </Button>
           </div>
         </DialogContent>
@@ -132,19 +137,23 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
                 <span>{benefit.text}</span>
               </div>
             ))}
-          </div>
-          <Button
-            onClick={handlePurchase}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-          >
-            {loading ? (
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Sparkles className="w-4 h-4 mr-2" />
-            )}
-            Purchase Spotlight
-          </Button>
+            </div>
+            <div className="text-center py-2 border-t border-b border-border">
+              <span className="text-2xl font-bold">{STRIPE_PRICES.SPOTLIGHT_BOOST.displayPrice}</span>
+              <span className="text-muted-foreground text-sm"> for 8 hours</span>
+            </div>
+            <Button
+              onClick={handlePurchase}
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            >
+              {loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 mr-2" />
+              )}
+              Purchase Spotlight ({STRIPE_PRICES.SPOTLIGHT_BOOST.displayPrice})
+            </Button>
         </div>
       </DialogContent>
     </Dialog>

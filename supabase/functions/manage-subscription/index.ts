@@ -1,13 +1,25 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import Stripe from "https://esm.sh/stripe@18.5.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Centralized Stripe Price IDs
+const STRIPE_PRICES = {
+  PRO_FOUNDER: 'price_1SfuSgInI9cm3k8RNN0RE9YI',
+  PRO_INVESTOR: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK',
+  SPOTLIGHT_BOOST: 'price_1SgSAEInI9cm3k8R4m5mVOCS',
+};
+
+const logStep = (step: string, details?: any) => {
+  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+  console.log(`[MANAGE-SUBSCRIPTION] ${step}${detailsStr}`);
+};
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -16,22 +28,19 @@ serve(async (req) => {
     const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
     
     if (!STRIPE_SECRET_KEY) {
-      console.log('Stripe key not configured yet');
+      logStep('Stripe key not configured');
       return new Response(
         JSON.stringify({ error: 'Stripe not configured. Please add STRIPE_SECRET_KEY.' }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Dynamic import Stripe only when key is available
-    const Stripe = (await import("https://esm.sh/stripe@14.21.0")).default;
-    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
+    const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2025-08-27.basil' });
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get auth user
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(
@@ -50,9 +59,9 @@ serve(async (req) => {
       );
     }
 
-    const { action, plan, priceId } = await req.json();
+    const { action, plan } = await req.json();
+    logStep('Request received', { action, plan, userId: user.id });
 
-    // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('email, stripe_customer_id, user_type')
@@ -66,18 +75,21 @@ serve(async (req) => {
       );
     }
 
+    logStep('Profile loaded', { userType: profile.user_type, hasStripeCustomer: !!profile.stripe_customer_id });
+
     switch (action) {
       case 'create_checkout': {
-        // Validate plan matches user type
-        if (profile.user_type === 'founder' && plan !== 'startup_pro') {
+        // Determine the correct price based on user type
+        const priceId = profile.user_type === 'founder' 
+          ? STRIPE_PRICES.PRO_FOUNDER 
+          : STRIPE_PRICES.PRO_INVESTOR;
+        
+        const expectedPlan = profile.user_type === 'founder' ? 'startup_pro' : 'investor_pro';
+        
+        if (plan && plan !== expectedPlan) {
+          logStep('Plan mismatch', { expected: expectedPlan, received: plan });
           return new Response(
-            JSON.stringify({ error: 'Invalid plan for founders' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-        if (profile.user_type === 'investor' && plan !== 'investor_pro') {
-          return new Response(
-            JSON.stringify({ error: 'Invalid plan for investors' }),
+            JSON.stringify({ error: `Invalid plan for ${profile.user_type}s` }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -96,9 +108,10 @@ serve(async (req) => {
             .from('profiles')
             .update({ stripe_customer_id: customerId })
             .eq('id', user.id);
+          
+          logStep('Created Stripe customer', { customerId });
         }
 
-        // Create checkout session
         const session = await stripe.checkout.sessions.create({
           customer: customerId,
           mode: 'subscription',
@@ -108,9 +121,11 @@ serve(async (req) => {
           cancel_url: `${req.headers.get('origin')}/settings?subscription=canceled`,
           metadata: {
             supabase_user_id: user.id,
-            plan: plan,
+            plan: expectedPlan,
           },
         });
+
+        logStep('Checkout session created', { sessionId: session.id, priceId });
 
         return new Response(
           JSON.stringify({ url: session.url }),
@@ -131,6 +146,8 @@ serve(async (req) => {
           return_url: `${req.headers.get('origin')}/settings`,
         });
 
+        logStep('Portal session created', { sessionId: portalSession.id });
+
         return new Response(
           JSON.stringify({ url: portalSession.url }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -138,7 +155,6 @@ serve(async (req) => {
       }
 
       case 'use_spotlight': {
-        // Check if user has active subscription
         const { data: subProfile } = await supabase
           .from('profiles')
           .select('subscription_status, subscription_expires_at, weekly_spotlight_used_at')
@@ -152,7 +168,6 @@ serve(async (req) => {
           );
         }
 
-        // Check weekly limit
         const now = new Date();
         const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         const spotlightUsedAt = subProfile.weekly_spotlight_used_at 
@@ -166,11 +181,12 @@ serve(async (req) => {
           );
         }
 
-        // Mark spotlight as used and create ad profile
         await supabase
           .from('profiles')
           .update({ weekly_spotlight_used_at: now.toISOString() })
           .eq('id', user.id);
+
+        logStep('Spotlight used', { userId: user.id });
 
         return new Response(
           JSON.stringify({ success: true, spotlight_expires_at: new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString() }),
@@ -179,7 +195,6 @@ serve(async (req) => {
       }
 
       case 'create_spotlight_checkout': {
-        // One-time spotlight purchase for non-Pro users
         // Get or create Stripe customer
         let customerId = profile.stripe_customer_id;
         
@@ -194,27 +209,15 @@ serve(async (req) => {
             .from('profiles')
             .update({ stripe_customer_id: customerId })
             .eq('id', user.id);
+          
+          logStep('Created Stripe customer for spotlight', { customerId });
         }
 
-        // Spotlight price ID - $9.99 one-time
-        const SPOTLIGHT_PRICE_ID = 'price_spotlight_one_time'; // This should be a real Stripe price ID
-        
-        // Create checkout session for one-time spotlight
         const session = await stripe.checkout.sessions.create({
           customer: customerId,
-          mode: 'payment', // One-time payment
+          mode: 'payment',
           payment_method_types: ['card'],
-          line_items: [{ 
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Spotlight Boost',
-                description: 'Boost your profile for 8 hours',
-              },
-              unit_amount: 999, // $9.99
-            },
-            quantity: 1 
-          }],
+          line_items: [{ price: STRIPE_PRICES.SPOTLIGHT_BOOST, quantity: 1 }],
           success_url: `${req.headers.get('origin')}/dashboard?spotlight=success`,
           cancel_url: `${req.headers.get('origin')}/dashboard?spotlight=canceled`,
           metadata: {
@@ -223,7 +226,7 @@ serve(async (req) => {
           },
         });
 
-        console.log('[MANAGE-SUBSCRIPTION] Spotlight checkout created:', session.id);
+        logStep('Spotlight checkout created', { sessionId: session.id });
 
         return new Response(
           JSON.stringify({ url: session.url }),

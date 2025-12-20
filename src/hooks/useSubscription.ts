@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+// Re-export SUBSCRIPTION_PLANS from centralized constants for backward compatibility
+export { SUBSCRIPTION_PLANS } from '@/lib/stripe-constants';
+
 interface SubscriptionData {
   isPro: boolean;
   plan: 'investor_pro' | 'startup_pro' | null;
@@ -91,19 +94,3 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
 
   return subscriptionData;
 };
-
-// Subscription plan details for UI
-export const SUBSCRIPTION_PLANS = {
-  investor_pro: {
-    name: 'Investor Pro',
-    price: 10000, // cents
-    priceDisplay: '$100/month',
-    stripePriceId: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK', // Propel Investor Pass Basic
-  },
-  startup_pro: {
-    name: 'Startup Pro',
-    price: 2499, // cents
-    priceDisplay: '$24.99/month',
-    stripePriceId: 'price_1SfuSgInI9cm3k8RNN0RE9YI', // Founding Propeller Pass
-  },
-} as const;
