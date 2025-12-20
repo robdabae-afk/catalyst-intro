@@ -7,7 +7,7 @@ import { RotateCcw } from "lucide-react";
 import { SwipeCard } from "@/components/SwipeCard";
 import { MatchModal } from "@/components/MatchModal";
 import { AppNavigation } from "@/components/AppNavigation";
-import { UpgradePrompt } from "@/components/UpgradePrompt";
+import { SwipeLimitReachedFlow } from "@/components/SwipeLimitReachedFlow";
 import { CaughtUpState } from "@/components/CaughtUpState";
 import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
@@ -323,12 +323,12 @@ const Dashboard = () => {
         />
       )}
 
-      {/* Upgrade Prompt Modal */}
+      {/* Swipe Limit Reached Flow - Shows ad for 10s then Pro/Concierge options */}
       {showUpgradePrompt && currentUser && (
-        <UpgradePrompt
-          userType={currentUser.user_type}
-          remainingSwipes={remainingSwipes}
+        <SwipeLimitReachedFlow
+          adProfile={adProfiles.length > 0 ? adProfiles[0] : null}
           userId={currentUser.id}
+          userType={currentUser.user_type}
           onClose={() => setShowUpgradePrompt(false)}
         />
       )}

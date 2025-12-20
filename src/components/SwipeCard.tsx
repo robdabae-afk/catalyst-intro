@@ -24,10 +24,11 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Reset ad lock when profile changes (Pro users never locked)
+  // Non-pro users must wait 5 seconds before swiping ads
   useEffect(() => {
     if (isAd && !isPro) {
       setAdLocked(true);
-      const timer = setTimeout(() => setAdLocked(false), 3000);
+      const timer = setTimeout(() => setAdLocked(false), 5000);
       return () => clearTimeout(timer);
     } else {
       setAdLocked(false);
