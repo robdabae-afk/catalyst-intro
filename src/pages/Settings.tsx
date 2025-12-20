@@ -447,10 +447,19 @@ const Settings = () => {
                 <Textarea 
                   id="traction" 
                   value={traction} 
-                  onChange={(e) => setTraction(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 250) {
+                      setTraction(e.target.value);
+                    }
+                  }}
                   placeholder="Key metrics, users, revenue, etc."
                   rows={2}
+                  maxLength={250}
+                  className={traction.length > 250 ? "border-destructive" : ""}
                 />
+                <p className={`text-xs ${traction.length > 250 ? "text-destructive" : traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
+                  {traction.length}/250 characters
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="preferredCity">Preferred City</Label>
