@@ -25,6 +25,7 @@ interface Profile {
   avatar_url?: string;
   has_seen_welcome?: boolean;
   legal_accepted_at?: string | null;
+  legal_acknowledged?: boolean;
 }
 
 const Dashboard = () => {
@@ -99,9 +100,9 @@ const Dashboard = () => {
         setShowWelcomeBillboard(true);
       }
       
-      // Show legal notice for existing approved users who haven't accepted terms
+      // Show legal notice for existing approved users who haven't acknowledged terms
       // (they signed up before the terms checkbox was added)
-      if (!profile.legal_accepted_at && profile.has_seen_welcome) {
+      if (!profile.legal_accepted_at && !profile.legal_acknowledged && profile.has_seen_welcome) {
         setShowLegalNotice(true);
       }
       
@@ -333,10 +334,13 @@ const Dashboard = () => {
       )}
 
       {/* Legal Acceptance Notice for existing approved users */}
-      <LegalAcceptanceNotice
-        open={showLegalNotice}
-        onAcknowledge={() => setShowLegalNotice(false)}
-      />
+      {currentUser && (
+        <LegalAcceptanceNotice
+          open={showLegalNotice}
+          onAcknowledge={() => setShowLegalNotice(false)}
+          userId={currentUser.id}
+        />
+      )}
 
       {/* Swipe Limit Reached Flow - Shows ad for 10s then Pro/Concierge options */}
       {showUpgradePrompt && currentUser && (

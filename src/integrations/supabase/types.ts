@@ -545,6 +545,8 @@ export type Database = {
           last_profile_update_at: string | null
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
+          legal_acknowledged: boolean | null
+          match_banner_dismissed: boolean | null
           name: string
           referral_code: string
           referred_by: string | null
@@ -579,6 +581,8 @@ export type Database = {
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
+          legal_acknowledged?: boolean | null
+          match_banner_dismissed?: boolean | null
           name: string
           referral_code: string
           referred_by?: string | null
@@ -613,6 +617,8 @@ export type Database = {
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
+          legal_acknowledged?: boolean | null
+          match_banner_dismissed?: boolean | null
           name?: string
           referral_code?: string
           referred_by?: string | null

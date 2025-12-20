@@ -2,15 +2,20 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Shield, Mail } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LegalAcceptanceNoticeProps {
   open: boolean;
   onAcknowledge: () => void;
+  userId: string;
 }
 
-const LegalAcceptanceNotice = ({ open, onAcknowledge }: LegalAcceptanceNoticeProps) => {
+const LegalAcceptanceNotice = ({ open, onAcknowledge, userId }: LegalAcceptanceNoticeProps) => {
   const [countdown, setCountdown] = useState(5);
   const [canDismiss, setCanDismiss] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!open) {
@@ -26,6 +31,27 @@ const LegalAcceptanceNotice = ({ open, onAcknowledge }: LegalAcceptanceNoticePro
       setCanDismiss(true);
     }
   }, [countdown, open]);
+
+  const handleAcknowledge = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ legal_acknowledged: true })
+        .eq('id', userId);
+
+      if (error) throw error;
+      onAcknowledge();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Failed to save acknowledgment"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
@@ -64,11 +90,11 @@ const LegalAcceptanceNotice = ({ open, onAcknowledge }: LegalAcceptanceNoticePro
         
         <DialogFooter>
           <Button 
-            onClick={onAcknowledge} 
-            disabled={!canDismiss}
+            onClick={handleAcknowledge} 
+            disabled={!canDismiss || saving}
             className="w-full"
           >
-            {canDismiss ? "I Understand" : `Please read (${countdown}s)`}
+            {saving ? "Saving..." : canDismiss ? "I Understand" : `Please read (${countdown}s)`}
           </Button>
         </DialogFooter>
       </DialogContent>
