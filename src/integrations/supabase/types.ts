@@ -543,6 +543,8 @@ export type Database = {
           has_seen_welcome: boolean
           id: string
           last_profile_update_at: string | null
+          legal_accepted_at: string | null
+          legal_accepted_ip: string | null
           name: string
           referral_code: string
           referred_by: string | null
@@ -575,6 +577,8 @@ export type Database = {
           has_seen_welcome?: boolean
           id: string
           last_profile_update_at?: string | null
+          legal_accepted_at?: string | null
+          legal_accepted_ip?: string | null
           name: string
           referral_code: string
           referred_by?: string | null
@@ -607,6 +611,8 @@ export type Database = {
           has_seen_welcome?: boolean
           id?: string
           last_profile_update_at?: string | null
+          legal_accepted_at?: string | null
+          legal_accepted_ip?: string | null
           name?: string
           referral_code?: string
           referred_by?: string | null

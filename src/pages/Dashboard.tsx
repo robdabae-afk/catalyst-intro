@@ -12,6 +12,7 @@ import { CaughtUpState } from "@/components/CaughtUpState";
 import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
 import { WelcomeBillboard } from "@/components/WelcomeBillboard";
+import LegalAcceptanceNotice from "@/components/LegalAcceptanceNotice";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -23,6 +24,7 @@ interface Profile {
   email: string;
   avatar_url?: string;
   has_seen_welcome?: boolean;
+  legal_accepted_at?: string | null;
 }
 
 const Dashboard = () => {
@@ -36,6 +38,7 @@ const Dashboard = () => {
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
+  const [showLegalNotice, setShowLegalNotice] = useState(false);
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
@@ -94,6 +97,12 @@ const Dashboard = () => {
       // Show welcome billboard if user hasn't seen it yet
       if (!profile.has_seen_welcome) {
         setShowWelcomeBillboard(true);
+      }
+      
+      // Show legal notice for existing approved users who haven't accepted terms
+      // (they signed up before the terms checkbox was added)
+      if (!profile.legal_accepted_at && profile.has_seen_welcome) {
+        setShowLegalNotice(true);
       }
       
       await loadProfiles(profile);
@@ -322,6 +331,12 @@ const Dashboard = () => {
           userType={currentUser.user_type}
         />
       )}
+
+      {/* Legal Acceptance Notice for existing approved users */}
+      <LegalAcceptanceNotice
+        open={showLegalNotice}
+        onAcknowledge={() => setShowLegalNotice(false)}
+      />
 
       {/* Swipe Limit Reached Flow - Shows ad for 10s then Pro/Concierge options */}
       {showUpgradePrompt && currentUser && (
