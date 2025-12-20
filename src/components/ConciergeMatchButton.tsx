@@ -40,23 +40,37 @@ export const ConciergeMatchButton = ({
   const [dismissed, setDismissed] = useState(false);
   const [benefitsVisible, setBenefitsVisible] = useState(showBenefitsProp);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
+  const [loadingDismissState, setLoadingDismissState] = useState(true);
 
   const loadPendingMatch = useCallback(async () => {
-    const { data } = await supabase
-      .from('manual_matches')
-      .select('*')
-      .eq('requester_id', userId)
-      .in('payment_status', ['paid', 'pending'])
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    // Load both the match and the dismiss state from the profile
+    const [matchResult, profileResult] = await Promise.all([
+      supabase
+        .from('manual_matches')
+        .select('*')
+        .eq('requester_id', userId)
+        .in('payment_status', ['paid', 'pending'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from('profiles')
+        .select('match_banner_dismissed')
+        .eq('id', userId)
+        .single()
+    ]);
 
-    if (data) {
-      setPendingMatch(data);
+    if (profileResult.data) {
+      setDismissed(profileResult.data.match_banner_dismissed || false);
+    }
+    setLoadingDismissState(false);
+
+    if (matchResult.data) {
+      setPendingMatch(matchResult.data);
       
       // If there's a pending match with stripe session, verify payment
-      if (data.payment_status === 'pending' && data.stripe_session_id) {
-        verifyPayment(data.id);
+      if (matchResult.data.payment_status === 'pending' && matchResult.data.stripe_session_id) {
+        verifyPayment(matchResult.data.id);
       }
     }
   }, [userId]);
@@ -219,9 +233,22 @@ export const ConciergeMatchButton = ({
     </Dialog>
   );
 
+  const handleDismissBanner = async () => {
+    try {
+      await supabase
+        .from('profiles')
+        .update({ match_banner_dismissed: true })
+        .eq('id', userId);
+      setDismissed(true);
+    } catch (error) {
+      console.error('Failed to dismiss banner:', error);
+      setDismissed(true); // Still dismiss locally on error
+    }
+  };
+
   // If user has a paid pending match, show the waiting state (dismissable)
   if (pendingMatch?.payment_status === 'paid') {
-    if (dismissed) return null;
+    if (dismissed || loadingDismissState) return null;
     
     return (
       <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent relative">
@@ -233,7 +260,7 @@ export const ConciergeMatchButton = ({
             <Checkbox 
               id="dismiss-match"
               checked={dismissed}
-              onCheckedChange={() => setDismissed(true)}
+              onCheckedChange={handleDismissBanner}
             />
           </div>
         </div>
