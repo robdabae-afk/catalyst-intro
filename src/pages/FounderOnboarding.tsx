@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, User, ImagePlus } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
-
+import LegalDisclaimer from "@/components/LegalDisclaimer";
 const FounderOnboarding = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -29,6 +29,7 @@ const FounderOnboarding = () => {
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
+  const [legalAgreed, setLegalAgreed] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -160,7 +161,26 @@ const FounderOnboarding = () => {
       return;
     }
 
+    if (!legalAgreed) {
+      toast({
+        variant: "destructive",
+        title: "Agreement required",
+        description: "Please agree to the Legal Disclaimer and Terms of Use",
+      });
+      return;
+    }
+
     setLoading(true);
+
+    // Get user's IP address
+    let userIp = 'unknown';
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json');
+      const ipData = await ipResponse.json();
+      userIp = ipData.ip;
+    } catch (error) {
+      console.error('Could not fetch IP:', error);
+    }
 
     try {
       // Sign up user
@@ -182,7 +202,7 @@ const FounderOnboarding = () => {
       const avatarUrl = await uploadAvatar(authData.user.id);
       const bannerUrl = await uploadBanner(authData.user.id);
 
-      // Create profile
+      // Create profile with legal acceptance
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -195,7 +215,9 @@ const FounderOnboarding = () => {
             .from('profiles')
             .select('id')
             .eq('referral_code', referralCode.toUpperCase())
-            .single()).data?.id : null
+            .single()).data?.id : null,
+          legal_accepted_at: new Date().toISOString(),
+          legal_accepted_ip: userIp
         } as any);
 
       if (profileError) throw profileError;
@@ -513,11 +535,13 @@ const FounderOnboarding = () => {
                 />
               </div>
 
+              <LegalDisclaimer agreed={legalAgreed} onAgreeChange={setLegalAgreed} />
+
               <div className="flex gap-4">
                 <Button type="button" variant="outline" onClick={() => navigate('/')} className="flex-1">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading} className="flex-1">
+                <Button type="submit" disabled={loading || !legalAgreed} className="flex-1">
                   {loading ? "Creating..." : "Create Profile"}
                 </Button>
               </div>

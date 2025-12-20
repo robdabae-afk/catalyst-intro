@@ -123,10 +123,19 @@ const handler = async (req: Request): Promise<Response> => {
 
     switch (type) {
       case "approved":
-        emailSubject = "Your Profile Has Been Approved!";
+        emailSubject = "Your Profile Has Been Approved! - Terms & Conditions";
         htmlContent = `
-          <h1>Welcome, ${profile.name}!</h1>
+          <h1>Welcome to Catalyst Intro, ${profile.name}!</h1>
           <p>Great news! Your profile has been approved and you now have full access to the platform.</p>
+          
+          <div style="background-color: #f5f5f5; padding: 20px; margin: 20px 0; border-radius: 8px;">
+            <h2 style="margin-top: 0;">Terms & Conditions</h2>
+            <p><strong>Legal Disclaimer:</strong> Catalyst Intro, to the fullest extent of the law, is not responsible for the outcome of any relationships or interpersonal communications made on the platform. Catalyst Intro executes background checks on users to develop a standard of trust, but this does not eliminate the need for any due diligence on a user's part.</p>
+            <p>Catalyst Intro is a public-facing discovery platform. Represent your company and yourself in the best way possible at all times. Users must be over the age of 18 to use the application.</p>
+          </div>
+          
+          <p><strong>Important:</strong> By continuing to use Catalyst Intro after this approval, you acknowledge and agree to our Terms & Conditions outlined above.</p>
+          
           <p>You can now start exploring, connecting, and making the most of our community.</p>
           <p>Best regards,<br>The Catalyst Intro Team</p>
         `;
