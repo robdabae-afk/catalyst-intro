@@ -16,10 +16,13 @@ import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
 import { SpotlightManager } from "@/components/SpotlightManager";
+import { AdminRevenueAdjustment } from "@/components/AdminRevenueAdjustment";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -707,6 +710,9 @@ const Settings = () => {
             userId={userId} 
           />
         )}
+
+        {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
+        {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
       </main>
     </div>
   );
