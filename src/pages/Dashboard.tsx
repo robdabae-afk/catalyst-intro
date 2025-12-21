@@ -181,48 +181,63 @@ const Dashboard = () => {
         investor_profiles: investorProfiles.filter(ip => ip.profile_id === profile.id)
       }));
 
-      // Apply filter preferences
+      // Apply filter preferences, but fall back to unfiltered if no results
+      let filteredProfiles = mergedProfiles;
+      
       if (filters) {
         const { filter_stages, filter_industries, filter_locations } = filters;
+        const hasActiveFilters = 
+          (filter_stages && filter_stages.length > 0) ||
+          (filter_industries && filter_industries.length > 0) ||
+          (filter_locations && filter_locations.length > 0);
 
-        mergedProfiles = mergedProfiles.filter(profile => {
-          // Get the target profile data
-          const founderProfile = profile.founder_profiles?.[0];
-          const investorProfile = profile.investor_profiles?.[0];
+        if (hasActiveFilters) {
+          filteredProfiles = mergedProfiles.filter(profile => {
+            // Get the target profile data
+            const founderProfile = profile.founder_profiles?.[0];
+            const investorProfile = profile.investor_profiles?.[0];
 
-          // Filter by stages
-          if (filter_stages && filter_stages.length > 0) {
-            const profileStage = founderProfile?.stage || investorProfile?.preferred_stage;
-            if (profileStage && !filter_stages.includes(profileStage)) {
-              return false;
+            // Filter by stages
+            if (filter_stages && filter_stages.length > 0) {
+              const profileStage = founderProfile?.stage || investorProfile?.preferred_stage;
+              if (profileStage && !filter_stages.includes(profileStage)) {
+                return false;
+              }
             }
-          }
 
-          // Filter by industries
-          if (filter_industries && filter_industries.length > 0) {
-            const profileIndustries = founderProfile?.industry || investorProfile?.sectors_of_interest || [];
-            const hasMatchingIndustry = profileIndustries.some((ind: string) => 
-              filter_industries.includes(ind)
-            );
-            if (profileIndustries.length > 0 && !hasMatchingIndustry) {
-              return false;
+            // Filter by industries
+            if (filter_industries && filter_industries.length > 0) {
+              const profileIndustries = founderProfile?.industry || investorProfile?.sectors_of_interest || [];
+              const hasMatchingIndustry = profileIndustries.some((ind: string) => 
+                filter_industries.includes(ind)
+              );
+              if (profileIndustries.length > 0 && !hasMatchingIndustry) {
+                return false;
+              }
             }
-          }
 
-          // Filter by locations
-          if (filter_locations && filter_locations.length > 0) {
-            const profileLocation = founderProfile?.preferred_city || investorProfile?.location || '';
-            const matchesLocation = filter_locations.some(loc => 
-              profileLocation.toLowerCase().includes(loc.toLowerCase())
-            );
-            if (profileLocation && !matchesLocation) {
-              return false;
+            // Filter by locations
+            if (filter_locations && filter_locations.length > 0) {
+              const profileLocation = founderProfile?.preferred_city || investorProfile?.location || '';
+              const matchesLocation = filter_locations.some(loc => 
+                profileLocation.toLowerCase().includes(loc.toLowerCase())
+              );
+              if (profileLocation && !matchesLocation) {
+                return false;
+              }
             }
-          }
 
-          return true;
-        });
+            return true;
+          });
+
+          // Fallback: If filters returned no results, show all profiles
+          if (filteredProfiles.length === 0) {
+            filteredProfiles = mergedProfiles;
+          }
+        }
       }
+      
+      mergedProfiles = filteredProfiles;
 
       // Get user's swipes to filter out already swiped profiles
       const { data: swipesData } = await supabase
