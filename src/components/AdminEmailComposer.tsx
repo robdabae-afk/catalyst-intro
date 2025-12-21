@@ -114,7 +114,51 @@ export const AdminEmailComposer = () => {
   };
 
   const sendEmails = async () => {
-    const recipientIds = getRecipientIds();
+    // For bulk sends, ensure users are loaded first
+    if (recipientType !== "selected" && users.length === 0) {
+      setLoadingUsers(true);
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, name, email, user_type")
+          .order("name");
+
+        if (error) throw error;
+        setUsers(data || []);
+        
+        // Wait for state to update and re-call
+        if (!data || data.length === 0) {
+          toast({
+            variant: "destructive",
+            title: "No users found",
+            description: "There are no users in the system to send emails to.",
+          });
+          setLoadingUsers(false);
+          return;
+        }
+      } catch (error: any) {
+        toast({
+          variant: "destructive",
+          title: "Error loading users",
+          description: error.message,
+        });
+        setLoadingUsers(false);
+        return;
+      }
+      setLoadingUsers(false);
+    }
+
+    // Get recipient IDs based on current users state
+    let recipientIds: string[];
+    if (recipientType === "selected") {
+      recipientIds = selectedUsers;
+    } else if (recipientType === "all") {
+      recipientIds = users.map((u) => u.id);
+    } else if (recipientType === "founders") {
+      recipientIds = users.filter((u) => u.user_type === "founder").map((u) => u.id);
+    } else {
+      recipientIds = users.filter((u) => u.user_type === "investor").map((u) => u.id);
+    }
 
     if (recipientIds.length === 0) {
       toast({
@@ -136,7 +180,7 @@ export const AdminEmailComposer = () => {
 
     setSending(true);
     try {
-      const { error } = await supabase.functions.invoke("send-admin-notification", {
+      const { data, error } = await supabase.functions.invoke("send-admin-notification", {
         body: {
           type: "custom",
           recipientIds,
@@ -145,22 +189,41 @@ export const AdminEmailComposer = () => {
         },
       });
 
+      // Check for invoke error
       if (error) throw error;
 
-      toast({
-        title: "Emails sent",
-        description: `Successfully sent ${recipientIds.length} email(s).`,
-      });
+      // Check for error in response data (500 responses)
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      // Show partial success info if available
+      const sent = data?.sent ?? recipientIds.length;
+      const failed = data?.failed ?? 0;
+
+      if (failed > 0) {
+        toast({
+          variant: "default",
+          title: "Emails partially sent",
+          description: `Sent ${sent} email(s), ${failed} failed.`,
+        });
+      } else {
+        toast({
+          title: "Emails sent",
+          description: `Successfully sent ${sent} email(s).`,
+        });
+      }
 
       // Reset form
       setSubject("");
       setMessage("");
       setSelectedUsers([]);
     } catch (error: any) {
+      console.error("Error sending emails:", error);
       toast({
         variant: "destructive",
         title: "Error sending emails",
-        description: error.message,
+        description: error.message || "An unexpected error occurred",
       });
     } finally {
       setSending(false);
@@ -302,13 +365,18 @@ export const AdminEmailComposer = () => {
 
           <Button
             onClick={sendEmails}
-            disabled={sending || getRecipientCount() === 0}
+            disabled={sending || loadingUsers || getRecipientCount() === 0}
             className="w-full"
           >
             {sending ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
                 Sending...
+              </>
+            ) : loadingUsers ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
+                Loading users...
               </>
             ) : (
               <>
