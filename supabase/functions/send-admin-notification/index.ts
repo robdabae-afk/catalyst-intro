@@ -36,30 +36,46 @@ const handler = async (req: Request): Promise<Response> => {
     const { userId, type, editSuggestion, editMessage, recipientIds, subject, message }: NotificationRequest = await req.json();
 
     console.log(`Sending ${type} notification`);
+    console.log(`Request details - type: ${type}, recipientIds count: ${recipientIds?.length || 0}, userId: ${userId || 'none'}`);
 
     // Handle custom bulk emails
     if (type === "custom") {
+      console.log("Processing custom bulk email request");
+      
       if (!recipientIds || recipientIds.length === 0) {
+        console.error("No recipients specified for custom email");
         throw new Error("No recipients specified for custom email");
       }
       if (!subject || !message) {
+        console.error("Missing subject or message for custom email");
         throw new Error("Subject and message are required for custom emails");
       }
+
+      console.log(`Fetching profiles for ${recipientIds.length} recipients`);
 
       // Get all recipient emails
       const { data: profiles, error: profilesError } = await supabaseClient
         .from("profiles")
-        .select("email, name")
+        .select("id, email, name")
         .in("id", recipientIds);
 
-      if (profilesError || !profiles) {
+      if (profilesError) {
         console.error("Error fetching profiles:", profilesError);
-        throw new Error("Failed to fetch recipient profiles");
+        throw new Error(`Failed to fetch recipient profiles: ${profilesError.message}`);
       }
+      
+      if (!profiles || profiles.length === 0) {
+        console.error("No profiles found for the given recipient IDs");
+        throw new Error("No profiles found for the given recipient IDs");
+      }
+
+      console.log(`Found ${profiles.length} profiles out of ${recipientIds.length} requested`);
 
       // Send emails to all recipients
       const results = await Promise.allSettled(
-        profiles.map(async (profile) => {
+        profiles.map(async (profile, index) => {
+          console.log(`Sending email ${index + 1}/${profiles.length} to ${profile.email}`);
+          
           const htmlContent = `
             <h1>Hello ${profile.name},</h1>
             ${message.split('\n').map(p => `<p>${p}</p>`).join('')}
@@ -81,17 +97,28 @@ const handler = async (req: Request): Promise<Response> => {
           });
 
           const emailResult = await emailResponse.json();
+          
           if (!emailResponse.ok) {
-            throw new Error(emailResult.message || "Failed to send email");
+            console.error(`Failed to send email to ${profile.email}:`, emailResult);
+            throw new Error(emailResult.message || `Failed to send email to ${profile.email}`);
           }
-          return emailResult;
+          
+          console.log(`Successfully sent email to ${profile.email}:`, emailResult.id);
+          return { email: profile.email, result: emailResult };
         })
       );
 
       const successful = results.filter(r => r.status === 'fulfilled').length;
       const failed = results.filter(r => r.status === 'rejected').length;
+      
+      // Log failed emails for debugging
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(`Email ${index + 1} failed:`, result.reason);
+        }
+      });
 
-      console.log(`Custom emails sent: ${successful} successful, ${failed} failed`);
+      console.log(`Custom emails completed: ${successful} successful, ${failed} failed out of ${profiles.length} total`);
 
       return new Response(JSON.stringify({ success: true, sent: successful, failed }), {
         status: 200,
