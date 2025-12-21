@@ -124,6 +124,7 @@ const Dashboard = () => {
           .from('profiles')
           .select('*')
           .eq('user_type', targetType)
+          .eq('is_hidden', false)
           .neq('id', user.id),
         supabase
           .from('profiles')

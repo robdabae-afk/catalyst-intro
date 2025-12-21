@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -37,6 +37,8 @@ interface UserWithStatus {
   weekly_spotlight_used_at: string | null;
   has_pending_update: boolean | null;
   last_profile_update_at: string | null;
+  is_hidden: boolean;
+  hidden_at: string | null;
 }
 
 const Admin = () => {
@@ -65,7 +67,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at')
+        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -233,6 +235,41 @@ const Admin = () => {
       loadUsers();
     } catch (error) {
       console.error('Error clearing update flag:', error);
+    }
+  };
+
+  const toggleHideProfile = async (userId: string, currentlyHidden: boolean) => {
+    setActionLoading(userId);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ 
+          is_hidden: !currentlyHidden,
+          hidden_at: !currentlyHidden ? new Date().toISOString() : null,
+          hidden_by: !currentlyHidden ? user?.id : null
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: currentlyHidden ? "Profile unhidden" : "Profile hidden",
+        description: currentlyHidden 
+          ? "The user will now appear in discovery." 
+          : "The user is now hidden from discovery."
+      });
+
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error updating profile visibility",
+        description: error.message
+      });
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -406,6 +443,7 @@ const Admin = () => {
                       <TableHead>Email</TableHead>
                       <TableHead>Type</TableHead>
                       <TableHead>Status</TableHead>
+                      <TableHead>Visibility</TableHead>
                       <TableHead>Pro</TableHead>
                       <TableHead>Signed Up</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
@@ -442,6 +480,19 @@ const Admin = () => {
                             {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
                               {status}
                             </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {user.is_hidden ? (
+                              <Badge variant="destructive" className="cursor-pointer" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
+                                <EyeOff className="w-3 h-3 mr-1" />
+                                Hidden
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="cursor-pointer" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
+                                <Eye className="w-3 h-3 mr-1" />
+                                Visible
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell>
                             {user.subscription_status === 'active' ? (

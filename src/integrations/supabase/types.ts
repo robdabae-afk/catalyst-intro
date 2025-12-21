@@ -541,7 +541,10 @@ export type Database = {
           filter_stages: string[] | null
           has_pending_update: boolean | null
           has_seen_welcome: boolean
+          hidden_at: string | null
+          hidden_by: string | null
           id: string
+          is_hidden: boolean
           last_profile_update_at: string | null
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
@@ -577,7 +580,10 @@ export type Database = {
           filter_stages?: string[] | null
           has_pending_update?: boolean | null
           has_seen_welcome?: boolean
+          hidden_at?: string | null
+          hidden_by?: string | null
           id: string
+          is_hidden?: boolean
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
@@ -613,7 +619,10 @@ export type Database = {
           filter_stages?: string[] | null
           has_pending_update?: boolean | null
           has_seen_welcome?: boolean
+          hidden_at?: string | null
+          hidden_by?: string | null
           id?: string
+          is_hidden?: boolean
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
