@@ -51,7 +51,7 @@ interface SendProgress {
   failedEmails: string[];
 }
 
-const DELAY_BETWEEN_EMAILS_MS = 15000; // 15 seconds
+const DELAY_BETWEEN_EMAILS_MS = 4000; // 4 seconds
 
 export const AdminEmailComposer = () => {
   const { toast } = useToast();
