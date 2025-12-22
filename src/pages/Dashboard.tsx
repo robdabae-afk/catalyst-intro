@@ -42,6 +42,7 @@ const Dashboard = () => {
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
   const [showLegalNotice, setShowLegalNotice] = useState(false);
+  const [swipeCooldown, setSwipeCooldown] = useState(false);
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
@@ -262,7 +263,7 @@ const Dashboard = () => {
   };
 
   const handleSwipe = async (direction: 'like' | 'pass') => {
-    if (!currentUser || !currentItem) return;
+    if (!currentUser || !currentItem || swipeCooldown) return;
 
     // For ad profiles, just advance the queue without recording or counting
     if (isCurrentItemAd) {
@@ -307,6 +308,10 @@ const Dashboard = () => {
 
       // Advance the queue
       advanceQueue();
+
+      // Start 3-second cooldown before next swipe
+      setSwipeCooldown(true);
+      setTimeout(() => setSwipeCooldown(false), 3000);
 
       // Show upgrade prompt when reaching limit (at 0 remaining)
       if (!isPro && remainingSwipes <= 1) {
