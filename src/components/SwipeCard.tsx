@@ -419,6 +419,17 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                 </div>
               )}
 
+              {/* Investment Thesis */}
+              {investorProfile.investment_thesis && (
+                <div className="bg-muted/50 rounded-md p-2 sm:p-3">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <Briefcase className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
+                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">Thesis</p>
+                  </div>
+                  <p className="text-xs sm:text-sm">{investorProfile.investment_thesis}</p>
+                </div>
+              )}
+
               {/* Location */}
               {investorProfile.location && (
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
