@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import {
   BASIC_INVESTOR_DAILY_SWIPES,
   PRO_INVESTOR_DAILY_SWIPES,
+  BASIC_FOUNDER_DAILY_SWIPES,
+  PRO_FOUNDER_DAILY_SWIPES,
   MAX_REFERRAL_BONUS_SWIPES,
 } from '@/lib/membership-constants';
 
@@ -27,9 +29,9 @@ export const useDailySwipes = (
     return today.toISOString().split('T')[0]; // YYYY-MM-DD
   };
 
-  // Founders have unlimited swipes, investors have tiered limits
+  // Calculate base swipes based on user type and pro status
   const baseSwipes = userType === 'founder' 
-    ? Infinity 
+    ? (isPro ? PRO_FOUNDER_DAILY_SWIPES : BASIC_FOUNDER_DAILY_SWIPES)
     : (isPro ? PRO_INVESTOR_DAILY_SWIPES : BASIC_INVESTOR_DAILY_SWIPES);
 
   // Load swipe count and bonus swipes on mount
@@ -105,14 +107,14 @@ export const useDailySwipes = (
     );
   }, [userId, swipesToday]);
 
-  // Total daily limit = base swipes + bonus (for basic investors only)
+  // Total daily limit = base swipes + bonus (for basic investors only, founders don't get bonus)
   const dailyLimit = userType === 'founder' 
-    ? Infinity 
+    ? baseSwipes 
     : (isPro ? PRO_INVESTOR_DAILY_SWIPES : baseSwipes + bonusSwipes);
   
-  const remainingSwipes = dailyLimit === Infinity ? Infinity : Math.max(0, dailyLimit - swipesToday);
-  const canSwipe = dailyLimit === Infinity || swipesToday < dailyLimit;
-  const shouldShowUpgradePrompt = userType === 'investor' && !isPro && swipesToday >= dailyLimit;
+  const remainingSwipes = Math.max(0, dailyLimit - swipesToday);
+  const canSwipe = swipesToday < dailyLimit;
+  const shouldShowUpgradePrompt = !isPro && swipesToday >= dailyLimit;
 
   return {
     swipesToday,
