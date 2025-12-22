@@ -272,6 +272,36 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback_prompts: {
+        Row: {
+          admin_requested_at: string | null
+          created_at: string
+          id: string
+          last_feedback_at: string | null
+          last_prompt_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_requested_at?: string | null
+          created_at?: string
+          id?: string
+          last_feedback_at?: string | null
+          last_prompt_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_requested_at?: string | null
+          created_at?: string
+          id?: string
+          last_feedback_at?: string | null
+          last_prompt_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       founder_profiles: {
         Row: {
           banner_url: string | null
@@ -830,6 +860,30 @@ export type Database = {
           id?: string
           swiped_id?: string
           swiper_id?: string
+        }
+        Relationships: []
+      }
+      user_feedback: {
+        Row: {
+          created_at: string
+          feedback_text: string | null
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_text?: string | null
+          id?: string
+          rating?: number
+          user_id?: string
         }
         Relationships: []
       }
