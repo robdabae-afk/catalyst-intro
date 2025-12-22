@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,6 +23,7 @@ import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 import { AdminReferralPanel } from "@/components/AdminReferralPanel";
 import { AdminConciergePanel } from "@/components/AdminConciergePanel";
+import { AdminFeedbackPanel } from "@/components/AdminFeedbackPanel";
 
 interface UserWithStatus {
   id: string;
@@ -312,7 +313,7 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 max-w-3xl">
+          <TabsList className="grid w-full grid-cols-7 max-w-4xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
@@ -324,6 +325,10 @@ const Admin = () => {
             <TabsTrigger value="referrals" className="flex items-center gap-2">
               <Gift className="w-4 h-4" />
               Referrals
+            </TabsTrigger>
+            <TabsTrigger value="feedback" className="flex items-center gap-2">
+              <Star className="w-4 h-4" />
+              Feedback
             </TabsTrigger>
             <TabsTrigger value="ads" className="flex items-center gap-2">
               <Megaphone className="w-4 h-4" />
@@ -338,6 +343,10 @@ const Admin = () => {
               Support
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="feedback">
+            <AdminFeedbackPanel />
+          </TabsContent>
 
           <TabsContent value="concierge">
             <AdminConciergePanel />

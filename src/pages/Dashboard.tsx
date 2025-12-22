@@ -12,6 +12,7 @@ import { CaughtUpState } from "@/components/CaughtUpState";
 import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { SpotlightPurchaseButton } from "@/components/SpotlightPurchaseButton";
 import { WelcomeBillboard } from "@/components/WelcomeBillboard";
+import { FeedbackModal } from "@/components/FeedbackModal";
 import LegalAcceptanceNotice from "@/components/LegalAcceptanceNotice";
 import { TractionLimitBanner } from "@/components/TractionLimitBanner";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
@@ -357,6 +358,11 @@ const Dashboard = () => {
           onAcknowledge={() => setShowLegalNotice(false)}
           userId={currentUser.id}
         />
+      )}
+
+      {/* Feedback Modal - shows every 2 days or when admin requests */}
+      {currentUser && !showWelcomeBillboard && !showLegalNotice && (
+        <FeedbackModal userId={currentUser.id} />
       )}
 
       {/* Swipe Limit Reached Flow - Shows ad for 10s then Pro/Concierge options */}
