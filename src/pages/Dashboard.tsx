@@ -43,6 +43,7 @@ const Dashboard = () => {
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
   const [showLegalNotice, setShowLegalNotice] = useState(false);
   const [swipeCooldown, setSwipeCooldown] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
@@ -311,7 +312,18 @@ const Dashboard = () => {
 
       // Start 3-second cooldown before next swipe
       setSwipeCooldown(true);
-      setTimeout(() => setSwipeCooldown(false), 3000);
+      setCooldownSeconds(3);
+      
+      const interval = setInterval(() => {
+        setCooldownSeconds(prev => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            setSwipeCooldown(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
 
       // Show upgrade prompt when reaching limit (at 0 remaining)
       if (!isPro && remainingSwipes <= 1) {
@@ -418,7 +430,16 @@ const Dashboard = () => {
             onExpandFilters={() => navigate('/filters')}
           />
         ) : currentItem ? (
-          <div>
+          <div className="relative">
+            {/* Cooldown Overlay */}
+            {swipeCooldown && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <div className="bg-background/80 backdrop-blur-sm rounded-full w-20 h-20 flex items-center justify-center shadow-lg border border-border animate-scale-in">
+                  <span className="text-3xl font-bold text-primary">{cooldownSeconds}</span>
+                </div>
+              </div>
+            )}
+            
             <div className="mb-4 text-center">
               <p className="text-sm text-muted-foreground">
                 {isCurrentItemAd ? (
