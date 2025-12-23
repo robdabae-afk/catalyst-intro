@@ -20,26 +20,58 @@ const Auth = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(() => {
-    // Check URL hash for recovery mode
+  const isRecoveryUrl = () => {
+    const searchParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    if (hashParams.get('type') === 'recovery' || window.location.hash.includes('recovery=true')) {
-      setIsRecoveryMode(true);
-    }
 
-    // Listen for PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
+    return (
+      searchParams.get("recovery") === "true" ||
+      hashParams.get("type") === "recovery" ||
+      hashParams.get("recovery") === "true" ||
+      window.location.hash.includes("recovery=true")
+    );
+  };
+
+  useEffect(() => {
+    // Determine recovery mode from URL (query + hash)
+    setIsRecoveryMode(isRecoveryUrl());
+
+    // Listen for auth events (must stay synchronous)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
         setIsRecoveryMode(true);
+        return;
       }
-      // If user is already logged in and not in recovery mode, redirect
-      if (event === 'SIGNED_IN' && session && !isRecoveryMode) {
+
+      // Redirect signed-in users (but never during recovery flows)
+      if (event === "SIGNED_IN" && session && !isRecoveryUrl()) {
         navigate("/dashboard");
       }
     });
 
+    // Initialize session / exchange code if needed (no Supabase calls inside callback)
+    (async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        if (!isRecoveryUrl()) navigate("/dashboard");
+        return;
+      }
+
+      const code = new URLSearchParams(window.location.search).get("code");
+      if (code) {
+        // PKCE recovery links include ?code=...
+        await supabase.auth.exchangeCodeForSession(code);
+        setIsRecoveryMode(true);
+      }
+    })();
+
     return () => subscription.unsubscribe();
-  }, [navigate, isRecoveryMode]);
+  }, [navigate]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +106,28 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      // updateUser requires an active recovery session; if missing, try exchanging ?code=... first.
+      let {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        const code = new URLSearchParams(window.location.search).get("code");
+        if (code) {
+          await supabase.auth.exchangeCodeForSession(code);
+          ({ data: { session } } = await supabase.auth.getSession());
+        }
+      }
+
+      if (!session) {
+        toast({
+          title: "Reset link expired",
+          description: "Your password reset session is missing. Please open the newest reset link from your email and try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -96,10 +150,10 @@ const Auth = () => {
       setIsRecoveryMode(false);
       setNewPassword("");
       setConfirmPassword("");
-      
-      // Clear the hash from URL
-      window.history.replaceState(null, '', window.location.pathname);
-      
+
+      // Clear recovery params from URL
+      window.history.replaceState(null, "", window.location.pathname);
+
       navigate("/dashboard");
     } catch (error) {
       toast({
