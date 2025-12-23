@@ -30,7 +30,8 @@ const ForgotPassword = () => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/auth#recovery=true`,
+        // Use query param (not hash) so the recovery token can safely use the URL hash.
+        redirectTo: `${window.location.origin}/auth?recovery=true`,
       });
 
       if (error) {
