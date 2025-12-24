@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { getConciergePrice } from '@/lib/stripe-constants';
-import { Crown, Clock, Sparkles, Loader2, CheckCircle, Check, UserCheck, Zap, Star, ChevronDown } from 'lucide-react';
+import { Crown, Clock, Sparkles, Loader2, CheckCircle, Check, UserCheck, Zap, Star, ChevronDown, Tag } from 'lucide-react';
 
 interface ConciergeMatchButtonProps {
   userId: string;
@@ -42,6 +43,8 @@ export const ConciergeMatchButton = ({
   const [benefitsVisible, setBenefitsVisible] = useState(showBenefitsProp);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [loadingDismissState, setLoadingDismissState] = useState(true);
+  const [discountCode, setDiscountCode] = useState('');
+  const [discountApplied, setDiscountApplied] = useState(false);
 
   const loadPendingMatch = useCallback(async () => {
     // Load both the match and the dismiss state from the profile
@@ -145,11 +148,29 @@ export const ConciergeMatchButton = ({
     return () => clearInterval(interval);
   }, [pendingMatch]);
 
+  const handleApplyDiscount = () => {
+    if (discountCode.toUpperCase() === 'CTLYST') {
+      setDiscountApplied(true);
+      toast({
+        title: "Discount Applied!",
+        description: "$10 off your premium match",
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Invalid Code',
+        description: 'The discount code is not valid',
+      });
+    }
+  };
+
   const handleProceedToPayment = async () => {
     setLoading(true);
     setShowExplanationModal(false);
     try {
-      const { data, error } = await supabase.functions.invoke('create-concierge-payment');
+      const { data, error } = await supabase.functions.invoke('create-concierge-payment', {
+        body: { discountCode: discountApplied ? 'CTLYST' : undefined }
+      });
       
       if (error) throw error;
       if (data?.url) {
@@ -173,7 +194,9 @@ export const ConciergeMatchButton = ({
   };
 
   const conciergePrice = getConciergePrice(userType);
-  const price = conciergePrice.displayPrice;
+  const originalPrice = conciergePrice.displayPrice;
+  const discountedAmount = (conciergePrice.amount - 1000) / 100;
+  const displayPrice = discountApplied ? `$${discountedAmount}` : originalPrice;
 
   // Explanation modal component
   const ExplanationModal = () => (
@@ -203,11 +226,38 @@ export const ConciergeMatchButton = ({
           <div className="bg-muted/50 rounded-lg p-3 space-y-2">
             <h4 className="font-medium text-sm">How it works:</h4>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Complete your purchase ({price})</li>
+              <li>Complete your purchase ({displayPrice})</li>
               <li>Our team reviews your profile and preferences</li>
               <li>Within 8-12 hours, you'll receive a curated match</li>
               <li>Connect with your hand-picked {userType === 'founder' ? 'investor' : 'startup'}</li>
             </ol>
+          </div>
+          <div className="space-y-3 pt-2">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Discount code"
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  disabled={discountApplied}
+                  className="pl-9"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={handleApplyDiscount}
+                disabled={discountApplied || !discountCode}
+              >
+                {discountApplied ? <CheckCircle className="w-4 h-4 text-green-500" /> : 'Apply'}
+              </Button>
+            </div>
+            {discountApplied && (
+              <p className="text-sm text-green-600 flex items-center gap-1">
+                <CheckCircle className="w-3 h-3" />
+                $10 discount applied! New price: {displayPrice}
+              </p>
+            )}
           </div>
           <div className="flex gap-3 pt-2">
             <Button
@@ -227,7 +277,7 @@ export const ConciergeMatchButton = ({
               ) : (
                 <Crown className="w-4 h-4 mr-2" />
               )}
-              Purchase ({price})
+              Purchase ({displayPrice})
             </Button>
           </div>
         </div>
@@ -322,7 +372,7 @@ export const ConciergeMatchButton = ({
               ) : (
                 <Crown className="w-4 h-4 mr-2" />
               )}
-              {verifying ? 'Verifying...' : `Request Premium Match (${price})`}
+              {verifying ? 'Verifying...' : `Request Premium Match (${originalPrice})`}
             </Button>
           </CardContent>
         </Card>
@@ -370,7 +420,7 @@ export const ConciergeMatchButton = ({
           ) : (
             <Crown className="w-4 h-4 mr-2" />
           )}
-          {verifying ? 'Verifying...' : `Request Premium Match (${price})`}
+          {verifying ? 'Verifying...' : `Request Premium Match (${originalPrice})`}
           {!benefitsVisible && showBenefitsProp && (
             <ChevronDown className="w-4 h-4 ml-1" onClick={(e) => { e.stopPropagation(); setBenefitsVisible(true); }} />
           )}

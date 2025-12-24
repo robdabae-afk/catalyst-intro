@@ -11,6 +11,11 @@ const corsHeaders = {
 const FOUNDER_PRICE_ID = "price_1Sg9vvInI9cm3k8RV9hn4TLx";
 const INVESTOR_PRICE_ID = "price_1Sg9w8InI9cm3k8RFUBTzs2Z";
 
+// Discount codes
+const DISCOUNT_CODES: Record<string, string> = {
+  'CTLYST': 'DGjXdW27', // $10 off coupon ID
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CONCIERGE-PAYMENT] ${step}${detailsStr}`);
@@ -34,6 +39,16 @@ serve(async (req) => {
 
   try {
     logStep("Function started");
+
+    // Parse request body for discount code
+    let discountCode: string | undefined;
+    try {
+      const body = await req.json();
+      discountCode = body?.discountCode?.toUpperCase();
+    } catch {
+      // No body or invalid JSON, continue without discount
+    }
+    logStep("Request parsed", { discountCode: discountCode || 'none' });
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
@@ -89,8 +104,14 @@ serve(async (req) => {
     }
     logStep("Match request created", { matchId: matchRequest.id });
 
+    // Check for valid discount code
+    const couponId = discountCode ? DISCOUNT_CODES[discountCode] : undefined;
+    if (discountCode && couponId) {
+      logStep("Applying discount", { code: discountCode, couponId });
+    }
+
     // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
@@ -106,7 +127,14 @@ serve(async (req) => {
         match_request_id: matchRequest.id,
         user_id: user.id,
       },
-    });
+    };
+
+    // Add discount if valid code provided
+    if (couponId) {
+      sessionParams.discounts = [{ coupon: couponId }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
     logStep("Checkout session created", { sessionId: session.id });
 
     // Update the match request with session ID
