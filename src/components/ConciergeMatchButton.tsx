@@ -198,8 +198,8 @@ export const ConciergeMatchButton = ({
   const discountedAmount = (conciergePrice.amount - 1000) / 100;
   const displayPrice = discountApplied ? `$${discountedAmount}` : originalPrice;
 
-  // Explanation modal component
-  const ExplanationModal = () => (
+  // Explanation modal - rendered as JSX, not a component
+  const explanationModal = (
     <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -345,7 +345,7 @@ export const ConciergeMatchButton = ({
   if (variant === 'limit-reached') {
     return (
       <>
-        <ExplanationModal />
+        {explanationModal}
         <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -383,7 +383,7 @@ export const ConciergeMatchButton = ({
   // Default variant with optional collapsible benefits
   return (
     <>
-      <ExplanationModal />
+      {explanationModal}
       <div className="space-y-2">
         {benefitsVisible && showBenefitsProp && (
           <Card className="border-amber-500/20 bg-amber-500/5">
