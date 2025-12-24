@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { ArrowLeft, Download, AlertTriangle, FileText } from "lucide-react";
 
 const SafeGenerator = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [companyName, setCompanyName] = useState("");
@@ -25,8 +26,20 @@ const SafeGenerator = () => {
   });
 
   useEffect(() => {
+    // Pre-fill from query params if coming from document request
+    const investorName = searchParams.get('investor_name');
+    const amount = searchParams.get('amount');
+    
+    if (investorName || amount) {
+      setFormData(prev => ({
+        ...prev,
+        investorName: investorName || prev.investorName,
+        amount: amount || prev.amount,
+      }));
+    }
+    
     loadCompanyInfo();
-  }, []);
+  }, [searchParams]);
 
   const loadCompanyInfo = async () => {
     const { data: { user } } = await supabase.auth.getUser();

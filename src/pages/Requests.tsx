@@ -252,7 +252,7 @@ export default function Requests() {
     return match ? parseInt(match[1]) : null;
   };
 
-  const handleResponse = async (requestId: string, status: 'approved' | 'denied', request?: DocumentRequest) => {
+  const handleResponse = async (requestId: string, status: 'approved' | 'denied' | 'acknowledged', request?: DocumentRequest) => {
     try {
       // If approving a location access request, grant location access
       if (status === 'approved' && request?.request_type === 'location_access' && userId) {
@@ -281,15 +281,18 @@ export default function Requests() {
       } else {
         if (status === 'approved' && request?.request_type === 'location_access') {
           toast({ title: 'Location access granted', description: 'The investor can now view your business address.' });
+        } else if (status === 'acknowledged' && request?.request_type === 'funding_interest') {
+          toast({ 
+            title: 'Interest Acknowledged', 
+            description: 'Redirecting to SAFE template generator...' 
+          });
+          // Redirect to SAFE template generator with pre-filled data
+          const amount = extractFundingAmount(request.message);
+          const investorName = request.requester?.name || '';
+          navigate(`/safe?investor_name=${encodeURIComponent(investorName)}&amount=${amount || ''}`);
+          return;
         } else {
           toast({ title: status === 'approved' ? 'Approved' : 'Denied' });
-        }
-        
-        // If approving a funding interest request, redirect to SAFE creation
-        if (status === 'approved' && request?.request_type === 'funding_interest') {
-          const amount = extractFundingAmount(request.message);
-          navigate(`/safe?investor_id=${request.requester_id}&amount=${amount || ''}`);
-          return;
         }
         
         if (userId) fetchRequests(userId);
@@ -380,9 +383,13 @@ export default function Requests() {
     const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
       pending: 'secondary',
       approved: 'default',
+      acknowledged: 'default',
       denied: 'destructive',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
+    const labels: Record<string, string> = {
+      acknowledged: 'Acknowledged',
+    };
+    return <Badge variant={variants[status] || 'secondary'}>{labels[status] || status}</Badge>;
   };
 
   const requestTypes = userType === 'founder' ? FOUNDER_REQUEST_TYPES : INVESTOR_REQUEST_TYPES;
@@ -537,6 +544,14 @@ export default function Requests() {
                         {new Date(req.created_at).toLocaleDateString()}
                       </p>
                       
+                      {/* SEC Compliance Notice for Funding Interest */}
+                      {req.request_type === 'funding_interest' && req.status === 'pending' && (
+                        <div className="mb-4 p-3 rounded-md bg-yellow-500/10 border border-yellow-500/30 text-sm text-yellow-700 dark:text-yellow-400">
+                          <strong>Note:</strong> Acknowledging this interest does not create a legal agreement. 
+                          You will be able to download a SAFE template to send to the investor off-platform for proper legal execution.
+                        </div>
+                      )}
+                      
                       {req.status === 'pending' && (
                         <div className="flex gap-2 flex-wrap">
                           {['pitch_deck', 'financials', 'cap_table'].includes(req.request_type) && (
@@ -557,10 +572,17 @@ export default function Requests() {
                               />
                             </div>
                           )}
-                          <Button size="sm" onClick={() => handleResponse(req.id, 'approved', req)}>
-                            <Check className="h-4 w-4 mr-1" /> 
-                            {req.request_type === 'funding_interest' ? 'Accept & Create SAFE' : 'Approve'}
-                          </Button>
+                          {req.request_type === 'funding_interest' ? (
+                            <Button size="sm" onClick={() => handleResponse(req.id, 'acknowledged', req)}>
+                              <Check className="h-4 w-4 mr-1" /> 
+                              Acknowledge & Download Template
+                            </Button>
+                          ) : (
+                            <Button size="sm" onClick={() => handleResponse(req.id, 'approved', req)}>
+                              <Check className="h-4 w-4 mr-1" /> 
+                              Approve
+                            </Button>
+                          )}
                           <Button size="sm" variant="destructive" onClick={() => handleResponse(req.id, 'denied', req)}>
                             <X className="h-4 w-4 mr-1" /> Deny
                           </Button>
