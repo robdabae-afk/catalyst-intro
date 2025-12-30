@@ -95,10 +95,48 @@ export const AdminConciergePanel = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
+      // First, create mutual swipes so the match appears in the Matches page
+      // This ensures both users see each other as matches
+      const requesterId = selectedMatch.requester_id;
+      const matchedUserId = selectedUser.id;
+
+      // Create swipe from requester to matched user (if not exists)
+      await supabase
+        .from('swipes')
+        .upsert({
+          swiper_id: requesterId,
+          swiped_id: matchedUserId,
+          action: 'like'
+        }, { ignoreDuplicates: true });
+
+      // Create swipe from matched user to requester (if not exists)
+      await supabase
+        .from('swipes')
+        .upsert({
+          swiper_id: matchedUserId,
+          swiped_id: requesterId,
+          action: 'like'
+        }, { ignoreDuplicates: true });
+
+      // Create the match record in the matches table
+      const { error: matchError } = await supabase
+        .from('matches')
+        .insert({
+          user_1_id: requesterId,
+          user_2_id: matchedUserId,
+          status: 'active'
+        });
+
+      // Ignore duplicate match error (match may already exist)
+      if (matchError && !matchError.message.includes('duplicate')) {
+        throw matchError;
+      }
+
+      // Update the manual_matches table
       const { error } = await supabase
         .from('manual_matches')
         .update({
-          matched_user_id: selectedUser.id,
+          matched_user_id: matchedUserId,
           payment_status: 'fulfilled',
           fulfilled_at: new Date().toISOString(),
           fulfilled_by: user?.id
