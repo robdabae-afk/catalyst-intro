@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Crown, Search, Check, Clock, DollarSign, Users } from 'lucide-react';
+import { Crown, Search, Check, Clock, DollarSign, Users, RefreshCw } from 'lucide-react';
 
 interface ManualMatch {
   id: string;
@@ -93,59 +93,24 @@ export const AdminConciergePanel = () => {
 
     setFulfilling(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      // First, create mutual swipes so the match appears in the Matches page
-      // This ensures both users see each other as matches
-      const requesterId = selectedMatch.requester_id;
-      const matchedUserId = selectedUser.id;
-
-      // Create swipe from requester to matched user (if not exists)
-      await supabase
-        .from('swipes')
-        .upsert({
-          swiper_id: requesterId,
-          swiped_id: matchedUserId,
-          action: 'like'
-        }, { ignoreDuplicates: true });
-
-      // Create swipe from matched user to requester (if not exists)
-      await supabase
-        .from('swipes')
-        .upsert({
-          swiper_id: matchedUserId,
-          swiped_id: requesterId,
-          action: 'like'
-        }, { ignoreDuplicates: true });
-
-      // Create the match record in the matches table
-      const { error: matchError } = await supabase
-        .from('matches')
-        .insert({
-          user_1_id: requesterId,
-          user_2_id: matchedUserId,
-          status: 'active'
-        });
-
-      // Ignore duplicate match error (match may already exist)
-      if (matchError && !matchError.message.includes('duplicate')) {
-        throw matchError;
-      }
-
-      // Update the manual_matches table
-      const { error } = await supabase
-        .from('manual_matches')
-        .update({
-          matched_user_id: matchedUserId,
-          payment_status: 'fulfilled',
-          fulfilled_at: new Date().toISOString(),
-          fulfilled_by: user?.id
-        })
-        .eq('id', selectedMatch.id);
+      // Call the secure backend function to fulfill the match
+      // This bypasses RLS and creates swipes, matches, and intro message
+      const { data, error } = await supabase.functions.invoke('admin-fulfill-concierge-match', {
+        body: {
+          manualMatchId: selectedMatch.id,
+          matchedUserId: selectedUser.id
+        }
+      });
 
       if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || 'Failed to fulfill match');
 
-      toast({ title: 'Match fulfilled successfully!' });
+      toast({ 
+        title: 'Match fulfilled successfully!',
+        description: data.repaired?.introSent 
+          ? 'Intro message sent to both users.' 
+          : 'Users can now chat.'
+      });
       setFulfillDialogOpen(false);
       setSelectedMatch(null);
       setSelectedUser(null);
@@ -159,6 +124,29 @@ export const AdminConciergePanel = () => {
       });
     } finally {
       setFulfilling(false);
+    }
+  };
+
+  const handleBackfill = async () => {
+    try {
+      toast({ title: 'Running backfill...', description: 'This may take a moment.' });
+      
+      const { data, error } = await supabase.functions.invoke('admin-backfill-concierge-chats');
+
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || 'Backfill failed');
+
+      toast({ 
+        title: 'Backfill complete!',
+        description: `Processed ${data.results?.total} matches. Created ${data.results?.introsCreated} intro messages.`
+      });
+      loadMatches();
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Backfill Error',
+        description: error.message
+      });
     }
   };
 
@@ -251,8 +239,12 @@ export const AdminConciergePanel = () => {
 
       {/* All Matches */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2"><DollarSign className="w-5 h-5" />All Concierge Requests</CardTitle>
+          <Button variant="outline" size="sm" onClick={handleBackfill}>
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Backfill Chats
+          </Button>
         </CardHeader>
         <CardContent>
           <Table>

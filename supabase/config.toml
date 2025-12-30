@@ -14,3 +14,15 @@ verify_jwt = false
 
 [functions.send-admin-notification]
 verify_jwt = true
+
+[functions.create-concierge-payment]
+verify_jwt = true
+
+[functions.verify-concierge-payment]
+verify_jwt = true
+
+[functions.admin-fulfill-concierge-match]
+verify_jwt = true
+
+[functions.admin-backfill-concierge-chats]
+verify_jwt = true
