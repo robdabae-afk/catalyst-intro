@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
@@ -27,6 +27,7 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [supportChatOpen, setSupportChatOpen] = useState(false);
   
   const [userId, setUserId] = useState<string | null>(null);
@@ -189,6 +190,55 @@ const Settings = () => {
       toast({ variant: "destructive", title: "Upload failed", description: error.message });
     } finally {
       setUploadingBanner(false);
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
+    
+    // Validate file size (100MB max)
+    if (file.size > 100 * 1024 * 1024) {
+      toast({ 
+        variant: "destructive", 
+        title: "File too large", 
+        description: "Please select a video under 100MB" 
+      });
+      return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ 
+        variant: "destructive", 
+        title: "Invalid file type", 
+        description: "Please select an MP4, WebM, or MOV video" 
+      });
+      return;
+    }
+    
+    setUploadingVideo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${userId}/pitch-video.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('videos')
+        .upload(filePath, file, { upsert: true });
+      
+      if (uploadError) throw uploadError;
+      
+      const { data: { publicUrl } } = supabase.storage
+        .from('videos')
+        .getPublicUrl(filePath);
+      
+      setVideoUrl(publicUrl);
+      toast({ title: "Video uploaded successfully" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingVideo(false);
     }
   };
 
@@ -546,6 +596,55 @@ const Settings = () => {
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium">Video Profile (Optional)</h3>
                 <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
+                
+                {/* Video Preview/Upload */}
+                <div className="space-y-2">
+                  <Label>Upload Video</Label>
+                  <div 
+                    className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
+                    onClick={() => document.getElementById('video-upload')?.click()}
+                  >
+                    {videoUrl ? (
+                      <video src={videoUrl} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                        <Video className="w-8 h-8 mb-2" />
+                        <span className="text-sm">Click to upload video (max 100MB)</span>
+                        <span className="text-xs mt-1">MP4, WebM, or MOV</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      {uploadingVideo ? (
+                        <Loader2 className="w-6 h-6 animate-spin text-white" />
+                      ) : (
+                        <Upload className="w-6 h-6 text-white" />
+                      )}
+                    </div>
+                  </div>
+                  <input 
+                    id="video-upload" 
+                    type="file" 
+                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
+                    className="hidden" 
+                    onChange={handleVideoUpload}
+                  />
+                  {videoUrl && (
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground truncate flex-1">Current: {videoUrl.split('/').pop()}</p>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => setVideoUrl('')}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground">— or —</div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="videoUrl">Video URL</Label>
