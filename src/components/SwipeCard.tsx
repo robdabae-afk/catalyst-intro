@@ -181,8 +181,8 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
               className="w-full h-full object-cover"
               autoPlay
               loop
-              muted
               playsInline
+              controls
               onError={(e) => {
                 // Fallback to image if video fails to load
                 console.error('Video load error:', e);
