@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, User, ImagePlus } from "lucide-react";
+import { Camera, User, ImagePlus, Video, Loader2 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 const FounderOnboarding = () => {
@@ -20,6 +20,7 @@ const FounderOnboarding = () => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const [referralValid, setReferralValid] = useState<boolean | null>(null);
@@ -27,6 +28,9 @@ const FounderOnboarding = () => {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [bannerPreview, setBannerPreview] = useState<string | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   const [legalAgreed, setLegalAgreed] = useState(false);
@@ -107,6 +111,33 @@ const FounderOnboarding = () => {
     }
   };
 
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 100 * 1024 * 1024) {
+        toast({
+          variant: "destructive",
+          title: "File too large",
+          description: "Please select a video under 100MB",
+        });
+        return;
+      }
+      const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          variant: "destructive",
+          title: "Invalid file type",
+          description: "Please select an MP4, WebM, or MOV video",
+        });
+        return;
+      }
+      setVideoFile(file);
+      setVideoPreview(URL.createObjectURL(file));
+      // Clear any external URL if user uploads a file
+      setFormData(prev => ({ ...prev, videoUrl: '' }));
+    }
+  };
+
   const uploadAvatar = async (userId: string): Promise<string | null> => {
     if (!avatarFile) return null;
 
@@ -146,6 +177,28 @@ const FounderOnboarding = () => {
 
     const { data: { publicUrl } } = supabase.storage
       .from('avatars')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
+  const uploadVideo = async (userId: string): Promise<string | null> => {
+    if (!videoFile) return null;
+
+    const fileExt = videoFile.name.split('.').pop();
+    const filePath = `${userId}/pitch-video.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('videos')
+      .upload(filePath, videoFile, { upsert: true });
+
+    if (uploadError) {
+      console.error('Video upload error:', uploadError);
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('videos')
       .getPublicUrl(filePath);
 
     return publicUrl;
@@ -200,9 +253,13 @@ const FounderOnboarding = () => {
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create user");
 
-      // Upload avatar and banner if selected
+      // Upload avatar, banner, and video if selected
       const avatarUrl = await uploadAvatar(authData.user.id);
       const bannerUrl = await uploadBanner(authData.user.id);
+      const uploadedVideoUrl = await uploadVideo(authData.user.id);
+      
+      // Use uploaded video URL if available, otherwise use the external URL from form
+      const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
 
       // Create profile with legal acceptance
       const { error: profileError } = await supabase
@@ -260,7 +317,7 @@ const FounderOnboarding = () => {
           company_state: formData.companyState || null,
           company_address: formData.companyAddress || null,
           banner_url: bannerUrl,
-          video_url: formData.videoUrl || null,
+          video_url: finalVideoUrl,
           funding_amount: formData.fundingAmount || null
         });
 
@@ -551,6 +608,42 @@ const FounderOnboarding = () => {
                 <h3 className="font-medium">Video Profile (Optional)</h3>
                 <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
                 
+                {/* Video Upload */}
+                <div className="space-y-2">
+                  <Label>Upload Video</Label>
+                  <div 
+                    className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
+                    onClick={() => videoInputRef.current?.click()}
+                  >
+                    {videoPreview ? (
+                      <video src={videoPreview} className="w-full h-full object-cover" muted />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                        <Video className="w-8 h-8 mb-2" />
+                        <span className="text-sm">Click to upload video (max 100MB)</span>
+                        <span className="text-xs mt-1">MP4, WebM, or MOV</span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Video className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                  />
+                  {videoFile && (
+                    <p className="text-xs text-muted-foreground">
+                      Selected: {videoFile.name} ({(videoFile.size / (1024 * 1024)).toFixed(1)}MB)
+                    </p>
+                  )}
+                </div>
+
+                <div className="text-center text-sm text-muted-foreground">— or —</div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="videoUrl">Video URL</Label>
                   <Input
@@ -558,8 +651,19 @@ const FounderOnboarding = () => {
                     type="url"
                     placeholder="https://... (mp4, webm, or hosted video link)"
                     value={formData.videoUrl}
-                    onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                    onChange={(e) => {
+                      setFormData({ ...formData, videoUrl: e.target.value });
+                      // Clear uploaded file if user enters URL
+                      if (e.target.value) {
+                        setVideoFile(null);
+                        setVideoPreview(null);
+                      }
+                    }}
+                    disabled={!!videoFile}
                   />
+                  {videoFile && (
+                    <p className="text-xs text-muted-foreground">Clear uploaded video to use external URL</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
