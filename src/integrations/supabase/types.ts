@@ -309,6 +309,7 @@ export type Database = {
           company_name: string | null
           company_state: string | null
           created_at: string | null
+          funding_amount: string | null
           id: string
           industry: string[] | null
           one_liner: string
@@ -319,6 +320,7 @@ export type Database = {
           stage: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
           traction: string | null
+          video_url: string | null
         }
         Insert: {
           banner_url?: string | null
@@ -326,6 +328,7 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
+          funding_amount?: string | null
           id?: string
           industry?: string[] | null
           one_liner: string
@@ -336,6 +339,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
           traction?: string | null
+          video_url?: string | null
         }
         Update: {
           banner_url?: string | null
@@ -343,6 +347,7 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
+          funding_amount?: string | null
           id?: string
           industry?: string[] | null
           one_liner?: string
@@ -353,6 +358,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name?: string
           traction?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
