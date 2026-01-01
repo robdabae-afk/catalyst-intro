@@ -41,7 +41,9 @@ const FounderOnboarding = () => {
     pitchDeckUrl: "",
     preferredCity: "",
     companyState: "",
-    companyAddress: ""
+    companyAddress: "",
+    videoUrl: "",
+    fundingAmount: ""
   });
 
   // Validate referral code when it changes
@@ -257,7 +259,9 @@ const FounderOnboarding = () => {
           preferred_city: formData.preferredCity || null,
           company_state: formData.companyState || null,
           company_address: formData.companyAddress || null,
-          banner_url: bannerUrl
+          banner_url: bannerUrl,
+          video_url: formData.videoUrl || null,
+          funding_amount: formData.fundingAmount || null
         });
 
       if (founderError) throw founderError;
@@ -541,6 +545,33 @@ const FounderOnboarding = () => {
                   value={formData.companyAddress}
                   onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="font-medium">Video Profile (Optional)</h3>
+                <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="videoUrl">Video URL</Label>
+                  <Input
+                    id="videoUrl"
+                    type="url"
+                    placeholder="https://... (mp4, webm, or hosted video link)"
+                    value={formData.videoUrl}
+                    onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
+                  <Input
+                    id="fundingAmount"
+                    placeholder="e.g., 500K, 1M, 2.5M"
+                    value={formData.fundingAmount}
+                    onChange={(e) => setFormData({ ...formData, fundingAmount: e.target.value })}
+                  />
+                  <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
+                </div>
               </div>
 
               <LegalDisclaimer agreed={legalAgreed} onAgreeChange={setLegalAgreed} />
