@@ -48,6 +48,8 @@ const Settings = () => {
   const [founderBannerUrl, setFounderBannerUrl] = useState("");
   const [pitchDeckUrl, setPitchDeckUrl] = useState("");
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
+  const [videoUrl, setVideoUrl] = useState("");
+  const [fundingAmount, setFundingAmount] = useState("");
   
   // Investor fields
   const [firmName, setFirmName] = useState("");
@@ -103,6 +105,8 @@ const Settings = () => {
           setFounderBannerUrl(founderProfile.banner_url || "");
           setPitchDeckUrl(founderProfile.pitch_deck_url || "");
           setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
+          setVideoUrl(founderProfile.video_url || "");
+          setFundingAmount(founderProfile.funding_amount || "");
         }
       } else {
         const { data: investorProfile } = await supabase
@@ -220,7 +224,9 @@ const Settings = () => {
             company_address: companyAddress,
             banner_url: founderBannerUrl,
             pitch_deck_url: pitchDeckUrl,
-            pitch_deck_visibility: pitchDeckVisibility
+            pitch_deck_visibility: pitchDeckVisibility,
+            video_url: videoUrl || null,
+            funding_amount: fundingAmount || null
           })
           .eq('profile_id', userId);
         
@@ -533,6 +539,34 @@ const Settings = () => {
                       </Label>
                     </div>
                   </RadioGroup>
+                </div>
+              </div>
+
+              {/* Video Profile Section */}
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="font-medium">Video Profile (Optional)</h3>
+                <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="videoUrl">Video URL</Label>
+                  <Input 
+                    id="videoUrl" 
+                    type="url"
+                    value={videoUrl} 
+                    onChange={(e) => setVideoUrl(e.target.value)} 
+                    placeholder="https://... (mp4, webm, or hosted video link)"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
+                  <Input 
+                    id="fundingAmount" 
+                    value={fundingAmount} 
+                    onChange={(e) => setFundingAmount(e.target.value)} 
+                    placeholder="e.g., 500K, 1M, 2.5M"
+                  />
+                  <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
                 </div>
               </div>
             </CardContent>
