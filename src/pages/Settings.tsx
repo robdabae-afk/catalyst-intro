@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
@@ -21,7 +21,6 @@ import { TokenBalance } from "@/components/TokenBalance";
 import { TokenPurchaseDialog } from "@/components/TokenPurchaseDialog";
 import { useTokens } from "@/hooks/useTokens";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Coins, Loader2 } from "lucide-react";
 
 const Settings = () => {
   const navigate = useNavigate();
