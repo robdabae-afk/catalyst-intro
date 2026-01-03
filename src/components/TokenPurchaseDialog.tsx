@@ -19,6 +19,8 @@ interface TokenPurchaseDialogProps {
   userId: string;
   trigger?: React.ReactNode;
   onPurchaseComplete?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface TokenPackage {
@@ -54,23 +56,13 @@ export const TokenPurchaseDialog = ({
 
   const loadPackages = async () => {
     try {
-      const { data, error } = await supabase
-        .from('token_packages')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-      if (error) throw error;
-
-      const formattedPackages = (data || []).map((pkg) => ({
-        id: pkg.id,
-        name: pkg.name,
-        tokens: pkg.tokens,
-        price_cents: pkg.price_cents,
-        displayPrice: `$${(pkg.price_cents / 100).toFixed(2)}`,
-      }));
-
-      setPackages(formattedPackages);
+      // Token packages feature not yet implemented - show placeholder packages
+      const placeholderPackages: TokenPackage[] = [
+        { id: '1', name: 'Starter Pack', tokens: 10, price_cents: 999, displayPrice: '$9.99' },
+        { id: '2', name: 'Pro Pack', tokens: 25, price_cents: 1999, displayPrice: '$19.99' },
+        { id: '3', name: 'Premium Pack', tokens: 50, price_cents: 3499, displayPrice: '$34.99' },
+      ];
+      setPackages(placeholderPackages);
     } catch (error: any) {
       console.error('Error loading token packages:', error);
       toast({

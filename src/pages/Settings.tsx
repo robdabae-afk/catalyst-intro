@@ -879,70 +879,10 @@ const Settings = () => {
   );
 };
 
-// Token Transaction History Component
+// Token Transaction History Component - placeholder until token_transactions table is created
 const TokenTransactionHistory = ({ userId }: { userId: string }) => {
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadTransactions = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('token_transactions')
-          .select('*')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(20);
-
-        if (error) throw error;
-        setTransactions(data || []);
-      } catch (error: any) {
-        console.error('Error loading transactions:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (userId) {
-      loadTransactions();
-    }
-  }, [userId]);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-4 h-4 animate-spin" />
-      </div>
-    );
-  }
-
-  if (transactions.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground">No transactions yet.</p>
-    );
-  }
-
   return (
-    <div className="space-y-2">
-      {transactions.map((tx) => (
-        <div
-          key={tx.id}
-          className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm"
-        >
-          <div className="flex-1">
-            <p className="font-medium">
-              {tx.description || tx.product_type || tx.transaction_type}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {new Date(tx.created_at).toLocaleDateString()}
-            </p>
-          </div>
-          <div className={`font-semibold ${tx.transaction_type === 'spend' ? 'text-red-600' : 'text-green-600'}`}>
-            {tx.transaction_type === 'spend' ? '-' : '+'}{Math.abs(tx.amount)}
-          </div>
-        </div>
-      ))}
-    </div>
+    <p className="text-sm text-muted-foreground">No transactions yet.</p>
   );
 };
 

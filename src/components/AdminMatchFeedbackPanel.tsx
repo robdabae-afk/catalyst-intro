@@ -91,14 +91,14 @@ export const AdminMatchFeedbackPanel = () => {
   const triggerFeedbackPrompt = async (matchId: string, userId: string) => {
     setSending(`${matchId}-${userId}`);
     try {
+      // Use feedback_prompts table instead of match_feedback_prompts
       const { error } = await supabase
-        .from('match_feedback_prompts')
+        .from('feedback_prompts')
         .upsert({
-          match_id: matchId,
           user_id: userId,
           admin_requested_at: new Date().toISOString(),
           last_prompt_at: new Date().toISOString()
-        }, { onConflict: 'match_id,user_id' });
+        }, { onConflict: 'user_id' });
 
       if (error) throw error;
 

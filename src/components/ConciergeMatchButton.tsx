@@ -442,7 +442,7 @@ export const ConciergeMatchButton = ({
           ) : (
             <Crown className="w-4 h-4 mr-2" />
           )}
-          {verifying ? 'Verifying...' : `Request Premium Match (${originalPrice})`}
+          {verifying ? 'Verifying...' : `Request Premium Match (${tokenCost} tokens)`}
           {!benefitsVisible && showBenefitsProp && (
             <ChevronDown className="w-4 h-4 ml-1" onClick={(e) => { e.stopPropagation(); setBenefitsVisible(true); }} />
           )}
