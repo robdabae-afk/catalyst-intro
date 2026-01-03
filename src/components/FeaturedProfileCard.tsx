@@ -75,8 +75,9 @@ export const FeaturedProfileCard = () => {
         }
 
         // Transform the data to match our interface
-        const founderProfiles = data.founder_profiles as any[];
-        if (founderProfiles && founderProfiles.length > 0) {
+        const founderProfiles = data.founder_profiles;
+        const founderProfilesArray = Array.isArray(founderProfiles) ? founderProfiles : (founderProfiles ? [founderProfiles] : []);
+        if (founderProfilesArray.length > 0) {
           const profileData: ProfileData = {
             id: data.id,
             name: data.name,

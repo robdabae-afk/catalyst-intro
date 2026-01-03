@@ -14,6 +14,7 @@ import { useTokens } from '@/hooks/useTokens';
 import { Loader2, Coins, Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { TOKEN_PACKAGES } from '@/lib/stripe-constants';
 
 interface TokenPurchaseDialogProps {
   userId: string;
@@ -21,14 +22,6 @@ interface TokenPurchaseDialogProps {
   onPurchaseComplete?: () => void;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-}
-
-interface TokenPackage {
-  id: string;
-  name: string;
-  tokens: number;
-  price_cents: number;
-  displayPrice: string;
 }
 
 export const TokenPurchaseDialog = ({ 
@@ -41,69 +34,15 @@ export const TokenPurchaseDialog = ({
   const { toast } = useToast();
   const { balance, loading: balanceLoading } = useTokens(userId);
   const [loading, setLoading] = useState(false);
+  const [purchasingPackageId, setPurchasingPackageId] = useState<string | null>(null);
   const [internalOpen, setInternalOpen] = useState(false);
   
   const dialogOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setDialogOpen = controlledOnOpenChange || setInternalOpen;
-  const [packages, setPackages] = useState<TokenPackage[]>([]);
-  const [loadingPackages, setLoadingPackages] = useState(true);
-
-  useEffect(() => {
-    if (dialogOpen) {
-      loadPackages();
-    }
-  }, [dialogOpen]);
-
-  const loadPackages = async () => {
-    setLoadingPackages(true);
-    try {
-      // Fetch token packages from the database
-      const { data, error } = await supabase
-        .from('token_packages')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-      if (error) throw error;
-
-      if (!data || data.length === 0) {
-        // Fallback to default packages if none in database
-        const defaultPackages: TokenPackage[] = [
-          { id: 'small', name: 'Small Pack', tokens: 30, price_cents: 1500, displayPrice: '$15' },
-          { id: 'medium', name: 'Medium Pack', tokens: 100, price_cents: 3000, displayPrice: '$30' },
-          { id: 'large', name: 'Large Pack', tokens: 200, price_cents: 7000, displayPrice: '$70' },
-        ];
-        setPackages(defaultPackages);
-      } else {
-        setPackages(data.map(p => ({
-          id: p.id,
-          name: p.name,
-          tokens: p.tokens,
-          price_cents: p.price_cents,
-          displayPrice: `$${(p.price_cents / 100).toFixed(0)}`,
-        })));
-      }
-    } catch (error: any) {
-      console.error('Error loading token packages:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'Failed to load token packages',
-      });
-      // Set fallback packages on error
-      const fallbackPackages: TokenPackage[] = [
-        { id: 'small', name: 'Small Pack', tokens: 30, price_cents: 1500, displayPrice: '$15' },
-        { id: 'medium', name: 'Medium Pack', tokens: 100, price_cents: 3000, displayPrice: '$30' },
-        { id: 'large', name: 'Large Pack', tokens: 200, price_cents: 7000, displayPrice: '$70' },
-      ];
-      setPackages(fallbackPackages);
-    } finally {
-      setLoadingPackages(false);
-    }
-  };
 
   const handlePurchase = async (packageId: string) => {
     setLoading(true);
+    setPurchasingPackageId(packageId);
     try {
       const { data, error } = await supabase.functions.invoke('manage-tokens', {
         body: {
@@ -114,7 +53,7 @@ export const TokenPurchaseDialog = ({
 
       if (error) {
         console.error('Token purchase error:', error);
-        throw new Error(error.message || error.error || 'Failed to start token purchase');
+        throw new Error(error.message || 'Failed to start token purchase');
       }
 
       if (data?.error) {
@@ -123,7 +62,7 @@ export const TokenPurchaseDialog = ({
       }
 
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
       } else {
         throw new Error('No checkout URL returned from server');
       }
@@ -136,6 +75,7 @@ export const TokenPurchaseDialog = ({
       });
     } finally {
       setLoading(false);
+      setPurchasingPackageId(null);
     }
   };
 
@@ -194,106 +134,35 @@ export const TokenPurchaseDialog = ({
           </div>
 
           {/* Token Packages */}
-          {loadingPackages ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin" />
-            </div>
-          ) : packages.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
-              No token packages available at this time.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {packages.map((pkg) => (
-                <Card key={pkg.id} className="relative">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                      <Badge variant="secondary">{pkg.tokens} tokens</Badge>
-                    </div>
-                    <CardDescription>
-                      {pkg.displayPrice}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      onClick={() => handlePurchase(pkg.id)}
-                      disabled={loading}
-                      className="w-full"
-                      variant="outline"
-                    >
-                      {loading ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <Check className="w-4 h-4 mr-2" />
-                      )}
-                      Purchase
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-
-          {/* Pro Week Purchase Option */}
-          <div className="border-t pt-4">
-            <h4 className="text-sm font-medium mb-3">Special Offers</h4>
-            <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">1 Week of Pro</CardTitle>
-                  <Badge variant="secondary" className="bg-amber-500/20">100 tokens</Badge>
-                </div>
-                <CardDescription>
-                  Get all Pro benefits for 1 week
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  onClick={async () => {
-                    setLoading(true);
-                    try {
-                      const { data, error } = await supabase.functions.invoke('manage-tokens', {
-                        body: {
-                          action: 'purchase_pro_week',
-                        },
-                      });
-                      if (error) throw error;
-                      if (data?.success) {
-                        toast({
-                          title: 'Pro Activated!',
-                          description: 'You now have Pro access for 1 week.',
-                        });
-                        setDialogOpen(false);
-                        if (onPurchaseComplete) onPurchaseComplete();
-                      }
-                    } catch (error: any) {
-                      toast({
-                        variant: 'destructive',
-                        title: 'Error',
-                        description: error.message || 'Failed to purchase Pro week',
-                      });
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  disabled={loading || balanceLoading || balance < 100}
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                >
-                  {loading ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Check className="w-4 h-4 mr-2" />
-                  )}
-                  Purchase Pro Week (100 tokens)
-                </Button>
-                {balance < 100 && (
-                  <p className="text-xs text-red-600 mt-2 text-center">
-                    You need 100 tokens for this offer
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {TOKEN_PACKAGES.map((pkg) => (
+              <Card key={pkg.id} className="relative">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg">{pkg.name}</CardTitle>
+                    <Badge variant="secondary">{pkg.tokens} tokens</Badge>
+                  </div>
+                  <CardDescription>
+                    {pkg.displayPrice}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={() => handlePurchase(pkg.id)}
+                    disabled={loading}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    {purchasingPackageId === pkg.id ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Check className="w-4 h-4 mr-2" />
+                    )}
+                    Purchase
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
           {/* Info */}
@@ -310,4 +179,3 @@ export const TokenPurchaseDialog = ({
     </Dialog>
   );
 };
-

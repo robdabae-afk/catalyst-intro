@@ -72,41 +72,37 @@ export const PRO_MONTHLY_TOKENS = {
 } as const;
 
 // Token packages available for purchase
-// Note: Stripe price IDs need to be created in Stripe dashboard
 export const TOKEN_PACKAGES = [
   {
-    id: 'starter',
+    id: 'small',
     name: 'Starter Pack',
     tokens: 10,
-    priceCents: 1000,
-    displayPrice: '$10',
-    stripePriceId: '', // To be configured in Stripe
+    priceCents: 999,
+    displayPrice: '$9.99',
+    stripePriceId: 'price_1SlKoeInI9cm3k8RoqI9ISRL',
   },
   {
-    id: 'value',
-    name: 'Value Pack',
+    id: 'medium',
+    name: 'Pro Pack',
     tokens: 25,
-    priceCents: 2500,
-    displayPrice: '$25',
-    stripePriceId: '', // To be configured in Stripe
+    priceCents: 1999,
+    displayPrice: '$19.99',
+    stripePriceId: 'price_1SlKopInI9cm3k8R2YC0fRVw',
   },
   {
-    id: 'popular',
-    name: 'Popular Pack',
-    tokens: 50,
-    priceCents: 5000,
-    displayPrice: '$50',
-    stripePriceId: '', // To be configured in Stripe
-  },
-  {
-    id: 'premium',
+    id: 'large',
     name: 'Premium Pack',
-    tokens: 100,
-    priceCents: 10000,
-    displayPrice: '$100',
-    stripePriceId: '', // To be configured in Stripe
+    tokens: 50,
+    priceCents: 3499,
+    displayPrice: '$34.99',
+    stripePriceId: 'price_1SlKozInI9cm3k8R1RWW0dSr',
   },
 ] as const;
+
+// Helper to get token package by ID
+export const getTokenPackage = (id: string) => {
+  return TOKEN_PACKAGES.find(pkg => pkg.id === id);
+};
 
 // Helper to get token cost for concierge match
 export const getConciergeTokenCost = (userType: 'founder' | 'investor') => {

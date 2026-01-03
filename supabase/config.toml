@@ -26,3 +26,6 @@ verify_jwt = true
 
 [functions.admin-backfill-concierge-chats]
 verify_jwt = true
+
+[functions.manage-tokens]
+verify_jwt = true
