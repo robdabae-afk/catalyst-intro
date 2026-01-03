@@ -61,19 +61,48 @@ serve(async (req) => {
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user } } = await supabaseAuth.auth.getUser(token);
     
-    if (!user) {
+    let user;
+    try {
+      const { data: { user: authUser }, error: authError } = await supabaseAuth.auth.getUser(token);
+      
+      if (authError || !authUser) {
+        logStep('Auth error', { error: authError?.message });
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized', details: authError?.message }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      user = authUser;
+      logStep('User authenticated', { userId: user.id });
+    } catch (authErr: any) {
+      logStep('Auth exception', { error: authErr.message });
       return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
+        JSON.stringify({ error: 'Authentication failed', details: authErr.message }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    logStep('User authenticated', { userId: user.id });
+    let body;
+    try {
+      body = await req.json();
+    } catch (parseError: any) {
+      logStep('JSON parse error', { error: parseError.message });
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const body = await req.json();
     const { action } = body;
+
+    if (!action) {
+      return new Response(
+        JSON.stringify({ error: 'Action is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     switch (action) {
       case 'get_balance': {
@@ -135,11 +164,14 @@ serve(async (req) => {
 
         // Create checkout session
         // Note: If stripe_price_id is not set, we'll use a one-time payment
+        const origin = req.headers.get('origin') || req.headers.get('referer') || 'https://catalyst-intro.com';
+        const baseUrl = origin.replace(/\/$/, ''); // Remove trailing slash
+        
         const sessionParams: any = {
           customer: customerId,
           mode: 'payment',
-          success_url: `${req.headers.get('origin')}/settings?tokens=success`,
-          cancel_url: `${req.headers.get('origin')}/settings?tokens=canceled`,
+          success_url: `${baseUrl}/settings?tokens=success`,
+          cancel_url: `${baseUrl}/settings?tokens=canceled`,
           metadata: {
             supabase_user_id: user.id,
             package_id: packageId,
@@ -163,14 +195,24 @@ serve(async (req) => {
           }];
         }
 
-        const session = await stripe.checkout.sessions.create(sessionParams);
+        try {
+          const session = await stripe.checkout.sessions.create(sessionParams);
 
-        logStep('Token purchase checkout created', { sessionId: session.id, packageId });
+          logStep('Token purchase checkout created', { sessionId: session.id, packageId });
 
-        return new Response(
-          JSON.stringify({ url: session.url }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+          return new Response(
+            JSON.stringify({ url: session.url }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        } catch (stripeError: any) {
+          logStep('Stripe checkout creation failed', { 
+            error: stripeError.message, 
+            type: stripeError.type,
+            code: stripeError.code,
+            packageId 
+          });
+          throw new Error(`Stripe error: ${stripeError.message || 'Failed to create checkout session'}`);
+        }
       }
 
       case 'spend_tokens': {
