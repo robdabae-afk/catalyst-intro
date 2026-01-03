@@ -55,21 +55,48 @@ export const TokenPurchaseDialog = ({
   }, [dialogOpen]);
 
   const loadPackages = async () => {
+    setLoadingPackages(true);
     try {
-      // Token packages feature not yet implemented - show placeholder packages
-      const placeholderPackages: TokenPackage[] = [
-        { id: '1', name: 'Starter Pack', tokens: 10, price_cents: 999, displayPrice: '$9.99' },
-        { id: '2', name: 'Pro Pack', tokens: 25, price_cents: 1999, displayPrice: '$19.99' },
-        { id: '3', name: 'Premium Pack', tokens: 50, price_cents: 3499, displayPrice: '$34.99' },
-      ];
-      setPackages(placeholderPackages);
+      // Fetch token packages from the database
+      const { data, error } = await supabase
+        .from('token_packages')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        // Fallback to default packages if none in database
+        const defaultPackages: TokenPackage[] = [
+          { id: 'small', name: 'Small Pack', tokens: 30, price_cents: 1500, displayPrice: '$15' },
+          { id: 'medium', name: 'Medium Pack', tokens: 100, price_cents: 3000, displayPrice: '$30' },
+          { id: 'large', name: 'Large Pack', tokens: 200, price_cents: 7000, displayPrice: '$70' },
+        ];
+        setPackages(defaultPackages);
+      } else {
+        setPackages(data.map(p => ({
+          id: p.id,
+          name: p.name,
+          tokens: p.tokens,
+          price_cents: p.price_cents,
+          displayPrice: `$${(p.price_cents / 100).toFixed(0)}`,
+        })));
+      }
     } catch (error: any) {
       console.error('Error loading token packages:', error);
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Failed to load token packages',
+        description: error.message || 'Failed to load token packages',
       });
+      // Set fallback packages on error
+      const fallbackPackages: TokenPackage[] = [
+        { id: 'small', name: 'Small Pack', tokens: 30, price_cents: 1500, displayPrice: '$15' },
+        { id: 'medium', name: 'Medium Pack', tokens: 100, price_cents: 3000, displayPrice: '$30' },
+        { id: 'large', name: 'Large Pack', tokens: 200, price_cents: 7000, displayPrice: '$70' },
+      ];
+      setPackages(fallbackPackages);
     } finally {
       setLoadingPackages(false);
     }
@@ -85,18 +112,27 @@ export const TokenPurchaseDialog = ({
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Token purchase error:', error);
+        throw new Error(error.message || error.error || 'Failed to start token purchase');
+      }
+
+      if (data?.error) {
+        console.error('Token purchase error from function:', data.error);
+        throw new Error(data.error);
+      }
 
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        throw new Error('No checkout URL returned');
+        throw new Error('No checkout URL returned from server');
       }
     } catch (error: any) {
+      console.error('Token purchase failed:', error);
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: error.message || 'Failed to start token purchase',
+        title: 'Purchase Error',
+        description: error.message || 'Failed to start token purchase. Please try again or contact support.',
       });
     } finally {
       setLoading(false);

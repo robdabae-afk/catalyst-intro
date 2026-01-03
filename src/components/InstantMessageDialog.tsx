@@ -109,12 +109,12 @@ export const InstantMessageDialog = ({
 
   return (
     <>
-      {showTokenPurchase && (
-        <TokenPurchaseDialog
-          userId={senderId}
-          onPurchaseComplete={() => setShowTokenPurchase(false)}
-        />
-      )}
+      <TokenPurchaseDialog
+        userId={senderId}
+        open={showTokenPurchase}
+        onOpenChange={setShowTokenPurchase}
+        onPurchaseComplete={() => setShowTokenPurchase(false)}
+      />
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

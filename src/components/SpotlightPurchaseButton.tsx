@@ -188,12 +188,12 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
               )}
               Activate Spotlight ({tokenCost} tokens)
             </Button>
-            {showTokenPurchase && (
-              <TokenPurchaseDialog
-                userId={userId}
-                onPurchaseComplete={() => setShowTokenPurchase(false)}
-              />
-            )}
+            <TokenPurchaseDialog
+              userId={userId}
+              open={showTokenPurchase}
+              onOpenChange={setShowTokenPurchase}
+              onPurchaseComplete={() => setShowTokenPurchase(false)}
+            />
           </div>
         </DialogContent>
       </Dialog>
@@ -294,6 +294,12 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
           </div>
         </DialogContent>
       </Dialog>
+      <TokenPurchaseDialog
+        userId={userId}
+        open={showTokenPurchase}
+        onOpenChange={setShowTokenPurchase}
+        onPurchaseComplete={() => setShowTokenPurchase(false)}
+      />
     </>
   );
 };

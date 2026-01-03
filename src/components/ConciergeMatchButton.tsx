@@ -212,15 +212,15 @@ export const ConciergeMatchButton = ({
   // Explanation modal - rendered as JSX, not a component
   const explanationModal = (
     <>
-      {showTokenPurchase && (
-        <TokenPurchaseDialog
-          userId={userId}
-          onPurchaseComplete={() => {
-            setShowTokenPurchase(false);
-            // Reload balance will happen automatically via useTokens hook
-          }}
-        />
-      )}
+      <TokenPurchaseDialog
+        userId={userId}
+        open={showTokenPurchase}
+        onOpenChange={setShowTokenPurchase}
+        onPurchaseComplete={() => {
+          setShowTokenPurchase(false);
+          // Reload balance will happen automatically via useTokens hook
+        }}
+      />
       <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

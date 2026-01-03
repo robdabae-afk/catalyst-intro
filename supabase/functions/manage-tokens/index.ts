@@ -381,9 +381,15 @@ serve(async (req) => {
         );
     }
   } catch (error: any) {
-    logStep('Error', { error: error.message });
+    logStep('Error', { error: error.message, stack: error.stack });
+    const errorMessage = error.message || 'Internal server error';
+    console.error('[MANAGE-TOKENS] Error details:', {
+      message: errorMessage,
+      stack: error.stack,
+      name: error.name,
+    });
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({ error: errorMessage }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
