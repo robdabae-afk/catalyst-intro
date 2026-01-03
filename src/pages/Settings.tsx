@@ -17,7 +17,11 @@ import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
 import { SpotlightManager } from "@/components/SpotlightManager";
 import { AdminRevenueAdjustment } from "@/components/AdminRevenueAdjustment";
+import { TokenBalance } from "@/components/TokenBalance";
+import { TokenPurchaseDialog } from "@/components/TokenPurchaseDialog";
+import { useTokens } from "@/hooks/useTokens";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { Coins, Loader2 } from "lucide-react";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -759,6 +763,31 @@ const Settings = () => {
           <SubscriptionSettings userId={userId} userType={userType} />
         )}
 
+        {/* Tokens Section */}
+        {userId && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Coins className="w-5 h-5 text-amber-500" />
+                Tokens
+              </CardTitle>
+              <CardDescription>
+                Manage your token balance and purchase history
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <TokenBalance userId={userId} variant="default" showPurchaseButton={false} />
+              <div className="flex gap-2">
+                <TokenPurchaseDialog userId={userId} />
+              </div>
+              <div className="pt-4 border-t">
+                <h4 className="text-sm font-medium mb-2">Transaction History</h4>
+                <TokenTransactionHistory userId={userId} />
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Spotlight Manager (Pro users only) */}
         {userId && userType && (
           <SpotlightManager userId={userId} userType={userType} />
@@ -847,6 +876,73 @@ const Settings = () => {
         {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
         {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
       </main>
+    </div>
+  );
+};
+
+// Token Transaction History Component
+const TokenTransactionHistory = ({ userId }: { userId: string }) => {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('token_transactions')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(20);
+
+        if (error) throw error;
+        setTransactions(data || []);
+      } catch (error: any) {
+        console.error('Error loading transactions:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      loadTransactions();
+    }
+  }, [userId]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-4 h-4 animate-spin" />
+      </div>
+    );
+  }
+
+  if (transactions.length === 0) {
+    return (
+      <p className="text-sm text-muted-foreground">No transactions yet.</p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {transactions.map((tx) => (
+        <div
+          key={tx.id}
+          className="flex items-center justify-between p-2 rounded-md bg-muted/50 text-sm"
+        >
+          <div className="flex-1">
+            <p className="font-medium">
+              {tx.description || tx.product_type || tx.transaction_type}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {new Date(tx.created_at).toLocaleDateString()}
+            </p>
+          </div>
+          <div className={`font-semibold ${tx.transaction_type === 'spend' ? 'text-red-600' : 'text-green-600'}`}>
+            {tx.transaction_type === 'spend' ? '-' : '+'}{Math.abs(tx.amount)}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

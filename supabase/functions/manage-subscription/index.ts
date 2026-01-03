@@ -11,7 +11,6 @@ const corsHeaders = {
 const STRIPE_PRICES = {
   PRO_FOUNDER: 'price_1SfuSgInI9cm3k8RNN0RE9YI',
   PRO_INVESTOR: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK',
-  SPOTLIGHT_BOOST: 'price_1SgSAEInI9cm3k8R4m5mVOCS',
 };
 
 const logStep = (step: string, details?: any) => {
@@ -194,45 +193,6 @@ serve(async (req) => {
         );
       }
 
-      case 'create_spotlight_checkout': {
-        // Get or create Stripe customer
-        let customerId = profile.stripe_customer_id;
-        
-        if (!customerId) {
-          const customer = await stripe.customers.create({
-            email: profile.email,
-            metadata: { supabase_user_id: user.id },
-          });
-          customerId = customer.id;
-          
-          await supabase
-            .from('profiles')
-            .update({ stripe_customer_id: customerId })
-            .eq('id', user.id);
-          
-          logStep('Created Stripe customer for spotlight', { customerId });
-        }
-
-        const session = await stripe.checkout.sessions.create({
-          customer: customerId,
-          mode: 'payment',
-          payment_method_types: ['card'],
-          line_items: [{ price: STRIPE_PRICES.SPOTLIGHT_BOOST, quantity: 1 }],
-          success_url: `${req.headers.get('origin')}/dashboard?spotlight=success`,
-          cancel_url: `${req.headers.get('origin')}/dashboard?spotlight=canceled`,
-          metadata: {
-            supabase_user_id: user.id,
-            type: 'spotlight',
-          },
-        });
-
-        logStep('Spotlight checkout created', { sessionId: session.id });
-
-        return new Response(
-          JSON.stringify({ url: session.url }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
 
       default:
         return new Response(

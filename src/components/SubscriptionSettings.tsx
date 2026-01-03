@@ -3,10 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSubscription } from '@/hooks/useSubscription';
-import { getProPrice } from '@/lib/stripe-constants';
+import { getProPrice, getProMonthlyTokens } from '@/lib/stripe-constants';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Crown, Loader2, Check, Sparkles, Ban, ExternalLink } from 'lucide-react';
+import { Crown, Loader2, Check, Sparkles, Ban, ExternalLink, Coins } from 'lucide-react';
 
 interface SubscriptionSettingsProps {
   userId: string;
@@ -136,6 +136,22 @@ export const SubscriptionSettings = ({ userId, userType }: SubscriptionSettingsP
             </div>
           ))}
         </div>
+
+        {/* Monthly Token Grant Info */}
+        {isPro && (
+          <div className="bg-amber-50 dark:bg-amber-950/20 rounded-lg p-3 space-y-1">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <Coins className="w-4 h-4 text-amber-600" />
+              Monthly Token Grant
+            </div>
+            <p className="text-sm text-muted-foreground">
+              You receive <span className="font-semibold text-foreground">{getProMonthlyTokens(userType)} tokens</span> every month with your Pro subscription.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Tokens are automatically added to your account on your subscription renewal date.
+            </p>
+          </div>
+        )}
 
         {/* Pricing */}
         {!isPro && (

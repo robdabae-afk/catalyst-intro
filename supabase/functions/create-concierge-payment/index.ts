@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -7,13 +6,10 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Pricing: $50 for founders, $25 for investors
-const FOUNDER_PRICE_ID = "price_1Sg9vvInI9cm3k8RV9hn4TLx";
-const INVESTOR_PRICE_ID = "price_1Sg9w8InI9cm3k8RFUBTzs2Z";
-
-// Discount codes
-const DISCOUNT_CODES: Record<string, string> = {
-  'CTLYST': 'DGjXdW27', // $10 off coupon ID
+// Token costs for concierge match
+const TOKEN_COSTS = {
+  FOUNDER: 50, // $50 = 50 tokens
+  INVESTOR: 25, // $25 = 25 tokens
 };
 
 const logStep = (step: string, details?: any) => {
@@ -57,10 +53,10 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    // Get user type to determine pricing (use admin client to bypass RLS)
+    // Get user type and token balance (use admin client to bypass RLS)
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('user_type')
+      .select('user_type, tokens')
       .eq('id', user.id)
       .single();
 
@@ -69,31 +65,36 @@ serve(async (req) => {
       throw new Error("User profile not found");
     }
     if (!profile) throw new Error("User profile not found");
+    
     const userType = profile.user_type;
-    const priceId = userType === 'founder' ? FOUNDER_PRICE_ID : INVESTOR_PRICE_ID;
-    const amountInCents = userType === 'founder' ? 5000 : 2500;
-    logStep("Determined pricing", { userType, priceId, amount: amountInCents });
+    const tokenCost = userType === 'founder' ? TOKEN_COSTS.FOUNDER : TOKEN_COSTS.INVESTOR;
+    const currentBalance = profile.tokens || 0;
+    
+    logStep("Determined token cost", { userType, tokenCost, currentBalance });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
-    });
-
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
+    // Check if user has sufficient tokens
+    if (currentBalance < tokenCost) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Insufficient tokens', 
+          required: tokenCost, 
+          balance: currentBalance 
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 400,
+        }
+      );
     }
-    logStep("Customer check", { customerId: customerId || "new customer" });
 
-    // Create the manual match request in pending state
+    // Create the manual match request in pending state (will be marked paid after token deduction)
     const { data: matchRequest, error: insertError } = await supabaseAdmin
       .from('manual_matches')
       .insert({
         requester_id: user.id,
         payment_status: 'pending',
         user_type: userType,
-        amount_paid: amountInCents
+        amount_paid: 0 // No cash payment, using tokens
       })
       .select()
       .single();
@@ -104,49 +105,57 @@ serve(async (req) => {
     }
     logStep("Match request created", { matchId: matchRequest.id });
 
-    // Check for valid discount code
-    const couponId = discountCode ? DISCOUNT_CODES[discountCode] : undefined;
-    if (discountCode && couponId) {
-      logStep("Applying discount", { code: discountCode, couponId });
-    }
-
-    // Create Stripe checkout session
-    const sessionParams: any = {
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/dashboard?concierge=success&match_id=${matchRequest.id}`,
-      cancel_url: `${req.headers.get("origin")}/dashboard?concierge=cancelled`,
-      metadata: {
-        match_request_id: matchRequest.id,
+    // Deduct tokens
+    const { data: transaction, error: transactionError } = await supabaseAdmin
+      .from('token_transactions')
+      .insert({
         user_id: user.id,
-      },
-    };
+        transaction_type: 'spend',
+        amount: tokenCost,
+        product_type: 'concierge_match',
+        related_id: matchRequest.id,
+        description: `Concierge Match (${userType})`,
+      })
+      .select()
+      .single();
 
-    // Add discount if valid code provided
-    if (couponId) {
-      sessionParams.discounts = [{ coupon: couponId }];
+    if (transactionError) {
+      logStep("Error deducting tokens", { error: transactionError });
+      // Clean up match request
+      await supabaseAdmin
+        .from('manual_matches')
+        .delete()
+        .eq('id', matchRequest.id);
+      throw transactionError;
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
-    logStep("Checkout session created", { sessionId: session.id });
-
-    // Update the match request with session ID
+    // Update match request to paid status
     await supabaseAdmin
       .from('manual_matches')
-      .update({ stripe_session_id: session.id })
+      .update({ 
+        payment_status: 'paid',
+        payment_timestamp: new Date().toISOString()
+      })
       .eq('id', matchRequest.id);
 
-    return new Response(JSON.stringify({ url: session.url, matchId: matchRequest.id }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
+    logStep("Tokens deducted and match request paid", { 
+      matchId: matchRequest.id, 
+      tokensSpent: tokenCost,
+      newBalance: currentBalance - tokenCost 
     });
+
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        matchId: matchRequest.id,
+        tokensSpent: tokenCost,
+        newBalance: currentBalance - tokenCost
+      }), 
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      }
+    );
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });

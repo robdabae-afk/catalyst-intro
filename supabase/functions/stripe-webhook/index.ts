@@ -59,11 +59,39 @@ serve(async (req) => {
         const session = event.data.object;
         const userId = session.metadata?.supabase_user_id;
         const plan = session.metadata?.plan;
+        const packageId = session.metadata?.package_id;
+        const tokens = session.metadata?.tokens;
 
-        if (userId && plan) {
+        // Handle token purchases (one-time payments)
+        if (userId && packageId && tokens && session.mode === 'payment') {
+          const tokenAmount = parseInt(tokens, 10);
+          await supabase
+            .from('token_transactions')
+            .insert({
+              user_id: userId,
+              transaction_type: 'purchase',
+              amount: tokenAmount,
+              product_type: 'token_package',
+              stripe_payment_intent_id: session.payment_intent as string,
+              description: `Token purchase - ${tokenAmount} tokens`,
+            });
+
+          console.log(`Granted ${tokenAmount} tokens to user ${userId} from token purchase`);
+          break;
+        }
+
+        // Handle Pro subscription purchases
+        if (userId && plan && session.subscription) {
           // Get subscription details
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
           
+          // Get user type for token grant
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('user_type')
+            .eq('id', userId)
+            .single();
+
           await supabase
             .from('profiles')
             .update({
@@ -73,6 +101,27 @@ serve(async (req) => {
               stripe_subscription_id: subscription.id,
             })
             .eq('id', userId);
+
+          // Grant monthly tokens for Pro subscription
+          if (profile?.user_type) {
+            const tokenAmount = profile.user_type === 'founder' ? 15 : 100; // PRO_MONTHLY_TOKENS
+            await supabase
+              .from('token_transactions')
+              .insert({
+                user_id: userId,
+                transaction_type: 'grant',
+                amount: tokenAmount,
+                product_type: 'pro_grant',
+                description: `Monthly ${profile.user_type === 'founder' ? 'Founder' : 'Investor'} Pro token grant`,
+              });
+            
+            await supabase
+              .from('profiles')
+              .update({ tokens_last_granted_at: new Date().toISOString() })
+              .eq('id', userId);
+
+            console.log(`Granted ${tokenAmount} tokens to user ${userId} for ${plan} subscription`);
+          }
 
           console.log(`Activated ${plan} subscription for user ${userId}`);
         }
@@ -86,7 +135,7 @@ serve(async (req) => {
         // Find user by stripe_customer_id
         const { data: profile } = await supabase
           .from('profiles')
-          .select('id')
+          .select('id, user_type, subscription_plan, tokens_last_granted_at')
           .eq('stripe_customer_id', customerId)
           .single();
 
@@ -98,6 +147,33 @@ serve(async (req) => {
               subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
             })
             .eq('id', profile.id);
+
+          // Grant monthly tokens if subscription is active and it's a renewal
+          if (subscription.status === 'active' && profile.subscription_plan && profile.user_type) {
+            // Check if tokens were already granted this billing period
+            const shouldGrant = !profile.tokens_last_granted_at || 
+              (new Date().getTime() - new Date(profile.tokens_last_granted_at).getTime()) > (28 * 24 * 60 * 60 * 1000);
+            
+            if (shouldGrant) {
+              const tokenAmount = profile.user_type === 'founder' ? 15 : 100; // PRO_MONTHLY_TOKENS
+              await supabase
+                .from('token_transactions')
+                .insert({
+                  user_id: profile.id,
+                  transaction_type: 'grant',
+                  amount: tokenAmount,
+                  product_type: 'pro_grant',
+                  description: `Monthly ${profile.user_type === 'founder' ? 'Founder' : 'Investor'} Pro token grant`,
+                });
+              
+              await supabase
+                .from('profiles')
+                .update({ tokens_last_granted_at: new Date().toISOString() })
+                .eq('id', profile.id);
+
+              console.log(`Granted ${tokenAmount} tokens to user ${profile.id} for subscription renewal`);
+            }
+          }
 
           console.log(`Updated subscription status to ${subscription.status} for user ${profile.id}`);
         }

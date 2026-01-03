@@ -12,8 +12,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { getConciergePrice } from '@/lib/stripe-constants';
-import { Crown, Clock, Sparkles, Loader2, CheckCircle, Check, UserCheck, Zap, Star, ChevronDown, Tag } from 'lucide-react';
+import { getConciergeTokenCost } from '@/lib/stripe-constants';
+import { useTokens } from '@/hooks/useTokens';
+import { TokenPurchaseDialog } from '@/components/TokenPurchaseDialog';
+import { Crown, Clock, Sparkles, Loader2, CheckCircle, Check, UserCheck, Zap, Star, ChevronDown, Tag, Coins } from 'lucide-react';
 
 interface ConciergeMatchButtonProps {
   userId: string;
@@ -35,6 +37,8 @@ export const ConciergeMatchButton = ({
   showBenefits: showBenefitsProp = true 
 }: ConciergeMatchButtonProps) => {
   const { toast } = useToast();
+  const { balance, loading: balanceLoading } = useTokens(userId);
+  const tokenCost = getConciergeTokenCost(userType);
   const [loading, setLoading] = useState(false);
   const [pendingMatch, setPendingMatch] = useState<any>(null);
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
@@ -43,8 +47,7 @@ export const ConciergeMatchButton = ({
   const [benefitsVisible, setBenefitsVisible] = useState(showBenefitsProp);
   const [showExplanationModal, setShowExplanationModal] = useState(false);
   const [loadingDismissState, setLoadingDismissState] = useState(true);
-  const [discountCode, setDiscountCode] = useState('');
-  const [discountApplied, setDiscountApplied] = useState(false);
+  const [showTokenPurchase, setShowTokenPurchase] = useState(false);
 
   const loadPendingMatch = useCallback(async () => {
     // Load both the match and the dismiss state from the profile
@@ -148,41 +151,54 @@ export const ConciergeMatchButton = ({
     return () => clearInterval(interval);
   }, [pendingMatch]);
 
-  const handleApplyDiscount = () => {
-    if (discountCode.toUpperCase() === 'CTLYST') {
-      setDiscountApplied(true);
-      toast({
-        title: "Discount Applied!",
-        description: "$10 off your premium match",
-      });
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Invalid Code',
-        description: 'The discount code is not valid',
-      });
-    }
-  };
-
   const handleProceedToPayment = async () => {
     setLoading(true);
     setShowExplanationModal(false);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-concierge-payment', {
-        body: { discountCode: discountApplied ? 'CTLYST' : undefined }
+    
+    // Check token balance
+    if (balance < tokenCost) {
+      toast({
+        variant: 'destructive',
+        title: 'Insufficient Tokens',
+        description: `You need ${tokenCost} tokens but only have ${balance}. Purchase more tokens to continue.`,
       });
+      setShowTokenPurchase(true);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-concierge-payment', {});
       
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+      if (error) {
+        if (error.message?.includes('Insufficient tokens')) {
+          toast({
+            variant: 'destructive',
+            title: 'Insufficient Tokens',
+            description: error.message,
+          });
+          setShowTokenPurchase(true);
+        } else {
+          throw error;
+        }
+        return;
+      }
+      
+      if (data?.success) {
+        toast({
+          title: "Purchase Successful!",
+          description: `In 8-12 hours maximum you will receive your personally curated match. ${tokenCost} tokens deducted.`,
+          duration: 8000,
+        });
+        loadPendingMatch();
       } else {
-        throw new Error('No checkout URL returned');
+        throw new Error('Purchase failed');
       }
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: error.message || 'Failed to create payment session',
+        description: error.message || 'Failed to complete purchase',
       });
     } finally {
       setLoading(false);
@@ -193,14 +209,19 @@ export const ConciergeMatchButton = ({
     setShowExplanationModal(true);
   };
 
-  const conciergePrice = getConciergePrice(userType);
-  const originalPrice = conciergePrice.displayPrice;
-  const discountedAmount = (conciergePrice.amount - 1000) / 100;
-  const displayPrice = discountApplied ? `$${discountedAmount}` : originalPrice;
-
   // Explanation modal - rendered as JSX, not a component
   const explanationModal = (
-    <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
+    <>
+      {showTokenPurchase && (
+        <TokenPurchaseDialog
+          userId={userId}
+          onPurchaseComplete={() => {
+            setShowTokenPurchase(false);
+            // Reload balance will happen automatically via useTokens hook
+          }}
+        />
+      )}
+      <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -226,36 +247,36 @@ export const ConciergeMatchButton = ({
           <div className="bg-muted/50 rounded-lg p-3 space-y-2">
             <h4 className="font-medium text-sm">How it works:</h4>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Complete your purchase ({displayPrice})</li>
+              <li>Spend {tokenCost} tokens to request a match</li>
               <li>Our team reviews your profile and preferences</li>
               <li>Within 8-12 hours, you'll receive a curated match</li>
               <li>Connect with your hand-picked {userType === 'founder' ? 'investor' : 'startup'}</li>
             </ol>
           </div>
-          <div className="space-y-3 pt-2">
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Discount code"
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  disabled={discountApplied}
-                  className="pl-9"
-                />
+          <div className="bg-amber-50 dark:bg-amber-950/20 rounded-lg p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Token Cost:</span>
+              <div className="flex items-center gap-1">
+                <Coins className="w-4 h-4 text-amber-600" />
+                <span className="text-lg font-bold">{tokenCost} tokens</span>
               </div>
-              <Button
-                variant="outline"
-                onClick={handleApplyDiscount}
-                disabled={discountApplied || !discountCode}
-              >
-                {discountApplied ? <CheckCircle className="w-4 h-4 text-green-500" /> : 'Apply'}
-              </Button>
             </div>
-            {discountApplied && (
-              <p className="text-sm text-green-600 flex items-center gap-1">
-                <CheckCircle className="w-3 h-3" />
-                $10 discount applied! New price: {displayPrice}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Your Balance:</span>
+              {balanceLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <div className="flex items-center gap-1">
+                  <Coins className="w-4 h-4 text-amber-600" />
+                  <span className={`text-lg font-bold ${balance < tokenCost ? 'text-red-600' : 'text-green-600'}`}>
+                    {balance} tokens
+                  </span>
+                </div>
+              )}
+            </div>
+            {balance < tokenCost && (
+              <p className="text-xs text-red-600 mt-2">
+                Insufficient tokens. Purchase more to continue.
               </p>
             )}
           </div>
@@ -269,20 +290,21 @@ export const ConciergeMatchButton = ({
             </Button>
             <Button
               onClick={handleProceedToPayment}
-              disabled={loading}
+              disabled={loading || balanceLoading || balance < tokenCost}
               className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               ) : (
-                <Crown className="w-4 h-4 mr-2" />
+                <Coins className="w-4 h-4 mr-2" />
               )}
-              Purchase ({displayPrice})
+              Purchase ({tokenCost} tokens)
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 
   const handleDismissBanner = async () => {
@@ -372,7 +394,7 @@ export const ConciergeMatchButton = ({
               ) : (
                 <Crown className="w-4 h-4 mr-2" />
               )}
-              {verifying ? 'Verifying...' : `Request Premium Match (${originalPrice})`}
+              {verifying ? 'Verifying...' : `Request Premium Match (${tokenCost} tokens)`}
             </Button>
           </CardContent>
         </Card>

@@ -54,6 +54,67 @@ export const getConciergePrice = (userType: 'founder' | 'investor') => {
   return userType === 'founder' ? STRIPE_PRICES.CONCIERGE_FOUNDER : STRIPE_PRICES.CONCIERGE_INVESTOR;
 };
 
+// Token-based economy constants
+// Token costs for products (1 token = $1)
+export const TOKEN_COSTS = {
+  CONCIERGE_FOUNDER: 50, // $50 = 50 tokens
+  CONCIERGE_INVESTOR: 25, // $25 = 25 tokens
+  SPOTLIGHT_BOOST: 10, // $9.99 rounded to 10 tokens
+} as const;
+
+// Monthly token grants for Pro subscriptions
+export const PRO_MONTHLY_TOKENS = {
+  FOUNDER_PRO: 15, // $15/month = 15 tokens/month
+  INVESTOR_PRO: 100, // $100/month = 100 tokens/month
+} as const;
+
+// Token packages available for purchase
+// Note: Stripe price IDs need to be created in Stripe dashboard
+export const TOKEN_PACKAGES = [
+  {
+    id: 'starter',
+    name: 'Starter Pack',
+    tokens: 10,
+    priceCents: 1000,
+    displayPrice: '$10',
+    stripePriceId: '', // To be configured in Stripe
+  },
+  {
+    id: 'value',
+    name: 'Value Pack',
+    tokens: 25,
+    priceCents: 2500,
+    displayPrice: '$25',
+    stripePriceId: '', // To be configured in Stripe
+  },
+  {
+    id: 'popular',
+    name: 'Popular Pack',
+    tokens: 50,
+    priceCents: 5000,
+    displayPrice: '$50',
+    stripePriceId: '', // To be configured in Stripe
+  },
+  {
+    id: 'premium',
+    name: 'Premium Pack',
+    tokens: 100,
+    priceCents: 10000,
+    displayPrice: '$100',
+    stripePriceId: '', // To be configured in Stripe
+  },
+] as const;
+
+// Helper to get token cost for concierge match
+export const getConciergeTokenCost = (userType: 'founder' | 'investor') => {
+  return userType === 'founder' ? TOKEN_COSTS.CONCIERGE_FOUNDER : TOKEN_COSTS.CONCIERGE_INVESTOR;
+};
+
+// Helper to get monthly token grant for Pro subscription
+export const getProMonthlyTokens = (userType: 'founder' | 'investor') => {
+  return userType === 'founder' ? PRO_MONTHLY_TOKENS.FOUNDER_PRO : PRO_MONTHLY_TOKENS.INVESTOR_PRO;
+};
+
 // For backward compatibility with existing useSubscription hook
 export const SUBSCRIPTION_PLANS = {
   investor_pro: {
