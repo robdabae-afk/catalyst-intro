@@ -11,7 +11,7 @@ const corsHeaders = {
 const TOKEN_COSTS = {
   CONCIERGE_FOUNDER: 50,
   CONCIERGE_INVESTOR: 25,
-  SPOTLIGHT_BOOST: 10,
+  SPOTLIGHT_BOOST: 30,
 };
 
 const PRO_MONTHLY_TOKENS = {
@@ -309,6 +309,67 @@ serve(async (req) => {
 
         return new Response(
           JSON.stringify({ success: true, tokensGranted: tokenAmount, transactionId: transaction.id }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      case 'purchase_pro_week': {
+        const PRO_WEEK_COST = 100;
+        
+        // Check user has sufficient tokens
+        const { data: profile, error: profileError } = await supabaseAdmin
+          .from('profiles')
+          .select('tokens, user_type')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        if ((profile?.tokens || 0) < PRO_WEEK_COST) {
+          return new Response(
+            JSON.stringify({ error: 'Insufficient tokens', balance: profile?.tokens || 0, required: PRO_WEEK_COST }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Deduct tokens
+        const { data: transaction, error: transactionError } = await supabaseAdmin
+          .from('token_transactions')
+          .insert({
+            user_id: user.id,
+            transaction_type: 'spend',
+            amount: PRO_WEEK_COST,
+            product_type: 'pro_week',
+            description: '1 Week of Pro subscription',
+          })
+          .select()
+          .single();
+
+        if (transactionError) throw transactionError;
+
+        // Grant Pro for 1 week
+        const now = new Date();
+        const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const plan = profile?.user_type === 'founder' ? 'startup_pro' : 'investor_pro';
+
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            subscription_plan: plan,
+            subscription_status: 'active',
+            subscription_expires_at: oneWeekLater.toISOString(),
+          })
+          .eq('id', user.id);
+
+        logStep('Pro week purchased', { userId: user.id, plan });
+
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            transactionId: transaction.id, 
+            expiresAt: oneWeekLater.toISOString(),
+            plan 
+          }),
           { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }

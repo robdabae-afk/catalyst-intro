@@ -157,9 +157,20 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
                 )}
               </div>
               {balance < tokenCost && (
-                <p className="text-xs text-red-600 mt-2">
-                  Insufficient tokens. Purchase more to continue.
-                </p>
+                <div className="space-y-2 mt-2">
+                  <p className="text-xs text-red-600">
+                    Insufficient tokens. Purchase more to continue.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowTokenPurchase(true)}
+                    className="w-full"
+                  >
+                    <Coins className="w-4 h-4 mr-2" />
+                    Purchase Here
+                  </Button>
+                </div>
               )}
             </div>
             <div className="text-center py-2 border-t border-b border-border">
@@ -249,9 +260,20 @@ export const SpotlightPurchaseButton = ({ userId, variant = 'default' }: Spotlig
                 )}
               </div>
               {balance < tokenCost && (
-                <p className="text-xs text-red-600 mt-2">
-                  Insufficient tokens. Purchase more to continue.
-                </p>
+                <div className="space-y-2 mt-2">
+                  <p className="text-xs text-red-600">
+                    Insufficient tokens. Purchase more to continue.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowTokenPurchase(true)}
+                    className="w-full"
+                  >
+                    <Coins className="w-4 h-4 mr-2" />
+                    Purchase Here
+                  </Button>
+                </div>
               )}
             </div>
             <div className="text-center py-2 border-t border-b border-border">

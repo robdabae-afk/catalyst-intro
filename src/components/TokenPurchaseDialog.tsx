@@ -199,13 +199,74 @@ export const TokenPurchaseDialog = ({
             </div>
           )}
 
+          {/* Pro Week Purchase Option */}
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-medium mb-3">Special Offers</h4>
+            <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">1 Week of Pro</CardTitle>
+                  <Badge variant="secondary" className="bg-amber-500/20">100 tokens</Badge>
+                </div>
+                <CardDescription>
+                  Get all Pro benefits for 1 week
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const { data, error } = await supabase.functions.invoke('manage-tokens', {
+                        body: {
+                          action: 'purchase_pro_week',
+                        },
+                      });
+                      if (error) throw error;
+                      if (data?.success) {
+                        toast({
+                          title: 'Pro Activated!',
+                          description: 'You now have Pro access for 1 week.',
+                        });
+                        setDialogOpen(false);
+                        if (onPurchaseComplete) onPurchaseComplete();
+                      }
+                    } catch (error: any) {
+                      toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: error.message || 'Failed to purchase Pro week',
+                      });
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading || balanceLoading || balance < 100}
+                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4 mr-2" />
+                  )}
+                  Purchase Pro Week (100 tokens)
+                </Button>
+                {balance < 100 && (
+                  <p className="text-xs text-red-600 mt-2 text-center">
+                    You need 100 tokens for this offer
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Info */}
           <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 text-sm text-muted-foreground">
             <p className="font-medium mb-1">How tokens work:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Pro subscriptions grant monthly tokens automatically</li>
               <li>Tokens never expire</li>
-              <li>Use tokens to purchase Concierge Matches and Spotlight Boosts</li>
+              <li>Use tokens to purchase Concierge Matches, Spotlight Boosts, and Instant Messages</li>
             </ul>
           </div>
         </div>

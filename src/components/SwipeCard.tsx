@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FUNDING_STAGES } from "@/lib/constants";
 import type { AdProfile, QueueItem } from "@/hooks/useSwipeQueue";
+import { InstantMessageDialog } from "@/components/InstantMessageDialog";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SwipeCardProps {
   profile: QueueItem;
@@ -13,15 +16,19 @@ interface SwipeCardProps {
   userType: 'founder' | 'investor';
   isAd?: boolean;
   isPro?: boolean; // Pro users bypass 3-second ad delay
+  currentUserId?: string; // Current user's ID for instant messaging
 }
 
-export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = false }: SwipeCardProps) => {
+export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = false, currentUserId }: SwipeCardProps) => {
+  const { toast } = useToast();
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragDirection, setDragDirection] = useState<'horizontal' | 'vertical' | null>(null);
   // PRO BYPASS: Pro users never have ad lock
   const [adLocked, setAdLocked] = useState(isAd && !isPro);
+  const [showInstantMessage, setShowInstantMessage] = useState(false);
+  const [showPopularPrompt, setShowPopularPrompt] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -129,10 +136,28 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
   const profileData = isShowingFounder ? founderProfile : investorProfile;
   const bannerUrl = isAdProfile ? adProfile?.banner_url : profileData?.banner_url;
   const avatarUrl = organicProfile?.avatar_url;
+  const profileId = organicProfile?.id;
+  const profileName = organicProfile?.name || 'User';
+  const instantMessageCount = organicProfile?.instant_message_count || 0;
+  const isPopular = instantMessageCount >= 5; // Consider popular if 5+ instant messages received
   
   // Check if founder has a video (video-based profile)
   const hasVideo = isShowingFounder && founderProfile?.video_url;
   const videoUrl = founderProfile?.video_url;
+
+  // Show popular user prompt occasionally for founders and non-pro investors
+  useEffect(() => {
+    if (!isAd && profileId && currentUserId && (userType === 'founder' || !isPro) && isPopular) {
+      // Show prompt 30% of the time for popular users
+      const shouldShow = Math.random() < 0.3;
+      if (shouldShow) {
+        setShowPopularPrompt(true);
+        // Auto-hide after 5 seconds
+        const timer = setTimeout(() => setShowPopularPrompt(false), 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [profileId, currentUserId, userType, isPro, isPopular, isAd]);
 
   return (
     <div className="relative w-full max-w-[280px] sm:max-w-md mx-auto h-[480px] sm:h-[600px] perspective-1000">
@@ -522,6 +547,35 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         </div>
       </Card>
 
+      {/* Popular User Prompt */}
+      {showPopularPrompt && !isAd && profileId && (
+        <Alert className="absolute top-4 left-4 right-4 z-30 bg-blue-50 dark:bg-blue-950/50 border-blue-500/30">
+          <AlertDescription className="text-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-blue-900 dark:text-blue-100">
+                  {profileName} is popular and receives many messages!
+                </p>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                  Send an instant message to stand out from the crowd.
+                </p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  setShowPopularPrompt(false);
+                  setShowInstantMessage(true);
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <MessageSquare className="w-4 h-4 mr-1" />
+                Message
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Action buttons */}
       <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2 flex gap-4 sm:gap-6">
         <Button
@@ -533,6 +587,17 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         >
           <X className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
+        {!isAd && profileId && currentUserId && (
+          <Button
+            size="lg"
+            variant="outline"
+            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-blue-500 hover:text-blue-500"
+            onClick={() => setShowInstantMessage(true)}
+            title="Send Instant Message"
+          >
+            <MessageSquare className="w-5 h-5 sm:w-8 sm:h-8" />
+          </Button>
+        )}
         <Button
           size="lg"
           variant="outline"
@@ -543,6 +608,22 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
           <Heart className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
       </div>
+
+      {/* Instant Message Dialog */}
+      {!isAd && profileId && currentUserId && (
+        <InstantMessageDialog
+          open={showInstantMessage}
+          onOpenChange={setShowInstantMessage}
+          senderId={currentUserId}
+          receiverId={profileId}
+          receiverName={profileName}
+          userType={userType}
+          isPopular={isPopular}
+          onMessageSent={() => {
+            // Optionally refresh or update UI
+          }}
+        />
+      )}
     </div>
   );
 };

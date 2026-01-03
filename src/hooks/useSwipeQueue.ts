@@ -28,6 +28,7 @@ export interface OrganicProfile {
   name: string;
   email: string;
   avatar_url?: string;
+  instant_message_count?: number;
   founder_profiles?: any[];
   investor_profiles?: any[];
 }

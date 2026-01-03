@@ -59,7 +59,10 @@ export const getConciergePrice = (userType: 'founder' | 'investor') => {
 export const TOKEN_COSTS = {
   CONCIERGE_FOUNDER: 50, // $50 = 50 tokens
   CONCIERGE_INVESTOR: 25, // $25 = 25 tokens
-  SPOTLIGHT_BOOST: 10, // $9.99 rounded to 10 tokens
+  SPOTLIGHT_BOOST: 30, // 30 tokens
+  INSTANT_MESSAGE_FOUNDER: 35, // 35 tokens for founders
+  INSTANT_MESSAGE_INVESTOR: 30, // 30 tokens for investors
+  PRO_WEEK: 100, // 100 tokens for 1 week of Pro
 } as const;
 
 // Monthly token grants for Pro subscriptions
