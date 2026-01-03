@@ -32,6 +32,7 @@ export const AdminMatchFeedbackPanel = () => {
   }, []);
 
   const loadMatches = async () => {
+    setLoading(true);
     try {
       const { data: matchesData, error } = await supabase
         .from('matches')
