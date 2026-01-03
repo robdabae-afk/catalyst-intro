@@ -1,69 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coffee, FileText, TrendingUp, Users, Banknote, ArrowRight, Building2 } from "lucide-react";
-import { FeaturedProfileCard } from "@/components/FeaturedProfileCard";
-
+import { Coffee, FileText, TrendingUp, Users, Banknote, ArrowRight } from "lucide-react";
+import heroBg from "@/assets/hero-bg.jpg";
 const Landing = () => {
   const navigate = useNavigate();
   return <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-background to-muted/30">
-        {/* Logo in top left */}
-        <div className="absolute top-6 left-6 z-10">
-          <div className="flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-primary" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              CATALYST INTRO
-            </h1>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{
+      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url(${heroBg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center'
+    }}>
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 text-white tracking-tight">
+            Swipe. Connect. Fund.
+          </h1>
+          <p className="text-xl md:text-2xl mb-12 text-gray-200 max-w-3xl mx-auto">The simplest way for founders and investors to collaborate.</p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-100 shadow-lg">
+              I'm a Founder
+            </Button>
+            <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
+              I'm an Investor
+            </Button>
           </div>
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left Column - Profile Card */}
-            <div className="flex justify-center lg:justify-start">
-              <FeaturedProfileCard />
-            </div>
-
-            {/* Right Column - Marketing Content */}
-            <div className="text-center lg:text-left space-y-8">
-              <div className="space-y-6">
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground tracking-tight">
-                  Catalyst Intro: Swipe. Connect. Fund.
-                </h1>
-                <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                  The simplest way for founders and investors to collaborate. Build your future with the right partners.
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button 
-                  size="lg" 
-                  onClick={() => navigate('/onboarding/founder')} 
-                  className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-100 shadow-lg"
-                >
-                  I'm a Founder
-                </Button>
-                <Button 
-                  size="lg" 
-                  onClick={() => navigate('/onboarding/investor')} 
-                  className="text-lg px-8 py-6 bg-transparent border-2 border-foreground text-foreground hover:bg-foreground/10"
-                >
-                  I'm an Investor
-                </Button>
-              </div>
-              
-              <p className="text-muted-foreground">
-                Already have an account?{" "}
-                <button 
-                  onClick={() => navigate('/auth')} 
-                  className="text-primary underline hover:text-primary/80 transition-colors"
-                >
-                  Sign in
-                </button>
-              </p>
-            </div>
-          </div>
+          
+          <p className="mt-8 text-gray-300">
+            Already have an account?{" "}
+            <button onClick={() => navigate('/auth')} className="text-white underline hover:text-gray-200 transition-colors">
+              Sign in
+            </button>
+          </p>
         </div>
       </section>
 
