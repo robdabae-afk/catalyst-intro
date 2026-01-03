@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -24,6 +24,7 @@ import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 import { AdminReferralPanel } from "@/components/AdminReferralPanel";
 import { AdminConciergePanel } from "@/components/AdminConciergePanel";
 import { AdminFeedbackPanel } from "@/components/AdminFeedbackPanel";
+import { AdminMatchFeedbackPanel } from "@/components/AdminMatchFeedbackPanel";
 import { AdminRevenueTracker } from "@/components/AdminRevenueTracker";
 
 interface UserWithStatus {
@@ -314,7 +315,7 @@ const Admin = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 max-w-5xl">
+          <TabsList className="grid w-full grid-cols-9 max-w-6xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
@@ -334,6 +335,10 @@ const Admin = () => {
             <TabsTrigger value="feedback" className="flex items-center gap-2">
               <Star className="w-4 h-4" />
               Feedback
+            </TabsTrigger>
+            <TabsTrigger value="match-feedback" className="flex items-center gap-2">
+              <Heart className="w-4 h-4" />
+              Match Feedback
             </TabsTrigger>
             <TabsTrigger value="ads" className="flex items-center gap-2">
               <Megaphone className="w-4 h-4" />
@@ -355,6 +360,10 @@ const Admin = () => {
 
           <TabsContent value="feedback">
             <AdminFeedbackPanel />
+          </TabsContent>
+
+          <TabsContent value="match-feedback">
+            <AdminMatchFeedbackPanel />
           </TabsContent>
 
           <TabsContent value="concierge">

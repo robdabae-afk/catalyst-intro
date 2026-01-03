@@ -15,6 +15,7 @@ import { WelcomeBillboard } from "@/components/WelcomeBillboard";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import LegalAcceptanceNotice from "@/components/LegalAcceptanceNotice";
 import { TractionLimitBanner } from "@/components/TractionLimitBanner";
+import { ReferralShareModal } from "@/components/ReferralShareModal";
 import { useSwipeQueue, AdProfile, OrganicProfile } from "@/hooks/useSwipeQueue";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useDailySwipes } from "@/hooks/useDailySwipes";
@@ -40,6 +41,7 @@ const Dashboard = () => {
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
+  const [showReferralModal, setShowReferralModal] = useState(false);
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
   const [showLegalNotice, setShowLegalNotice] = useState(false);
   const [swipeCooldown, setSwipeCooldown] = useState(false);
@@ -274,7 +276,12 @@ const Dashboard = () => {
 
     // Check swipe limit for non-Pro users (only for organic profiles)
     if (!canSwipe) {
-      setShowUpgradePrompt(true);
+      // Show referral modal first for free users, then upgrade prompt
+      if (!isPro) {
+        setShowReferralModal(true);
+      } else {
+        setShowUpgradePrompt(true);
+      }
       return;
     }
 
@@ -325,9 +332,9 @@ const Dashboard = () => {
         });
       }, 1000);
 
-      // Show upgrade prompt when reaching limit (at 0 remaining)
+      // Show referral modal when reaching limit (at 0 remaining) for free users
       if (!isPro && remainingSwipes <= 1) {
-        setShowUpgradePrompt(true);
+        setShowReferralModal(true);
       }
     } catch (error: any) {
       toast({
@@ -382,8 +389,21 @@ const Dashboard = () => {
         <FeedbackModal userId={currentUser.id} />
       )}
 
+      {/* Referral Share Modal - Shows first for free users when swipes run out */}
+      {showReferralModal && currentUser && !isPro && (
+        <ReferralShareModal
+          userId={currentUser.id}
+          userType={currentUser.user_type}
+          onClose={() => {
+            setShowReferralModal(false);
+            // Show upgrade prompt after referral modal closes
+            setShowUpgradePrompt(true);
+          }}
+        />
+      )}
+
       {/* Swipe Limit Reached Flow - Shows ad for 10s then Pro/Concierge options */}
-      {showUpgradePrompt && currentUser && (
+      {showUpgradePrompt && currentUser && !showReferralModal && (
         <SwipeLimitReachedFlow
           adProfile={adProfiles.length > 0 ? adProfiles[0] : null}
           userId={currentUser.id}
