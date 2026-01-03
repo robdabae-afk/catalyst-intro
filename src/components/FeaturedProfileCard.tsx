@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Building2, MapPin, TrendingUp, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Helmet } from "react-helmet-async";
 
 interface ProfileData {
   id: string;
@@ -26,6 +27,9 @@ interface ProfileData {
   };
 }
 
+const CACHE_KEY = 'featured_profile_cache';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
 export const FeaturedProfileCard = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,54 +37,67 @@ export const FeaturedProfileCard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Try searching by email first
-        let profileData = null;
-        
-        const { data: emailData, error: emailError } = await supabase
-          .from('profiles')
-          .select('id, name, email, avatar_url, user_type')
-          .ilike('email', '%stephenmonster88@gmail.com%')
-          .eq('is_hidden', false)
-          .maybeSingle();
-
-        if (!emailError && emailData) {
-          profileData = emailData;
-        } else {
-          // Fallback: try searching by name
-          const { data: nameData, error: nameError } = await supabase
-            .from('profiles')
-            .select('id, name, email, avatar_url, user_type')
-            .or('name.ilike.%Rob and Stephen%,name.ilike.%Rob%Stephen%')
-            .eq('is_hidden', false)
-            .maybeSingle();
-          
-          if (!nameError && nameData) {
-            profileData = nameData;
+        // Check cache first for instant load
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION && data) {
+              setProfile(data);
+              setLoading(false);
+              // Still fetch fresh data in background, but show cached immediately
+            }
+          } catch (e) {
+            // Invalid cache, continue to fetch
           }
         }
 
-        if (!profileData) {
-          setLoading(false);
-          return;
-        }
-
-        // Fetch founder profile data using public view (accessible to all)
-        const { data: founderData, error: founderError } = await supabase
-          .from('founder_profiles')
-          .select('*')
-          .eq('profile_id', profileData.id)
+        // Single optimized query that gets everything at once
+        const { data, error } = await supabase
+          .from('profiles')
+          .select(`
+            id, name, email, avatar_url, user_type,
+            founder_profiles (*)
+          `)
+          .or('email.ilike.%stephenmonster88@gmail.com%,name.ilike.%Rob and Stephen%,name.ilike.%Rob%Stephen%')
+          .eq('is_hidden', false)
           .maybeSingle();
 
-        if (founderError) {
-          console.error('Error fetching founder profile:', founderError);
+        if (error) {
+          console.error('Error fetching featured profile:', error);
           setLoading(false);
           return;
         }
 
-        setProfile({
-          ...profileData,
-          founder_profile: founderData || undefined,
-        });
+        if (!data) {
+          setLoading(false);
+          return;
+        }
+
+        // Transform the data to match our interface
+        const founderProfiles = data.founder_profiles as any[];
+        if (founderProfiles && founderProfiles.length > 0) {
+          const profileData: ProfileData = {
+            id: data.id,
+            name: data.name,
+            email: data.email,
+            avatar_url: data.avatar_url,
+            user_type: data.user_type,
+            founder_profile: founderProfiles[0],
+          };
+
+          setProfile(profileData);
+          
+          // Cache the result
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+              data: profileData,
+              timestamp: Date.now()
+            }));
+          } catch (e) {
+            // localStorage might be full or disabled, ignore
+          }
+        }
       } catch (error) {
         console.error('Error fetching featured profile:', error);
       } finally {
@@ -108,9 +125,31 @@ export const FeaturedProfileCard = () => {
   }
 
   const founderProfile = profile.founder_profile;
+  
+  // Get image URL for meta tags (prefer banner, fallback to avatar)
+  const imageUrl = founderProfile.banner_url || profile.avatar_url || '';
+  const title = `${profile.name}${founderProfile.startup_name ? ` - ${founderProfile.startup_name}` : ''}`;
+  const description = founderProfile.one_liner || 'Connect with founders and investors on Catalyst';
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-4">
+    <>
+      {/* Dynamic meta tags for link previews */}
+      <Helmet>
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        {imageUrl && <meta property="og:image" content={imageUrl} />}
+        {imageUrl && <meta property="og:image:width" content="1200" />}
+        {imageUrl && <meta property="og:image:height" content="630" />}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+      </Helmet>
+      
+      <div className="w-full max-w-md mx-auto space-y-4">
       {/* Profile Card */}
       <Card className="overflow-hidden border-border/50 bg-card shadow-lg">
         {/* Header */}
@@ -217,6 +256,7 @@ export const FeaturedProfileCard = () => {
       <p className="text-2xl font-semibold text-center text-white">
         Swipe on profiles like us.
       </p>
-    </div>
+      </div>
+    </>
   );
 };
