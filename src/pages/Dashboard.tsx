@@ -127,7 +127,7 @@ const Dashboard = () => {
       const [profilesResult, filtersResult, adsResult] = await Promise.all([
         supabase
           .from('profiles')
-          .select('*, instant_message_count')
+          .select('*')
           .eq('user_type', targetType)
           .eq('is_hidden', false)
           .neq('id', user.id),
