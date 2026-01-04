@@ -24,6 +24,7 @@ import Settings from "./pages/Settings";
 import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
+import CatalystDeck from "./pages/CatalystDeck";
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
           <Route path="/settings" element={<Settings />} />
           <Route path="/filters" element={<FilterPreferences />} />
           <Route path="/referrals" element={<ReferralDashboard />} />
+          <Route path="/catalystdeck" element={<CatalystDeck />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
