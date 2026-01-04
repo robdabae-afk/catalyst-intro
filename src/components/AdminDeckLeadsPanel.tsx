@@ -34,8 +34,7 @@ export function AdminDeckLeadsPanel() {
     const loadLeads = async () => {
         try {
             setLoading(true);
-            // @ts-ignore - Table likely needs creation in Supabase
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('deck_leads')
                 .select('*')
                 .order('created_at', { ascending: false });

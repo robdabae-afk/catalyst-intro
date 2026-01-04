@@ -74,13 +74,11 @@ export function LeadCaptureDialog({
 
             // Save to Supabase
             try {
-                // @ts-ignore
-                await supabase.from('deck_leads').insert({
+                await (supabase as any).from('deck_leads').insert({
                     name: values.name,
                     email: values.email,
                     phone: values.phone,
                     source: 'download',
-                    created_at: new Date().toISOString()
                 });
             } catch (err) {
                 console.error('Error saving lead:', err);
