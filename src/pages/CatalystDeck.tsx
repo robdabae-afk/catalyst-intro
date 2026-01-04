@@ -809,17 +809,17 @@ export default function CatalystDeck() {
                             </div>
 
                             {/* SEC Compliance KPI Marker (1.5 Year Mark) */}
-                            <div className="absolute top-0 bottom-0 z-20 flex flex-col items-center pointer-events-none" style={{ left: '33.33%', transform: 'translateX(-50%)' }}>
+                            <div className="absolute top-0 bottom-0 z-60 flex flex-col items-center pointer-events-none" style={{ left: '33.33%', transform: 'translateX(-50%)' }}>
                                 {/* Vertical Line */}
-                                <div className="h-full w-[1px] border-l border-dashed border-[#DD5555] opacity-60"></div>
+                                <div className="h-full w-[1px] border-l border-dashed border-[#FFAA00] opacity-80"></div>
 
                                 {/* Badge */}
-                                <div className="absolute top-[20%] bg-[#0A0A0A] border border-[#DD5555] shadow-[0_0_15px_rgba(221,85,85,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2">
-                                    <Shield className="w-3 h-3 text-[#DD5555]" />
+                                <div className="absolute top-[20%] bg-[#0A0A0A] border border-[#FFAA00] shadow-[0_0_15px_rgba(255,170,0,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2">
+                                    <Shield className="w-3 h-3 text-[#FFAA00]" />
                                     <span className="text-[10px] font-bold text-[#FFFFFF] uppercase tracking-wider whitespace-nowrap">SEC Securities Compliance Achieved</span>
                                 </div>
                                 {/* Dot on X-Axis */}
-                                <div className="absolute bottom-0 w-2 h-2 bg-[#DD5555] rounded-full shadow-[0_0_10px_rgba(221,85,85,0.8)]"></div>
+                                <div className="absolute bottom-0 w-2 h-2 bg-[#FFAA00] rounded-full shadow-[0_0_10px_rgba(255,170,0,0.8)]"></div>
                             </div>
 
                             {/* Chart Area */}
