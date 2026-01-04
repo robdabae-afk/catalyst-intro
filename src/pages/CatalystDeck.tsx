@@ -762,8 +762,7 @@ export default function CatalystDeck() {
                                 <span className="whitespace-nowrap">Express interest in funding Catalyst Intro</span>
                             </Button>
                             <Button
-                                variant="outline"
-                                className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] border border-[#333333] hover:bg-[#E5E5E5] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => navigate('/')}
                             >
                                 Sign Up
