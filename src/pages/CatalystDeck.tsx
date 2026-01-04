@@ -17,6 +17,7 @@ export default function CatalystDeck() {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [watchlisted, setWatchlisted] = useState(false);
     const [showLeadCapture, setShowLeadCapture] = useState(false);
+    const [showFundingForm, setShowFundingForm] = useState(false);
     const navigate = useNavigate();
 
     // New VC-Ready Data
@@ -752,13 +753,20 @@ export default function CatalystDeck() {
                 );
             case 'cta-final':
                 return (
-                    <div className="text-center w-full max-w-xl">
-                        <div className="flex flex-col gap-4 justify-center items-center">
-                            <Button className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-64 no-print">
-                                Join Waitlist
+                    <div className="text-center w-full max-w-xl pt-16 md:pt-0">
+                        <div className="flex flex-col gap-6 justify-center items-center">
+                            <Button
+                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-72 no-print transition-all hover:scale-105"
+                                onClick={() => setShowFundingForm(true)}
+                            >
+                                Express interest in funding Catalyst Intro
                             </Button>
-                            <Button variant="outline" className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-64 no-print">
-                                Apply as Founder
+                            <Button
+                                variant="outline"
+                                className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-72 no-print transition-all hover:scale-105"
+                                onClick={() => navigate('/')}
+                            >
+                                Sign Up
                             </Button>
                         </div>
                         <div className="mt-12 pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
@@ -1011,6 +1019,63 @@ export default function CatalystDeck() {
                 onSuccess={handleCaptureSuccess}
             />
 
+            {/* Funding Interest Form Modal */}
+            {showFundingForm && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-[#0A0A0A] border border-[#333333] w-full max-w-md p-8 rounded-3xl shadow-2xl relative animate-in zoom-in-95 duration-300">
+                        <button
+                            onClick={() => setShowFundingForm(false)}
+                            className="absolute top-4 right-4 text-[#666666] hover:text-[#FFFFFF] transition-colors"
+                        >
+                            <X className="w-6 h-6" />
+                        </button>
+
+                        <div className="text-center mb-8">
+                            <div className="bg-[#FFFFFF] w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <DollarSign className="w-6 h-6 text-[#000000]" />
+                            </div>
+                            <h2 className="text-2xl font-bold text-[#FFFFFF]">Funding Interest</h2>
+                            <p className="text-[#666666] text-sm mt-2">Express interest in funding Catalyst Intro</p>
+                        </div>
+
+                        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setShowFundingForm(false); }}>
+                            <div>
+                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
+                                <input
+                                    type="tel"
+                                    required
+                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                    placeholder="+1 (555) 000-0000"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Anticipated Check Size ($)</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                    placeholder="$50,000"
+                                />
+                            </div>
+                            <Button
+                                type="submit"
+                                className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] font-bold py-6 rounded-xl mt-4"
+                            >
+                                Submit Expression of Interest
+                            </Button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
