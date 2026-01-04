@@ -92,11 +92,11 @@ export default function CatalystDeck() {
         },
         {
             id: "investor-pain",
-            type: "funnel-viz",
+            type: "allocation-missed",
             subtitle: "Investor Pain",
-            title: "TOO MUCH DEAL FLOW. TOO LITTLE SIGNAL.",
-            content: "Thousands of inbound decks. No consistent format. Investors miss high-quality opportunities due to noise, not lack of capital.",
-            narrative: "Precision over volume."
+            title: "THE HIGHEST COST IS MISSED ALLOCATION.",
+            content: "The problem isn't just noise—it's access. The defining companies of a generation are filled by insiders before they even raise. Investors miss out on returns because they simply can't get in.",
+            narrative: "Precision doesn't matter if the door is locked."
         },
         {
             id: "market",
@@ -404,20 +404,50 @@ export default function CatalystDeck() {
                         )}
                     </div>
                 );
-            case 'funnel-viz':
+            case 'allocation-missed':
                 return (
-                    <div className="relative w-full max-w-sm h-96 flex flex-col items-center justify-center">
-                        {/* Funnel Shape */}
-                        <div className="w-full h-2 bg-[#333333] mb-1"></div>
-                        <div className="w-[80%] h-2 bg-[#333333] mb-1 opacity-80"></div>
-                        <div className="w-[60%] h-2 bg-[#333333] mb-1 opacity-60"></div>
-                        <div className="w-[40%] h-2 bg-[#333333] mb-1 opacity-40"></div>
-                        <div className="w-[20%] h-2 bg-[#333333] mb-8 opacity-20"></div>
-
-                        <div className="w-16 h-16 rounded-full border-2 border-[#FFFFFF] flex items-center justify-center animate-pulse">
-                            <Target className="w-8 h-8 text-[#FFFFFF]" />
+                    <div className="relative w-full max-w-md aspect-[4/3] bg-[#0A0A0A] border border-[#333333] rounded-3xl p-6 flex flex-col shadow-2xl overflow-hidden">
+                        {/* Status Header */}
+                        <div className="flex justify-between items-center mb-8">
+                            <div className="flex gap-2">
+                                <div className="w-3 h-3 rounded-full bg-[#DD5555]"></div>
+                                <div className="w-3 h-3 rounded-full bg-[#333333]"></div>
+                                <div className="w-3 h-3 rounded-full bg-[#333333]"></div>
+                            </div>
+                            <div className="text-[10px] font-bold text-[#DD5555] bg-[#DD5555]/10 px-3 py-1 rounded-full uppercase tracking-widest border border-[#DD5555]/20 animate-pulse">
+                                Access Denied
+                            </div>
                         </div>
-                        <div className="mt-4 text-xs font-bold text-[#FFFFFF] uppercase tracking-widest">Signal Extracted</div>
+
+                        {/* Company Info (Abstract) */}
+                        <div className="flex items-center gap-4 mb-8">
+                            <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl">🦄</div>
+                            <div>
+                                <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
+                                <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
+                            </div>
+                        </div>
+
+                        {/* Round Details */}
+                        <div className="space-y-4 mb-8">
+                            <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
+                                <span className="text-sm text-[#AAAAAA]">Round Status</span>
+                                <span className="text-sm font-bold text-[#FFFFFF]">Oversubscribed (400%)</span>
+                            </div>
+                            <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
+                                <span className="text-sm text-[#AAAAAA]">Your Allocation</span>
+                                <span className="text-sm font-bold text-[#DD5555]">$0.00</span>
+                            </div>
+                        </div>
+
+                        {/* Locked Button */}
+                        <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+                            <Lock className="w-4 h-4 text-[#AAAAAA]" />
+                            <span className="text-xs font-bold text-[#AAAAAA] uppercase tracking-widest">Round Closed</span>
+                        </div>
+
+                        {/* Overlay Gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/80 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                 );
             case 'tam-sam-som':
