@@ -368,9 +368,9 @@ export default function CatalystDeck() {
                             </div>
                         )}
 
-                        <div className="flex gap-4 w-full justify-between items-center relative z-10 mb-8 md:mb-12">
+                        <div className="flex gap-4 w-full justify-between items-stretch relative z-10 mb-8 md:mb-12">
                             {slide.items.map((item: any, i: number) => (
-                                <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
+                                <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center flex flex-col justify-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
                                     <div className={`text-2xl md:text-5xl font-bold mb-1 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
                                         {item.value}
                                     </div>
