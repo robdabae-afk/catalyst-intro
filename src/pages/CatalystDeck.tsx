@@ -309,8 +309,10 @@ export default function CatalystDeck() {
                 return (
                     <div className="flex gap-4 w-full justify-between items-center">
                         {slide.items.map((item: any, i: number) => (
-                            <div key={i} className="flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center">
-                                <div className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-2">{item.value}</div>
+                            <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible`}>
+                                <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : 'text-[#FFFFFF]'}`}>
+                                    {item.value}
+                                </div>
                                 <div className="text-xs uppercase tracking-widest text-[#666666]">{item.label}</div>
                             </div>
                         ))}
@@ -722,6 +724,29 @@ export default function CatalystDeck() {
     return (
         <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative print-container">
             <style>{`
+        @keyframes chaos-pulse {
+            0% { 
+                text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+                transform: scale(1);
+                filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.2));
+            }
+            50% { 
+                text-shadow: 0 0 25px rgba(255, 0, 0, 0.9), 0 0 50px rgba(255, 0, 0, 0.6), 0 0 80px rgba(255, 0, 0, 0.3);
+                transform: scale(1.1);
+                filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8));
+            }
+            100% { 
+                text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+                transform: scale(1);
+                filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.2));
+            }
+        }
+        .chaos-animate {
+            color: #ff3333 !important;
+            animation: chaos-pulse 2s infinite ease-in-out;
+            display: inline-block;
+        }
+
         @media print {
             @page {
                 size: landscape;
