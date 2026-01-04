@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import heroBg from "@/assets/hero-bg.jpg";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Building2, MapPin, TrendingUp, FileText } from "lucide-react";
@@ -34,79 +35,31 @@ export const FeaturedProfileCard = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Hardcoded Catalyst Profile to ensure instant loading and fix disappearance bug
+  const catalystProfile: ProfileData = {
+    id: 'catalyst-intro',
+    name: 'Catalyst Team',
+    email: 'team@catalyst.com',
+    avatar_url: null, // Will fall back to 'C'
+    user_type: 'founder',
+    founder_profile: {
+      startup_name: 'Catalyst',
+      one_liner: 'The simplest way for founders and investors to collaborate. Build your future with the right partners.',
+      stage: 'Seed',
+      industry: ['B2B SaaS', 'FinTech', 'Marketplace'],
+      traction: 'Helping thousands of founders connect with investors.',
+      preferred_city: 'San Francisco',
+      pitch_deck_url: 'https://catalyst.com',
+      company_name: 'Catalyst Intro',
+      company_state: 'CA',
+      banner_url: heroBg,
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // Check cache first for instant load
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          try {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_DURATION && data) {
-              setProfile(data);
-              setLoading(false);
-              // Still fetch fresh data in background, but show cached immediately
-            }
-          } catch (e) {
-            // Invalid cache, continue to fetch
-          }
-        }
-
-        // Single optimized query that gets everything at once
-        const { data, error } = await supabase
-          .from('profiles')
-          .select(`
-            id, name, email, avatar_url, user_type,
-            founder_profiles (*)
-          `)
-          .or('email.ilike.%stephenmonster88@gmail.com%,name.ilike.%Rob and Stephen%,name.ilike.%Rob%Stephen%')
-          .eq('is_hidden', false)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching featured profile:', error);
-          setLoading(false);
-          return;
-        }
-
-        if (!data) {
-          setLoading(false);
-          return;
-        }
-
-        // Transform the data to match our interface
-        const founderProfiles = data.founder_profiles;
-        const founderProfilesArray = Array.isArray(founderProfiles) ? founderProfiles : (founderProfiles ? [founderProfiles] : []);
-        if (founderProfilesArray.length > 0) {
-          const profileData: ProfileData = {
-            id: data.id,
-            name: data.name,
-            email: data.email,
-            avatar_url: data.avatar_url,
-            user_type: data.user_type,
-            founder_profile: founderProfiles[0],
-          };
-
-          setProfile(profileData);
-          
-          // Cache the result
-          try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-              data: profileData,
-              timestamp: Date.now()
-            }));
-          } catch (e) {
-            // localStorage might be full or disabled, ignore
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching featured profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
+    // Instant load with hardcoded data
+    setProfile(catalystProfile);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -126,7 +79,7 @@ export const FeaturedProfileCard = () => {
   }
 
   const founderProfile = profile.founder_profile;
-  
+
   // Get image URL for meta tags (prefer banner, fallback to avatar)
   const imageUrl = founderProfile.banner_url || profile.avatar_url || '';
   const title = `${profile.name}${founderProfile.startup_name ? ` - ${founderProfile.startup_name}` : ''}`;
@@ -143,120 +96,122 @@ export const FeaturedProfileCard = () => {
         {imageUrl && <meta property="og:image:height" content="630" />}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-        
+
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         {imageUrl && <meta name="twitter:image" content={imageUrl} />}
       </Helmet>
-      
+
       <div className="w-full max-w-md mx-auto space-y-4">
-      {/* Profile Card */}
-      <Card className="overflow-hidden border-border/50 bg-card shadow-lg">
-        {/* Header */}
-        <div className="bg-gradient-to-br from-primary/20 to-accent/20 px-6 py-4">
-          <h2 className="text-2xl font-bold text-foreground">Connect.</h2>
-        </div>
-
-        {/* Banner */}
-        {founderProfile.banner_url && (
-          <div className="relative h-24 bg-gradient-to-br from-primary/20 to-accent/20">
-            <img 
-              src={founderProfile.banner_url} 
-              alt="Banner" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-card to-transparent" />
+        {/* Profile Card */}
+        <Card className="overflow-hidden border-border/50 bg-card shadow-lg">
+          {/* Header */}
+          <div className="bg-gradient-to-br from-primary/20 to-accent/20 px-6 py-4">
+            <h2 className="text-2xl font-bold text-foreground">Connect.</h2>
           </div>
-        )}
 
-        {/* Profile Header Section */}
-        <CardHeader className="pb-2 pt-4 px-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="w-16 h-16 border-4 border-background">
-              <AvatarImage src={profile.avatar_url || ''} alt={profile.name} />
-              <AvatarFallback className="bg-primary/20 text-primary text-xl">
-                {profile.name?.charAt(0) || 'R'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <CardTitle className="text-xl truncate">{profile.name}</CardTitle>
-              <p className="text-sm text-muted-foreground truncate">{profile.email}</p>
-              <Badge variant="secondary" className="mt-1 capitalize">Founder</Badge>
-            </div>
-          </div>
-        </CardHeader>
-
-        {/* Content Section */}
-        <CardContent className="space-y-3 pt-2 px-6 pb-6">
-          {/* Startup Name */}
-          {founderProfile.startup_name && (
-            <div>
-              <h3 className="text-lg font-semibold text-foreground">{founderProfile.startup_name}</h3>
+          {/* Banner */}
+          {founderProfile.banner_url && (
+            <div className="relative h-24 bg-gradient-to-br from-primary/20 to-accent/20">
+              <img
+                src={founderProfile.banner_url}
+                alt="Banner"
+                className="w-full h-full object-cover"
+                loading="eager"
+                fetchPriority="high"
+              />
+              <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-card to-transparent" />
             </div>
           )}
 
-          {/* One-liner */}
-          {founderProfile.one_liner && (
-            <p className="text-sm leading-snug text-foreground">
-              {founderProfile.one_liner}
-            </p>
-          )}
+          {/* Profile Header Section */}
+          <CardHeader className="pb-2 pt-4 px-6">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-16 h-16 border-4 border-background">
+                <AvatarImage src={profile.avatar_url || ''} alt={profile.name} />
+                <AvatarFallback className="bg-primary/20 text-primary text-xl">
+                  {profile.name?.charAt(0) || 'R'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 min-w-0">
+                <CardTitle className="text-xl truncate">{profile.name}</CardTitle>
+                <p className="text-sm text-muted-foreground truncate">{profile.email}</p>
+                <Badge variant="secondary" className="mt-1 capitalize">Founder</Badge>
+              </div>
+            </div>
+          </CardHeader>
 
-          {/* Stage & Industry */}
-          <div className="flex flex-wrap items-center gap-1">
-            {founderProfile.stage && (
-              <Badge variant="outline" className="text-xs">
-                {founderProfile.stage.replace('-', ' ')}
-              </Badge>
+          {/* Content Section */}
+          <CardContent className="space-y-3 pt-2 px-6 pb-6">
+            {/* Startup Name */}
+            {founderProfile.startup_name && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{founderProfile.startup_name}</h3>
+              </div>
             )}
-            {founderProfile.industry?.map((ind: string) => (
-              <Badge key={ind} variant="secondary" className="text-xs">
-                {ind}
-              </Badge>
-            ))}
-          </div>
 
-          {/* Location */}
-          {founderProfile.preferred_city && (
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="w-3 h-3 flex-shrink-0" />
-              <span>{founderProfile.preferred_city}</span>
+            {/* One-liner */}
+            {founderProfile.one_liner && (
+              <p className="text-sm leading-snug text-foreground">
+                {founderProfile.one_liner}
+              </p>
+            )}
+
+            {/* Stage & Industry */}
+            <div className="flex flex-wrap items-center gap-1">
+              {founderProfile.stage && (
+                <Badge variant="outline" className="text-xs">
+                  {founderProfile.stage.replace('-', ' ')}
+                </Badge>
+              )}
+              {founderProfile.industry?.map((ind: string) => (
+                <Badge key={ind} variant="secondary" className="text-xs">
+                  {ind}
+                </Badge>
+              ))}
             </div>
-          )}
 
-          {/* Traction */}
-          {founderProfile.traction && (
-            <div className="bg-muted/50 rounded-md p-3">
-              <div className="flex items-center gap-1.5 mb-2">
-                <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
-                <p className="text-xs font-medium text-muted-foreground">Traction</p>
+            {/* Location */}
+            {founderProfile.preferred_city && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <MapPin className="w-3 h-3 flex-shrink-0" />
+                <span>{founderProfile.preferred_city}</span>
               </div>
-              <div className="text-xs text-foreground whitespace-pre-line">
-                {founderProfile.traction}
+            )}
+
+            {/* Traction */}
+            {founderProfile.traction && (
+              <div className="bg-muted/50 rounded-md p-3">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
+                  <p className="text-xs font-medium text-muted-foreground">Traction</p>
+                </div>
+                <div className="text-xs text-foreground whitespace-pre-line">
+                  {founderProfile.traction}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* View Pitch Deck Button */}
-          {founderProfile.pitch_deck_url && (
-            <Button 
-              variant="outline" 
-              className="w-full" 
-              size="sm"
-              onClick={() => window.open(founderProfile.pitch_deck_url || '', '_blank')}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              View Pitch Deck
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+            {/* View Pitch Deck Button */}
+            {founderProfile.pitch_deck_url && (
+              <Button
+                variant="outline"
+                className="w-full"
+                size="sm"
+                onClick={() => window.open(founderProfile.pitch_deck_url || '', '_blank')}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                View Pitch Deck
+              </Button>
+            )}
+          </CardContent>
+        </Card>
 
-      {/* Call to Action Text */}
-      <p className="text-2xl font-semibold text-center text-white">
-        Swipe on profiles like us.
-      </p>
+        {/* Call to Action Text */}
+        <p className="text-2xl font-semibold text-center text-white">
+          Swipe on profiles like us.
+        </p>
       </div>
     </>
   );
