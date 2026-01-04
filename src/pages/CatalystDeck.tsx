@@ -1005,7 +1005,7 @@ export default function CatalystDeck() {
             <style>{`
         @keyframes pulse-glow {
             0%, 100% { border-color: #444444; box-shadow: 0 0 5px rgba(255,255,255,0.1); }
-            50% { border-color: #666666; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+            50% { border-color: #FFFFFF; box-shadow: 0 0 20px rgba(255,255,255,0.6); }
         }
         @keyframes swipe-hint {
             0%, 100% { transform: translateX(0) rotate(0deg); }
