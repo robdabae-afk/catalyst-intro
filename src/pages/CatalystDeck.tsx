@@ -391,79 +391,90 @@ export default function CatalystDeck() {
                 );
             case 'growth-chart':
                 return (
-                    <div className="w-full max-w-2xl">
-                        <div className="relative h-64 border-l border-b border-[#333333] ml-8 mb-8">
+                    <div className="w-full max-w-3xl relative px-12">
+                        {/* Left Y-Axis (Revenue) */}
+                        <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[10px] text-[#555555] font-bold h-64 py-2">
+                            <span>$20M</span>
+                            <span>$10M</span>
+                            <span>$0</span>
+                        </div>
+
+                        {/* Right Y-Axis (Users) */}
+                        <div className="absolute right-0 top-0 bottom-8 flex flex-col justify-between text-[10px] text-[#555555] font-bold h-64 py-2 text-right">
+                            <span>100k</span>
+                            <span>50k</span>
+                            <span>0</span>
+                        </div>
+
+                        <div className="relative h-64 border-b border-[#333333] mb-8 mx-4">
                             {/* Grid Lines */}
                             <div className="absolute inset-0 flex flex-col justify-between opacity-20">
                                 <div className="border-t border-[#FFFFFF] w-full h-0"></div>
                                 <div className="border-t border-[#FFFFFF] w-full h-0"></div>
                                 <div className="border-t border-[#FFFFFF] w-full h-0"></div>
-                                <div className="border-t border-[#FFFFFF] w-full h-0"></div>
                             </div>
 
-                            {/* Bars & Line Container */}
-                            <div className="absolute inset-0 flex items-end justify-around px-8">
+                            {/* Chart Area */}
+                            <div className="absolute inset-0 grid grid-cols-3 items-end">
                                 {slide.items.map((item: any, i: number) => {
-                                    // Scale Revenue (Max ~20M)
+                                    // Scale Revenue (Max $20M)
                                     const revValue = parseFloat(item.revenue.replace(/[^0-9.]/g, ''));
                                     const heightPerc = (revValue / 20) * 100;
 
-                                    // Scale Users (Max ~100k)
+                                    // Scale Users (Max 100k)
                                     const userValue = parseInt(item.users.replace(/[^0-9]/g, ''));
                                     const userHeight = (userValue / 100) * 100;
 
                                     return (
-                                        <div key={i} className="relative flex flex-col items-center group w-24">
+                                        <div key={i} className="relative flex flex-col items-center justify-end h-full">
                                             {/* Bar (Revenue) */}
                                             <div
-                                                className={`w-12 bg-[#FFFFFF] transition-all duration-1000 origin-bottom ${isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
+                                                className={`w-16 bg-[#FFFFFF] transition-all duration-1000 origin-bottom relative z-10 ${isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
                                                 style={{ height: `${heightPerc}%`, transitionDelay: `${i * 200}ms` }}
                                             >
-                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {item.revenue}
                                                 </div>
                                             </div>
 
-                                            {/* Line Point (Users) - Visualized as floating orb */}
+                                            {/* Line Point (Users) */}
                                             <div
-                                                className={`absolute w-4 h-4 rounded-full border-2 border-[#FFFFFF] bg-[#000000] z-20 transition-all duration-1000 delay-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}
-                                                style={{ bottom: `${userHeight}%` }}
+                                                className={`absolute w-3 h-3 rounded-full border border-[#000000] bg-[#FFFFFF] z-30 transition-all duration-1000 delay-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                                style={{ bottom: `calc(${userHeight}% - 6px)` }}
                                             >
-                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-[#AAAAAA] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {item.users} Users
-                                                </div>
                                             </div>
 
                                             {/* Label */}
-                                            <div className="absolute -bottom-8 text-sm font-medium text-[#AAAAAA]">{item.label}</div>
+                                            <div className="absolute -bottom-8 text-xs font-medium text-[#AAAAAA] uppercase tracking-wider">{item.label}</div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            {/* Trend Line (SVG Overlay) */}
-                            <svg className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 delay-1000 ${isActive ? 'opacity-50' : 'opacity-0'}`}>
+                            {/* Trend Line (SVG) */}
+                            {/* Points mapped to Grid Centers: 16.66% (1/6), 50% (3/6), 83.33% (5/6) */}
+                            {/* Y Values (inverted): 5k->95%, 25k->75%, 80k->20% */}
+                            <svg className={`absolute inset-0 w-full h-full pointer-events-none z-20 transition-opacity duration-1000 delay-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="none" viewBox="0 0 100 100">
                                 <polyline
-                                    points="
-                                        80,240 
-                                        240,190 
-                                        400,60"
+                                    points="16.66,95 50,75 83.33,20"
                                     fill="none"
                                     stroke="#FFFFFF"
-                                    strokeWidth="2"
-                                    strokeDasharray="4 4"
+                                    strokeWidth="0.5"
+                                    strokeDasharray="2 2"
+                                    vectorEffect="non-scaling-stroke"
                                 />
                             </svg>
                         </div>
+
                         {/* Legend */}
-                        <div className="flex justify-center gap-8 mt-4 text-xs tracking-widest uppercase">
+                        <div className="flex justify-center gap-8 text-[10px] tracking-widest uppercase">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-[#FFFFFF]"></div>
-                                <span className="text-[#AAAAAA]">Revenue (ARR)</span>
+                                <div className="w-2 h-2 bg-[#FFFFFF]"></div>
+                                <span className="text-[#555555]">Revenue (ARR)</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full border border-[#FFFFFF]"></div>
-                                <span className="text-[#AAAAAA]">Active Users</span>
+                                <div className="w-2 h-2 rounded-full border border-[#FFFFFF]"></div>
+                                <span className="text-[#555555]">Active Users</span>
                             </div>
                         </div>
                     </div>
