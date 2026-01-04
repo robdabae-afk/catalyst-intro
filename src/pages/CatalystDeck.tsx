@@ -92,11 +92,11 @@ export default function CatalystDeck() {
         },
         {
             id: "investor-pain",
-            type: "allocation-missed",
+            type: "pain-combo",
             subtitle: "Investor Pain",
-            title: "THE HIGHEST COST IS MISSED ALLOCATION.",
-            content: "The problem isn't just noise—it's access. The defining companies of a generation are filled by insiders before they even raise. Investors miss out on returns because they simply can't get in.",
-            narrative: "Precision doesn't matter if the door is locked."
+            title: "THE TWIN COSTS: DROWNING IN NOISE, LOCKED OUT OF WINNERS.",
+            content: "Investors are buried under thousands of inconsistent inbound decks, yet still miss the defining companies of a generation because insiders fill the rounds before they can even see the signal.",
+            narrative: "Precision over volume. Access over noise."
         },
         {
             id: "market",
@@ -402,6 +402,82 @@ export default function CatalystDeck() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                );
+            case 'pain-combo':
+                return (
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-5xl">
+                        {/* 1. NOISE (Left Side) - Stylized Funnel / Chaos */}
+                        <div className="flex flex-col items-center justify-center relative opacity-80 group">
+                            <div className="relative w-48 h-64 flex flex-col items-center justify-center">
+                                {/* Stack of Papers (Noise) */}
+                                <div className="absolute top-0 w-32 h-40 bg-[#1A1A1A] border border-[#333333] rounded-lg rotate-[-12deg] z-0 animate-pulse"></div>
+                                <div className="absolute top-2 w-32 h-40 bg-[#1A1A1A] border border-[#333333] rounded-lg rotate-[6deg] z-10 opacity-80"></div>
+                                <div className="absolute top-4 w-32 h-40 bg-[#222222] border border-[#444444] rounded-lg rotate-[-3deg] z-20 flex flex-col items-center justify-center p-4">
+                                    <div className="w-16 h-2 bg-[#444444] mb-2 rounded-full"></div>
+                                    <div className="w-20 h-2 bg-[#333333] mb-2 rounded-full"></div>
+                                    <div className="w-14 h-2 bg-[#333333] mb-8 rounded-full"></div>
+                                    <div className="w-12 h-12 rounded-full border-2 border-[#555555] flex items-center justify-center">
+                                        <Search className="w-6 h-6 text-[#777777]" />
+                                    </div>
+                                </div>
+                                {/* Funnel / Filter Indicator */}
+                                <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+                                    <div className="w-[2px] h-8 bg-gradient-to-b from-[#444444] to-transparent"></div>
+                                    <div className="text-[10px] text-[#555555] uppercase tracking-widest whitespace-nowrap">High Volume / Low Signal</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Arrow Connector (Hidden on Mobile) */}
+                        <div className="hidden md:flex items-center text-[#333333]">
+                            <ArrowRight className="w-8 h-8 opacity-50" />
+                        </div>
+
+                        {/* 2. ACCESS (Right Side) - The Missed Allocation Card */}
+                        <div className="relative w-full max-w-md aspect-[4/3] bg-[#0A0A0A] border border-[#333333] rounded-3xl p-6 flex flex-col shadow-2xl overflow-hidden scale-90 md:scale-100 hover:scale-[1.02] transition-transform duration-500">
+                            {/* Status Header */}
+                            <div className="flex justify-between items-center mb-8">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-[#DD5555]"></div>
+                                    <div className="w-3 h-3 rounded-full bg-[#333333]"></div>
+                                    <div className="w-3 h-3 rounded-full bg-[#333333]"></div>
+                                </div>
+                                <div className="text-[10px] font-bold text-[#DD5555] bg-[#DD5555]/10 px-3 py-1 rounded-full uppercase tracking-widest border border-[#DD5555]/20 animate-pulse">
+                                    Access Denied
+                                </div>
+                            </div>
+
+                            {/* Company Info (Abstract) */}
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl">🦄</div>
+                                <div>
+                                    <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
+                                    <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
+                                </div>
+                            </div>
+
+                            {/* Round Details */}
+                            <div className="space-y-4 mb-8">
+                                <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
+                                    <span className="text-sm text-[#AAAAAA]">Round Status</span>
+                                    <span className="text-sm font-bold text-[#FFFFFF]">Oversubscribed (400%)</span>
+                                </div>
+                                <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
+                                    <span className="text-sm text-[#AAAAAA]">Your Allocation</span>
+                                    <span className="text-sm font-bold text-[#DD5555]">$0.00</span>
+                                </div>
+                            </div>
+
+                            {/* Locked Button */}
+                            <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+                                <Lock className="w-4 h-4 text-[#AAAAAA]" />
+                                <span className="text-xs font-bold text-[#AAAAAA] uppercase tracking-widest">Round Closed</span>
+                            </div>
+
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#000000]/80 via-transparent to-transparent pointer-events-none"></div>
+                        </div>
                     </div>
                 );
             case 'allocation-missed':
