@@ -29,86 +29,35 @@ interface ProfileData {
   };
 }
 
-const CACHE_KEY = 'featured_profile_cache';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
 export const FeaturedProfileCard = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Hardcoded Catalyst Profile to ensure instant loading and fix disappearance bug
+  const catalystProfile: ProfileData = {
+    id: 'catalyst-intro',
+    name: 'Catalyst Team',
+    email: 'team@catalyst.com',
+    avatar_url: null, // Will fall back to 'C'
+    user_type: 'founder',
+    founder_profile: {
+      startup_name: 'Catalyst',
+      one_liner: 'The simplest way for founders and investors to collaborate. Build your future with the right partners.',
+      stage: 'Seed',
+      industry: ['B2B SaaS', 'FinTech', 'Marketplace'],
+      traction: 'Helping thousands of founders connect with investors.',
+      preferred_city: 'San Francisco',
+      pitch_deck_url: 'https://catalyst.com',
+      company_name: 'Catalyst Intro',
+      company_state: 'CA',
+      banner_url: heroBg,
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // Check cache first for instant load
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          try {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_DURATION && data) {
-              setProfile(data);
-              setLoading(false);
-              // Still fetch fresh data in background, but show cached immediately
-            }
-          } catch (e) {
-            // Invalid cache, continue to fetch
-          }
-        }
-
-        // Single optimized query that gets everything at once
-        const { data, error } = await supabase
-          .from('profiles')
-          .select(`
-            id, name, email, avatar_url, user_type,
-            founder_profiles (*)
-          `)
-          .or('email.ilike.%stephenmonster88@gmail.com%,name.ilike.%Rob and Stephen%,name.ilike.%Rob%Stephen%')
-          .eq('is_hidden', false)
-          .maybeSingle();
-
-        if (error) {
-          console.error('Error fetching featured profile:', error);
-          setLoading(false);
-          return;
-        }
-
-        if (!data) {
-          setLoading(false);
-          return;
-        }
-
-        // Transform the data to match our interface
-        const founderProfiles = data.founder_profiles;
-        const founderProfilesArray = Array.isArray(founderProfiles) ? founderProfiles : (founderProfiles ? [founderProfiles] : []);
-        if (founderProfilesArray.length > 0) {
-          const profileData: ProfileData = {
-            id: data.id,
-            name: data.name,
-            email: data.email,
-            avatar_url: data.avatar_url,
-            user_type: data.user_type,
-            founder_profile: founderProfiles[0],
-          };
-
-          setProfile(profileData);
-
-          // Cache the result
-          try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-              data: profileData,
-              timestamp: Date.now()
-            }));
-          } catch (e) {
-            // localStorage might be full or disabled, ignore
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching featured profile:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
+    // Instant load with hardcoded data
+    setProfile(catalystProfile);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -155,8 +104,7 @@ export const FeaturedProfileCard = () => {
       <div className="w-full max-w-md mx-auto space-y-4">
         {/* Profile Card */}
         <Card className="overflow-hidden border-border/50 bg-card shadow-lg">
-          {/* Header */}
-
+          {/* Header Removed as requested */}
 
           {/* Banner */}
           {founderProfile.banner_url && (
