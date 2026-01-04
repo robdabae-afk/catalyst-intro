@@ -16,7 +16,7 @@ const Landing = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left Column - Profile Card */}
-          <div className="flex justify-center lg:justify-start order-2 lg:order-1 transform scale-[0.6] md:scale-100 origin-top lg:origin-center -mt-16 md:mt-0">
+          <div className="flex justify-center lg:justify-start order-2 lg:order-1 transform scale-[0.6] md:scale-100 origin-top lg:origin-center mt-8 md:mt-0">
             <FeaturedProfileCard />
           </div>
 
