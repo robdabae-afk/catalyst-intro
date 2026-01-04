@@ -1,5 +1,6 @@
 
-import PptxGenJS from "pptxgenjs";
+// CDN Loaded
+const PptxGenJS = (window as any).PptxGenJS;
 
 export const generatePPTX = async (slides: any[]) => {
     const pres = new PptxGenJS();
@@ -13,7 +14,7 @@ export const generatePPTX = async (slides: any[]) => {
         objects: []
     });
 
-    const addCommonElements = (slide: PptxGenJS.Slide, s: any) => {
+    const addCommonElements = (slide: any, s: any) => {
         if (s.subtitle) {
             slide.addText(s.subtitle, { x: 0.5, y: 0.3, w: '90%', fontSize: 14, color: "DD5555", align: "left", fontFace: "Courier New", charSpacing: 2 });
         }
