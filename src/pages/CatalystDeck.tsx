@@ -480,7 +480,6 @@ export default function CatalystDeck() {
                 );
             case 'mobile-ux':
                 return (
-                return (
                     <div className="border border-[#333333] rounded-3xl p-4 w-56 h-80 md:w-64 md:h-96 bg-[#000000] relative overflow-hidden mx-auto">
                         <div className="w-full h-full bg-[#1A1A1A] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-transform duration-500 hover:scale-105"
                             onClick={() => setWatchlisted(!watchlisted)}>

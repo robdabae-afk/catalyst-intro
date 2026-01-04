@@ -126,9 +126,10 @@ const Dashboard = () => {
       // Fetch base profiles, user's filter preferences, and ad profiles in parallel
       const [profilesResult, filtersResult, adsResult] = await Promise.all([
         supabase
-          .from('public_profiles')
+          .from('profiles')
           .select('*')
           .eq('user_type', targetType)
+          .eq('is_hidden', false)
           .neq('id', user.id),
         supabase
           .from('profiles')
