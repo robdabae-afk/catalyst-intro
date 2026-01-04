@@ -874,6 +874,7 @@ export default function CatalystDeck() {
                 background: #000000 !important; 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact;
+                overflow: visible !important;
             }
             .print-container {
                 display: block !important;
@@ -884,10 +885,13 @@ export default function CatalystDeck() {
                 height: 100vh !important;
                 width: 100vw !important;
                 page-break-after: always;
+                break-after: page;
                 display: flex !important;
                 align-items: center;
                 justify-content: center;
-                padding: 40px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: hidden !important; /* Prevent double render ghosting */
             }
             .no-print {
                 display: none !important;
@@ -902,6 +906,7 @@ export default function CatalystDeck() {
             .embla-slide {
                 flex: none !important;
                 transform: none !important;
+                display: flex !important; /* Restore flex for centering */
             }
         }
       `}</style>
@@ -936,53 +941,55 @@ export default function CatalystDeck() {
                     {slides.map((slide, index) => (
                         <div
                             key={slide.id}
-                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-4 md:px-24 py-6 md:py-12 embla-slide slide-page"
+                            className="flex-[0_0_100%] min-w-0 relative h-[100dvh] flex flex-col items-center embla-slide slide-page overflow-y-auto no-scrollbar scroll-smooth"
                         >
-                            <div className={`max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full ${slide.type === 'cta-final' ? '' : ''}`}>
+                                <div className={`max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
-                                {/* Left Content (Text) */}
-                                <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                    <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-24' : ''}`}>
-                                        <div className="h-[1px] w-12 bg-[#333333]"></div>
-                                        <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
-                                            {slide.subtitle}
-                                        </h3>
+                                    {/* Left Content (Text) */}
+                                    <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-24' : ''}`}>
+                                            <div className="h-[1px] w-12 bg-[#333333]"></div>
+                                            <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
+                                                {slide.subtitle}
+                                            </h3>
+                                        </div>
+
+                                        <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
+                                            {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
+                                                part === 'IGNORED' ? (
+                                                    <span key={i} id="ignored-text" className="highlight-ignored">
+                                                        {part}
+                                                    </span>
+                                                ) : part
+                                            )}
+                                        </h1>
+
+                                        {slide.subhead && (
+                                            <p className="text-lg md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
+                                                {slide.subhead}
+                                            </p>
+                                        )}
+
+                                        {slide.content && (
+                                            <p className="text-base md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
+                                                {slide.content}
+                                            </p>
+                                        )}
+
+                                        {slide.narrative && (
+                                            <div className={`pl-6 border-l-2 border-[#FFFFFF] py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
+                                                <p className="text-lg text-[#FFFFFF] italic font-serif">
+                                                    {slide.narrative}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
-                                        {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
-                                            part === 'IGNORED' ? (
-                                                <span key={i} id="ignored-text" className="highlight-ignored">
-                                                    {part}
-                                                </span>
-                                            ) : part
-                                        )}
-                                    </h1>
-
-                                    {slide.subhead && (
-                                        <p className="text-lg md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
-                                            {slide.subhead}
-                                        </p>
-                                    )}
-
-                                    {slide.content && (
-                                        <p className="text-base md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
-                                            {slide.content}
-                                        </p>
-                                    )}
-
-                                    {slide.narrative && (
-                                        <div className={`pl-6 border-l-2 border-[#FFFFFF] py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
-                                            <p className="text-lg text-[#FFFFFF] italic font-serif">
-                                                {slide.narrative}
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Right Content (Visuals) */}
-                                <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
-                                    {renderVisual(slide, index === selectedIndex)}
+                                    {/* Right Content (Visuals) */}
+                                    <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
+                                        {renderVisual(slide, index === selectedIndex)}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1053,168 +1060,172 @@ export default function CatalystDeck() {
                 onSuccess={handleCaptureSuccess}
             />
             {/* Funding Interest Form Modal */}
-            {showFundingForm && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#0A0A0A] border border-[#333333] w-full max-w-md p-8 rounded-3xl shadow-2xl relative animate-in zoom-in-95 duration-300">
-                        <button
-                            onClick={() => setShowFundingForm(false)}
-                            className="absolute top-4 right-4 text-[#666666] hover:text-[#FFFFFF] transition-colors"
-                        >
-                            <X className="w-6 h-6" />
-                        </button>
-
-                        <div className="text-center mb-8">
-                            <div className="bg-[#FFFFFF] w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <DollarSign className="w-6 h-6 text-[#000000]" />
-                            </div>
-                            <h2 className="text-2xl font-bold text-[#FFFFFF]">Funding Interest</h2>
-                            <p className="text-[#666666] text-sm mt-2">Express interest in funding Catalyst Intro</p>
-                        </div>
-
-                        <form className="space-y-4" onSubmit={async (e) => {
-                            e.preventDefault();
-                            const formData = new FormData(e.currentTarget);
-                            const data = Object.fromEntries(formData);
-
-                            try {
-                                await (supabase as any).from('deck_leads').insert({
-                                    name: data.name,
-                                    email: '', // Not collected in this form
-                                    phone: data.phone,
-                                    check_size: data.check_size,
-                                    source: 'funding',
-                                });
-                            } catch (err) {
-                                console.error('Error saving funding interest:', err);
-                            }
-
-                            setShowFundingForm(false);
-                        }}>
-                            <div>
-                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Name</label>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    required
-                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                    placeholder="John Doe"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
-                                <input
-                                    name="phone"
-                                    type="tel"
-                                    required
-                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                    placeholder="+1 (555) 000-0000"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Anticipated Check Size ($)</label>
-                                <input
-                                    name="check_size"
-                                    type="text"
-                                    required
-                                    className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                    placeholder="$50,000"
-                                />
-                            </div>
-                            <Button
-                                type="submit"
-                                className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] font-bold py-6 rounded-xl mt-4"
+            {
+                showFundingForm && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="bg-[#0A0A0A] border border-[#333333] w-full max-w-md p-8 rounded-3xl shadow-2xl relative animate-in zoom-in-95 duration-300">
+                            <button
+                                onClick={() => setShowFundingForm(false)}
+                                className="absolute top-4 right-4 text-[#666666] hover:text-[#FFFFFF] transition-colors"
                             >
-                                Submit Expression of Interest
-                            </Button>
-                        </form>
-                    </div>
-                </div>
-            )}
+                                <X className="w-6 h-6" />
+                            </button>
 
-            {/* MANDATORY DISCLAIMER & REGISTRATION GATE */}
-            {gateState !== 'granted' && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#000000] animate-in fade-in duration-300">
-                    <div className="w-full max-w-lg p-8 md:p-12 relative animate-in zoom-in-95 duration-500">
-
-                        {/* 1. DISCLAIMER PHASE */}
-                        {gateState === 'disclaimer' && (
-                            <div className="flex flex-col items-center text-center space-y-8">
-                                <div className="w-16 h-16 rounded-full border border-[#333333] flex items-center justify-center mb-4">
-                                    <Shield className="w-8 h-8 text-[#FFFFFF]" />
+                            <div className="text-center mb-8">
+                                <div className="bg-[#FFFFFF] w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <DollarSign className="w-6 h-6 text-[#000000]" />
                                 </div>
-                                <h2 className="text-3xl font-bold text-[#FFFFFF] tracking-tighter">Disclaimer</h2>
-                                <div className="text-[#AAAAAA] text-sm md:text-base leading-relaxed border border-[#222222] bg-[#0A0A0A] p-6 rounded-2xl">
-                                    <p className="mb-4">
-                                        The material inside this presentation is not for advertisement or marketing purposes.
-                                    </p>
-                                    <p className="mb-4">
-                                        <span className="text-[#FFFFFF] font-bold">Catalyst Intro</span> is not a registered or approved securities exchange platform at the time of viewing.
-                                    </p>
-                                    <p>
-                                        The transfer of funds in exchange for securities on the platform is <span className="text-[#DD5555] font-bold">strictly prohibited</span> by the operators of Catalyst Intro.
-                                    </p>
+                                <h2 className="text-2xl font-bold text-[#FFFFFF]">Funding Interest</h2>
+                                <p className="text-[#666666] text-sm mt-2">Express interest in funding Catalyst Intro</p>
+                            </div>
+
+                            <form className="space-y-4" onSubmit={async (e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.currentTarget);
+                                const data = Object.fromEntries(formData);
+
+                                try {
+                                    await (supabase as any).from('deck_leads').insert({
+                                        name: data.name,
+                                        email: '', // Not collected in this form
+                                        phone: data.phone,
+                                        check_size: data.check_size,
+                                        source: 'funding',
+                                    });
+                                } catch (err) {
+                                    console.error('Error saving funding interest:', err);
+                                }
+
+                                setShowFundingForm(false);
+                            }}>
+                                <div>
+                                    <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Name</label>
+                                    <input
+                                        name="name"
+                                        type="text"
+                                        required
+                                        className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                        placeholder="John Doe"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
+                                    <input
+                                        name="phone"
+                                        type="tel"
+                                        required
+                                        className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                        placeholder="+1 (555) 000-0000"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Anticipated Check Size ($)</label>
+                                    <input
+                                        name="check_size"
+                                        type="text"
+                                        required
+                                        className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                        placeholder="$50,000"
+                                    />
                                 </div>
                                 <Button
-                                    onClick={handleDisclaimerAck}
-                                    className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg transition-transform hover:scale-105"
+                                    type="submit"
+                                    className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] font-bold py-6 rounded-xl mt-4"
                                 >
-                                    I Acknowledge
+                                    Submit Expression of Interest
                                 </Button>
-                            </div>
-                        )}
+                            </form>
+                        </div>
+                    </div>
+                )
+            }
 
-                        {/* 2. REGISTRATION PHASE */}
-                        {gateState === 'registration' && (
-                            <div className="flex flex-col items-center text-center space-y-6">
-                                <div className="text-center mb-2">
-                                    <h2 className="text-2xl font-bold text-[#FFFFFF] mb-2">Welcome to Catalyst Intro</h2>
-                                    <p className="text-[#666666] text-sm">Please provide your details to continue.</p>
-                                </div>
+            {/* MANDATORY DISCLAIMER & REGISTRATION GATE */}
+            {
+                gateState !== 'granted' && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#000000] animate-in fade-in duration-300">
+                        <div className="w-full max-w-lg p-8 md:p-12 relative animate-in zoom-in-95 duration-500">
 
-                                <form onSubmit={handleGateRegistration} className="w-full space-y-4 text-left">
-                                    <div>
-                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Full Name</label>
-                                        <input
-                                            name="name"
-                                            type="text"
-                                            required
-                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                            placeholder="Jane Founder"
-                                        />
+                            {/* 1. DISCLAIMER PHASE */}
+                            {gateState === 'disclaimer' && (
+                                <div className="flex flex-col items-center text-center space-y-8">
+                                    <div className="w-16 h-16 rounded-full border border-[#333333] flex items-center justify-center mb-4">
+                                        <Shield className="w-8 h-8 text-[#FFFFFF]" />
                                     </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Email Address</label>
-                                        <input
-                                            name="email"
-                                            type="email"
-                                            required
-                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                            placeholder="jane@example.com"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
-                                        <input
-                                            name="phone"
-                                            type="tel"
-                                            required
-                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
-                                            placeholder="+1 (555) 000-0000"
-                                        />
+                                    <h2 className="text-3xl font-bold text-[#FFFFFF] tracking-tighter">Disclaimer</h2>
+                                    <div className="text-[#AAAAAA] text-sm md:text-base leading-relaxed border border-[#222222] bg-[#0A0A0A] p-6 rounded-2xl">
+                                        <p className="mb-4">
+                                            The material inside this presentation is not for advertisement or marketing purposes.
+                                        </p>
+                                        <p className="mb-4">
+                                            <span className="text-[#FFFFFF] font-bold">Catalyst Intro</span> is not a registered or approved securities exchange platform at the time of viewing.
+                                        </p>
+                                        <p>
+                                            The transfer of funds in exchange for securities on the platform is <span className="text-[#DD5555] font-bold">strictly prohibited</span> by the operators of Catalyst Intro.
+                                        </p>
                                     </div>
                                     <Button
-                                        type="submit"
-                                        className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg mt-4 transition-transform hover:scale-105"
+                                        onClick={handleDisclaimerAck}
+                                        className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg transition-transform hover:scale-105"
                                     >
-                                        Continue to Deck
+                                        I Acknowledge
                                     </Button>
-                                </form>
-                            </div>
-                        )}
+                                </div>
+                            )}
 
+                            {/* 2. REGISTRATION PHASE */}
+                            {gateState === 'registration' && (
+                                <div className="flex flex-col items-center text-center space-y-6">
+                                    <div className="text-center mb-2">
+                                        <h2 className="text-2xl font-bold text-[#FFFFFF] mb-2">Welcome to Catalyst Intro</h2>
+                                        <p className="text-[#666666] text-sm">Please provide your details to continue.</p>
+                                    </div>
+
+                                    <form onSubmit={handleGateRegistration} className="w-full space-y-4 text-left">
+                                        <div>
+                                            <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Full Name</label>
+                                            <input
+                                                name="name"
+                                                type="text"
+                                                required
+                                                className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                                placeholder="Jane Founder"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Email Address</label>
+                                            <input
+                                                name="email"
+                                                type="email"
+                                                required
+                                                className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                                placeholder="jane@example.com"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
+                                            <input
+                                                name="phone"
+                                                type="tel"
+                                                required
+                                                className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                                placeholder="+1 (555) 000-0000"
+                                            />
+                                        </div>
+                                        <Button
+                                            type="submit"
+                                            className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg mt-4 transition-transform hover:scale-105"
+                                        >
+                                            Continue to Deck
+                                        </Button>
+                                    </form>
+                                </div>
+                            )}
+
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
