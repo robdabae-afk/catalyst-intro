@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft, X, ArrowRight, Check } from "lucide-react";
+import { ChevronRight, ChevronLeft, X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function CatalystDeck() {
@@ -16,58 +16,117 @@ export default function CatalystDeck() {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [watchlisted, setWatchlisted] = useState(false);
 
-    // Animation states
-    const [showTypewriter, setShowTypewriter] = useState(false);
-
     const slides = [
         {
             id: "thesis",
+            type: "hero",
             subtitle: "The Thesis",
-            title: "PRIVATE MARKETS. UNLOCKED.",
-            subhead: "The first discovery engine for everyday professionals to back the next unicorn.",
-            type: "hero-swipe"
+            title: "CONSUMERIZING THE PRIVATE MARKETS.",
+            subhead: "A high-precision discovery engine for the $10 Trillion private equity ecosystem.",
+            content: "By 2026, private market assets are projected to grow by 12% CAGR, yet 98% of the professional workforce remains siloed from the asset class.",
+            narrative: "We aren't just building a matching app; we are building the interface for the democratization of capital."
         },
         {
-            id: "reg-cf",
-            subtitle: "Powered by Reg CF",
-            title: "FOUNDER <-> PUBLIC",
-            content: "We utilize SEC Regulation Crowdfunding to bridge the gap between world-class founders and the professional public. \n\nStats: $5M/year raise limits. $1.1M active US startups. 300k+ hungry investors.",
-            type: "bridge"
+            id: "team",
+            type: "grid-icons",
+            subtitle: "The Military-Grade Founder",
+            title: "PRECISION OVER NOISE.",
+            narrative: "\"In the military, information without clarity is a liability. I’ve applied that same tactical rigor to the venture capital funnel.\"",
+            items: [
+                { icon: Target, label: "Operational Background", desc: "Infantry Officer, National Guard (High-stakes decision making)" },
+                { icon: Globe, label: "Strategic Education", desc: "Naval Warfare & Maritime Transportation (Complex logistics)" },
+                { icon: Shield, label: "Technical Edge", desc: "Network Security Operations (Data integrity & architecture)" }
+            ]
         },
         {
-            id: "discovery",
-            subtitle: "The Discovery Gap",
-            title: "DISCOVERY IS BROKEN.",
-            content: "1.1 million startups are invisible to the people who want to fund them.",
-            type: "network-glow"
+            id: "problem",
+            type: "stats-row",
+            subtitle: "The Data-Driven Friction",
+            title: "99.1% OF PITCH DECKS ARE REJECTED.",
+            content: "In 2025, there was a $1.5 Billion shortfall in early-stage funding purely due to discovery friction.",
+            items: [
+                { value: "200+ Hrs", label: "Founder Burn (Outbound)" },
+                { value: "2m 42s", label: "Investor Attention Span" },
+                { value: "$1.5B", label: "Funding Shortfall" }
+            ]
         },
         {
-            id: "filter",
-            subtitle: "The Noise Filter",
-            title: "CURATION OVER CHAOS.",
-            content: "Investors are drowning. Catalyst standardizes the pitch, removes the noise, and surfaces the top 5% of performers.",
-            type: "funnel"
+            id: "market",
+            type: "tam-sam-som",
+            subtitle: "Market Opportunity",
+            title: "THE RETAIL REVOLUTION.",
+            narrative: "We are targeting the \"Reg CF Superhighway\"—the fastest-growing segment of private finance.",
+            items: [
+                { label: "TAM", value: "$10.3 Trillion", desc: "Total US Private Equity & VC Assets" },
+                { label: "SAM", value: "$250 Billion", desc: "Annual Early-Stage Seed/Pre-seed Volume" },
+                { label: "SOM", value: "$5.1 Billion", desc: "Reg CF Market (Growing 33% YoY)" }
+            ]
         },
         {
-            id: "watchlist",
-            subtitle: "The Watchlist UX",
-            title: "SWIPE TO SHORTLIST.",
-            content: "Not a trade. A discovery. Our UX reduces friction without encouraging impulsive trades. You swipe to add to your 'Intelligence Watchlist.' Deep due diligence happens on the regulated rail.",
-            type: "mobile-mockup"
+            id: "precedent",
+            type: "comparison-trend",
+            subtitle: "The Consumerization Precedent",
+            title: "WE’VE SEEN THIS MOVIE BEFORE.",
+            narrative: "We are doing for startups what Robinhood did for stocks: removing the \"elitist\" barrier to entry.",
+            items: [
+                { label: "Public Markets (Robinhood)", value: "10% -> 25%", desc: "Retail participation growth in 5 years" },
+                { label: "Prediction Markets (Kalshi)", value: "$1B+", desc: "Volume reached by simplifying betting" },
+                { label: "Catalyst", value: "$5M Cap", desc: "Bringing Retail UX to Reg CF" }
+            ]
         },
         {
-            id: "opportunity",
-            subtitle: "The Opportunity",
-            title: "BEYOND THE WALLED GARDEN.",
-            content: "Like Robinhood for stocks and Kalshi for predictions, Catalyst is the gateway for the scientific or health professional to fund the research they actually understand.",
-            type: "blur-reveal"
+            id: "product",
+            type: "mobile-ux",
+            subtitle: "The Product",
+            title: "HIGH-INTENT DISCOVERY.",
+            content: "Standardized Data: 12 key metrics on every card.",
+            narrative: "\"We’ve de-risked the 'gamification' by decoupling discovery from the transaction. You swipe to learn; you invest through the regulated rail.\"",
         },
         {
-            id: "rail",
-            subtitle: "The Catalyst Rail",
-            title: "COMPLIANT BY DESIGN.",
-            content: "Infrastructure: Escrow, KYC/AML, and Form C disclosures are baked into the final investment flow through our registered portal partners.",
-            type: "cta"
+            id: "revenue",
+            type: "revenue-cards",
+            subtitle: "Revenue Model",
+            title: "THREE REVENUE STREAMS.",
+            subhead: "Year 1 Target: $1.2M ARR",
+            items: [
+                { title: "Founder SaaS", price: "$99/mo", features: ["Dashboard Access", "Auto Reg CF Filings", "Investor Heatmaps"] },
+                { title: "Institutional", price: "$499/mo", features: ["\"Top 5%\" Curated Data", "Direct-to-GP Messaging", "Deal Flow API"] },
+                { title: "Partner Kickback", price: "1-2.5%", features: ["Referral fee from Funding Portals", "Success-based", "High Margin"] }
+            ]
+        },
+        {
+            id: "competition",
+            type: "comparison-table",
+            subtitle: "The Competitive Edge",
+            title: "WHY WE WIN.",
+            narrative: "Catalyst is 100% data-driven and accessible to established professionals, unlike the gated or fragmented alternatives."
+        },
+        {
+            id: "roadmap",
+            type: "timeline",
+            subtitle: "18-Month Roadmap",
+            title: "TACTICAL EXECUTION.",
+            items: [
+                { quarter: "Q1 2026", milestone: "Launch /catalystdeck & Beta Waitlist (Target: 5k users)" },
+                { quarter: "Q2 2026", milestone: "Partner Integration with 3 Major SEC Portals" },
+                { quarter: "Q3 2026", milestone: "Full \"Swipe-to-Invest\" Reg CF Flow Launch" },
+                { quarter: "Q4 2026", milestone: "Series A Raise ($5M) to scale acquisition" }
+            ]
+        },
+        {
+            id: "vision",
+            type: "vision-impact",
+            subtitle: "The Vision",
+            title: "THE END OF THE WALLED GARDEN.",
+            content: "There are 22 million established professionals in the US. If only 5% invest $1,000/year, we unlock $1.1 Billion in new capital.",
+            narrative: "\"Any professional can support the technology they believe in. That is the true Catalyst for human advancement.\""
+        },
+        {
+            id: "cta",
+            type: "cta-final",
+            subtitle: "Join the Revolution",
+            title: "JOIN THE REVOLUTION.",
+            content: "Catalyst is a technology provider. All securities offerings are conducted via registered intermediaries under Reg CF. Investing involves high risk."
         }
     ];
 
@@ -79,31 +138,21 @@ export default function CatalystDeck() {
     }, []);
 
     const onSelect = useCallback((emblaApi: any) => {
-        const index = emblaApi.selectedScrollSnap();
-        setSelectedIndex(index);
-
-        // Reset animations when entering slides
-        if (index === 2) { // Discovery slide
-            setShowTypewriter(false);
-            setTimeout(() => setShowTypewriter(true), 100);
-        }
+        setSelectedIndex(emblaApi.selectedScrollSnap());
     }, []);
 
     useEffect(() => {
         if (!emblaApi) return;
-
         onScroll(emblaApi);
         onSelect(emblaApi);
         emblaApi.on("reInit", onScroll);
         emblaApi.on("scroll", onScroll);
         emblaApi.on("select", onSelect);
-
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "ArrowRight") emblaApi.scrollNext();
             if (e.key === "ArrowLeft") emblaApi.scrollPrev();
         };
         window.addEventListener("keydown", handleKeyDown);
-
         return () => {
             emblaApi.off("reInit", onScroll);
             emblaApi.off("scroll", onScroll);
@@ -112,54 +161,209 @@ export default function CatalystDeck() {
         };
     }, [emblaApi, onScroll, onSelect]);
 
+    const renderVisual = (slide: any, isActive: boolean) => {
+        switch (slide.type) {
+            case 'hero':
+                return (
+                    <div className="relative w-full max-w-sm aspect-[3/4] border border-[#333333] rounded-3xl bg-[#000000] p-6 flex flex-col justify-between overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-transparent opacity-50"></div>
+                        <div className="relative z-10 w-full h-1/2 bg-[#1A1A1A] rounded-xl mb-4 animate-pulse"></div>
+                        <div className="relative z-10 space-y-3">
+                            <div className="h-4 w-3/4 bg-[#333333] rounded"></div>
+                            <div className="h-4 w-1/2 bg-[#333333] rounded"></div>
+                        </div>
+                        <div className={`absolute bottom-10 right-10 transform transition-all duration-1000 ${isActive ? 'translate-x-12 rotate-12 opacity-0' : 'translate-x-0 rotate-0 opacity-100'}`}>
+                            <div className="w-24 h-24 border-2 border-[#FFFFFF] rounded-full flex items-center justify-center">
+                                <ArrowUpRight className="w-10 h-10 text-[#FFFFFF]" />
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'grid-icons':
+                return (
+                    <div className="grid gap-6 w-full max-w-md">
+                        {slide.items.map((item: any, i: number) => (
+                            <div key={i} className="flex items-start gap-4 p-4 border border-[#333333] rounded-xl bg-[#0A0A0A]">
+                                <div className="p-3 bg-[#FFFFFF] text-[#000000] rounded-lg">
+                                    <item.icon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-[#FFFFFF]">{item.label}</h4>
+                                    <p className="text-sm text-[#AAAAAA] mt-1">{item.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                );
+            case 'stats-row':
+                return (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                        {slide.items.map((item: any, i: number) => (
+                            <div key={i} className="p-6 border border-[#FFFFFF] rounded-2xl flex flex-col items-center justify-center text-center bg-[#000000]">
+                                <span className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-2">{item.value}</span>
+                                <span className="text-xs uppercase tracking-widest text-[#AAAAAA]">{item.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                );
+            case 'tam-sam-som':
+                return (
+                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center">
+                        {/* SOM */}
+                        <div className={`absolute w-32 h-32 rounded-full bg-[#FFFFFF] z-30 flex items-center justify-center text-[#000000] text-center p-2 shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-1000 ${isActive ? 'scale-100' : 'scale-0'}`}>
+                            <div>
+                                <div className="text-xl font-bold">{slide.items[2].value}</div>
+                                <div className="text-[10px] font-bold">SOM</div>
+                            </div>
+                        </div>
+                        {/* SAM */}
+                        <div className={`absolute w-64 h-64 rounded-full border border-[#FFFFFF] bg-[#1A1A1A] z-20 flex items-start justify-center pt-4 transition-all duration-1000 delay-200 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
+                            <div className="text-center mt-2">
+                                <div className="text-[#FFFFFF] font-bold">{slide.items[1].value}</div>
+                                <div className="text-[10px] text-[#AAAAAA]">SAM</div>
+                            </div>
+                        </div>
+                        {/* TAM */}
+                        <div className={`absolute w-96 h-96 rounded-full border border-[#333333] z-10 flex items-start justify-center pt-4 transition-all duration-1000 delay-400 ${isActive ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
+                            <div className="text-center mt-4">
+                                <div className="text-[#AAAAAA] font-bold">{slide.items[0].value}</div>
+                                <div className="text-[10px] text-[#555555]">TAM</div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 'comparison-trend':
+                return (
+                    <div className="w-full max-w-lg space-y-6">
+                        {slide.items.map((item: any, i: number) => (
+                            <div key={i} className="relative">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="font-bold text-[#FFFFFF]">{item.label}</span>
+                                    <span className="text-[#AAAAAA] text-sm">{item.value}</span>
+                                </div>
+                                <div className="h-2 w-full bg-[#1A1A1A] rounded-full overflow-hidden">
+                                    <div className="h-full bg-[#FFFFFF] rounded-full" style={{ width: i === 0 ? '25%' : i === 1 ? '50%' : '10%' }}></div>
+                                </div>
+                                <p className="text-xs text-[#555555] mt-1">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+            case 'mobile-ux':
+                return (
+                    <div className="border border-[#333333] rounded-3xl p-4 w-64 h-96 bg-[#000000] relative overflow-hidden mx-auto">
+                        <div className="w-full h-full bg-[#1A1A1A] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-transform duration-500 hover:scale-105"
+                            onClick={() => setWatchlisted(!watchlisted)}>
+                            <h3 className="text-2xl font-bold text-[#FFFFFF] mb-4">StartUp Inc.</h3>
+                            <div className="grid grid-cols-2 gap-2 w-full px-4 mb-4">
+                                {[1, 2, 3, 4].map(n => <div key={n} className="h-2 bg-[#333333] rounded"></div>)}
+                            </div>
+                            {watchlisted ? <Check className="w-12 h-12 text-[#FFFFFF]" /> : <div className="text-[#FFFFFF] opacity-50 text-sm">Tap to Watchlist</div>}
+                        </div>
+                        {watchlisted && (
+                            <div className="absolute bottom-8 left-4 right-4 bg-[#FFFFFF] text-[#000000] p-3 rounded-lg text-xs font-bold text-center animate-in slide-in-from-bottom fade-in duration-300">
+                                Added to Intelligence Watchlist
+                            </div>
+                        )}
+                    </div>
+                );
+            case 'revenue-cards':
+                return (
+                    <div className="flex flex-col md:flex-row gap-4 w-full">
+                        {slide.items.map((item: any, i: number) => (
+                            <div key={i} className="flex-1 p-6 border border-[#333333] rounded-xl bg-[#0A0A0A] hover:border-[#FFFFFF] transition-colors duration-300">
+                                <div className="text-[#AAAAAA] text-sm uppercase tracking-widest mb-2">{item.title}</div>
+                                <div className="text-3xl font-bold text-[#FFFFFF] mb-6">{item.price}</div>
+                                <ul className="space-y-2">
+                                    {item.features.map((feat: string, j: number) => (
+                                        <li key={j} className="text-xs text-[#888888] flex items-center gap-2">
+                                            <div className="w-1 h-1 bg-[#FFFFFF] rounded-full"></div> {feat}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                );
+            case 'comparison-table':
+                return (
+                    <div className="w-full overflow-hidden border border-[#333333] rounded-xl">
+                        <table className="w-full text-left text-sm">
+                            <thead>
+                                <tr className="bg-[#1A1A1A] text-[#AAAAAA]">
+                                    <th className="p-4 font-normal">Feature</th>
+                                    <th className="p-4 font-normal">AngelList</th>
+                                    <th className="p-4 font-normal">Wefunder</th>
+                                    <th className="p-4 font-bold text-[#FFFFFF]">Catalyst</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#333333] bg-[#000000]">
+                                <tr>
+                                    <td className="p-4 text-[#AAAAAA]">Check Size</td>
+                                    <td className="p-4 text-[#555555]">$1,000+</td>
+                                    <td className="p-4 text-[#555555]">$100+</td>
+                                    <td className="p-4 font-bold text-[#FFFFFF]">$100+</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-4 text-[#AAAAAA]">Discovery UX</td>
+                                    <td className="p-4 text-[#555555]">List/Search</td>
+                                    <td className="p-4 text-[#555555]">List/Search</td>
+                                    <td className="p-4 font-bold text-[#FFFFFF]">Swipe/Algorithm</td>
+                                </tr>
+                                <tr>
+                                    <td className="p-4 text-[#AAAAAA]">Target User</td>
+                                    <td className="p-4 text-[#555555]">HNWIs</td>
+                                    <td className="p-4 text-[#555555]">General Public</td>
+                                    <td className="p-4 font-bold text-[#FFFFFF]">Professionals</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                );
+            case 'timeline':
+                return (
+                    <div className="w-full max-w-2xl space-y-8 relative pl-8 border-l border-[#333333]">
+                        {slide.items.map((item: any, i: number) => (
+                            <div key={i} className="relative">
+                                <div className="absolute -left-[37px] top-1 w-4 h-4 bg-[#000000] border-2 border-[#FFFFFF] rounded-full"></div>
+                                <div className="text-sm font-bold text-[#FFFFFF] mb-1">{item.quarter}</div>
+                                <div className="text-[#AAAAAA]">{item.milestone}</div>
+                            </div>
+                        ))}
+                    </div>
+                );
+            case 'vision-impact':
+                return (
+                    <div className="w-full max-w-md aspect-square rounded-full border border-[#333333] flex items-center justify-center relative bg-[radial-gradient(circle,rgba(255,255,255,0.1)_0%,rgba(0,0,0,0)_70%)]">
+                        <div className="text-center z-10">
+                            <div className="text-6xl font-bold text-[#FFFFFF] mb-2">$1.1B</div>
+                            <div className="text-sm uppercase tracking-widest text-[#AAAAAA]">New Capital Unlocked</div>
+                        </div>
+                    </div>
+                );
+            case 'cta-final':
+                return (
+                    <div className="text-center w-full max-w-xl">
+                        <div className="flex flex-col gap-4 justify-center items-center">
+                            <Button className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-64">
+                                Join Waitlist
+                            </Button>
+                            <Button variant="outline" className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-64">
+                                Apply as Founder
+                            </Button>
+                        </div>
+                        <div className="mt-12 pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
+                            {slide.content}
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative">
-            <style>{`
-        @keyframes swipeRight {
-          0% { transform: translateX(0) rotate(0deg); opacity: 1; }
-          50% { transform: translateX(100px) rotate(10deg); opacity: 0.5; }
-          100% { transform: translateX(200px) rotate(20deg); opacity: 0; }
-        }
-        @keyframes folderOpen {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        @keyframes particleDrop {
-            0% { transform: translateY(-20px) translateX(var(--x-start)); opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translateY(100px) translateX(0); opacity: 0; }
-        }
-        @keyframes diamondExit {
-            0% { transform: translateY(0); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(50px); opacity: 0; }
-        }
-        .typewriter-text {
-            overflow: hidden;
-            border-right: .15em solid #FFFFFF;
-            white-space: nowrap;
-            margin: 0 auto;
-            letter-spacing: .15em;
-            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
-        }
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #FFFFFF }
-        }
-        .blur-in {
-            animation: blurIn 1.5s ease-out forwards;
-        }
-        @keyframes blurIn {
-            0% { filter: blur(10px); opacity: 0; }
-            100% { filter: blur(0); opacity: 1; }
-        }
-      `}</style>
 
             {/* Exit Button */}
             <div className="absolute top-8 left-8 z-50">
@@ -180,12 +384,12 @@ export default function CatalystDeck() {
                     {slides.map((slide, index) => (
                         <div
                             key={slide.id}
-                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-8 md:px-24"
+                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-6 md:px-24 py-12"
                         >
-                            <div className={`max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'}`}>
+                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'stats-row' || slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center' : ''}`}>
 
                                 {/* Left Content (Text) */}
-                                <div className="space-y-8 order-2 md:order-1">
+                                <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col' : ''}`}>
                                     <div className="flex items-center gap-4">
                                         <div className="h-[1px] w-12 bg-[#333333]"></div>
                                         <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
@@ -193,7 +397,7 @@ export default function CatalystDeck() {
                                         </h3>
                                     </div>
 
-                                    <h1 className={`text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-[#FFFFFF] ${slide.type === 'network-glow' && showTypewriter ? 'typewriter-text' : ''} ${slide.type === 'blur-reveal' && index === selectedIndex ? 'blur-in' : ''}`}>
+                                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-[#FFFFFF]">
                                         {slide.title}
                                     </h1>
 
@@ -203,120 +407,24 @@ export default function CatalystDeck() {
                                         </p>
                                     )}
 
-                                    <p className="text-lg md:text-xl text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
-                                        {slide.content}
-                                    </p>
+                                    {slide.content && (
+                                        <p className="text-lg md:text-xl text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
+                                            {slide.content}
+                                        </p>
+                                    )}
 
-                                    {slide.type === 'cta' && (
-                                        <div className="pt-6">
-                                            <Button className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold">
-                                                Join the Waitlist
-                                            </Button>
-                                            <div className="mt-8 pt-8 border-t border-[#1A1A1A] text-xs text-[#444444] max-w-md">
-                                                Disclaimer: Investments in Reg CF offerings are speculative, illiquid, and involve a high degree of risk, including the possible loss of your entire investment. All securities are offered through registered portals.
-                                            </div>
+                                    {slide.narrative && (
+                                        <div className="pl-6 border-l-2 border-[#FFFFFF] py-2">
+                                            <p className="text-lg text-[#FFFFFF] italic font-serif">
+                                                {slide.narrative}
+                                            </p>
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Right Content (Visuals) */}
-                                <div className="order-1 md:order-2 flex justify-center items-center h-[400px]">
-
-                                    {/* Hero Swipe Animation */}
-                                    {slide.type === 'hero-swipe' && (
-                                        <div className="relative w-64 h-96">
-                                            <div className="absolute top-0 left-0 w-full h-full border border-[#333333] rounded-3xl bg-[#000000] p-6 flex flex-col justify-between"
-                                                style={{ animation: index === selectedIndex ? 'swipeRight 2s ease-in-out infinite' : 'none' }}>
-                                                <div className="w-full h-32 bg-[#1A1A1A] rounded-xl mb-4"></div>
-                                                <div className="space-y-2">
-                                                    <div className="h-4 w-3/4 bg-[#333333] rounded"></div>
-                                                    <div className="h-4 w-1/2 bg-[#333333] rounded"></div>
-                                                </div>
-                                            </div>
-                                            <div className="absolute top-1/2 -right-32 transform -translate-y-1/2 opacity-0"
-                                                style={{ animation: index === selectedIndex ? 'folderOpen 2s ease-in-out infinite' : 'none', animationDelay: '1.5s' }}>
-                                                <div className="border border-[#FFFFFF] p-4 rounded-xl">
-                                                    <Check className="w-8 h-8 text-[#FFFFFF]" />
-                                                    <span className="text-xs mt-2 block uppercase tracking-widest">Watchlist</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Bridge Visualization */}
-                                    {slide.type === 'bridge' && (
-                                        <div className="relative w-full h-64 flex items-center justify-between px-4">
-                                            <div className="flex flex-col items-center gap-2">
-                                                <div className="w-16 h-16 rounded-full border border-[#FFFFFF] flex items-center justify-center">F</div>
-                                                <span className="text-xs uppercase text-[#AAAAAA]">Founder</span>
-                                            </div>
-                                            <div className="flex-1 h-[2px] bg-[#333333] mx-4 relative overflow-hidden">
-                                                <div className="absolute top-0 left-0 h-full w-full bg-[#FFFFFF] opacity-20 animate-pulse"></div>
-                                                <div className="absolute top-0 left-0 h-full w-1/3 bg-[#FFFFFF] blur-md" style={{ animation: 'typing 2s linear infinite' }}></div>
-                                            </div>
-                                            <div className="flex flex-col items-center gap-2">
-                                                <div className="w-16 h-16 rounded-full border border-[#FFFFFF] flex items-center justify-center">P</div>
-                                                <span className="text-xs uppercase text-[#AAAAAA]">Public</span>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Network Glow */}
-                                    {slide.type === 'network-glow' && (
-                                        <div className="relative w-80 h-80">
-                                            {[...Array(6)].map((_, i) => (
-                                                <div key={i} className="absolute w-3 h-3 bg-[#333333] rounded-full"
-                                                    style={{
-                                                        top: `${Math.random() * 80 + 10}%`,
-                                                        left: `${Math.random() * 80 + 10}%`,
-                                                        opacity: 0.3
-                                                    }}
-                                                />
-                                            ))}
-                                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-[#FFFFFF] rounded-full shadow-[0_0_20px_rgba(255,255,255,0.8)] animate-pulse"></div>
-                                        </div>
-                                    )}
-
-                                    {/* Funnel Animation */}
-                                    {slide.type === 'funnel' && (
-                                        <div className="relative w-64 h-80 flex flex-col items-center">
-                                            {/* Particles */}
-                                            <div className="absolute top-0 w-full h-20 overflow-hidden">
-                                                {[...Array(10)].map((_, i) => (
-                                                    <div key={i} className="absolute w-2 h-2 bg-[#333333] rounded-full"
-                                                        style={{
-                                                            left: `${Math.random() * 100}%`,
-                                                            '--x-start': `${(Math.random() - 0.5) * 50}px`,
-                                                            animation: `particleDrop ${2 + Math.random()}s infinite linear`
-                                                        } as any}>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {/* Funnel Shape */}
-                                            <div className="w-0 h-0 border-l-[50px] border-r-[50px] border-t-[80px] border-l-transparent border-r-transparent border-t-[#1A1A1A] my-8"></div>
-                                            {/* Output */}
-                                            <div className="flex gap-2">
-                                                <div className="w-4 h-4 border border-[#FFFFFF] rotate-45" style={{ animation: 'diamondExit 2s infinite' }}></div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Mobile Mockup */}
-                                    {slide.type === 'mobile-mockup' && (
-                                        <div className="border border-[#333333] rounded-3xl p-4 w-64 h-96 bg-[#000000] relative overflow-hidden">
-                                            {/* Mock Card */}
-                                            <div className="w-full h-full bg-[#1A1A1A] rounded-xl flex items-center justify-center text-[#333333] text-4xl font-bold cursor-pointer"
-                                                onClick={() => setWatchlisted(true)}>
-                                                {watchlisted ? <Check className="w-12 h-12 text-[#FFFFFF]" /> : "SWIPE"}
-                                            </div>
-                                            {watchlisted && (
-                                                <div className="absolute bottom-8 left-4 right-4 bg-[#FFFFFF] text-[#000000] p-3 rounded-lg text-xs font-bold text-center animate-in slide-in-from-bottom fade-in duration-300">
-                                                    Added to Watchlist
-                                                    <div className="text-[10px] font-normal mt-1 text-[#444444]">Review Form C to proceed</div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
+                                <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row' ? 'w-full max-w-4xl' : ''}`}>
+                                    {renderVisual(slide, index === selectedIndex)}
                                 </div>
                             </div>
                         </div>
@@ -329,7 +437,6 @@ export default function CatalystDeck() {
 
                 {/* Navigation Arrows (Desktop) */}
                 <div className="hidden md:flex justify-between items-center px-12 pb-12 pointer-events-auto">
-                    {/* Left Arrow */}
                     <div className={`transition-opacity duration-300 ${!canScrollPrev ? 'opacity-0' : 'opacity-100'}`}>
                         <Button
                             variant="ghost"
@@ -342,7 +449,6 @@ export default function CatalystDeck() {
                         </Button>
                     </div>
 
-                    {/* Right Arrow */}
                     <div className={`transition-opacity duration-300 ${!canScrollNext ? 'opacity-0' : 'opacity-100'}`}>
                         <Button
                             variant="ghost"
