@@ -577,21 +577,21 @@ export default function CatalystDeck() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
                         {/* Current Revenue */}
                         <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.current.title}</h3>
-                            <p className="text-[#AAAAAA] mb-2">{slide.items.current.description}</p>
-                            <div className="text-[#FFFFFF] font-mono">{slide.items.current.revenue}</div>
+                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.current.title}</h3>
+                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.current.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.current.revenue}</div>
                         </div>
                         {/* Post‑CF Approval */}
                         <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.cfApproved.title}</h3>
-                            <p className="text-[#AAAAAA] mb-2">{slide.items.cfApproved.description}</p>
-                            <div className="text-[#FFFFFF] font-mono">{slide.items.cfApproved.revenue}</div>
+                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.cfApproved.title}</h3>
+                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.cfApproved.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.cfApproved.revenue}</div>
                         </div>
                         {/* Mini‑IPO */}
                         <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.miniIPO.title}</h3>
-                            <p className="text-[#AAAAAA] mb-2">{slide.items.miniIPO.description}</p>
-                            <div className="text-[#FFFFFF] font-mono">{slide.items.miniIPO.revenue}</div>
+                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.miniIPO.title}</h3>
+                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.miniIPO.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.miniIPO.revenue}</div>
                         </div>
                     </div>
                 );
@@ -795,7 +795,7 @@ export default function CatalystDeck() {
         }
         .highlight-ignored {
             color: #FFFFFF;
-            font-size: 1.15em;
+            font-size: 1.1em;
             letter-spacing: -0.02em;
             text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
             position: relative;
@@ -907,7 +907,7 @@ export default function CatalystDeck() {
                                         </h3>
                                     </div>
 
-                                    <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-[#FFFFFF]">
+                                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
                                         {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
                                             part === 'IGNORED' ? (
                                                 <span key={i} id="ignored-text" className="highlight-ignored">
@@ -918,13 +918,13 @@ export default function CatalystDeck() {
                                     </h1>
 
                                     {slide.subhead && (
-                                        <p className="text-xl md:text-2xl text-[#FFFFFF] font-medium leading-relaxed">
+                                        <p className="text-lg md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
                                             {slide.subhead}
                                         </p>
                                     )}
 
                                     {slide.content && (
-                                        <p className="text-lg md:text-xl text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
+                                        <p className="text-base md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
                                             {slide.content}
                                         </p>
                                     )}
