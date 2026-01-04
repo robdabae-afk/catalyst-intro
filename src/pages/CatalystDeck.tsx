@@ -1,11 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Download, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
+import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Share2, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { LeadCaptureDialog } from '@/components/LeadCaptureDialog';
 import { supabase } from "@/integrations/supabase/client";
-import { generatePDF } from "@/utils/pdfGenerator";
 
 export default function CatalystDeck() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -18,7 +16,7 @@ export default function CatalystDeck() {
     const [canScrollNext, setCanScrollNext] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [watchlisted, setWatchlisted] = useState(false);
-    const [showLeadCapture, setShowLeadCapture] = useState(false);
+
     const [showFundingForm, setShowFundingForm] = useState(false);
     const [gateState, setGateState] = useState<'disclaimer' | 'registration' | 'granted'>('disclaimer');
     const navigate = useNavigate();
@@ -248,15 +246,14 @@ export default function CatalystDeck() {
         };
     }, [emblaApi, onScroll, onSelect]);
 
-    const handleDownload = () => {
-        setShowLeadCapture(true);
-    };
 
-    const handleCaptureSuccess = () => {
-        // Wait for dialog to close visually before building PDF
-        setTimeout(() => {
-            generatePDF(slides);
-        }, 500);
+
+    const [copied, setCopied] = useState(false);
+
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     // Hover Wrapper Component for Three-Col Slide
@@ -1125,11 +1122,11 @@ export default function CatalystDeck() {
             <div className="absolute top-8 right-8 z-50 no-print">
                 <Button
                     variant="ghost"
-                    onClick={handleDownload}
+                    onClick={handleShare}
                     className="text-[#AAAAAA] hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-colors gap-2"
                 >
-                    <Download className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-widest font-medium">Download PDF</span>
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
+                    <span className="text-xs uppercase tracking-widest font-medium">{copied ? 'Link Copied' : 'Share Deck'}</span>
                 </Button>
             </div>
 
@@ -1140,8 +1137,8 @@ export default function CatalystDeck() {
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0 relative h-[100dvh] flex flex-col items-center embla-slide slide-page overflow-y-auto no-scrollbar scroll-smooth"
                         >
-                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full ${slide.type === 'cta-final' ? '' : ''}`}>
-                                <div className={`max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full ${slide.type === 'cta-final' ? '' : ''} overflow-hidden`}>
+                                <div className={`w-[240vw] md:w-full max-w-7xl grid grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 origin-top md:origin-center transform scale-[0.4] sm:scale-75 md:scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center !w-full !scale-100' : ''} print:opacity-100`}>
 
                                     {/* Left Content (Text) */}
                                     <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
@@ -1250,12 +1247,7 @@ export default function CatalystDeck() {
                     />
                 </div>
             </div>
-            {/* Lead Capture Dialog */}
-            <LeadCaptureDialog
-                open={showLeadCapture}
-                onOpenChange={setShowLeadCapture}
-                onSuccess={handleCaptureSuccess}
-            />
+
             {/* Funding Interest Form Modal */}
             {
                 showFundingForm && (
@@ -1284,7 +1276,7 @@ export default function CatalystDeck() {
                                 try {
                                     await (supabase as any).from('deck_leads').insert({
                                         name: data.name,
-                                        email: '', // Not collected in this form
+                                        email: data.email,
                                         phone: data.phone,
                                         check_size: data.check_size,
                                         source: 'funding',
@@ -1303,6 +1295,16 @@ export default function CatalystDeck() {
                                         required
                                         className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
                                         placeholder="John Doe"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Email</label>
+                                    <input
+                                        name="email"
+                                        type="email"
+                                        required
+                                        className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                        placeholder="john@example.com"
                                     />
                                 </div>
                                 <div>
