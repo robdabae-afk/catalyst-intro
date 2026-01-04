@@ -127,6 +127,30 @@ export default function CatalystDeck() {
             }
         },
         {
+            id: "revenue-detail",
+            type: "revenue-comparison",
+            subtitle: "Revenue Model Detail",
+            title: "HOW WE MAKE MONEY",
+            narrative: "Breakdown of current and future revenue streams as we progress through regulation milestones.",
+            items: {
+                current: {
+                    title: "Current (Live)",
+                    description: "Founder subscriptions, visibility tools, concierge matching.",
+                    revenue: "$1‑$5M ARR"
+                },
+                cfApproved: {
+                    title: "Post‑CF Approval",
+                    description: "Success fees on capital, founder SaaS (filings), institutional data APIs.",
+                    revenue: "$10‑$30M ARR"
+                },
+                miniIPO: {
+                    title: "Mini‑IPO (Regulated)",
+                    description: "Primary market underwriting fees, secondary trading spreads, compliance services.",
+                    revenue: "$50‑$150M ARR"
+                }
+            }
+        },
+        {
             id: "growth-scale",
             type: "growth-chart",
             subtitle: "Growth & Scale",
@@ -492,6 +516,29 @@ export default function CatalystDeck() {
                                 <span>=</span>
                                 <span className="text-[#FFFFFF]">$127.5M ARR</span>
                             </div>
+                        </div>
+                    </div>
+                );
+            case 'revenue-comparison':
+                return (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+                        {/* Current Revenue */}
+                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
+                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.current.title}</h3>
+                            <p className="text-[#AAAAAA] mb-2">{slide.items.current.description}</p>
+                            <div className="text-[#FFFFFF] font-mono">{slide.items.current.revenue}</div>
+                        </div>
+                        {/* Post‑CF Approval */}
+                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
+                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.cfApproved.title}</h3>
+                            <p className="text-[#AAAAAA] mb-2">{slide.items.cfApproved.description}</p>
+                            <div className="text-[#FFFFFF] font-mono">{slide.items.cfApproved.revenue}</div>
+                        </div>
+                        {/* Mini‑IPO */}
+                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
+                            <h3 className="text-xl font-bold text-[#FFFFFF] mb-2">{slide.items.miniIPO.title}</h3>
+                            <p className="text-[#AAAAAA] mb-2">{slide.items.miniIPO.description}</p>
+                            <div className="text-[#FFFFFF] font-mono">{slide.items.miniIPO.revenue}</div>
                         </div>
                     </div>
                 );
