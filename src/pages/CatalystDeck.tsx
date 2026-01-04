@@ -501,8 +501,8 @@ export default function CatalystDeck() {
                             <div className="flex items-center gap-4 mb-8">
                                 <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl grayscale opacity-70">🦄</div>
                                 <div>
-                                    <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
-                                    <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
+                                    <div className="text-lg font-bold text-[#FFFFFF] mb-0.5">Unicorn Inc.</div>
+                                    <div className="text-[10px] font-bold text-[#DD5555] tracking-widest uppercase">ALLOCATION EXHAUSTED</div>
                                 </div>
                             </div>
 
@@ -554,8 +554,8 @@ export default function CatalystDeck() {
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl grayscale opacity-70">🦄</div>
                             <div>
-                                <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
-                                <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
+                                <div className="text-lg font-bold text-[#FFFFFF] mb-0.5">Unicorn Inc.</div>
+                                <div className="text-[10px] font-bold text-[#DD5555] tracking-widest uppercase">ALLOCATION EXHAUSTED</div>
                             </div>
                         </div>
 
