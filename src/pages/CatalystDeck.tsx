@@ -70,7 +70,7 @@ export default function CatalystDeck() {
             items: [
                 { label: "TAM", time: "End-State", value: "$10.3T", desc: "Global Investable Capital" },
                 { label: "SAM", time: "5-10 Year", value: "$250B", desc: "Private & Alt Flows" },
-                { label: "SOM", time: "Execution", value: "$5.1B", desc: "Near-Term Target" }
+                { label: "SOM", time: "Execution", value: "$5.1B", desc: "Annual Capital Flow Intermediated*" }
             ]
         },
 
@@ -103,25 +103,28 @@ export default function CatalystDeck() {
             narrative: "Becoming a funding portal is a core part of long-term strategy."
         },
         {
-            id: "sequencing",
-            type: "step-flow",
-            subtitle: "Regulatory Sequencing",
-            title: "INTENTIONAL REGULATORY PATH.",
+            id: "roadmap-phases",
+            type: "phase-execution",
+            subtitle: "Phase-Based Execution",
+            title: "FROM DISCOVERY TO CAPITAL INFRASTRUCTURE.",
+            narrative: "North Star Metric: Annual Capital Flow Facilitated.",
             items: [
-                { step: "Phase 1", title: "Discovery", desc: "Build deal flow & signal. Validate UX. Avoid premature overhead." },
-                { step: "Phase 2", title: "Reg CF Portal", desc: "Retail participation. Standardized instruments. $500+ minimums." },
-                { step: "Phase 3", title: "Scale", desc: "Reg A+ expansion. Institutional capital. Advanced data products." }
+                { phase: "Phase 1", title: "Discovery Platform", desc: "Data-driven matching. No custody.", revenue: "$1M - $10M (Sub-scale)" },
+                { phase: "Phase 2", title: "Capital Facilitation", desc: "Soft commitments. SPVs. Introductions.", revenue: "$20M - $60M" },
+                { phase: "Phase 3", title: "Regulated Portal", desc: "Full execution. Primary & Secondary.", revenue: "$100M - $200M+" }
             ]
         },
         {
-            id: "business-model",
-            type: "split-revenue",
-            subtitle: "Business Model",
-            title: "MONETIZATION SCALES WITH REGULATION.",
-            items: [
-                { title: "Current Revenue (Live)", features: ["Founder Subscriptions", "Visibility Tools", "Concierge Matching"] },
-                { title: "Future Revenue (Post-Portal)", features: ["Success Fees on Capital", "Founder SaaS (Filings)", "Institutional Data APIs"] }
-            ]
+            id: "revenue-model",
+            type: "flow-revenue",
+            subtitle: "Revenue Model",
+            title: "TAKE RATE ON CAPITAL FLOW.",
+            narrative: "Catalyst is not a SaaS company chasing subscription dollars. It is a capital infrastructure platform monetizing participation in private market flows.",
+            items: {
+                som: "$5.1B",
+                rate: "2.5% – 4.0%",
+                revenue: "$127.5M – $204M"
+            }
         },
         {
             id: "growth-scale",
@@ -281,6 +284,10 @@ export default function CatalystDeck() {
                                 <div className="text-[9px] text-[#444444] mt-1">{slide.items[0].desc}</div>
                             </div>
                         </div>
+                        {/* Footnote */}
+                        <div className="absolute -bottom-8 left-0 text-[10px] text-[#666666] italic">
+                            *Revenue derived via blended take rate (2.5% - 4.0%).
+                        </div>
                     </div>
                 );
             case 'comparison-trend':
@@ -334,34 +341,100 @@ export default function CatalystDeck() {
                     <div className="w-full space-y-4">
                         {slide.items.map((item: any, i: number) => (
                             <div key={i} className="flex items-center gap-4">
-                                <div className="w-24 text-xs font-bold text-[#666666] uppercase tracking-widest text-right">{item.step}</div>
-                                <div className="h-12 w-[2px] bg-[#333333] relative">
-                                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 ${i === 0 ? 'bg-[#FFFFFF] border-[#FFFFFF]' : 'bg-[#000000] border-[#666666]'}`}></div>
+                                <div className="text-right w-24">
+                                    <div className="text-xs font-bold text-[#666666] uppercase tracking-widest">{item.phase}</div>
                                 </div>
-                                <div className={`flex-1 p-4 border rounded-lg ${i === 0 ? 'border-[#FFFFFF] bg-[#111111]' : 'border-[#333333] bg-[#000000]'} `}>
-                                    <h4 className="font-bold text-[#FFFFFF] text-sm">{item.title}</h4>
-                                    <p className="text-xs text-[#AAAAAA]">{item.desc}</p>
+                                <div className="h-12 w-[2px] bg-[#333333] relative">
+                                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 ${i >= 0 ? 'bg-[#FFFFFF] border-[#FFFFFF]' : 'bg-[#000000] border-[#666666]'}`}></div>
+                                </div>
+                                <div className={`flex-1 p-4 border rounded-lg ${i === 2 ? 'border-[#FFFFFF] bg-[#111111] shadow-[0_0_30px_rgba(255,255,255,0.1)]' : 'border-[#333333] bg-[#000000]'} flex justify-between items-center`}>
+                                    <div>
+                                        <h4 className="font-bold text-[#FFFFFF] text-sm">{item.title}</h4>
+                                        <p className="text-xs text-[#AAAAAA]">{item.desc}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-[10px] text-[#555555] uppercase tracking-wider mb-1">Revenue Potential</div>
+                                        <div className="text-sm font-bold text-[#FFFFFF]">{item.revenue}</div>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 );
-            case 'split-revenue':
+            case 'phase-execution':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                    <div className="w-full space-y-6">
                         {slide.items.map((item: any, i: number) => (
-                            <div key={i} className={`p-6 border rounded-xl ${i === 0 ? 'border-[#FFFFFF] bg-[#0A0A0A]' : 'border-[#333333] bg-[#000000] border-dashed'}`}>
-                                <h3 className="font-bold text-[#FFFFFF] mb-4 text-lg border-b border-[#333333] pb-2">{item.title}</h3>
-                                <ul className="space-y-3">
-                                    {item.features.map((feat: string, j: number) => (
-                                        <li key={j} className="text-sm text-[#CCCCCC] flex items-center gap-2">
-                                            <ChevronDown className="w-3 h-3 text-[#555555] rotate-[-90deg]" />
-                                            {feat}
-                                        </li>
-                                    ))}
-                                </ul>
+                            <div key={i} className="flex items-center gap-6 group">
+                                <div className="text-right w-24 shrink-0">
+                                    <div className="text-xs font-bold text-[#444444] uppercase tracking-widest group-hover:text-[#FFFFFF] transition-colors">{item.phase}</div>
+                                </div>
+                                <div className="h-full w-[1px] bg-[#333333] relative self-stretch flex items-center justify-center">
+                                    <div className={`w-3 h-3 rounded-full ${i === 2 ? 'bg-[#FFFFFF] shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#333333]'} transition-all`}></div>
+                                </div>
+                                <div className={`flex-1 p-6 border rounded-xl transition-all duration-300 ${i === 2 ? 'border-[#FFFFFF] bg-[#0A0A0A]' : 'border-[#222222] bg-[#000000] opacity-60 group-hover:opacity-100'}`}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="font-bold text-[#FFFFFF] text-lg mb-1">{item.title}</h4>
+                                            <p className="text-sm text-[#AAAAAA]">{item.desc}</p>
+                                        </div>
+                                        <div className="text-right bg-[#111111] px-3 py-2 rounded-lg border border-[#333333]">
+                                            <div className="text-[9px] text-[#555555] uppercase tracking-wider mb-0.5">Est. Revenue</div>
+                                            <div className="text-sm font-mono font-bold text-[#FFFFFF]">{item.revenue}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
+                    </div>
+                );
+            case 'flow-revenue':
+                return (
+                    <div className="flex flex-col items-center justify-center w-full gap-8">
+                        {/* Flow Diagram */}
+                        <div className="flex items-center gap-4 w-full justify-center">
+                            {/* Capital Flow */}
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-48 h-24 border border-[#FFFFFF] bg-[#0A0A0A] rounded-xl flex flex-col items-center justify-center p-4 text-center">
+                                    <div className="text-xs text-[#AAAAAA] uppercase tracking-widest mb-2">Capital Flow (SOM)</div>
+                                    <div className="text-3xl font-bold text-[#FFFFFF]">{slide.items.som}</div>
+                                </div>
+                                <div className="text-[10px] text-[#555555]">Investable Volume</div>
+                            </div>
+
+                            <ArrowRight className="w-8 h-8 text-[#333333]" />
+
+                            {/* Take Rate */}
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-32 h-24 border border-[#333333] bg-[#000000] rounded-xl flex flex-col items-center justify-center p-4 text-center">
+                                    <div className="text-xs text-[#555555] uppercase tracking-widest mb-2">Take Rate</div>
+                                    <div className="text-xl font-bold text-[#AAAAAA]">{slide.items.rate}</div>
+                                </div>
+                                <div className="text-[10px] text-[#333333]">Blended Fee</div>
+                            </div>
+
+                            <ArrowRight className="w-8 h-8 text-[#FFFFFF]" />
+
+                            {/* Revenue */}
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-48 h-24 border-2 border-[#FFFFFF] bg-[#FFFFFF] rounded-xl flex flex-col items-center justify-center p-4 text-center shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                                    <div className="text-xs text-[#000000] uppercase tracking-widest mb-2 font-bold">Projected ARR</div>
+                                    <div className="text-3xl font-bold text-[#000000] leading-none">{slide.items.revenue}</div>
+                                </div>
+                                <div className="text-[10px] text-[#FFFFFF] font-bold">Platform Revenue</div>
+                            </div>
+                        </div>
+
+                        {/* Math Explanation */}
+                        <div className="mt-8 text-center">
+                            <div className="inline-flex items-center gap-3 text-lg font-mono text-[#AAAAAA] border border-[#333333] px-6 py-3 rounded-full bg-[#050505]">
+                                <span className="text-[#FFFFFF]">{slide.items.som}</span>
+                                <span>×</span>
+                                <span className="text-[#FFFFFF]">2.5%</span>
+                                <span>=</span>
+                                <span className="text-[#FFFFFF]">$127.5M ARR</span>
+                            </div>
+                        </div>
                     </div>
                 );
             case 'comparison-table':
