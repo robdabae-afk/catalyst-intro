@@ -49,14 +49,14 @@ const Dashboard = () => {
 
   // Check subscription status for ad bypass
   const { isPro } = useSubscription(currentUser?.id || null);
-  
+
   // Track daily swipes for free users
-  const { 
-    remainingSwipes, 
-    canSwipe, 
-    shouldShowUpgradePrompt, 
+  const {
+    remainingSwipes,
+    canSwipe,
+    shouldShowUpgradePrompt,
     incrementSwipe,
-    baseSwipes 
+    baseSwipes
   } = useDailySwipes(currentUser?.id || null, isPro, currentUser?.user_type || null);
 
   const {
@@ -100,18 +100,18 @@ const Dashboard = () => {
       }
 
       setCurrentUser(profile);
-      
+
       // Show welcome billboard if user hasn't seen it yet
       if (!profile.has_seen_welcome) {
         setShowWelcomeBillboard(true);
       }
-      
+
       // Show legal notice for existing approved users who haven't acknowledged terms
       // (they signed up before the terms checkbox was added)
       if (!profile.legal_accepted_at && !profile.legal_acknowledged && profile.has_seen_welcome) {
         setShowLegalNotice(true);
       }
-      
+
       await loadProfiles(profile);
     };
 
@@ -122,14 +122,13 @@ const Dashboard = () => {
     try {
       // Load profiles of opposite type
       const targetType = user.user_type === 'founder' ? 'investor' : 'founder';
-      
+
       // Fetch base profiles, user's filter preferences, and ad profiles in parallel
       const [profilesResult, filtersResult, adsResult] = await Promise.all([
         supabase
-          .from('profiles')
+          .from('public_profiles')
           .select('*')
           .eq('user_type', targetType)
-          .eq('is_hidden', false)
           .neq('id', user.id),
         supabase
           .from('profiles')
@@ -160,7 +159,7 @@ const Dashboard = () => {
 
       // Fetch related profile data based on target type
       const profileIds = profilesData.map(p => p.id);
-      
+
       let founderProfiles: any[] = [];
       let investorProfiles: any[] = [];
 
@@ -188,10 +187,10 @@ const Dashboard = () => {
 
       // Apply filter preferences, but fall back to unfiltered if no results
       let filteredProfiles = mergedProfiles;
-      
+
       if (filters) {
         const { filter_stages, filter_industries, filter_locations } = filters;
-        const hasActiveFilters = 
+        const hasActiveFilters =
           (filter_stages && filter_stages.length > 0) ||
           (filter_industries && filter_industries.length > 0) ||
           (filter_locations && filter_locations.length > 0);
@@ -213,7 +212,7 @@ const Dashboard = () => {
             // Filter by industries
             if (filter_industries && filter_industries.length > 0) {
               const profileIndustries = founderProfile?.industry || investorProfile?.sectors_of_interest || [];
-              const hasMatchingIndustry = profileIndustries.some((ind: string) => 
+              const hasMatchingIndustry = profileIndustries.some((ind: string) =>
                 filter_industries.includes(ind)
               );
               if (profileIndustries.length > 0 && !hasMatchingIndustry) {
@@ -224,7 +223,7 @@ const Dashboard = () => {
             // Filter by locations
             if (filter_locations && filter_locations.length > 0) {
               const profileLocation = founderProfile?.preferred_city || investorProfile?.location || '';
-              const matchesLocation = filter_locations.some(loc => 
+              const matchesLocation = filter_locations.some(loc =>
                 profileLocation.toLowerCase().includes(loc.toLowerCase())
               );
               if (profileLocation && !matchesLocation) {
@@ -241,7 +240,7 @@ const Dashboard = () => {
           }
         }
       }
-      
+
       mergedProfiles = filteredProfiles;
 
       // Get user's swipes to filter out already swiped profiles
@@ -320,7 +319,7 @@ const Dashboard = () => {
       // Start 3-second cooldown before next swipe
       setSwipeCooldown(true);
       setCooldownSeconds(3);
-      
+
       const interval = setInterval(() => {
         setCooldownSeconds(prev => {
           if (prev <= 1) {
@@ -358,7 +357,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      <AppNavigation 
+      <AppNavigation
         userType={currentUser?.user_type}
         userName={currentUser?.name}
         avatarUrl={currentUser?.avatar_url}
@@ -416,7 +415,7 @@ const Dashboard = () => {
       <div className="max-w-md mx-auto px-4 py-8 space-y-4">
         {/* Traction Limit Banner for Founders */}
         {currentUser?.user_type === 'founder' && <TractionLimitBanner />}
-        
+
         {/* Spotlight and Concierge Buttons Row */}
         {currentUser && (
           <div className="flex gap-2">
@@ -424,8 +423,8 @@ const Dashboard = () => {
               <SpotlightPurchaseButton userId={currentUser.id} variant="compact" />
             </div>
             <div className="flex-1">
-              <ConciergeMatchButton 
-                userId={currentUser.id} 
+              <ConciergeMatchButton
+                userId={currentUser.id}
                 userType={currentUser.user_type}
                 showBenefits={false}
               />
@@ -459,7 +458,7 @@ const Dashboard = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="mb-4 text-center">
               <p className="text-sm text-muted-foreground">
                 {isCurrentItemAd ? (
@@ -477,7 +476,7 @@ const Dashboard = () => {
               {/* Swipes remaining indicator for free users */}
               {!isPro && !isCurrentItemAd && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  {remainingSwipes > 0 
+                  {remainingSwipes > 0
                     ? `${remainingSwipes} swipe${remainingSwipes === 1 ? '' : 's'} left today`
                     : 'Daily limit reached'}
                 </p>
