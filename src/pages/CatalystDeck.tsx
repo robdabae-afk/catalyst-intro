@@ -258,22 +258,62 @@ export default function CatalystDeck() {
         }, 500);
     };
 
+    // Hover Wrapper Component for Three-Col Slide
+    const HoverWrapper = ({ slide }: { slide: any }) => {
+        const [hoveredProblem, setHoveredProblem] = useState<any | null>(null);
+
+        return (
+            <>
+                {/* Dynamic Header Area */}
+                <div className="h-32 mb-8 text-center flex flex-col justify-center transition-all duration-300">
+                    {hoveredProblem ? (
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="text-sm md:text-base text-[#AAAAAA] font-mono mb-2 uppercase tracking-widest">
+                                The Problem
+                            </div>
+                            <h3 className="text-2xl md:text-4xl font-bold text-[#FFFFFF] max-w-2xl mx-auto leading-tight">
+                                {hoveredProblem.desc}
+                            </h3>
+                        </div>
+                    ) : (
+                        <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="text-sm md:text-base text-[#DD5555] font-mono mb-2 uppercase tracking-widest">
+                                {slide.subtitle}
+                            </div>
+                            <h3 className="text-3xl md:text-5xl font-bold text-[#FFFFFF] mb-6 tracking-tight">
+                                {slide.title}
+                            </h3>
+                        </div>
+                    )}
+                </div>
+
+                {/* Interactive Columns */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full px-4">
+                    {slide.items.map((item: any, i: number) => (
+                        <div
+                            key={i}
+                            className="p-8 border border-[#333333] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 group hover:border-[#FFFFFF] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] cursor-help"
+                            onMouseEnter={() => setHoveredProblem(item)}
+                            onMouseLeave={() => setHoveredProblem(null)}
+                        >
+                            <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 group-hover:bg-[#FFFFFF]">
+                                <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
+                            </div>
+                            <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
+                            <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-500 ease-out"></div>
+                        </div>
+                    ))}
+                </div>
+            </>
+        );
+    };
+
     const renderVisual = (slide: any, isActive: boolean) => {
         switch (slide.type) {
             case 'three-col-text':
                 return (
-                    <div className="grid grid-cols-1 gap-4 md:gap-6 w-full max-w-4xl">
-                        {slide.items.map((item: any, i: number) => (
-                            <div key={i} className="bg-[#111111] border border-[#333333] p-4 md:p-6 rounded-xl flex items-start gap-4">
-                                <div className="bg-[#FFFFFF] p-2 rounded-lg text-[#000000] shrink-0">
-                                    <item.icon className="w-4 h-4 md:w-5 md:h-5" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-[#FFFFFF] mb-1 md:mb-2 text-sm md:text-base">{item.title}</h3>
-                                    <p className="text-xs md:text-sm text-[#AAAAAA] leading-relaxed">{item.desc}</p>
-                                </div>
-                            </div>
-                        ))}
+                    <div className="w-full max-w-5xl flex flex-col items-center">
+                        <HoverWrapper slide={slide} />
                     </div>
                 );
             case 'hero-text':
@@ -286,16 +326,23 @@ export default function CatalystDeck() {
             case 'thesis-swipe':
                 return (
                     <div className="flex flex-col items-center gap-8 relative">
-                        {/* Swipe Card */}
-                        <div className="w-64 md:w-80 aspect-[3/4] bg-[#111111]/80 backdrop-blur-xl border border-[#333333] rounded-3xl p-6 flex flex-col items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden animate-in fade-in zoom-in duration-700">
-                            {/* Profile Placeholder */}
-                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-[#333333] border-dashed flex items-center justify-center mb-6 bg-[#000000]/50">
-                                <Users className="w-8 h-8 md:w-12 md:h-12 text-[#333333]" strokeWidth={1} />
-                            </div>
+                        {/* Card Stack Effect */}
+                        <div className="absolute top-0 w-full h-full bg-[#333333] rounded-3xl rotate-6 scale-90 opacity-40 translate-x-4"></div>
+                        <div className="absolute top-0 w-full h-full bg-[#222222] rounded-3xl -rotate-3 scale-95 opacity-60 -translate-x-2"></div>
 
-                            {/* Name Placeholder */}
-                            <div className="w-32 h-4 bg-[#333333] rounded-full mb-2"></div>
-                            <div className="w-20 h-3 bg-[#222222] rounded-full mb-8"></div>
+                        {/* Main Glass Card with Swipe Animation */}
+                        <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-3xl p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
+                            {/* Founder Profile Header */}
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden border border-[#555555]">
+                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80" alt="Founder" className="w-full h-full object-cover grayscale opacity-80" />
+                                </div>
+
+                                <div>
+                                    <div className="text-lg font-bold text-[#FFFFFF]">Sarah Jenks</div>
+                                    <div className="text-xs text-[#888888] uppercase tracking-wider">CEO, FinEdge</div>
+                                </div>
+                            </div>
 
                             {/* Tags */}
                             <div className="flex gap-2 w-full justify-center mb-8">
@@ -816,7 +863,7 @@ export default function CatalystDeck() {
                                 {/* Badge */}
                                 <div className="absolute top-[20%] bg-[#0A0A0A] border border-[#FFAA00] shadow-[0_0_15px_rgba(255,170,0,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2 animate-pulse">
                                     <Shield className="w-3 h-3 text-[#FFAA00]" />
-                                    <span className="text-[10px] font-bold text-[#FFFFFF] uppercase tracking-wider whitespace-nowrap">SEC Securities Compliance Achieved</span>
+                                    <span className="text-[10px] font-bold text-[#FFFFFF] uppercase tracking-wider whitespace-nowrap">Initial SEC Compliance Achieved</span>
                                 </div>
                                 {/* Dot on X-Axis */}
                                 <div className="absolute bottom-0 w-2 h-2 bg-[#FFAA00] rounded-full shadow-[0_0_10px_rgba(255,170,0,0.8)]"></div>
@@ -950,6 +997,11 @@ export default function CatalystDeck() {
     return (
         <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative print-container">
             <style>{`
+        @keyframes swipe-hint {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-10px) rotate(-2deg); }
+            75% { transform: translateX(10px) rotate(2deg); }
+        }
         @keyframes chaos-pulse {
             0% { 
                 text-shadow: 0 0 10px rgba(180, 40, 40, 0.4);
