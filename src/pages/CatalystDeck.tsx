@@ -753,17 +753,17 @@ export default function CatalystDeck() {
                 );
             case 'cta-final':
                 return (
-                    <div className="text-center w-full max-w-xl pt-16 md:pt-0">
+                    <div className="text-center w-full max-w-xl">
                         <div className="flex flex-col gap-6 justify-center items-center">
                             <Button
-                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-72 no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => setShowFundingForm(true)}
                             >
-                                Express interest in funding Catalyst Intro
+                                <span className="whitespace-nowrap">Express interest in funding Catalyst Intro</span>
                             </Button>
                             <Button
                                 variant="outline"
-                                className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-72 no-print transition-all hover:scale-105"
+                                className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => navigate('/')}
                             >
                                 Sign Up
@@ -908,7 +908,7 @@ export default function CatalystDeck() {
 
                                 {/* Left Content (Text) */}
                                 <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                    <div className="flex items-center gap-4">
+                                    <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-24' : ''}`}>
                                         <div className="h-[1px] w-12 bg-[#333333]"></div>
                                         <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
                                             {slide.subtitle}
