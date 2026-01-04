@@ -425,66 +425,85 @@ export default function CatalystDeck() {
                             </div>
 
                             {/* Chart Area */}
-                            <div className="absolute inset-0 grid grid-cols-3 items-end">
+                            <div className="absolute inset-0 z-30">
+                                {/* Revenue Points */}
                                 {slide.items.map((item: any, i: number) => {
-                                    // Scale Revenue (Max $20M)
                                     const revValue = parseFloat(item.revenue.replace(/[^0-9.]/g, ''));
                                     const heightPerc = (revValue / 20) * 100;
-
-                                    // Scale Users (Max 100k)
-                                    const userValue = parseInt(item.users.replace(/[^0-9]/g, ''));
-                                    const userHeight = (userValue / 100) * 100;
+                                    const xPos = [16.66, 50, 83.33][i];
 
                                     return (
-                                        <div key={i} className="relative flex flex-col items-center justify-end h-full">
-                                            {/* Bar (Revenue) */}
-                                            <div
-                                                className={`w-16 bg-[#FFFFFF] transition-all duration-1000 origin-bottom relative z-10 ${isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
-                                                style={{ height: `${heightPerc}%`, transitionDelay: `${i * 200}ms` }}
-                                            >
-                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    {item.revenue}
-                                                </div>
+                                        <div key={`rev-${i}`}
+                                            className={`absolute w-3 h-3 rounded-full bg-[#FFFFFF] z-30 transition-all duration-1000 delay-500 hover:scale-150 cursor-crosshair ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                            style={{ left: `${xPos}%`, bottom: `calc(${heightPerc}% - 6px)`, transform: 'translateX(-50%)' }}
+                                        >
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
+                                                {item.revenue}
                                             </div>
+                                        </div>
+                                    );
+                                })}
 
-                                            {/* Line Point (Users) */}
-                                            <div
-                                                className={`absolute w-3 h-3 rounded-full border border-[#000000] bg-[#FFFFFF] z-30 transition-all duration-1000 delay-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}
-                                                style={{ bottom: `calc(${userHeight}% - 6px)` }}
-                                            >
+                                {/* User Points */}
+                                {slide.items.map((item: any, i: number) => {
+                                    const userValue = parseInt(item.users.replace(/[^0-9]/g, ''));
+                                    const userHeight = (userValue / 100) * 100;
+                                    const xPos = [16.66, 50, 83.33][i];
+
+                                    return (
+                                        <div key={`user-${i}`}
+                                            className={`absolute w-3 h-3 rounded-full border-2 border-[#FFFFFF] bg-[#000000] z-30 transition-all duration-1000 delay-700 hover:scale-150 cursor-crosshair ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                            style={{ left: `${xPos}%`, bottom: `calc(${userHeight}% - 6px)`, transform: 'translateX(-50%)' }}
+                                        >
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
+                                                {item.users} Users
                                             </div>
-
-                                            {/* Label */}
-                                            <div className="absolute -bottom-8 text-xs font-medium text-[#AAAAAA] uppercase tracking-wider">{item.label}</div>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            {/* Trend Line (SVG) */}
-                            {/* Points mapped to Grid Centers: 16.66% (1/6), 50% (3/6), 83.33% (5/6) */}
-                            {/* Y Values (inverted): 5k->95%, 25k->75%, 80k->20% */}
+                            {/* Trend Lines (SVG) */}
                             <svg className={`absolute inset-0 w-full h-full pointer-events-none z-20 transition-opacity duration-1000 delay-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="none" viewBox="0 0 100 100">
+                                {/* Revenue Line (Solid) */}
+                                <polyline
+                                    points="16.66,94 50,67.5 83.33,10"
+                                    fill="none"
+                                    stroke="#FFFFFF"
+                                    strokeWidth="1.5"
+                                    vectorEffect="non-scaling-stroke"
+                                />
+                                {/* Users Line (Dashed) */}
                                 <polyline
                                     points="16.66,95 50,75 83.33,20"
                                     fill="none"
                                     stroke="#FFFFFF"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="2 2"
+                                    strokeWidth="1"
+                                    strokeDasharray="4 4"
                                     vectorEffect="non-scaling-stroke"
+                                    className="opacity-60"
                                 />
                             </svg>
+
+                            {/* X-Axis Labels */}
+                            <div className="absolute inset-x-0 -bottom-8 flex justify-between px-[16.66%] translate-x-[-12px]"> {/* Adjusting for center alignment logic roughly */}
+                                {slide.items.map((item: any, i: number) => (
+                                    <div key={i} className="w-0 flex justify-center text-xs font-medium text-[#AAAAAA] uppercase tracking-wider">
+                                        {item.label}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {/* Legend */}
-                        <div className="flex justify-center gap-8 text-[10px] tracking-widest uppercase">
+                        <div className="flex justify-center gap-8 text-[10px] tracking-widest uppercase mt-4">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-[#FFFFFF]"></div>
-                                <span className="text-[#555555]">Revenue (ARR)</span>
+                                <div className="w-8 h-[2px] bg-[#FFFFFF]"></div>
+                                <span className="text-[#AAAAAA]">Revenue (ARR)</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full border border-[#FFFFFF]"></div>
-                                <span className="text-[#555555]">Active Users</span>
+                                <div className="w-8 h-[1px] border-t border-dashed border-[#FFFFFF]"></div>
+                                <span className="text-[#AAAAAA]">Active Users</span>
                             </div>
                         </div>
                     </div>
