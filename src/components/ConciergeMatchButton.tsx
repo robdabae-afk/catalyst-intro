@@ -30,11 +30,11 @@ const CONCIERGE_BENEFITS = [
   { icon: Star, text: 'Quality over quantity - curated for you' },
 ];
 
-export const ConciergeMatchButton = ({ 
-  userId, 
-  userType, 
+export const ConciergeMatchButton = ({
+  userId,
+  userType,
   variant = 'default',
-  showBenefits: showBenefitsProp = true 
+  showBenefits: showBenefitsProp = true
 }: ConciergeMatchButtonProps) => {
   const { toast } = useToast();
   const { balance, loading: balanceLoading } = useTokens(userId);
@@ -74,7 +74,7 @@ export const ConciergeMatchButton = ({
 
     if (matchResult.data) {
       setPendingMatch(matchResult.data);
-      
+
       // If there's a pending match with stripe session, verify payment
       if (matchResult.data.payment_status === 'pending' && matchResult.data.stripe_session_id) {
         verifyPayment(matchResult.data.id);
@@ -88,7 +88,7 @@ export const ConciergeMatchButton = ({
       const { data, error } = await supabase.functions.invoke('verify-concierge-payment', {
         body: { matchId }
       });
-      
+
       if (!error && data?.success && data?.status === 'paid') {
         // Payment was verified - show success notification
         toast({
@@ -96,7 +96,7 @@ export const ConciergeMatchButton = ({
           description: "In 8-12 hours maximum you will receive your personally curated match.",
           duration: 8000,
         });
-        
+
         // Reload to get updated status
         loadPendingMatch();
       }
@@ -154,7 +154,7 @@ export const ConciergeMatchButton = ({
   const handleProceedToPayment = async () => {
     setLoading(true);
     setShowExplanationModal(false);
-    
+
     // Check token balance
     if (balance < tokenCost) {
       toast({
@@ -169,7 +169,7 @@ export const ConciergeMatchButton = ({
 
     try {
       const { data, error } = await supabase.functions.invoke('create-concierge-payment', {});
-      
+
       if (error) {
         if (error.message?.includes('Insufficient tokens')) {
           toast({
@@ -183,7 +183,7 @@ export const ConciergeMatchButton = ({
         }
         return;
       }
-      
+
       if (data?.success) {
         toast({
           title: "Purchase Successful!",
@@ -216,94 +216,95 @@ export const ConciergeMatchButton = ({
         userId={userId}
         open={showTokenPurchase}
         onOpenChange={setShowTokenPurchase}
+        trigger={<span className="hidden" />}
         onPurchaseComplete={() => {
           setShowTokenPurchase(false);
           // Reload balance will happen automatically via useTokens hook
         }}
       />
       <Dialog open={showExplanationModal} onOpenChange={setShowExplanationModal}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Crown className="w-5 h-5 text-amber-500" />
-            Premium Match Service
-          </DialogTitle>
-          <DialogDescription className="text-left pt-2">
-            Skip the swiping and let our expert team find your perfect match.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-3">
-            <h4 className="font-medium text-sm">What you get:</h4>
-            {CONCIERGE_BENEFITS.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-3 text-sm">
-                <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
-                  <benefit.icon className="w-4 h-4 text-amber-500" />
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-amber-500" />
+              Premium Match Service
+            </DialogTitle>
+            <DialogDescription className="text-left pt-2">
+              Skip the swiping and let our expert team find your perfect match.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm">What you get:</h4>
+              {CONCIERGE_BENEFITS.map((benefit, index) => (
+                <div key={index} className="flex items-center gap-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center">
+                    <benefit.icon className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <span>{benefit.text}</span>
                 </div>
-                <span>{benefit.text}</span>
-              </div>
-            ))}
-          </div>
-          <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-            <h4 className="font-medium text-sm">How it works:</h4>
-            <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Spend {tokenCost} tokens to request a match</li>
-              <li>Our team reviews your profile and preferences</li>
-              <li>Within 8-12 hours, you'll receive a curated match</li>
-              <li>Connect with your hand-picked {userType === 'founder' ? 'investor' : 'startup'}</li>
-            </ol>
-          </div>
-          <div className="bg-amber-50 dark:bg-amber-950/20 rounded-lg p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Token Cost:</span>
-              <div className="flex items-center gap-1">
-                <Coins className="w-4 h-4 text-amber-600" />
-                <span className="text-lg font-bold">{tokenCost} tokens</span>
-              </div>
+              ))}
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Your Balance:</span>
-              {balanceLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
+            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+              <h4 className="font-medium text-sm">How it works:</h4>
+              <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>Spend {tokenCost} tokens to request a match</li>
+                <li>Our team reviews your profile and preferences</li>
+                <li>Within 8-12 hours, you'll receive a curated match</li>
+                <li>Connect with your hand-picked {userType === 'founder' ? 'investor' : 'startup'}</li>
+              </ol>
+            </div>
+            <div className="bg-amber-50 dark:bg-amber-950/20 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Token Cost:</span>
                 <div className="flex items-center gap-1">
                   <Coins className="w-4 h-4 text-amber-600" />
-                  <span className={`text-lg font-bold ${balance < tokenCost ? 'text-red-600' : 'text-green-600'}`}>
-                    {balance} tokens
-                  </span>
+                  <span className="text-lg font-bold">{tokenCost} tokens</span>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Your Balance:</span>
+                {balanceLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <Coins className="w-4 h-4 text-amber-600" />
+                    <span className={`text-lg font-bold ${balance < tokenCost ? 'text-red-600' : 'text-green-600'}`}>
+                      {balance} tokens
+                    </span>
+                  </div>
+                )}
+              </div>
+              {balance < tokenCost && (
+                <p className="text-xs text-red-600 mt-2">
+                  Insufficient tokens. Purchase more to continue.
+                </p>
               )}
             </div>
-            {balance < tokenCost && (
-              <p className="text-xs text-red-600 mt-2">
-                Insufficient tokens. Purchase more to continue.
-              </p>
-            )}
+            <div className="flex gap-3 pt-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowExplanationModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleProceedToPayment}
+                disabled={loading || balanceLoading || balance < tokenCost}
+                className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Coins className="w-4 h-4 mr-2" />
+                )}
+                Purchase ({tokenCost} tokens)
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-3 pt-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setShowExplanationModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleProceedToPayment}
-              disabled={loading || balanceLoading || balance < tokenCost}
-              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
-            >
-              {loading ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Coins className="w-4 h-4 mr-2" />
-              )}
-              Purchase ({tokenCost} tokens)
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
     </>
   );
 
@@ -323,7 +324,7 @@ export const ConciergeMatchButton = ({
   // If user has a paid pending match, show the waiting state (dismissable)
   if (pendingMatch?.payment_status === 'paid') {
     if (dismissed || loadingDismissState) return null;
-    
+
     return (
       <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-transparent relative">
         <div className="absolute top-3 right-3">
@@ -331,7 +332,7 @@ export const ConciergeMatchButton = ({
             <label htmlFor="dismiss-match" className="text-xs text-muted-foreground cursor-pointer">
               Dismiss
             </label>
-            <Checkbox 
+            <Checkbox
               id="dismiss-match"
               checked={dismissed}
               onCheckedChange={handleDismissBanner}
