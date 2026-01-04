@@ -261,6 +261,7 @@ export default function CatalystDeck() {
     // Hover Wrapper Component for Three-Col Slide
     const HoverWrapper = ({ slide }: { slide: any }) => {
         const [hoveredProblem, setHoveredProblem] = useState<any | null>(null);
+        const [showCue, setShowCue] = useState(true);
 
         return (
             <>
@@ -287,19 +288,25 @@ export default function CatalystDeck() {
                     )}
                 </div>
 
+                {/* Interaction cue */}
+                <div className={`text-center text-sm text-[#AAAAAA] mb-4 transition-opacity duration-300 ${showCue ? 'opacity-100' : 'opacity-0'}`}>
+                    Hover to reveal
+                </div>
+
                 {/* Interactive Columns */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full px-4">
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className="p-8 border border-[#333333] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 group hover:border-[#FFFFFF] hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] cursor-help"
-                            onMouseEnter={() => setHoveredProblem(item)}
+                            className="p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help"
+                            onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
                             <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 group-hover:bg-[#FFFFFF]">
                                 <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
                             </div>
                             <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
+                            <p className="text-sm text-[#AAAAAA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-2">{item.desc}</p>
                             <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-500 ease-out"></div>
                         </div>
                     ))}
