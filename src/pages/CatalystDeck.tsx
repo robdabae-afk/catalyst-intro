@@ -310,10 +310,10 @@ export default function CatalystDeck() {
                     <div className="relative w-full flex flex-col items-center">
                         {/* Connecting Arrow from IGNORED (Left Column) to Stats (Right Column) */}
                         {slide.id === 'founder-pain' && isActive && (
-                            <div className="absolute top-1/2 -left-[60%] w-[60%] h-32 pointer-events-none z-0 no-print opacity-40">
+                            <div className="absolute top-1/2 -left-[50%] w-[50%] h-32 pointer-events-none z-0 no-print opacity-40">
                                 <svg className="w-full h-full" viewBox="0 0 400 100" fill="none">
                                     <path
-                                        d="M 20 20 Q 150 100 380 80"
+                                        d="M 150 20 Q 250 100 380 80"
                                         stroke="url(#arrow-grad)"
                                         strokeWidth="2"
                                         strokeLinecap="round"
@@ -324,7 +324,7 @@ export default function CatalystDeck() {
                                     <defs>
                                         <linearGradient id="arrow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
                                             <stop offset="0%" stopColor="transparent" />
-                                            <stop offset="50%" stopColor="#FFFFFF" />
+                                            <stop offset="30%" stopColor="#FFFFFF" />
                                             <stop offset="100%" stopColor="#FFFFFF" />
                                         </linearGradient>
                                     </defs>
@@ -335,7 +335,7 @@ export default function CatalystDeck() {
                         <div className="flex gap-4 w-full justify-between items-center relative z-10 mb-12">
                             {slide.items.map((item: any, i: number) => (
                                 <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
-                                    <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : 'text-[#FFFFFF]'}`}>
+                                    <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
                                         {item.value}
                                     </div>
                                     <div className="text-xs uppercase tracking-widest text-[#666666]">{item.label}</div>
@@ -352,7 +352,7 @@ export default function CatalystDeck() {
                                 </div>
 
                                 <div className="flex flex-col items-center">
-                                    <div className="text-[10px] text-[#DD5555] font-bold mb-1 uppercase tracking-widest animate-pulse">99% Filtered Out</div>
+                                    <div className="text-[10px] text-[#DD5555] font-bold mb-1 uppercase tracking-widest animate-pulse">99% Un-funded</div>
                                     <div className="flex items-center gap-2">
                                         <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#333333] to-transparent"></div>
                                         <ArrowRight className="w-4 h-4 text-[#333333]" />
