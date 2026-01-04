@@ -307,15 +307,34 @@ export default function CatalystDeck() {
                 );
             case 'stats-row-pain':
                 return (
-                    <div className="flex gap-4 w-full justify-between items-center">
-                        {slide.items.map((item: any, i: number) => (
-                            <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible`}>
-                                <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : 'text-[#FFFFFF]'}`}>
-                                    {item.value}
+                    <div className="relative w-full">
+                        {/* Ignored Conversion Visualization */}
+                        {slide.id === 'founder-pain' && (
+                            <div className="absolute -top-16 left-0 right-0 flex items-center justify-center gap-6 no-print">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-[#FFFFFF]">100,000+</div>
+                                    <div className="text-[10px] text-[#666666] uppercase tracking-widest">New Ideas / Year</div>
                                 </div>
-                                <div className="text-xs uppercase tracking-widest text-[#666666]">{item.label}</div>
+                                <div className="flex flex-col items-center">
+                                    <div className="text-[10px] text-[#DD5555] font-bold mb-1 uppercase">99% Filtered Out</div>
+                                    <ArrowRight className="w-12 h-4 text-[#333333]" />
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold text-[#FFFFFF]">~0.05%</div>
+                                    <div className="text-[10px] text-[#666666] uppercase tracking-widest">Secured Seed</div>
+                                </div>
                             </div>
-                        ))}
+                        )}
+                        <div className="flex gap-4 w-full justify-between items-center relative">
+                            {slide.items.map((item: any, i: number) => (
+                                <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
+                                    <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : 'text-[#FFFFFF]'}`}>
+                                        {item.value}
+                                    </div>
+                                    <div className="text-xs uppercase tracking-widest text-[#666666]">{item.label}</div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 );
             case 'funnel-viz':
@@ -726,25 +745,42 @@ export default function CatalystDeck() {
             <style>{`
         @keyframes chaos-pulse {
             0% { 
-                text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+                text-shadow: 0 0 10px rgba(180, 40, 40, 0.4);
                 transform: scale(1);
-                filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.2));
             }
             50% { 
-                text-shadow: 0 0 25px rgba(255, 0, 0, 0.9), 0 0 50px rgba(255, 0, 0, 0.6), 0 0 80px rgba(255, 0, 0, 0.3);
-                transform: scale(1.1);
-                filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.8));
+                text-shadow: 0 0 20px rgba(220, 50, 50, 0.5);
+                transform: scale(1.05);
             }
             100% { 
-                text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+                text-shadow: 0 0 10px rgba(180, 40, 40, 0.4);
                 transform: scale(1);
-                filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.2));
             }
         }
         .chaos-animate {
-            color: #ff3333 !important;
-            animation: chaos-pulse 2s infinite ease-in-out;
+            color: #dd5555 !important;
+            animation: chaos-pulse 3s infinite ease-in-out;
             display: inline-block;
+        }
+        .highlight-ignored {
+            color: #FFFFFF;
+            font-size: 1.15em;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+            position: relative;
+            background: linear-gradient(to right, #FFFFFF, #AAAAAA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .highlight-ignored::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #FFFFFF;
+            opacity: 0.3;
         }
 
         @media print {
@@ -832,7 +868,13 @@ export default function CatalystDeck() {
                                     </div>
 
                                     <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-[#FFFFFF]">
-                                        {slide.title}
+                                        {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
+                                            part === 'IGNORED' ? (
+                                                <span key={i} className="highlight-ignored">
+                                                    {part}
+                                                </span>
+                                            ) : part
+                                        )}
                                     </h1>
 
                                     {slide.subhead && (
