@@ -262,15 +262,15 @@ export default function CatalystDeck() {
         switch (slide.type) {
             case 'three-col-text':
                 return (
-                    <div className="grid grid-cols-1 gap-6 w-full max-w-4xl">
+                    <div className="grid grid-cols-1 gap-4 md:gap-6 w-full max-w-4xl">
                         {slide.items.map((item: any, i: number) => (
-                            <div key={i} className="bg-[#111111] border border-[#333333] p-6 rounded-xl flex items-start gap-4">
-                                <div className="bg-[#FFFFFF] p-2 rounded-lg text-[#000000]">
-                                    <item.icon className="w-5 h-5" />
+                            <div key={i} className="bg-[#111111] border border-[#333333] p-4 md:p-6 rounded-xl flex items-start gap-4">
+                                <div className="bg-[#FFFFFF] p-2 rounded-lg text-[#000000] shrink-0">
+                                    <item.icon className="w-4 h-4 md:w-5 md:h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-[#FFFFFF] mb-2">{item.title}</h3>
-                                    <p className="text-sm text-[#AAAAAA] leading-relaxed">{item.desc}</p>
+                                    <h3 className="font-bold text-[#FFFFFF] mb-1 md:mb-2 text-sm md:text-base">{item.title}</h3>
+                                    <p className="text-xs md:text-sm text-[#AAAAAA] leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}
@@ -280,17 +280,17 @@ export default function CatalystDeck() {
                 return (
                     <div className="w-full h-full flex items-center justify-center relative">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_70%)]"></div>
-                        <Building className="w-48 h-48 text-[#1A1A1A]" strokeWidth={0.5} />
+                        <Building className="w-32 h-32 md:w-48 md:h-48 text-[#1A1A1A]" strokeWidth={0.5} />
                     </div>
                 );
             case 'thesis-swipe':
                 return (
                     <div className="flex flex-col items-center gap-8 relative">
                         {/* Swipe Card */}
-                        <div className="w-80 aspect-[3/4] bg-[#111111]/80 backdrop-blur-xl border border-[#333333] rounded-3xl p-6 flex flex-col items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden animate-in fade-in zoom-in duration-700">
+                        <div className="w-64 md:w-80 aspect-[3/4] bg-[#111111]/80 backdrop-blur-xl border border-[#333333] rounded-3xl p-6 flex flex-col items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden animate-in fade-in zoom-in duration-700">
                             {/* Profile Placeholder */}
-                            <div className="w-32 h-32 rounded-full border-2 border-[#333333] border-dashed flex items-center justify-center mb-6 bg-[#000000]/50">
-                                <Users className="w-12 h-12 text-[#333333]" strokeWidth={1} />
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-[#333333] border-dashed flex items-center justify-center mb-6 bg-[#000000]/50">
+                                <Users className="w-8 h-8 md:w-12 md:h-12 text-[#333333]" strokeWidth={1} />
                             </div>
 
                             {/* Name Placeholder */}
@@ -368,13 +368,13 @@ export default function CatalystDeck() {
                             </div>
                         )}
 
-                        <div className="flex gap-4 w-full justify-between items-center relative z-10 mb-12">
+                        <div className="flex gap-4 w-full justify-between items-center relative z-10 mb-8 md:mb-12">
                             {slide.items.map((item: any, i: number) => (
-                                <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
-                                    <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
-                                        {item.value}
+                                <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
+                                    <div className={`text-2xl md:text-5xl font-bold mb-1 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
+                                        item.value === 'Chaos' ? 'Chaos' : item.value
                                     </div>
-                                    <div className="text-xs uppercase tracking-widest text-[#666666]">{item.label}</div>
+                                    <div className="text-[10px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
                                 </div>
                             ))}
                         </div>
@@ -422,7 +422,7 @@ export default function CatalystDeck() {
                 );
             case 'tam-sam-som':
                 return (
-                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center">
+                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center scale-75 md:scale-100">
                         {/* Legend / Clarifier */}
                         <div className="absolute top-0 right-0 text-right">
                             <div className="flex items-center justify-end gap-2 text-[10px] text-[#AAAAAA] uppercase tracking-widest mb-1">
@@ -480,7 +480,8 @@ export default function CatalystDeck() {
                 );
             case 'mobile-ux':
                 return (
-                    <div className="border border-[#333333] rounded-3xl p-4 w-64 h-96 bg-[#000000] relative overflow-hidden mx-auto">
+                return (
+                    <div className="border border-[#333333] rounded-3xl p-4 w-56 h-80 md:w-64 md:h-96 bg-[#000000] relative overflow-hidden mx-auto">
                         <div className="w-full h-full bg-[#1A1A1A] rounded-xl flex flex-col items-center justify-center cursor-pointer transition-transform duration-500 hover:scale-105"
                             onClick={() => setWatchlisted(!watchlisted)}>
                             <h3 className="text-2xl font-bold text-[#FFFFFF] mb-4">StartUp Inc.</h3>
@@ -498,7 +499,7 @@ export default function CatalystDeck() {
                 );
             case 'future-badge':
                 return (
-                    <div className="w-64 h-64 rounded-full border border-[#FFFFFF] flex items-center justify-center relative bg-[#0A0A0A]">
+                    <div className="w-48 h-48 md:w-64 md:h-64 rounded-full border border-[#FFFFFF] flex items-center justify-center relative bg-[#0A0A0A]">
                         <div className="absolute inset-0 border-t-2 border-[#FFFFFF] rounded-full animate-spin-slow"></div>
                         <div className="text-center">
                             <Shield className="w-12 h-12 text-[#FFFFFF] mx-auto mb-2" />
@@ -563,7 +564,7 @@ export default function CatalystDeck() {
                 return (
                     <div className="flex flex-col items-center justify-center w-full gap-8">
                         {/* Flow Diagram */}
-                        <div className="flex items-center gap-4 w-full justify-center">
+                        <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
                             {/* Capital Flow */}
                             <div className="flex flex-col items-center gap-3">
                                 <div className="w-48 h-24 border border-[#FFFFFF] bg-[#0A0A0A] rounded-xl flex flex-col items-center justify-center p-4 text-center">
@@ -573,7 +574,7 @@ export default function CatalystDeck() {
                                 <div className="text-[10px] text-[#555555]">Investable Volume</div>
                             </div>
 
-                            <ArrowRight className="w-8 h-8 text-[#333333]" />
+                            <ArrowRight className="w-8 h-8 text-[#333333] rotate-90 md:rotate-0" />
 
                             {/* Take Rate */}
                             <div className="flex flex-col items-center gap-3">
@@ -584,7 +585,7 @@ export default function CatalystDeck() {
                                 <div className="text-[10px] text-[#333333]">Blended Fee</div>
                             </div>
 
-                            <ArrowRight className="w-8 h-8 text-[#FFFFFF]" />
+                            <ArrowRight className="w-8 h-8 text-[#FFFFFF] rotate-90 md:rotate-0" />
 
                             {/* Revenue */}
                             <div className="flex flex-col items-center gap-3">
@@ -637,41 +638,41 @@ export default function CatalystDeck() {
                         <table className="w-full text-left text-sm">
                             <thead>
                                 <tr className="bg-[#1A1A1A] text-[#AAAAAA]">
-                                    <th className="p-4 font-normal">Feature</th>
-                                    <th className="p-4 font-normal">AngelList</th>
-                                    <th className="p-4 font-normal">Wefunder</th>
-                                    <th className="p-4 font-normal text-[#FFFFFF] opacity-50">Catalyst (Today)</th>
-                                    <th className="p-4 font-bold text-[#FFFFFF]">End-State</th>
+                                    <th className="p-2 md:p-4 font-normal text-xs md:text-sm">Feature</th>
+                                    <th className="p-2 md:p-4 font-normal text-xs md:text-sm">AngelList</th>
+                                    <th className="p-2 md:p-4 font-normal text-xs md:text-sm">Wefunder</th>
+                                    <th className="p-2 md:p-4 font-normal text-xs md:text-sm text-[#FFFFFF] opacity-50">Catalyst (Today)</th>
+                                    <th className="p-2 md:p-4 font-bold text-xs md:text-sm text-[#FFFFFF]">End-State</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#333333] bg-[#000000]">
                                 <tr>
-                                    <td className="p-4 text-[#AAAAAA]">Discovery UX</td>
-                                    <td className="p-4 text-[#555555]">List</td>
-                                    <td className="p-4 text-[#555555]">Campaign</td>
-                                    <td className="p-4 text-[#FFFFFF] opacity-50">Swipe</td>
-                                    <td className="p-4 font-bold text-[#FFFFFF]">Swipe</td>
+                                    <td className="p-2 md:p-4 text-[#AAAAAA] text-xs md:text-sm">Discovery UX</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">List</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">Campaign</td>
+                                    <td className="p-2 md:p-4 text-[#FFFFFF] opacity-50 text-xs md:text-sm">Swipe</td>
+                                    <td className="p-2 md:p-4 font-bold text-[#FFFFFF] text-xs md:text-sm">Swipe</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-4 text-[#AAAAAA]">Capital Exec</td>
-                                    <td className="p-4 text-[#555555]">Yes</td>
-                                    <td className="p-4 text-[#555555]">Yes</td>
-                                    <td className="p-4 text-[#FFFFFF] opacity-50">No</td>
-                                    <td className="p-4 font-bold text-[#FFFFFF]">Yes</td>
+                                    <td className="p-2 md:p-4 text-[#AAAAAA] text-xs md:text-sm">Capital Exec</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">Yes</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">Yes</td>
+                                    <td className="p-2 md:p-4 text-[#FFFFFF] opacity-50 text-xs md:text-sm">No</td>
+                                    <td className="p-2 md:p-4 font-bold text-[#FFFFFF] text-xs md:text-sm">Yes</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-4 text-[#AAAAAA]">Target User</td>
-                                    <td className="p-4 text-[#555555]">Funds</td>
-                                    <td className="p-4 text-[#555555]">Public</td>
-                                    <td className="p-4 text-[#FFFFFF] opacity-50">Professionals</td>
-                                    <td className="p-4 font-bold text-[#FFFFFF]">Pro + Retail</td>
+                                    <td className="p-2 md:p-4 text-[#AAAAAA] text-xs md:text-sm">Target User</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">Funds</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">Public</td>
+                                    <td className="p-2 md:p-4 text-[#FFFFFF] opacity-50 text-xs md:text-sm">Professionals</td>
+                                    <td className="p-2 md:p-4 font-bold text-[#FFFFFF] text-xs md:text-sm">Pro + Retail</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-4 text-[#AAAAAA]">Min Check</td>
-                                    <td className="p-4 text-[#555555]">$1k+</td>
-                                    <td className="p-4 text-[#555555]">$100+</td>
-                                    <td className="p-4 text-[#FFFFFF] opacity-50">~$500</td>
-                                    <td className="p-4 font-bold text-[#FFFFFF]">~$500</td>
+                                    <td className="p-2 md:p-4 text-[#AAAAAA] text-xs md:text-sm">Min Check</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">$1k+</td>
+                                    <td className="p-2 md:p-4 text-[#555555] text-xs md:text-sm">$100+</td>
+                                    <td className="p-2 md:p-4 text-[#FFFFFF] opacity-50 text-xs md:text-sm">~$500</td>
+                                    <td className="p-2 md:p-4 font-bold text-[#FFFFFF] text-xs md:text-sm">~$500</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -936,9 +937,9 @@ export default function CatalystDeck() {
                     {slides.map((slide, index) => (
                         <div
                             key={slide.id}
-                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-6 md:px-24 py-12 embla-slide slide-page"
+                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-4 md:px-24 py-6 md:py-12 embla-slide slide-page"
                         >
-                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`max-w-7xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                 {/* Left Content (Text) */}
                                 <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
@@ -949,7 +950,7 @@ export default function CatalystDeck() {
                                         </h3>
                                     </div>
 
-                                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
+                                    <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
                                         {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
                                             part === 'IGNORED' ? (
                                                 <span key={i} id="ignored-text" className="highlight-ignored">
