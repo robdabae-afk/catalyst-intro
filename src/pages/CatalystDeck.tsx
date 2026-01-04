@@ -330,21 +330,19 @@ export default function CatalystDeck() {
             case 'thesis-swipe':
                 return (
                     <div className="flex flex-col items-center gap-8 relative">
-                        {/* Card Stack Effect */}
-                        <div className="absolute top-0 w-full h-full bg-[#333333] rounded-3xl rotate-6 scale-90 opacity-40 translate-x-4"></div>
-                        <div className="absolute top-0 w-full h-full bg-[#222222] rounded-3xl -rotate-3 scale-95 opacity-60 -translate-x-2"></div>
+                        {/* Card Stack Effect Removed */}
 
                         {/* Main Glass Card with Swipe Animation */}
                         <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-3xl p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
                             {/* Founder Profile Header */}
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-gray-600 rounded-full overflow-hidden border border-[#555555]">
-                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=100&q=80" alt="Founder" className="w-full h-full object-cover grayscale opacity-80" />
+                                <div className="w-12 h-12 bg-[#222222] rounded-full border border-[#333333] flex items-center justify-center">
+                                    <Users className="w-6 h-6 text-[#444444]" />
                                 </div>
 
                                 <div>
-                                    <div className="text-lg font-bold text-[#FFFFFF]">Sarah Jenks</div>
-                                    <div className="text-xs text-[#888888] uppercase tracking-wider">CEO, FinEdge</div>
+                                    <div className="h-4 w-32 bg-[#333333] rounded mb-1.5 animate-pulse"></div>
+                                    <div className="h-3 w-20 bg-[#222222] rounded animate-pulse"></div>
                                 </div>
                             </div>
 
