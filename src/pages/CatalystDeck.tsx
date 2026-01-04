@@ -18,7 +18,29 @@ export default function CatalystDeck() {
     const [watchlisted, setWatchlisted] = useState(false);
     const [showLeadCapture, setShowLeadCapture] = useState(false);
     const [showFundingForm, setShowFundingForm] = useState(false);
+    const [gateState, setGateState] = useState<'disclaimer' | 'registration' | 'granted'>('disclaimer');
     const navigate = useNavigate();
+
+    const handleDisclaimerAck = () => {
+        const hasUserData = localStorage.getItem('catalyst_user_registered');
+        if (hasUserData) {
+            setGateState('granted');
+        } else {
+            setGateState('registration');
+        }
+    };
+
+    const handleGateRegistration = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData);
+
+        // Save to localStorage
+        localStorage.setItem('catalyst_user_registered', 'true');
+        localStorage.setItem('catalyst_user_details', JSON.stringify(data));
+
+        setGateState('granted');
+    };
 
     // New VC-Ready Data
     const slides = [
@@ -1017,7 +1039,6 @@ export default function CatalystDeck() {
                 onOpenChange={setShowLeadCapture}
                 onSuccess={handleCaptureSuccess}
             />
-
             {/* Funding Interest Form Modal */}
             {showFundingForm && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
@@ -1072,6 +1093,91 @@ export default function CatalystDeck() {
                                 Submit Expression of Interest
                             </Button>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* MANDATORY DISCLAIMER & REGISTRATION GATE */}
+            {gateState !== 'granted' && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#000000] animate-in fade-in duration-300">
+                    <div className="w-full max-w-lg p-8 md:p-12 relative animate-in zoom-in-95 duration-500">
+
+                        {/* 1. DISCLAIMER PHASE */}
+                        {gateState === 'disclaimer' && (
+                            <div className="flex flex-col items-center text-center space-y-8">
+                                <div className="w-16 h-16 rounded-full border border-[#333333] flex items-center justify-center mb-4">
+                                    <Shield className="w-8 h-8 text-[#FFFFFF]" />
+                                </div>
+                                <h2 className="text-3xl font-bold text-[#FFFFFF] tracking-tighter">Disclaimer</h2>
+                                <div className="text-[#AAAAAA] text-sm md:text-base leading-relaxed border border-[#222222] bg-[#0A0A0A] p-6 rounded-2xl">
+                                    <p className="mb-4">
+                                        The material inside this presentation is not for advertisement or marketing purposes.
+                                    </p>
+                                    <p className="mb-4">
+                                        <span className="text-[#FFFFFF] font-bold">Catalyst Intro</span> is not a registered or approved securities exchange platform at the time of viewing.
+                                    </p>
+                                    <p>
+                                        The transfer of funds in exchange for securities on the platform is <span className="text-[#DD5555] font-bold">strictly prohibited</span> by the operator's of Catalyst Intro.
+                                    </p>
+                                </div>
+                                <Button
+                                    onClick={handleDisclaimerAck}
+                                    className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg transition-transform hover:scale-105"
+                                >
+                                    I Acknowledge
+                                </Button>
+                            </div>
+                        )}
+
+                        {/* 2. REGISTRATION PHASE */}
+                        {gateState === 'registration' && (
+                            <div className="flex flex-col items-center text-center space-y-6">
+                                <div className="text-center mb-2">
+                                    <h2 className="text-2xl font-bold text-[#FFFFFF] mb-2">Welcome to Catalyst Intro</h2>
+                                    <p className="text-[#666666] text-sm">Please provide your details to continue.</p>
+                                </div>
+
+                                <form onSubmit={handleGateRegistration} className="w-full space-y-4 text-left">
+                                    <div>
+                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Full Name</label>
+                                        <input
+                                            name="name"
+                                            type="text"
+                                            required
+                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                            placeholder="Jane Founder"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Email Address</label>
+                                        <input
+                                            name="email"
+                                            type="email"
+                                            required
+                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                            placeholder="jane@example.com"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
+                                        <input
+                                            name="phone"
+                                            type="tel"
+                                            required
+                                            className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
+                                            placeholder="+1 (555) 000-0000"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#E5E5E5] font-bold py-6 rounded-full text-lg mt-4 transition-transform hover:scale-105"
+                                    >
+                                        Continue to Deck
+                                    </Button>
+                                </form>
+                            </div>
+                        )}
+
                     </div>
                 </div>
             )}
