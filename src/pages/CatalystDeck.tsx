@@ -5,6 +5,7 @@ import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Downloa
 import { Link, useNavigate } from "react-router-dom";
 import { LeadCaptureDialog } from '@/components/LeadCaptureDialog';
 import { supabase } from "@/integrations/supabase/client";
+import { generatePPTX } from "@/utils/pptxGenerator";
 
 export default function CatalystDeck() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -252,9 +253,9 @@ export default function CatalystDeck() {
     };
 
     const handleCaptureSuccess = () => {
-        // Wait for dialog to close visually before printing
+        // Wait for dialog to close visually before building PPTX
         setTimeout(() => {
-            window.print();
+            generatePPTX(slides);
         }, 500);
     };
 
@@ -1128,7 +1129,7 @@ export default function CatalystDeck() {
                     className="text-[#AAAAAA] hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-colors gap-2"
                 >
                     <Download className="w-4 h-4" />
-                    <span className="text-xs uppercase tracking-widest font-medium">Download PDF</span>
+                    <span className="text-xs uppercase tracking-widest font-medium">Download PPTX</span>
                 </Button>
             </div>
 
