@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, ChevronLeft, X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target } from "lucide-react";
+import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Download, ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function CatalystDeck() {
@@ -16,6 +16,7 @@ export default function CatalystDeck() {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [watchlisted, setWatchlisted] = useState(false);
 
+    // Data for slides (Same as before)
     const slides = [
         {
             id: "thesis",
@@ -160,6 +161,10 @@ export default function CatalystDeck() {
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [emblaApi, onScroll, onSelect]);
+
+    const handleDownload = () => {
+        window.print();
+    };
 
     const renderVisual = (slide: any, isActive: boolean) => {
         switch (slide.type) {
@@ -345,10 +350,10 @@ export default function CatalystDeck() {
                 return (
                     <div className="text-center w-full max-w-xl">
                         <div className="flex flex-col gap-4 justify-center items-center">
-                            <Button className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-64">
+                            <Button className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-64 no-print">
                                 Join Waitlist
                             </Button>
-                            <Button variant="outline" className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-64">
+                            <Button variant="outline" className="border-[#333333] text-[#FFFFFF] hover:bg-[#1A1A1A] px-8 py-6 rounded-full font-bold w-64 no-print">
                                 Apply as Founder
                             </Button>
                         </div>
@@ -363,10 +368,51 @@ export default function CatalystDeck() {
     };
 
     return (
-        <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative">
+        <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative print-container">
+            <style>{`
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+            body { 
+                background: #000000 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+            }
+            .print-container {
+                display: block !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .slide-page {
+                height: 100vh !important;
+                width: 100vw !important;
+                page-break-after: always;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                padding: 40px !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            /* Hide carousel wrappers and show slides directly */
+            .embla-viewport, .embla-container {
+                display: block !important;
+                height: auto !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+            .embla-slide {
+                flex: none !important;
+                transform: none !important;
+            }
+        }
+      `}</style>
 
-            {/* Exit Button */}
-            <div className="absolute top-8 left-8 z-50">
+            {/* Nav Controls - Top Left/Right */}
+            <div className="absolute top-8 left-8 z-50 no-print flex gap-4">
                 <Link to="/">
                     <Button
                         variant="ghost"
@@ -379,14 +425,25 @@ export default function CatalystDeck() {
                 </Link>
             </div>
 
-            <div className="flex-1 overflow-hidden cursor-grab active:cursor-grabbing" ref={emblaRef}>
-                <div className="flex h-full touch-pan-y">
+            <div className="absolute top-8 right-8 z-50 no-print">
+                <Button
+                    variant="ghost"
+                    onClick={handleDownload}
+                    className="text-[#AAAAAA] hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-colors gap-2"
+                >
+                    <Download className="w-4 h-4" />
+                    <span className="text-xs uppercase tracking-widest font-medium">Download PDF</span>
+                </Button>
+            </div>
+
+            <div className="flex-1 overflow-hidden cursor-grab active:cursor-grabbing embla-viewport" ref={emblaRef}>
+                <div className="flex h-full touch-pan-y embla-container">
                     {slides.map((slide, index) => (
                         <div
                             key={slide.id}
-                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-6 md:px-24 py-12"
+                            className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-6 md:px-24 py-12 embla-slide slide-page"
                         >
-                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'stats-row' || slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center' : ''}`}>
+                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'stats-row' || slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center' : ''} print:opacity-100`}>
 
                                 {/* Left Content (Text) */}
                                 <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col' : ''}`}>
@@ -432,37 +489,55 @@ export default function CatalystDeck() {
                 </div>
             </div>
 
-            {/* Controls & Progress */}
-            <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none">
+            {/* Bottom Controls Bar */}
+            <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none no-print">
 
-                {/* Navigation Arrows (Desktop) */}
-                <div className="hidden md:flex justify-between items-center px-12 pb-12 pointer-events-auto">
+                {/* Navigation & Progress Wrapper */}
+                <div className="flex justify-between items-end px-12 pb-12 pointer-events-auto w-full">
+
+                    {/* Left Nav (Custom 3-Circle) */}
                     <div className={`transition-opacity duration-300 ${!canScrollPrev ? 'opacity-0' : 'opacity-100'}`}>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => emblaApi?.scrollPrev()}
                             disabled={!canScrollPrev}
-                            className="w-14 h-14 rounded-full border border-[#333333] hover:bg-[#1A1A1A] text-[#FFFFFF] transition-all duration-300 group"
+                            className="group flex items-center gap-3 hover:bg-transparent w-auto h-auto px-2"
                         >
-                            <ChevronLeft className="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" />
+                            <ArrowLeft className="w-5 h-5 text-[#FFFFFF]" />
+                            <div className="flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#FFFFFF]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#FFFFFF]"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#FFFFFF]"></div>
+                            </div>
                         </Button>
                     </div>
 
+                    {/* Page Counter */}
+                    <div className="text-[#AAAAAA] text-sm tabular-nums font-medium tracking-widest pb-2">
+                        {String(selectedIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                    </div>
+
+                    {/* Right Nav (Custom 3-Circle) */}
                     <div className={`transition-opacity duration-300 ${!canScrollNext ? 'opacity-0' : 'opacity-100'}`}>
                         <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => emblaApi?.scrollNext()}
                             disabled={!canScrollNext}
-                            className="w-14 h-14 rounded-full border border-[#333333] hover:bg-[#1A1A1A] text-[#FFFFFF] transition-all duration-300 group"
+                            className="group flex items-center gap-3 hover:bg-transparent w-auto h-auto px-2"
                         >
-                            <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
+                            <div className="flex items-center gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#FFFFFF]"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#FFFFFF]"></div>
+                                <div className="w-1.5 h-1.5 rounded-full bg-[#FFFFFF]"></div>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-[#FFFFFF]" />
                         </Button>
                     </div>
                 </div>
 
-                {/* Minimal Progress Bar */}
+                {/* Minimal Progress Bar (kept as secondary indicator) */}
                 <div className="w-full h-[2px] bg-[#1A1A1A]">
                     <div
                         className="h-full bg-[#FFFFFF] transition-all duration-300 ease-out"
