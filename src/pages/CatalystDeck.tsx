@@ -499,7 +499,7 @@ export default function CatalystDeck() {
 
                             {/* Company Info (Abstract) */}
                             <div className="flex items-center gap-4 mb-8">
-                                <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl">🦄</div>
+                                <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl grayscale opacity-70">🦄</div>
                                 <div>
                                     <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
                                     <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
@@ -510,16 +510,22 @@ export default function CatalystDeck() {
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
                                     <span className="text-sm text-[#AAAAAA]">Round Status</span>
-                                    <span className="text-sm font-bold text-[#FFFFFF]">Oversubscribed (400%)</span>
+                                    <div className="text-right">
+                                        <span className="block text-sm font-bold text-[#FFFFFF]">Oversubscribed</span>
+                                        <span className="block text-[10px] text-[#DD5555] font-mono mt-0.5">Funding: 100% Filled</span>
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
                                     <span className="text-sm text-[#AAAAAA]">Your Allocation</span>
-                                    <span className="text-sm font-bold text-[#DD5555]">$0.00</span>
+                                    <div className="text-right">
+                                        <span className="block text-sm font-bold text-[#DD5555]">$0.00</span>
+                                        <span className="block text-[10px] text-[#DD5555] font-mono mt-0.5 bg-[#DD5555]/10 px-1 rounded whitespace-nowrap">ALLOCATION EXHAUSTED</span>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Locked Button */}
-                            <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+                            <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-90 cursor-not-allowed">
                                 <Lock className="w-4 h-4 text-[#AAAAAA]" />
                                 <span className="text-xs font-bold text-[#AAAAAA] uppercase tracking-widest">Round Closed</span>
                             </div>
@@ -546,7 +552,7 @@ export default function CatalystDeck() {
 
                         {/* Company Info (Abstract) */}
                         <div className="flex items-center gap-4 mb-8">
-                            <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl">🦄</div>
+                            <div className="w-16 h-16 rounded-xl bg-[#FFFFFF] flex items-center justify-center text-2xl grayscale opacity-70">🦄</div>
                             <div>
                                 <div className="h-4 w-32 bg-[#333333] rounded-full mb-2"></div>
                                 <div className="h-3 w-24 bg-[#222222] rounded-full"></div>
@@ -557,16 +563,22 @@ export default function CatalystDeck() {
                         <div className="space-y-4 mb-8">
                             <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
                                 <span className="text-sm text-[#AAAAAA]">Round Status</span>
-                                <span className="text-sm font-bold text-[#FFFFFF]">Oversubscribed (400%)</span>
+                                <div className="text-right">
+                                    <span className="block text-sm font-bold text-[#FFFFFF]">Oversubscribed</span>
+                                    <span className="block text-[10px] text-[#DD5555] font-mono mt-0.5">Funding: 100% Filled</span>
+                                </div>
                             </div>
                             <div className="flex justify-between items-center pb-4 border-b border-[#222222]">
                                 <span className="text-sm text-[#AAAAAA]">Your Allocation</span>
-                                <span className="text-sm font-bold text-[#DD5555]">$0.00</span>
+                                <div className="text-right">
+                                    <span className="block text-sm font-bold text-[#DD5555]">$0.00</span>
+                                    <span className="block text-[10px] text-[#DD5555] font-mono mt-0.5 bg-[#DD5555]/10 px-1 rounded whitespace-nowrap">ALLOCATION EXHAUSTED</span>
+                                </div>
                             </div>
                         </div>
 
                         {/* Locked Button */}
-                        <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+                        <div className="mt-auto w-full bg-[#1A1A1A] border border-[#333333] h-12 rounded-xl flex items-center justify-center gap-2 opacity-90 cursor-not-allowed">
                             <Lock className="w-4 h-4 text-[#AAAAAA]" />
                             <span className="text-xs font-bold text-[#AAAAAA] uppercase tracking-widest">Round Closed</span>
                         </div>
