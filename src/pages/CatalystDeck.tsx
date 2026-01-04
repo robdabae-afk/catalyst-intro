@@ -34,7 +34,7 @@ export default function CatalystDeck() {
         },
         {
             id: "thesis",
-            type: "hero-text",
+            type: "thesis-swipe",
             subtitle: "The Thesis",
             title: "CATALYST IS THE FRONT DOOR TO PRIVATE MARKETS.",
             subhead: "Discovery first. Funding next. Full-stack platform over time.",
@@ -220,6 +220,64 @@ export default function CatalystDeck() {
                     <div className="w-full h-full flex items-center justify-center relative">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_70%)]"></div>
                         <Building className="w-48 h-48 text-[#1A1A1A]" strokeWidth={0.5} />
+                    </div>
+                );
+            case 'thesis-swipe':
+                return (
+                    <div className="flex flex-col items-center gap-8 relative">
+                        {/* Swipe Card */}
+                        <div className="w-80 aspect-[3/4] bg-[#111111]/80 backdrop-blur-xl border border-[#333333] rounded-3xl p-6 flex flex-col items-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden animate-in fade-in zoom-in duration-700">
+                            {/* Profile Placeholder */}
+                            <div className="w-32 h-32 rounded-full border-2 border-[#333333] border-dashed flex items-center justify-center mb-6 bg-[#000000]/50">
+                                <Users className="w-12 h-12 text-[#333333]" strokeWidth={1} />
+                            </div>
+
+                            {/* Name Placeholder */}
+                            <div className="w-32 h-4 bg-[#333333] rounded-full mb-2"></div>
+                            <div className="w-20 h-3 bg-[#222222] rounded-full mb-8"></div>
+
+                            {/* Tags */}
+                            <div className="flex gap-2 w-full justify-center mb-8">
+                                <span className="px-3 py-1 rounded-full border border-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] tracking-wider uppercase">Fintech</span>
+                                <span className="px-3 py-1 rounded-full border border-[#333333] bg-[#000000] text-[10px] font-bold text-[#AAAAAA] tracking-wider uppercase">Pre-Seed</span>
+                            </div>
+
+                            {/* Traction Section */}
+                            <div className="w-full border-t border-[#333333] pt-4 mt-auto">
+                                <div className="text-[9px] text-[#555555] uppercase tracking-widest mb-3 text-center">Traction</div>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <div className="w-16 h-2 bg-[#222222] rounded-full"></div>
+                                        <div className="w-8 h-2 bg-[#222222] rounded-full"></div>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="w-12 h-2 bg-[#222222] rounded-full"></div>
+                                        <div className="w-10 h-2 bg-[#222222] rounded-full"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Swipe Hint Animation Overlay */}
+                            <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                                <div className="w-16 h-16 rounded-full bg-[#FFFFFF]/10 flex items-center justify-center animate-pulse">
+                                    <div className="w-2 h-2 bg-[#FFFFFF] rounded-full animate-ping"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Caption */}
+                        <div className="text-center space-y-2">
+                            <div className="flex items-center gap-4 justify-center text-xs font-bold tracking-widest uppercase">
+                                <span className="text-[#555555] flex items-center gap-1">
+                                    <ArrowLeft className="w-3 h-3" /> No
+                                </span>
+                                <span className="w-1 h-1 bg-[#333333] rounded-full"></span>
+                                <span className="text-[#FFFFFF] flex items-center gap-1">
+                                    Yes <ArrowRight className="w-3 h-3" />
+                                </span>
+                            </div>
+                            <p className="text-[#666666] text-xs italic">"Swipe Right if you're interested."</p>
+                        </div>
                     </div>
                 );
             case 'stats-row-pain':
@@ -689,10 +747,10 @@ export default function CatalystDeck() {
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0 relative h-screen flex flex-col justify-center items-center px-6 md:px-24 py-12 embla-slide slide-page"
                         >
-                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'hero-text' || slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`max-w-7xl w-full grid md:grid-cols-2 gap-12 md:gap-24 items-center transition-opacity duration-500 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                 {/* Left Content (Text) */}
-                                <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' || slide.type === 'hero-text' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
                                     <div className="flex items-center gap-4">
                                         <div className="h-[1px] w-12 bg-[#333333]"></div>
                                         <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
@@ -726,7 +784,7 @@ export default function CatalystDeck() {
                                 </div>
 
                                 {/* Right Content (Visuals) */}
-                                <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'hero-text' ? 'hidden' : ''} ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
+                                <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
                                     {renderVisual(slide, index === selectedIndex)}
                                 </div>
                             </div>
