@@ -809,7 +809,7 @@ export default function CatalystDeck() {
                             </div>
 
                             {/* SEC Compliance KPI Marker (1.5 Year Mark) */}
-                            <div className="absolute top-0 bottom-0 z-60 flex flex-col items-center pointer-events-none" style={{ left: '33.33%', transform: 'translateX(-50%)' }}>
+                            <div className="absolute top-0 bottom-0 z-50 flex flex-col items-center pointer-events-none" style={{ left: '33.33%', transform: 'translateX(-50%)' }}>
                                 {/* Vertical Line */}
                                 <div className="h-full w-[1px] border-l border-dashed border-[#FFAA00] opacity-80"></div>
 
