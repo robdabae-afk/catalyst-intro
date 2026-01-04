@@ -59,6 +59,18 @@ export default function CatalystDeck() {
             narrative: "Precision over volume."
         },
         {
+            id: "market",
+            type: "tam-sam-som",
+            subtitle: "Market Opportunity",
+            title: "THE REG CF SUPERHIGHWAY.",
+            narrative: "We are targeting the fastest-growing segment of private finance.",
+            items: [
+                { label: "TAM", value: "$10.3 Trillion", desc: "Total US Private Equity & VC Assets" },
+                { label: "SAM", value: "$250 Billion", desc: "Annual Early-Stage Volume" },
+                { label: "SOM", value: "$5.1 Billion", desc: "Reg CF Market (Growing 33% YoY)" }
+            ]
+        },
+        {
             id: "access-precedents",
             type: "comparison-trend",
             subtitle: "Access + Precedents",
@@ -209,6 +221,32 @@ export default function CatalystDeck() {
                             <Target className="w-8 h-8 text-[#FFFFFF]" />
                         </div>
                         <div className="mt-4 text-xs font-bold text-[#FFFFFF] uppercase tracking-widest">Signal Extracted</div>
+                    </div>
+                );
+            case 'tam-sam-som':
+                return (
+                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center">
+                        {/* SOM */}
+                        <div className={`absolute w-32 h-32 rounded-full bg-[#FFFFFF] z-30 flex items-center justify-center text-[#000000] text-center p-2 shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all duration-1000 ${isActive ? 'scale-100' : 'scale-0'}`}>
+                            <div>
+                                <div className="text-xl font-bold">{slide.items[2].value}</div>
+                                <div className="text-[10px] font-bold">SOM</div>
+                            </div>
+                        </div>
+                        {/* SAM */}
+                        <div className={`absolute w-64 h-64 rounded-full border border-[#FFFFFF] bg-[#1A1A1A] z-20 flex items-start justify-center pt-4 transition-all duration-1000 delay-200 ${isActive ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
+                            <div className="text-center mt-2">
+                                <div className="text-[#FFFFFF] font-bold">{slide.items[1].value}</div>
+                                <div className="text-[10px] text-[#AAAAAA]">SAM</div>
+                            </div>
+                        </div>
+                        {/* TAM */}
+                        <div className={`absolute w-96 h-96 rounded-full border border-[#333333] z-10 flex items-start justify-center pt-4 transition-all duration-1000 delay-400 ${isActive ? 'scale-100 opacity-100' : 'scale-75 opacity-0'}`}>
+                            <div className="text-center mt-4">
+                                <div className="text-[#AAAAAA] font-bold">{slide.items[0].value}</div>
+                                <div className="text-[10px] text-[#555555]">TAM</div>
+                            </div>
+                        </div>
                     </div>
                 );
             case 'comparison-trend':
