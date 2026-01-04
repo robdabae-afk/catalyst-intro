@@ -36,20 +36,20 @@ export const FeaturedProfileCard = () => {
   // Hardcoded Catalyst Profile to ensure instant loading and fix disappearance bug
   const catalystProfile: ProfileData = {
     id: 'catalyst-intro',
-    name: 'Catalyst Team',
-    email: 'team@catalyst.com',
-    avatar_url: null, // Will fall back to 'C'
+    name: 'Rob and Stephen',
+    email: 'stephenmonster88@gmail.com',
+    avatar_url: null, // Will fall back to initials
     user_type: 'founder',
     founder_profile: {
-      startup_name: 'Catalyst',
-      one_liner: 'The simplest way for founders and investors to collaborate. Build your future with the right partners.',
-      stage: 'Seed',
-      industry: ['B2B SaaS', 'FinTech', 'Marketplace'],
-      traction: 'Helping thousands of founders connect with investors.',
-      preferred_city: 'San Francisco',
-      pitch_deck_url: 'https://catalyst.com',
+      startup_name: 'Catalyst Intro',
+      one_liner: 'Tinder for Founders and Investors',
+      stage: 'Pre-Seed',
+      industry: ['FinTech', 'B2B SaaS'], // Inferred from "Tinder for..." and context
+      traction: '-Helping 65+ users\n-Launched "Pro" our initial monetization feature\n-Over 10 investor X founder matches per week',
+      preferred_city: 'New York',
+      pitch_deck_url: '#', // Placeholder or keep generic if not known
       company_name: 'Catalyst Intro',
-      company_state: 'CA',
+      company_state: 'NY',
       banner_url: heroBg,
     }
   };
