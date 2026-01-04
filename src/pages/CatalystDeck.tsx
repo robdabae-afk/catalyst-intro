@@ -822,6 +822,20 @@ export default function CatalystDeck() {
                                 <div className="absolute bottom-0 w-2 h-2 bg-[#FFAA00] rounded-full shadow-[0_0_10px_rgba(255,170,0,0.8)]"></div>
                             </div>
 
+                            {/* Mini-IPO KPI Marker (3 Year Mark) */}
+                            <div className="absolute top-0 bottom-0 z-50 flex flex-col items-center pointer-events-none" style={{ left: '83.33%', transform: 'translateX(-50%)' }}>
+                                {/* Vertical Line */}
+                                <div className="h-full w-[1px] border-l border-dashed border-[#00FF88] opacity-60"></div>
+
+                                {/* Badge */}
+                                <div className="absolute bottom-[20%] bg-[#0A0A0A] border border-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2 animate-pulse">
+                                    <Globe className="w-3 h-3 text-[#00FF88]" />
+                                    <span className="text-[10px] font-bold text-[#FFFFFF] uppercase tracking-wider whitespace-nowrap">Mini-IPO Regulatory Approval</span>
+                                </div>
+                                {/* Dot on X-Axis */}
+                                <div className="absolute bottom-0 w-2 h-2 bg-[#00FF88] rounded-full shadow-[0_0_10px_rgba(0,255,136,0.8)]"></div>
+                            </div>
+
                             {/* Chart Area */}
                             <div className="absolute inset-0 z-30">
                                 {/* Revenue Points */}
@@ -865,7 +879,7 @@ export default function CatalystDeck() {
                             <svg className={`absolute inset-0 w-full h-full pointer-events-none z-20 transition-opacity duration-1000 delay-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`} preserveAspectRatio="none" viewBox="0 0 100 100">
                                 {/* Revenue Line (Solid) */}
                                 <polyline
-                                    points="16.66,94 50,67.5 83.33,10"
+                                    points="16.66,94 50,67.5 83.33,10 100,0"
                                     fill="none"
                                     stroke="#FFFFFF"
                                     strokeWidth="1.5"
@@ -873,7 +887,7 @@ export default function CatalystDeck() {
                                 />
                                 {/* Users Line (Dashed) */}
                                 <polyline
-                                    points="16.66,95 50,75 83.33,20"
+                                    points="16.66,95 50,75 83.33,20 100,5"
                                     fill="none"
                                     stroke="#FFFFFF"
                                     strokeWidth="1"
