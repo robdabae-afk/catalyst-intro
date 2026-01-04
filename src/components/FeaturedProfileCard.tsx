@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroBg from "@/assets/hero-bg.jpg";
+import robAndStephen from "@/assets/rob-and-stephen.jpg";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,7 +39,7 @@ export const FeaturedProfileCard = () => {
     id: 'catalyst-intro',
     name: 'Rob and Stephen',
     email: 'stephenmonster88@gmail.com',
-    avatar_url: null, // Will fall back to initials
+    avatar_url: robAndStephen,
     user_type: 'founder',
     founder_profile: {
       startup_name: 'Catalyst Intro',
