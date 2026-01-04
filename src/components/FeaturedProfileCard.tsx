@@ -125,7 +125,11 @@ export const FeaturedProfileCard = () => {
           <CardHeader className="pb-2 pt-4 px-6">
             <div className="flex items-center gap-4">
               <Avatar className="w-16 h-16 border-4 border-background">
-                <AvatarImage src={profile.avatar_url || ''} alt={profile.name} />
+                <AvatarImage
+                  src={profile.avatar_url || ''}
+                  alt={profile.name}
+                  className="object-cover scale-150"
+                />
                 <AvatarFallback className="bg-primary/20 text-primary text-xl">
                   {profile.name?.charAt(0) || 'R'}
                 </AvatarFallback>
