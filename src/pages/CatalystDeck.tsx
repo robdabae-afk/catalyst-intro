@@ -37,8 +37,8 @@ export default function CatalystDeck() {
             type: "thesis-swipe",
             subtitle: "The Thesis",
             title: "CATALYST IS THE FRONT DOOR TO PRIVATE MARKETS.",
-            subhead: "Catalyst connects founders, accredited investors, and everyday professionals — from first swipe to funded.",
-            content: "Standardized startup discovery. A swipe based user interface to filter intent. Designed from day one to transition into a regulated funding portal.",
+            subhead: "Catalyst connects founders, institutional, and accredited investors — from first swipe to funding.",
+            content: "Standardized startup discovery. A swipe based user interface to filter intent while simultaneously onboarding everyday professionals to private market opportunities. Designed from day one to transition into a regulated funding portal.",
             narrative: "Swipe. Connect. Fund"
         },
         {
