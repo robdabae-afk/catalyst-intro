@@ -1117,7 +1117,7 @@ export default function CatalystDeck() {
                                         <span className="text-[#FFFFFF] font-bold">Catalyst Intro</span> is not a registered or approved securities exchange platform at the time of viewing.
                                     </p>
                                     <p>
-                                        The transfer of funds in exchange for securities on the platform is <span className="text-[#DD5555] font-bold">strictly prohibited</span> by the operator's of Catalyst Intro.
+                                        The transfer of funds in exchange for securities on the platform is <span className="text-[#DD5555] font-bold">strictly prohibited</span> by the operators of Catalyst Intro.
                                     </p>
                                 </div>
                                 <Button
