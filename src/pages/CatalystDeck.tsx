@@ -298,15 +298,15 @@ export default function CatalystDeck() {
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
+                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-[3000ms] transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
                             onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
-                            <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 group-hover:bg-[#FFFFFF]">
+                            <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-[3000ms] group-hover:bg-[#FFFFFF]">
                                 <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
                             </div>
                             <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
-                            <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-500 ease-out"></div>
+                            <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-[3000ms] ease-out"></div>
                         </div>
                     ))}
                 </div>
