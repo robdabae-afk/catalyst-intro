@@ -298,7 +298,7 @@ export default function CatalystDeck() {
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className="p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help"
+                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_3s_infinite]' : ''}`}
                             onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
@@ -306,7 +306,6 @@ export default function CatalystDeck() {
                                 <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
                             </div>
                             <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
-                            <p className="text-sm text-[#AAAAAA] opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-2">{item.desc}</p>
                             <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-500 ease-out"></div>
                         </div>
                     ))}
@@ -1004,6 +1003,10 @@ export default function CatalystDeck() {
     return (
         <div className="min-h-screen bg-[#000000] text-[#FFFFFF] font-sans selection:bg-[#FFFFFF] selection:text-[#000000] overflow-hidden flex flex-col relative print-container">
             <style>{`
+        @keyframes pulse-glow {
+            0%, 100% { border-color: #444444; box-shadow: 0 0 5px rgba(255,255,255,0.1); }
+            50% { border-color: #666666; box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        }
         @keyframes swipe-hint {
             0%, 100% { transform: translateX(0) rotate(0deg); }
             25% { transform: translateX(-10px) rotate(-2deg); }
