@@ -70,6 +70,7 @@ export default function CatalystDeck() {
                 { label: "SOM", value: "$5.1 Billion", desc: "Reg CF Market (Growing 33% YoY)" }
             ]
         },
+
         {
             id: "access-precedents",
             type: "comparison-trend",
@@ -117,6 +118,18 @@ export default function CatalystDeck() {
             items: [
                 { title: "Current Revenue (Live)", features: ["Founder Subscriptions", "Visibility Tools", "Concierge Matching"] },
                 { title: "Future Revenue (Post-Portal)", features: ["Success Fees on Capital", "Founder SaaS (Filings)", "Institutional Data APIs"] }
+            ]
+        },
+        {
+            id: "growth-scale",
+            type: "growth-chart",
+            subtitle: "Growth & Scale",
+            title: "SCALING THE CURVE.",
+            narrative: "Conservative initial traction compounds into exponential network effects.",
+            items: [
+                { label: "Year 1", revenue: "$1.2M", users: "5k" },
+                { label: "Year 2", revenue: "$6.5M", users: "25k" },
+                { label: "Year 3", revenue: "$18.0M", users: "80k" }
             ]
         },
         {
@@ -374,6 +387,85 @@ export default function CatalystDeck() {
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                );
+            case 'growth-chart':
+                return (
+                    <div className="w-full max-w-2xl">
+                        <div className="relative h-64 border-l border-b border-[#333333] ml-8 mb-8">
+                            {/* Grid Lines */}
+                            <div className="absolute inset-0 flex flex-col justify-between opacity-20">
+                                <div className="border-t border-[#FFFFFF] w-full h-0"></div>
+                                <div className="border-t border-[#FFFFFF] w-full h-0"></div>
+                                <div className="border-t border-[#FFFFFF] w-full h-0"></div>
+                                <div className="border-t border-[#FFFFFF] w-full h-0"></div>
+                            </div>
+
+                            {/* Bars & Line Container */}
+                            <div className="absolute inset-0 flex items-end justify-around px-8">
+                                {slide.items.map((item: any, i: number) => {
+                                    // Scale Revenue (Max ~20M)
+                                    const revValue = parseFloat(item.revenue.replace(/[^0-9.]/g, ''));
+                                    const heightPerc = (revValue / 20) * 100;
+
+                                    // Scale Users (Max ~100k)
+                                    const userValue = parseInt(item.users.replace(/[^0-9]/g, ''));
+                                    const userHeight = (userValue / 100) * 100;
+
+                                    return (
+                                        <div key={i} className="relative flex flex-col items-center group w-24">
+                                            {/* Bar (Revenue) */}
+                                            <div
+                                                className={`w-12 bg-[#FFFFFF] transition-all duration-1000 origin-bottom ${isActive ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
+                                                style={{ height: `${heightPerc}%`, transitionDelay: `${i * 200}ms` }}
+                                            >
+                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {item.revenue}
+                                                </div>
+                                            </div>
+
+                                            {/* Line Point (Users) - Visualized as floating orb */}
+                                            <div
+                                                className={`absolute w-4 h-4 rounded-full border-2 border-[#FFFFFF] bg-[#000000] z-20 transition-all duration-1000 delay-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                                style={{ bottom: `${userHeight}%` }}
+                                            >
+                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-[#AAAAAA] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {item.users} Users
+                                                </div>
+                                            </div>
+
+                                            {/* Label */}
+                                            <div className="absolute -bottom-8 text-sm font-medium text-[#AAAAAA]">{item.label}</div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Trend Line (SVG Overlay) */}
+                            <svg className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-1000 delay-1000 ${isActive ? 'opacity-50' : 'opacity-0'}`}>
+                                <polyline
+                                    points="
+                                        80,240 
+                                        240,190 
+                                        400,60"
+                                    fill="none"
+                                    stroke="#FFFFFF"
+                                    strokeWidth="2"
+                                    strokeDasharray="4 4"
+                                />
+                            </svg>
+                        </div>
+                        {/* Legend */}
+                        <div className="flex justify-center gap-8 mt-4 text-xs tracking-widest uppercase">
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-[#FFFFFF]"></div>
+                                <span className="text-[#AAAAAA]">Revenue (ARR)</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 rounded-full border border-[#FFFFFF]"></div>
+                                <span className="text-[#AAAAAA]">Active Users</span>
+                            </div>
+                        </div>
                     </div>
                 );
             case 'cta-final':
