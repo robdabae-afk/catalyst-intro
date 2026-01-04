@@ -372,7 +372,7 @@ export default function CatalystDeck() {
                             {slide.items.map((item: any, i: number) => (
                                 <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
                                     <div className={`text-2xl md:text-5xl font-bold mb-1 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
-                                        item.value === 'Chaos' ? 'Chaos' : item.value
+                                        {item.value}
                                     </div>
                                     <div className="text-[10px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
                                 </div>
