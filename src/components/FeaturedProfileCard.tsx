@@ -131,7 +131,6 @@ export const FeaturedProfileCard = () => {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-xl truncate">{profile.name}</CardTitle>
-                <p className="text-sm text-muted-foreground truncate">{profile.email}</p>
                 <Badge variant="secondary" className="mt-1 capitalize">Founder</Badge>
               </div>
             </div>
