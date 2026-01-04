@@ -233,6 +233,36 @@ export type Database = {
           },
         ]
       }
+      deck_leads: {
+        Row: {
+          check_size: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          source: string
+        }
+        Insert: {
+          check_size?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name: string
+          phone: string
+          source: string
+        }
+        Update: {
+          check_size?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          source?: string
+        }
+        Relationships: []
+      }
       document_requests: {
         Row: {
           created_at: string

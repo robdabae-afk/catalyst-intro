@@ -42,13 +42,11 @@ export default function CatalystDeck() {
 
         // Save to Supabase
         try {
-            // @ts-ignore - Table creation required
-            await supabase.from('deck_leads').insert({
+            await (supabase as any).from('deck_leads').insert({
                 name: data.name,
                 email: data.email,
                 phone: data.phone,
                 source: 'gate',
-                created_at: new Date().toISOString()
             });
         } catch (err) {
             console.error('Error saving lead:', err);
@@ -1079,14 +1077,12 @@ export default function CatalystDeck() {
                             const data = Object.fromEntries(formData);
 
                             try {
-                                // @ts-ignore
-                                await supabase.from('deck_leads').insert({
+                                await (supabase as any).from('deck_leads').insert({
                                     name: data.name,
                                     email: '', // Not collected in this form
                                     phone: data.phone,
                                     check_size: data.check_size,
                                     source: 'funding',
-                                    created_at: new Date().toISOString()
                                 });
                             } catch (err) {
                                 console.error('Error saving funding interest:', err);
