@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Download, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Download, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { LeadCaptureDialog } from '@/components/LeadCaptureDialog';
 
 export default function CatalystDeck() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -15,6 +16,8 @@ export default function CatalystDeck() {
     const [canScrollNext, setCanScrollNext] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [watchlisted, setWatchlisted] = useState(false);
+    const [showLeadCapture, setShowLeadCapture] = useState(false);
+    const navigate = useNavigate();
 
     // New VC-Ready Data
     const slides = [
@@ -181,7 +184,14 @@ export default function CatalystDeck() {
     }, [emblaApi, onScroll, onSelect]);
 
     const handleDownload = () => {
-        window.print();
+        setShowLeadCapture(true);
+    };
+
+    const handleCaptureSuccess = () => {
+        // Wait for dialog to close visually before printing
+        setTimeout(() => {
+            window.print();
+        }, 500);
     };
 
     const renderVisual = (slide: any, isActive: boolean) => {
@@ -678,6 +688,13 @@ export default function CatalystDeck() {
                     />
                 </div>
             </div>
+            {/* Lead Capture Dialog */}
+            <LeadCaptureDialog
+                open={showLeadCapture}
+                onOpenChange={setShowLeadCapture}
+                onSuccess={handleCaptureSuccess}
+            />
+
         </div>
     );
 }
