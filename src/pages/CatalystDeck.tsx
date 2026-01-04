@@ -40,7 +40,7 @@ export default function CatalystDeck() {
             subhead: "Catalyst connects founders with institutional and accredited investors — from first swipe to funding.",
             content: "While simultaneously onboarding & introducing every-day professionals to private market opportunities",
             extraContent: "Standardized startup discovery paired with a swipe based user interface to filter intent.",
-            narrative: "Designed from day one to transition into a regulated funding portal."
+            narrative: "Designed from day one to transition into a regulated securities platform."
         },
         {
             id: "founder-pain",
@@ -65,8 +65,8 @@ export default function CatalystDeck() {
         {
             id: "market",
             type: "tam-sam-som",
-            subtitle: "Market Opportunity",
-            title: "THE REG CF SUPERHIGHWAY.",
+            subtitle: "Market",
+            title: "THE CROWD FUNDING & PRE-IPO OPPORTUNITY",
             narrative: "Figures represent Capital Volume. Modest take rates on execution target ($5.1B) yields 9-figure revenue.",
             items: [
                 { label: "TAM", time: "End-State", value: "$10.3T", desc: "Global Investable Capital" },
@@ -91,15 +91,15 @@ export default function CatalystDeck() {
             id: "product-today",
             type: "mobile-ux",
             subtitle: "Product Today (Discovery Mode)",
-            title: "CATALYST TODAY: DISCOVERY & SIGNAL.",
-            content: "Swipe to discover. Add to watchlist. Review standardized data. Express interest.",
-            narrative: "No transaction execution in the initial phase."
+            title: "CATALYST TODAY: DISCOVERY, COLLABORATION, & OFF-PLATFORM EXECUTION.",
+            content: "Swipe to discover. Review standardized data. Express interest. Help startups grow.",
+            narrative: "Investment happens off-platform - users use our tools for discovery and collaboration while we work towards regulatory compliance."
         },
         {
             id: "product-tomorrow",
             type: "future-badge",
             subtitle: "Product Tomorrow (Funding Portal)",
-            title: "CATALYST TOMORROW: A REGULATED FUNDING PORTAL.",
+            title: "CATALYST TOMORROW: THE ONLY REGULATED SECURITIES EXCHANGE FOR PRIVATE MARKETS.",
             content: "Transition to SEC-registered portal. Reg CF offerings first. Integrated escrow, KYC, and disclosures.",
             narrative: "Becoming a funding portal is a core part of long-term strategy."
         },
