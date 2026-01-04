@@ -307,25 +307,32 @@ export default function CatalystDeck() {
                 );
             case 'stats-row-pain':
                 return (
-                    <div className="relative w-full">
-                        {/* Ignored Conversion Visualization */}
-                        {slide.id === 'founder-pain' && (
-                            <div className="absolute -top-16 left-0 right-0 flex items-center justify-center gap-6 no-print">
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-[#FFFFFF]">100,000+</div>
-                                    <div className="text-[10px] text-[#666666] uppercase tracking-widest">New Ideas / Year</div>
-                                </div>
-                                <div className="flex flex-col items-center">
-                                    <div className="text-[10px] text-[#DD5555] font-bold mb-1 uppercase">99% Filtered Out</div>
-                                    <ArrowRight className="w-12 h-4 text-[#333333]" />
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-2xl font-bold text-[#FFFFFF]">~0.05%</div>
-                                    <div className="text-[10px] text-[#666666] uppercase tracking-widest">Secured Seed</div>
-                                </div>
+                    <div className="relative w-full flex flex-col items-center">
+                        {/* Connecting Arrow from IGNORED (Left Column) to Stats (Right Column) */}
+                        {slide.id === 'founder-pain' && isActive && (
+                            <div className="absolute top-1/2 -left-[60%] w-[60%] h-32 pointer-events-none z-0 no-print opacity-40">
+                                <svg className="w-full h-full" viewBox="0 0 400 100" fill="none">
+                                    <path
+                                        d="M 20 20 Q 150 100 380 80"
+                                        stroke="url(#arrow-grad)"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                        className="sleek-arrow-path"
+                                    />
+                                    <path d="M 375 75 L 385 80 L 375 85" stroke="#FFFFFF" strokeWidth="1.5" fill="none" />
+                                    <defs>
+                                        <linearGradient id="arrow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="transparent" />
+                                            <stop offset="50%" stopColor="#FFFFFF" />
+                                            <stop offset="100%" stopColor="#FFFFFF" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
                             </div>
                         )}
-                        <div className="flex gap-4 w-full justify-between items-center relative">
+
+                        <div className="flex gap-4 w-full justify-between items-center relative z-10 mb-12">
                             {slide.items.map((item: any, i: number) => (
                                 <div key={i} className={`flex-1 p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
                                     <div className={`text-4xl md:text-5xl font-bold mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : 'text-[#FFFFFF]'}`}>
@@ -335,6 +342,30 @@ export default function CatalystDeck() {
                                 </div>
                             ))}
                         </div>
+
+                        {/* Ignored Conversion Visualization - Moved Below Boxes */}
+                        {slide.id === 'founder-pain' && (
+                            <div className="w-full max-w-2xl py-8 mt-4 border-t border-[#111111] flex items-center justify-center gap-12 no-print relative z-10">
+                                <div className="text-center group">
+                                    <div className="text-2xl md:text-3xl font-bold text-[#FFFFFF] tracking-tight group-hover:scale-105 transition-transform">{slide.items[0].actualValue || '100,000+'}</div>
+                                    <div className="text-[9px] text-[#555555] uppercase tracking-widest mt-1">New Ideas / Year</div>
+                                </div>
+
+                                <div className="flex flex-col items-center">
+                                    <div className="text-[10px] text-[#DD5555] font-bold mb-1 uppercase tracking-widest animate-pulse">99% Filtered Out</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#333333] to-transparent"></div>
+                                        <ArrowRight className="w-4 h-4 text-[#333333]" />
+                                        <div className="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#333333] to-transparent"></div>
+                                    </div>
+                                </div>
+
+                                <div className="text-center group">
+                                    <div className="text-2xl md:text-3xl font-bold text-[#FFFFFF] tracking-tight group-hover:scale-105 transition-transform">~0.05%</div>
+                                    <div className="text-[9px] text-[#555555] uppercase tracking-widest mt-1">Secured Seed</div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 );
             case 'funnel-viz':
@@ -782,6 +813,15 @@ export default function CatalystDeck() {
             background: #FFFFFF;
             opacity: 0.3;
         }
+        @keyframes flow-line {
+            0% { stroke-dashoffset: 100; opacity: 0; }
+            50% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0.5; }
+        }
+        .sleek-arrow-path {
+            stroke-dasharray: 100;
+            animation: flow-line 3s infinite linear;
+        }
 
         @media print {
             @page {
@@ -870,7 +910,7 @@ export default function CatalystDeck() {
                                     <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tighter leading-[0.9] text-[#FFFFFF]">
                                         {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
                                             part === 'IGNORED' ? (
-                                                <span key={i} className="highlight-ignored">
+                                                <span key={i} id="ignored-text" className="highlight-ignored">
                                                     {part}
                                                 </span>
                                             ) : part
