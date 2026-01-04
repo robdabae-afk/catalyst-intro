@@ -298,7 +298,7 @@ export default function CatalystDeck() {
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_3s_infinite]' : ''}`}
+                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-300 transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
                             onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
