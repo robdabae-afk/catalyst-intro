@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Check, Download, AlertCircle } from "lucide-react";
 
 import {
@@ -70,6 +71,21 @@ export function LeadCaptureDialog({
 
         if (isValid) {
             setVerified(true);
+
+            // Save to Supabase
+            try {
+                // @ts-ignore
+                await supabase.from('deck_leads').insert({
+                    name: values.name,
+                    email: values.email,
+                    phone: values.phone,
+                    source: 'download',
+                    created_at: new Date().toISOString()
+                });
+            } catch (err) {
+                console.error('Error saving lead:', err);
+            }
+
             // Wait a brief moment to show success state before closing/downloading
             setTimeout(() => {
                 onSuccess();

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -26,6 +26,7 @@ import { AdminConciergePanel } from "@/components/AdminConciergePanel";
 import { AdminFeedbackPanel } from "@/components/AdminFeedbackPanel";
 import { AdminMatchFeedbackPanel } from "@/components/AdminMatchFeedbackPanel";
 import { AdminRevenueTracker } from "@/components/AdminRevenueTracker";
+import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 
 interface UserWithStatus {
   id: string;
@@ -200,10 +201,10 @@ const Admin = () => {
       // Clear any pending update flags when denying
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           has_pending_update: false,
           admin_edit_suggestion: null,
-          admin_edit_message: null 
+          admin_edit_message: null
         })
         .eq('id', userId);
 
@@ -245,10 +246,10 @@ const Admin = () => {
     setActionLoading(userId);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const { error } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           is_hidden: !currentlyHidden,
           hidden_at: !currentlyHidden ? new Date().toISOString() : null,
           hidden_by: !currentlyHidden ? user?.id : null
@@ -259,8 +260,8 @@ const Admin = () => {
 
       toast({
         title: currentlyHidden ? "Profile unhidden" : "Profile hidden",
-        description: currentlyHidden 
-          ? "The user will now appear in discovery." 
+        description: currentlyHidden
+          ? "The user will now appear in discovery."
           : "The user is now hidden from discovery."
       });
 
@@ -351,6 +352,10 @@ const Admin = () => {
             <TabsTrigger value="support" className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4" />
               Support
+            </TabsTrigger>
+            <TabsTrigger value="deck-leads" className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Deck Leads
             </TabsTrigger>
           </TabsList>
 
@@ -484,8 +489,8 @@ const Admin = () => {
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
                               {user.has_pending_update && (
-                                <span 
-                                  className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse cursor-pointer" 
+                                <span
+                                  className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse cursor-pointer"
                                   title="User made updates - click to clear"
                                   onClick={() => clearUpdateFlag(user.id)}
                                 />
@@ -504,7 +509,7 @@ const Admin = () => {
                               variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : 'destructive'}
                               className="capitalize"
                             >
-                            {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
+                              {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
                               {status}
                             </Badge>
                           </TableCell>
@@ -602,6 +607,10 @@ const Admin = () => {
 
           <TabsContent value="support">
             <AdminSupportPanel />
+          </TabsContent>
+
+          <TabsContent value="deck-leads">
+            <AdminDeckLeadsPanel />
           </TabsContent>
         </Tabs>
       </div>

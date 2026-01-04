@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Download, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { LeadCaptureDialog } from '@/components/LeadCaptureDialog';
+import { supabase } from "@/integrations/supabase/client";
 
 export default function CatalystDeck() {
     const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -30,7 +31,7 @@ export default function CatalystDeck() {
         }
     };
 
-    const handleGateRegistration = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleGateRegistration = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const data = Object.fromEntries(formData);
@@ -38,6 +39,20 @@ export default function CatalystDeck() {
         // Save to localStorage
         localStorage.setItem('catalyst_user_registered', 'true');
         localStorage.setItem('catalyst_user_details', JSON.stringify(data));
+
+        // Save to Supabase
+        try {
+            // @ts-ignore - Table creation required
+            await supabase.from('deck_leads').insert({
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                source: 'gate',
+                created_at: new Date().toISOString()
+            });
+        } catch (err) {
+            console.error('Error saving lead:', err);
+        }
 
         setGateState('granted');
     };
@@ -1058,10 +1073,31 @@ export default function CatalystDeck() {
                             <p className="text-[#666666] text-sm mt-2">Express interest in funding Catalyst Intro</p>
                         </div>
 
-                        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setShowFundingForm(false); }}>
+                        <form className="space-y-4" onSubmit={async (e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.currentTarget);
+                            const data = Object.fromEntries(formData);
+
+                            try {
+                                // @ts-ignore
+                                await supabase.from('deck_leads').insert({
+                                    name: data.name,
+                                    email: '', // Not collected in this form
+                                    phone: data.phone,
+                                    check_size: data.check_size,
+                                    source: 'funding',
+                                    created_at: new Date().toISOString()
+                                });
+                            } catch (err) {
+                                console.error('Error saving funding interest:', err);
+                            }
+
+                            setShowFundingForm(false);
+                        }}>
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Name</label>
                                 <input
+                                    name="name"
                                     type="text"
                                     required
                                     className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
@@ -1071,6 +1107,7 @@ export default function CatalystDeck() {
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Phone Number</label>
                                 <input
+                                    name="phone"
                                     type="tel"
                                     required
                                     className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
@@ -1080,6 +1117,7 @@ export default function CatalystDeck() {
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest text-[#666666] mb-1 ml-1">Anticipated Check Size ($)</label>
                                 <input
+                                    name="check_size"
                                     type="text"
                                     required
                                     className="w-full bg-[#111111] border border-[#222222] rounded-xl px-4 py-3 text-[#FFFFFF] focus:outline-none focus:border-[#FFFFFF] transition-colors"
