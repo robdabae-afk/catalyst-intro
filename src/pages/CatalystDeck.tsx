@@ -814,7 +814,7 @@ export default function CatalystDeck() {
                                 <div className="h-full w-[1px] border-l border-dashed border-[#FFAA00] opacity-80"></div>
 
                                 {/* Badge */}
-                                <div className="absolute top-[20%] bg-[#0A0A0A] border border-[#FFAA00] shadow-[0_0_15px_rgba(255,170,0,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2">
+                                <div className="absolute top-[20%] bg-[#0A0A0A] border border-[#FFAA00] shadow-[0_0_15px_rgba(255,170,0,0.3)] px-3 py-1.5 rounded-lg flex items-center gap-2 animate-pulse">
                                     <Shield className="w-3 h-3 text-[#FFAA00]" />
                                     <span className="text-[10px] font-bold text-[#FFFFFF] uppercase tracking-wider whitespace-nowrap">SEC Securities Compliance Achieved</span>
                                 </div>
