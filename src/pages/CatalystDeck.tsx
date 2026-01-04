@@ -832,10 +832,10 @@ export default function CatalystDeck() {
 
                                     return (
                                         <div key={`rev-${i}`}
-                                            className={`absolute w-3 h-3 rounded-full bg-[#FFFFFF] z-30 transition-all duration-1000 delay-500 hover:scale-150 cursor-crosshair ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                            className={`absolute w-3 h-3 rounded-full bg-[#FFFFFF] z-30 transition-all duration-1000 delay-500 hover:scale-150 cursor-crosshair group ${isActive ? 'opacity-100' : 'opacity-0'}`}
                                             style={{ left: `${xPos}%`, bottom: `calc(${heightPerc}% - 6px)`, transform: 'translateX(-50%)' }}
                                         >
-                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
                                                 {item.revenue}
                                             </div>
                                         </div>
@@ -850,10 +850,10 @@ export default function CatalystDeck() {
 
                                     return (
                                         <div key={`user-${i}`}
-                                            className={`absolute w-3 h-3 rounded-full border-2 border-[#FFFFFF] bg-[#000000] z-30 transition-all duration-1000 delay-700 hover:scale-150 cursor-crosshair ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                                            className={`absolute w-3 h-3 rounded-full border-2 border-[#FFFFFF] bg-[#000000] z-30 transition-all duration-1000 delay-700 hover:scale-150 cursor-crosshair group ${isActive ? 'opacity-100' : 'opacity-0'}`}
                                             style={{ left: `${xPos}%`, bottom: `calc(${userHeight}% - 6px)`, transform: 'translateX(-50%)' }}
                                         >
-                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
+                                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-bold text-[#FFFFFF] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity bg-black px-2 py-1 rounded border border-[#333333]">
                                                 {item.users} Users
                                             </div>
                                         </div>
