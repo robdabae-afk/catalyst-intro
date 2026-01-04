@@ -36,7 +36,7 @@ export default function CatalystDeck() {
             id: "thesis",
             type: "hero-text",
             subtitle: "The Thesis",
-            title: "CATALYST BUILDS THE FRONT DOOR TO PRIVATE MARKETS.",
+            title: "CATALYST IS THE FRONT DOOR TO PRIVATE MARKETS.",
             subhead: "Discovery first. Funding next. Full-stack platform over time.",
             content: "Standardized startup discovery. Swipe-based UX to filter intent. Designed from day one to transition into a regulated funding portal.",
             narrative: "This is intentional sequencing—not avoidance."
