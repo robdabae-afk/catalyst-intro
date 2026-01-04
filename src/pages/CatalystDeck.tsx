@@ -25,7 +25,7 @@ export default function CatalystDeck() {
             id: "core-problem",
             type: "three-col-text",
             subtitle: "The Core Problem",
-            title: "PRIVATE MARKETS ARE BROKEN IN THREE WAYS.",
+            title: "PRIVATE MARKET INVESTING IS BROKEN.",
             items: [
                 { icon: Search, title: "Discovery Is Inefficient", desc: "Founders rely on cold outreach. Most decks are never opened. Capital exists—attention does not." },
                 { icon: Activity, title: "Signal Is Buried", desc: "Angels miss deals due to volume. No standardized data = subjective screening. High-potential startups are filtered out." },
@@ -37,10 +37,10 @@ export default function CatalystDeck() {
             type: "thesis-swipe",
             subtitle: "The Thesis",
             title: "CATALYST IS THE FRONT DOOR TO PRIVATE MARKETS.",
-            subhead: "Catalyst connects founders, institutional, and accredited investors — from first swipe to funding.",
-            content: "while simultaneously onboarding every day professionals to private market opportunities",
-            extraContent: "Standardized startup discovery. A swipe based user interface to filter intent. Designed from day one to transition into a regulated funding portal.",
-            narrative: "Swipe. Connect. Fund"
+            subhead: "Catalyst connects founders with institutional and accredited investors — from first swipe to funding.",
+            content: "While simultaneously onboarding & introducing every-day professionals to private market opportunities",
+            extraContent: "Standardized startup discovery paired with a swipe based user interface to filter intent.",
+            narrative: "Designed from day one to transition into a regulated funding portal."
         },
         {
             id: "founder-pain",
