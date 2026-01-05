@@ -16,6 +16,7 @@ import { ConciergeMatchButton } from '@/components/ConciergeMatchButton';
 import { TractionLimitBanner } from '@/components/TractionLimitBanner';
 import { AppNavigation } from '@/components/AppNavigation';
 import { supabase } from '@/integrations/supabase/client';
+import { SlidersHorizontal, X, Star, Handshake } from "lucide-react";
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -290,7 +291,7 @@ const Dashboard = () => {
             className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
             onClick={() => navigate('/filters')}
           >
-            <span className="material-symbols-outlined text-white/90" style={{ fontSize: "20px" }}>tune</span>
+            <SlidersHorizontal size={20} className="text-white/90" />
           </button>
         </div>
       </div>
@@ -398,7 +399,7 @@ const Dashboard = () => {
               disabled={swipeCooldown}
               className="group flex items-center justify-center w-[68px] h-[68px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
             >
-              <span className="material-symbols-outlined text-white/40 group-hover:text-white/90 text-[32px] transition-colors">close</span>
+              <X className="text-white/40 group-hover:text-white/90 transition-colors" size={32} />
             </button>
             <button
               onClick={() => handleSwipe('priority_like')}
@@ -408,14 +409,14 @@ const Dashboard = () => {
               <div className="absolute -top-3.5 bg-white text-black text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg tracking-widest uppercase border border-luxury-gold/30 whitespace-nowrap">
                 Priority
               </div>
-              <span className="material-symbols-outlined text-black text-[36px] drop-shadow-sm transition-transform group-hover:scale-110">star</span>
+              <Star className="text-black drop-shadow-sm transition-transform group-hover:scale-110" size={36} fill="black" />
             </button>
             <button
               onClick={() => handleSwipe('like')}
               disabled={swipeCooldown}
               className="group flex items-center justify-center w-[68px] h-[68px] rounded-full bg-white shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-gray-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.25)] transition-all active:scale-95 duration-200"
             >
-              <span className="material-symbols-outlined text-black text-[34px] group-hover:rotate-12 transition-transform duration-300">handshake</span>
+              <Handshake className="text-black group-hover:rotate-12 transition-transform duration-300" size={34} />
             </button>
           </div>
         </div>

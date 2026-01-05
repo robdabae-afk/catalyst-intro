@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { ArrowRight, Lock, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Lock, CheckCircle2, UploadCloud } from "lucide-react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 
 export const FounderProfileInput = () => {
@@ -96,7 +96,7 @@ export const FounderProfileInput = () => {
                 <div className="pt-4">
                     <div className="w-full h-32 border border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-2 group cursor-pointer hover:border-white/20 hover:bg-white/5 transition-all">
                         <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-zinc-500 group-hover:text-white transition-colors">upload_file</span>
+                            <UploadCloud className="text-zinc-500 group-hover:text-white transition-colors" size={24} />
                         </div>
                         <p className="text-xs text-zinc-600 font-medium group-hover:text-zinc-400">Upload Pitch Deck (PDF)</p>
                     </div>

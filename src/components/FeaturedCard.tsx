@@ -1,4 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock } from "lucide-react";
 
 export interface ProfileMetrics {
     response_rate: number;
@@ -54,19 +55,19 @@ export const FeaturedCard = ({
             label: "Response",
             value: metrics ? `${metrics.response_rate}%` : "-",
             sub: "Response Rate",
-            icon: "bolt"
+            icon: Zap
         },
         {
             label: "Avg Reply",
             value: metrics ? metrics.avg_reply_time : "-",
             sub: "Usually faster",
-            icon: "schedule"
+            icon: Clock
         },
         {
             label: "Deals",
             value: metrics ? metrics.active_deals_count.toString() : "-",
             sub: "Active deals",
-            icon: "handshake"
+            icon: Handshake
         }
     ];
 
@@ -84,7 +85,7 @@ export const FeaturedCard = ({
                     >
                     </div>
                     <div className="absolute bottom-1 right-1 bg-white text-black rounded-full p-1.5 ring-4 ring-black flex items-center justify-center shadow-lg">
-                        <span className="material-symbols-outlined text-[14px] font-bold">verified</span>
+                        <CheckCircle2 size={14} className="font-bold" />
                     </div>
                 </div>
 
@@ -96,7 +97,7 @@ export const FeaturedCard = ({
                         {role} • {company}
                     </p>
                     <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mt-2">
-                        <span className="material-symbols-outlined text-[16px]">location_on</span>
+                        <MapPin size={16} />
                         <span>{location}</span>
                     </div>
                 </div>
@@ -117,7 +118,7 @@ export const FeaturedCard = ({
                     {stats.map((stat, i) => (
                         <div key={i} className="flex min-w-[130px] flex-1 flex-col gap-3 rounded-xl p-5 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors">
                             <div className="flex items-center justify-between">
-                                <span className="material-symbols-outlined text-white text-[20px]">{stat.icon}</span>
+                                <stat.icon size={20} className="text-white" />
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{stat.label}</span>
                             </div>
                             <div>
@@ -219,7 +220,7 @@ export const FeaturedCard = ({
                                             <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
                                         </div>
                                         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                            <span className="material-symbols-outlined text-white text-[24px] mb-2 opacity-80">lock</span>
+                                            <Lock size={24} className="text-white mb-2 opacity-80" />
                                             <button
                                                 onClick={onUnlockHistory}
                                                 disabled={unlockingHistory}
