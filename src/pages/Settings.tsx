@@ -64,29 +64,7 @@ const Settings = () => {
   const [portfolioLink, setPortfolioLink] = useState("");
   const [investorBannerUrl, setInvestorBannerUrl] = useState("");
 
-  // Test Mode State
-  const [useTestMode, setUseTestMode] = useState(false);
-
-  useEffect(() => {
-    // Determine initial test mode state
-    const checkTestMode = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.from('profiles').select('is_test_mode').eq('id', user.id).single();
-        if (data) setUseTestMode(data.is_test_mode || false);
-      }
-    }
-    checkTestMode();
-  }, []);
-
-  const handleTestModeToggle = async (checked: boolean) => {
-    setUseTestMode(checked);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from('profiles').update({ is_test_mode: checked }).eq('id', user.id);
-      toast({ title: checked ? "Test Mode Enabled" : "Test Mode Disabled" });
-    }
-  };
+  // Investor fields
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -439,6 +417,8 @@ const Settings = () => {
           </CardContent>
         </Card>
 
+
+
         {/* Discovery Filters */}
         <Card>
           <CardHeader>
@@ -479,342 +459,352 @@ const Settings = () => {
         </Card>
 
         {/* Founder-specific fields */}
-        {userType === 'founder' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Startup Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {
+          userType === 'founder' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Startup Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startupName">Startup Name</Label>
+                    <Input
+                      id="startupName"
+                      value={startupName}
+                      onChange={(e) => setStartupName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Industries</Label>
+                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                      {INDUSTRIES.map((ind) => (
+                        <div key={ind} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`settings-industry-${ind}`}
+                            checked={selectedIndustries.includes(ind)}
+                            onCheckedChange={() => {
+                              setSelectedIndustries(prev =>
+                                prev.includes(ind)
+                                  ? prev.filter(i => i !== ind)
+                                  : [...prev, ind]
+                              );
+                            }}
+                          />
+                          <label htmlFor={`settings-industry-${ind}`} className="text-sm cursor-pointer">
+                            {ind}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
                 <div className="space-y-2">
-                  <Label htmlFor="startupName">Startup Name</Label>
-                  <Input
-                    id="startupName"
-                    value={startupName}
-                    onChange={(e) => setStartupName(e.target.value)}
+                  <Label htmlFor="oneLiner">One-Liner</Label>
+                  <Textarea
+                    id="oneLiner"
+                    value={oneLiner}
+                    onChange={(e) => setOneLiner(e.target.value)}
+                    placeholder="A brief description of your startup"
+                    rows={2}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Industries</Label>
-                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                    {INDUSTRIES.map((ind) => (
-                      <div key={ind} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`settings-industry-${ind}`}
-                          checked={selectedIndustries.includes(ind)}
-                          onCheckedChange={() => {
-                            setSelectedIndustries(prev =>
-                              prev.includes(ind)
-                                ? prev.filter(i => i !== ind)
-                                : [...prev, ind]
-                            );
-                          }}
-                        />
-                        <label htmlFor={`settings-industry-${ind}`} className="text-sm cursor-pointer">
-                          {ind}
-                        </label>
+                  <Label htmlFor="traction">Traction</Label>
+                  <Textarea
+                    id="traction"
+                    value={traction}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 250) {
+                        setTraction(e.target.value);
+                      }
+                    }}
+                    placeholder="Key metrics, users, revenue, etc."
+                    rows={2}
+                    maxLength={250}
+                    className={traction.length > 250 ? "border-destructive" : ""}
+                  />
+                  <p className={`text-xs ${traction.length > 250 ? "text-destructive" : traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
+                    {traction.length}/250 characters
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="preferredCity">Preferred City</Label>
+                  <Input
+                    id="preferredCity"
+                    value={preferredCity}
+                    onChange={(e) => setPreferredCity(e.target.value)}
+                    placeholder="City for meetings"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="companyName">Legal Company Name</Label>
+                    <Input
+                      id="companyName"
+                      value={companyName}
+                      onChange={(e) => setCompanyName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="companyState">State of Incorporation</Label>
+                    <Input
+                      id="companyState"
+                      value={companyState}
+                      onChange={(e) => setCompanyState(e.target.value)}
+                      placeholder="e.g., Delaware"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="companyAddress">Company Address</Label>
+                  <Input
+                    id="companyAddress"
+                    value={companyAddress}
+                    onChange={(e) => setCompanyAddress(e.target.value)}
+                  />
+                </div>
+
+                {/* Pitch Deck Section */}
+                <div className="space-y-4 pt-4 border-t">
+                  <div className="space-y-2">
+                    <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
+                    <Input
+                      id="pitchDeckUrl"
+                      type="url"
+                      value={pitchDeckUrl}
+                      onChange={(e) => setPitchDeckUrl(e.target.value)}
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Who can see your pitch deck?</Label>
+                    <RadioGroup
+                      value={pitchDeckVisibility}
+                      onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
+                      className="flex flex-col gap-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="public" id="settings-visibility-public" />
+                        <Label htmlFor="settings-visibility-public" className="font-normal cursor-pointer">
+                          Public on Discover — visible to all investors
+                        </Label>
                       </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="private" id="settings-visibility-private" />
+                        <Label htmlFor="settings-visibility-private" className="font-normal cursor-pointer">
+                          Private — share manually or upon request
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+
+                {/* Video Profile Section */}
+                <div className="space-y-4 pt-4 border-t">
+                  <h3 className="font-medium">Video Profile (Optional)</h3>
+                  <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
+
+                  {/* Video Preview/Upload */}
+                  <div className="space-y-2">
+                    <Label>Upload Video</Label>
+                    <div
+                      className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
+                      onClick={() => document.getElementById('video-upload')?.click()}
+                    >
+                      {videoUrl ? (
+                        <video src={videoUrl} className="w-full h-full object-cover" muted />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                          <Video className="w-8 h-8 mb-2" />
+                          <span className="text-sm">Click to upload video (max 100MB)</span>
+                          <span className="text-xs mt-1">MP4, WebM, or MOV</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        {uploadingVideo ? (
+                          <Loader2 className="w-6 h-6 animate-spin text-white" />
+                        ) : (
+                          <Upload className="w-6 h-6 text-white" />
+                        )}
+                      </div>
+                    </div>
+                    <input
+                      id="video-upload"
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
+                      className="hidden"
+                      onChange={handleVideoUpload}
+                    />
+                    {videoUrl && (
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs text-muted-foreground truncate flex-1">Current: {videoUrl.split('/').pop()}</p>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setVideoUrl('')}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-center text-sm text-muted-foreground">— or —</div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="videoUrl">Video URL</Label>
+                    <Input
+                      id="videoUrl"
+                      type="url"
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      placeholder="https://... (mp4, webm, or hosted video link)"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
+                    <Input
+                      id="fundingAmount"
+                      value={fundingAmount}
+                      onChange={(e) => setFundingAmount(e.target.value)}
+                      placeholder="e.g., 500K, 1M, 2.5M"
+                    />
+                    <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        }
+
+        {/* Investor-specific fields */}
+        {
+          userType === 'investor' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Investor Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firmName">Firm Name (Optional)</Label>
+                    <Input
+                      id="firmName"
+                      value={firmName}
+                      onChange={(e) => setFirmName(e.target.value)}
+                      placeholder="Leave blank if angel investor"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
+                    <Input
+                      id="typicalCheckSize"
+                      value={typicalCheckSize}
+                      onChange={(e) => setTypicalCheckSize(e.target.value)}
+                      placeholder="e.g., $25K - $100K"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="preferredStage">Preferred Stage</Label>
+                    <Select value={preferredStage} onValueChange={setPreferredStage}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select stage" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {FUNDING_STAGES.map(stage => (
+                          <SelectItem key={stage.value} value={stage.value}>
+                            {stage.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location</Label>
+                    <Input
+                      id="location"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="City, Country"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>Sectors of Interest</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {INDUSTRIES.map(sector => (
+                      <Button
+                        key={sector}
+                        type="button"
+                        variant={sectorsOfInterest.includes(sector) ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => toggleSector(sector)}
+                      >
+                        {sector}
+                      </Button>
                     ))}
                   </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="oneLiner">One-Liner</Label>
-                <Textarea
-                  id="oneLiner"
-                  value={oneLiner}
-                  onChange={(e) => setOneLiner(e.target.value)}
-                  placeholder="A brief description of your startup"
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="traction">Traction</Label>
-                <Textarea
-                  id="traction"
-                  value={traction}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 250) {
-                      setTraction(e.target.value);
-                    }
-                  }}
-                  placeholder="Key metrics, users, revenue, etc."
-                  rows={2}
-                  maxLength={250}
-                  className={traction.length > 250 ? "border-destructive" : ""}
-                />
-                <p className={`text-xs ${traction.length > 250 ? "text-destructive" : traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
-                  {traction.length}/250 characters
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="preferredCity">Preferred City</Label>
-                <Input
-                  id="preferredCity"
-                  value={preferredCity}
-                  onChange={(e) => setPreferredCity(e.target.value)}
-                  placeholder="City for meetings"
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyName">Legal Company Name</Label>
+                  <Label htmlFor="portfolioLink">Portfolio Link (Optional)</Label>
                   <Input
-                    id="companyName"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="companyState">State of Incorporation</Label>
-                  <Input
-                    id="companyState"
-                    value={companyState}
-                    onChange={(e) => setCompanyState(e.target.value)}
-                    placeholder="e.g., Delaware"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="companyAddress">Company Address</Label>
-                <Input
-                  id="companyAddress"
-                  value={companyAddress}
-                  onChange={(e) => setCompanyAddress(e.target.value)}
-                />
-              </div>
-
-              {/* Pitch Deck Section */}
-              <div className="space-y-4 pt-4 border-t">
-                <div className="space-y-2">
-                  <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
-                  <Input
-                    id="pitchDeckUrl"
-                    type="url"
-                    value={pitchDeckUrl}
-                    onChange={(e) => setPitchDeckUrl(e.target.value)}
+                    id="portfolioLink"
+                    value={portfolioLink}
+                    onChange={(e) => setPortfolioLink(e.target.value)}
                     placeholder="https://..."
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label>Who can see your pitch deck?</Label>
-                  <RadioGroup
-                    value={pitchDeckVisibility}
-                    onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
-                    className="flex flex-col gap-2"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="public" id="settings-visibility-public" />
-                      <Label htmlFor="settings-visibility-public" className="font-normal cursor-pointer">
-                        Public on Discover — visible to all investors
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="private" id="settings-visibility-private" />
-                      <Label htmlFor="settings-visibility-private" className="font-normal cursor-pointer">
-                        Private — share manually or upon request
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              </div>
-
-              {/* Video Profile Section */}
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="font-medium">Video Profile (Optional)</h3>
-                <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
-
-                {/* Video Preview/Upload */}
-                <div className="space-y-2">
-                  <Label>Upload Video</Label>
-                  <div
-                    className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
-                    onClick={() => document.getElementById('video-upload')?.click()}
-                  >
-                    {videoUrl ? (
-                      <video src={videoUrl} className="w-full h-full object-cover" muted />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
-                        <Video className="w-8 h-8 mb-2" />
-                        <span className="text-sm">Click to upload video (max 100MB)</span>
-                        <span className="text-xs mt-1">MP4, WebM, or MOV</span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      {uploadingVideo ? (
-                        <Loader2 className="w-6 h-6 animate-spin text-white" />
-                      ) : (
-                        <Upload className="w-6 h-6 text-white" />
-                      )}
-                    </div>
-                  </div>
-                  <input
-                    id="video-upload"
-                    type="file"
-                    accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
-                    className="hidden"
-                    onChange={handleVideoUpload}
-                  />
-                  {videoUrl && (
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground truncate flex-1">Current: {videoUrl.split('/').pop()}</p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setVideoUrl('')}
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="text-center text-sm text-muted-foreground">— or —</div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="videoUrl">Video URL</Label>
-                  <Input
-                    id="videoUrl"
-                    type="url"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                    placeholder="https://... (mp4, webm, or hosted video link)"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
-                  <Input
-                    id="fundingAmount"
-                    value={fundingAmount}
-                    onChange={(e) => setFundingAmount(e.target.value)}
-                    placeholder="e.g., 500K, 1M, 2.5M"
-                  />
-                  <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Investor-specific fields */}
-        {userType === 'investor' && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Investor Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firmName">Firm Name (Optional)</Label>
-                  <Input
-                    id="firmName"
-                    value={firmName}
-                    onChange={(e) => setFirmName(e.target.value)}
-                    placeholder="Leave blank if angel investor"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
-                  <Input
-                    id="typicalCheckSize"
-                    value={typicalCheckSize}
-                    onChange={(e) => setTypicalCheckSize(e.target.value)}
-                    placeholder="e.g., $25K - $100K"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="preferredStage">Preferred Stage</Label>
-                  <Select value={preferredStage} onValueChange={setPreferredStage}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select stage" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {FUNDING_STAGES.map(stage => (
-                        <SelectItem key={stage.value} value={stage.value}>
-                          {stage.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
-                    id="location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="City, Country"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Sectors of Interest</Label>
-                <div className="flex flex-wrap gap-2">
-                  {INDUSTRIES.map(sector => (
-                    <Button
-                      key={sector}
-                      type="button"
-                      variant={sectorsOfInterest.includes(sector) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleSector(sector)}
-                    >
-                      {sector}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="portfolioLink">Portfolio Link (Optional)</Label>
-                <Input
-                  id="portfolioLink"
-                  value={portfolioLink}
-                  onChange={(e) => setPortfolioLink(e.target.value)}
-                  placeholder="https://..."
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </CardContent>
+            </Card>
+          )
+        }
 
         {/* Subscription Settings */}
-        {userId && userType && (
-          <SubscriptionSettings userId={userId} userType={userType} />
-        )}
+        {
+          userId && userType && (
+            <SubscriptionSettings userId={userId} userType={userType} />
+          )
+        }
 
         {/* Tokens Section */}
-        {userId && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Coins className="w-5 h-5 text-amber-500" />
-                Tokens
-              </CardTitle>
-              <CardDescription>
-                Manage your token balance and purchase history
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <TokenBalance userId={userId} variant="default" showPurchaseButton={false} />
-              <div className="flex gap-2">
-                <TokenPurchaseDialog userId={userId} />
-              </div>
-              <div className="pt-4 border-t">
-                <h4 className="text-sm font-medium mb-2">Transaction History</h4>
-                <TokenTransactionHistory userId={userId} />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {
+          userId && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Coins className="w-5 h-5 text-amber-500" />
+                  Tokens
+                </CardTitle>
+                <CardDescription>
+                  Manage your token balance and purchase history
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <TokenBalance userId={userId} variant="default" showPurchaseButton={false} />
+                <div className="flex gap-2">
+                  <TokenPurchaseDialog userId={userId} />
+                </div>
+                <div className="pt-4 border-t">
+                  <h4 className="text-sm font-medium mb-2">Transaction History</h4>
+                  <TokenTransactionHistory userId={userId} />
+                </div>
+              </CardContent>
+            </Card>
+          )
+        }
 
         {/* Spotlight Manager (Pro users only) */}
-        {userId && userType && (
-          <SpotlightManager userId={userId} userType={userType} />
-        )}
+        {
+          userId && userType && (
+            <SpotlightManager userId={userId} userType={userType} />
+          )
+        }
 
         {/* Referral Program */}
         <Card>
@@ -888,18 +878,20 @@ const Settings = () => {
         </div>
 
         {/* Support Chat Dialog */}
-        {userId && (
-          <SupportChat
-            open={supportChatOpen}
-            onOpenChange={setSupportChatOpen}
-            userId={userId}
-          />
-        )}
+        {
+          userId && (
+            <SupportChat
+              open={supportChatOpen}
+              onOpenChange={setSupportChatOpen}
+              userId={userId}
+            />
+          )
+        }
 
         {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
         {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
-      </main>
-    </div>
+      </main >
+    </div >
   );
 };
 

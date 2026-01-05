@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ const Admin = () => {
   const { isAdmin, isLoading: adminLoading } = useIsAdmin();
   const [users, setUsers] = useState<UserWithStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [useTestMode, setUseTestMode] = useState(false); // Test Mode State
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
@@ -64,8 +65,26 @@ const Admin = () => {
 
     if (isAdmin) {
       loadUsers();
+      checkTestMode();
     }
   }, [isAdmin, adminLoading, navigate]);
+
+  const checkTestMode = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data } = await supabase.from('profiles').select('is_test_mode').eq('id', user.id).single();
+      if (data) setUseTestMode(data.is_test_mode || false);
+    }
+  };
+
+  const handleTestModeToggle = async (checked: boolean) => {
+    setUseTestMode(checked);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({ is_test_mode: checked }).eq('id', user.id);
+      toast({ title: checked ? "Test Mode Enabled" : "Test Mode Disabled" });
+    }
+  };
 
   const loadUsers = async () => {
     try {
@@ -315,6 +334,31 @@ const Admin = () => {
       </nav>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Test Mode Toggle */}
+        <div className="mb-6 flex items-center justify-between bg-card p-4 rounded-lg border border-border shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="bg-amber-500/10 p-2 rounded-full">
+              <Shield className="w-5 h-5 text-amber-500" />
+            </div>
+            <div>
+              <h3 className="font-medium">Test Mode</h3>
+              <p className="text-sm text-muted-foreground">View dashboard as if you are a test user (filters organic profiles)</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={useTestMode ? "default" : "outline"} className={useTestMode ? "bg-amber-500 hover:bg-amber-600" : ""}>
+              {useTestMode ? "Enabled" : "Disabled"}
+            </Badge>
+            <Button
+              variant={useTestMode ? "destructive" : "default"}
+              size="sm"
+              onClick={() => handleTestModeToggle(!useTestMode)}
+            >
+              {useTestMode ? "Disable Test Mode" : "Enable Test Mode"}
+            </Button>
+          </div>
+        </div>
+
         <Tabs defaultValue="users" className="space-y-6">
           <TabsList className="grid w-full grid-cols-9 max-w-6xl">
             <TabsTrigger value="users" className="flex items-center gap-2">
