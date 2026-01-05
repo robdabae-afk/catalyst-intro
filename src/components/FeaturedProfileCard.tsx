@@ -136,7 +136,7 @@ export const FeaturedProfileCard = () => {
               </Avatar>
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-xl truncate">{profile.name}</CardTitle>
-                <Badge variant="secondary" className="mt-1 capitalize">Founder</Badge>
+                <Badge variant="secondary" className="mt-1 capitalize text-black bg-white">Founder</Badge>
               </div>
             </div>
           </CardHeader>
@@ -160,12 +160,12 @@ export const FeaturedProfileCard = () => {
             {/* Stage & Industry */}
             <div className="flex flex-wrap items-center gap-1">
               {founderProfile.stage && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs text-black bg-white">
                   {founderProfile.stage.replace('-', ' ')}
                 </Badge>
               )}
               {founderProfile.industry?.map((ind: string) => (
-                <Badge key={ind} variant="secondary" className="text-xs">
+                <Badge key={ind} variant="secondary" className="text-xs text-black bg-white">
                   {ind}
                 </Badge>
               ))}
