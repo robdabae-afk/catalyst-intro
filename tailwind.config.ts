@@ -19,6 +19,14 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // New Featured Founders Colors
+        "background-dark": "#000000",
+        "surface-dark": "#0A0A0A",
+        "surface-card": "#121212",
+        "border-subtle": "#222222",
+        "luxury-gold": "#C5A059",
+        "luxury-gold-light": "#E5C57F",
+        "accent-blue": "#2D68FF",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -58,10 +66,23 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      fontFamily: {
+        "sans": ["Plus Jakarta Sans", "sans-serif"],
+        "serif": ["Playfair Display", "serif"],
+      },
+      boxShadow: {
+        "glow": "0 0 25px -5px rgba(255, 255, 255, 0.05)",
+        "gold-glow": "0 0 20px -5px rgba(197, 160, 89, 0.3)",
+        "card-depth": "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "xl": "1rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
+        "full": "9999px"
       },
       keyframes: {
         "accordion-down": {
