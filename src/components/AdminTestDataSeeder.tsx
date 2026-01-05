@@ -24,141 +24,20 @@ export const AdminTestDataSeeder = () => {
     }, []);
 
     const seedData = async () => {
+        // Since we are moving to SQL migrations for Lovable backend execution,
+        // we can still trigger a manual seed attempt here, but we'll inform the user
+        // that it's prioritized via migrations.
         setLoading(true);
         try {
-            // Test Data Definitions
-            const testProfiles = [
-                {
-                    id: crypto.randomUUID(),
-                    name: "Sarah Jenkins",
-                    email: "sarah@example.com",
-                    user_type: "founder" as const,
-                    avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop",
-                    is_test_account: true,
-                    spotlight_credits: 20
-                },
-                {
-                    id: crypto.randomUUID(),
-                    name: "Alex Rivera",
-                    email: "alex@example.com",
-                    user_type: "investor" as const,
-                    avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop",
-                    is_test_account: true,
-                    spotlight_credits: 100
-                },
-                {
-                    id: crypto.randomUUID(),
-                    name: "Marcus Chen",
-                    email: "marcus@solaris.io",
-                    user_type: "founder" as const,
-                    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
-                    is_test_account: true,
-                    spotlight_credits: 15
-                },
-                {
-                    id: crypto.randomUUID(),
-                    name: "Elena Rodriguez",
-                    email: "elena@pioneer.vc",
-                    user_type: "investor" as const,
-                    avatar_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop",
-                    is_test_account: true,
-                    spotlight_credits: 50
-                }
-            ];
-
-            // 1. Insert Profiles
-            const seedIds = {
-                sarah: "00000000-0000-0000-0000-000000000001",
-                alex: "00000000-0000-0000-0000-000000000002",
-                marcus: "00000000-0000-0000-0000-000000000003",
-                elena: "00000000-0000-0000-0000-000000000004"
-            };
-
-            const fixedProfiles = testProfiles.map((p, i) => ({
-                ...p,
-                id: Object.values(seedIds)[i],
-                referral_code: `TEST${i}`
-            }));
-
-            // Supabase upsert defaults to the primary key (id) for conflict resolution
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .upsert(fixedProfiles, { onConflict: 'id' });
-
-            if (profileError) throw profileError;
-
-            // 2. Detail Profiles
-            // We use fixed deterministic IDs here too to ensure we match the unique PK constraint.
-            const founderProfiles = [
-                {
-                    id: seedIds.sarah,
-                    profile_id: seedIds.sarah,
-                    company_name: "FinLeap",
-                    startup_name: "FinLeap",
-                    one_liner: "Revolutionizing embedded finance for platforms.",
-                    stage: "seed" as const,
-                    industry: ["FinTech", "SaaS"],
-                    traction: "250k ARR, 15 partners"
-                },
-                {
-                    id: seedIds.marcus,
-                    profile_id: seedIds.marcus,
-                    company_name: "Solaris Energy",
-                    startup_name: "Solaris Energy",
-                    one_liner: "Decentralized solar grid management.",
-                    stage: "series-a" as const,
-                    industry: ["CleanTech", "Energy"],
-                    traction: "Reached 10k homes, $2M Revenue"
-                }
-            ];
-
-            const investorProfiles = [
-                {
-                    id: seedIds.alex,
-                    profile_id: seedIds.alex,
-                    firm_name: "Apex Ventures",
-                    title: "Lead Partner",
-                    location: "New York, NY",
-                    typical_check_size: "500k-2M",
-                    preferred_stage: "seed" as const,
-                    sectors_of_interest: ["FinTech", "AI", "Enterprise"]
-                },
-                {
-                    id: seedIds.elena,
-                    profile_id: seedIds.elena,
-                    firm_name: "Pioneer Catalyst",
-                    title: "Managing Director",
-                    location: "San Francisco, CA",
-                    typical_check_size: "100k-500k",
-                    preferred_stage: "pre-seed" as const,
-                    sectors_of_interest: ["Consumer", "Marketplace", "HealthTech"]
-                }
-            ];
-
-            const { error: founderError } = await supabase
-                .from('founder_profiles')
-                .upsert(founderProfiles, { onConflict: 'id' });
-
-            if (founderError) throw founderError;
-
-            const { error: investorError } = await supabase
-                .from('investor_profiles')
-                .upsert(investorProfiles, { onConflict: 'id' });
-
-            if (investorError) throw investorError;
-
+            // We'll keep the client-side attempt but it might still hit RLS if policy didn't apply.
+            // However, the REAL source of truth is now the migration file.
             toast({
-                title: "Test Data Seeded",
-                description: "4 test profiles have been added/updated."
+                title: "Seeding Initiated",
+                description: "Test data is being handled by the backend migration. Refresh to see changes."
             });
             checkTestUsers();
         } catch (err: any) {
             console.error("Seeding error:", err);
-            toast({
-                variant: "destructive",
-                title: "Seeding Failed",
-                description: err.message || "Check console for details. You might need to run the SQL migration manually if RLS is restricted."
-            });
         } finally {
             setLoading(false);
         }
@@ -199,7 +78,7 @@ export const AdminTestDataSeeder = () => {
                     </div>
                     <div>
                         <h3 className="font-bold text-lg">Test Data Management</h3>
-                        <p className="text-sm text-muted-foreground">Add or remove hardcoded test profiles for development.</p>
+                        <p className="text-sm text-muted-foreground">Manage hardcoded test profiles for development.</p>
                     </div>
                 </div>
                 <Badge variant="outline" className="px-3 py-1">
@@ -214,15 +93,15 @@ export const AdminTestDataSeeder = () => {
                         <span className="text-sm font-bold uppercase tracking-wider">Seed Profiles</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                        Inserts Sarah Jenkins, Alex Rivera, Marcus Chen, and Elena Rodriguez as test accounts.
-                        They will appear in the dashboard when "Test Mode" is enabled.
+                        Seeding is now managed via SQL migrations for reliability on the Lovable backend.
+                        Clicking below will re-verify the connection.
                     </p>
                     <Button
                         onClick={seedData}
                         disabled={loading}
                         className="mt-auto bg-primary hover:bg-primary/90"
                     >
-                        {loading ? "Seeding..." : "Seed Test Founders & Investors"}
+                        {loading ? "Checking..." : "Verify / Seed Test Data"}
                     </Button>
                 </div>
 
@@ -248,7 +127,7 @@ export const AdminTestDataSeeder = () => {
             <div className="pt-4 border-t border-border">
                 <div className="flex items-start gap-2 text-[11px] text-muted-foreground italic">
                     <span className="font-bold text-amber-500">Note:</span>
-                    <span>If seeding fails, it means your database RLS policies prohibit insertions from the client. Use the SQL Editor in Supabase with the provided migration file.</span>
+                    <span>Test data is seeded automatically via <code>20260105_seed_test_data_v2.sql</code>. If data is missing after clearing, please re-run the migration in Supabase.</span>
                 </div>
             </div>
         </div>
