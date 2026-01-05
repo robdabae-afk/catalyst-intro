@@ -76,12 +76,20 @@ const Dashboard = () => {
     totalOrganic,
   } = useSwipeQueue(mockOrganicProfiles, [], isPro);
 
-  const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(true);
-  const [showLegalNotice, setShowLegalNotice] = useState(true);
+  const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
+  const [showLegalNotice, setShowLegalNotice] = useState(false);
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<OrganicProfile | null>(null);
+
+  useEffect(() => {
+    if (currentUser) {
+      // Only show if explicitly false/null in DB
+      setShowWelcomeBillboard(!currentUser.has_seen_welcome);
+      setShowLegalNotice(!currentUser.legal_acknowledged);
+    }
+  }, [currentUser]);
 
   const handleSwipe = async (direction: 'left' | 'right' | 'pass' | 'like') => {
     if (!currentItem) return;
