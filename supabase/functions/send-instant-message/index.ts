@@ -7,10 +7,7 @@ const corsHeaders = {
 };
 
 // Token costs for instant messages
-const TOKEN_COSTS = {
-  FOUNDER: 35,
-  INVESTOR: 30,
-};
+const TOKEN_COST = 30; // Uniform cost for all users
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -43,7 +40,7 @@ serve(async (req) => {
 
     const token = authHeader.replace('Bearer ', '');
     const { data: { user } } = await supabaseAuth.auth.getUser(token);
-    
+
     if (!user) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
@@ -78,18 +75,17 @@ serve(async (req) => {
       );
     }
 
-    const tokenCost = profile.user_type === 'founder' ? TOKEN_COSTS.FOUNDER : TOKEN_COSTS.INVESTOR;
     const currentBalance = profile.tokens || 0;
 
-    logStep('Determined token cost', { userType: profile.user_type, tokenCost, currentBalance });
+    logStep('Determined token cost', { tokenCost: TOKEN_COST, currentBalance });
 
     // Check if user has sufficient tokens
-    if (currentBalance < tokenCost) {
+    if (currentBalance < TOKEN_COST) {
       return new Response(
-        JSON.stringify({ 
-          error: 'Insufficient tokens', 
-          required: tokenCost, 
-          balance: currentBalance 
+        JSON.stringify({
+          error: 'Insufficient tokens',
+          required: TOKEN_COST,
+          balance: currentBalance
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -101,7 +97,7 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         transaction_type: 'spend',
-        amount: tokenCost,
+        amount: TOKEN_COST,
         product_type: 'instant_message',
         description: `Instant message to user`,
       })
@@ -117,7 +113,7 @@ serve(async (req) => {
         sender_id: user.id,
         receiver_id: receiverId,
         content: content.trim(),
-        tokens_spent: tokenCost,
+        tokens_spent: TOKEN_COST,
       })
       .select()
       .single();
@@ -129,25 +125,25 @@ serve(async (req) => {
         .insert({
           user_id: user.id,
           transaction_type: 'refund',
-          amount: tokenCost,
+          amount: TOKEN_COST,
           product_type: 'instant_message',
           description: 'Refund for failed instant message',
         });
       throw messageError;
     }
 
-    logStep('Instant message sent', { 
-      messageId: instantMessage.id, 
-      tokensSpent: tokenCost,
-      newBalance: currentBalance - tokenCost 
+    logStep('Instant message sent', {
+      messageId: instantMessage.id,
+      tokensSpent: TOKEN_COST,
+      newBalance: currentBalance - TOKEN_COST
     });
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         messageId: instantMessage.id,
-        tokensSpent: tokenCost,
-        newBalance: currentBalance - tokenCost
+        tokensSpent: TOKEN_COST,
+        newBalance: currentBalance - TOKEN_COST
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

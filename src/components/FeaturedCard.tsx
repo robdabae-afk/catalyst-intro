@@ -1,5 +1,9 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
 import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { InstantMessageModal } from './InstantMessageModal';
+import { TokenPurchaseModal } from './TokenPurchaseModal';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ProfileMetrics {
     response_rate: number;
@@ -40,6 +44,52 @@ export const FeaturedCard = ({
     // Safe access to profile data
     const organicProfile = !isAd ? (profile as OrganicProfile) : null;
     const adProfile = isAd ? (profile as AdProfile) : null;
+
+    // Modal state
+    const [showMessageModal, setShowMessageModal] = useState(false);
+    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+    const [tokenBalance, setTokenBalance] = useState<number>(0);
+    const [loadingBalance, setLoadingBalance] = useState(true);
+
+    // Fetch user's token balance
+    useEffect(() => {
+        const fetchTokenBalance = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('tokens')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile) {
+                    setTokenBalance(profile.tokens || 0);
+                }
+            } catch (error) {
+                console.error('Error fetching token balance:', error);
+            } finally {
+                setLoadingBalance(false);
+            }
+        };
+
+        fetchTokenBalance();
+    }, []);
+
+    const handleMessageClick = () => {
+        setShowMessageModal(true);
+    };
+
+    const handleMessageSuccess = (newBalance: number) => {
+        setTokenBalance(newBalance);
+        setShowMessageModal(false);
+    };
+
+    const handleOpenPurchase = () => {
+        setShowMessageModal(false);
+        setShowPurchaseModal(true);
+    };
 
     // Determine display data
     const name = isAd ? adProfile?.name : organicProfile?.name;
@@ -127,10 +177,11 @@ export const FeaturedCard = ({
 
                 <div className="flex w-full gap-3 mt-10">
                     <button
+                        onClick={handleMessageClick}
                         className="flex-1 h-12 flex items-center justify-center rounded-lg bg-white text-black text-sm font-bold shadow-lg shadow-white/10 hover:bg-gray-200 transition-all uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!isPro && !isMatch}
+                        disabled={!organicProfile}
                     >
-                        {isPro || isMatch ? "Message" : "Match to Message"}
+                        Message
                     </button>
                 </div>
             </section>
