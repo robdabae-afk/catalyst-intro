@@ -1,11 +1,22 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
 
+export interface ProfileMetrics {
+    response_rate: number;
+    avg_reply_time: string;
+    active_deals_count: number;
+    activity_heatmap: number[]; // Array of counts for last 90 days
+    is_history_unlocked: boolean;
+}
+
 interface FeaturedCardProps {
     profile: OrganicProfile | AdProfile;
     userType: 'founder' | 'investor';
+    metrics?: ProfileMetrics | null;
+    onUnlockHistory?: () => void;
+    unlockingHistory?: boolean;
 }
 
-export const FeaturedCard = ({ profile, userType }: FeaturedCardProps) => {
+export const FeaturedCard = ({ profile, userType, metrics, onUnlockHistory, unlockingHistory }: FeaturedCardProps) => {
     const isAd = profile.isAd;
     // Safe access to profile data
     const organicProfile = !isAd ? (profile as OrganicProfile) : null;
@@ -19,12 +30,30 @@ export const FeaturedCard = ({ profile, userType }: FeaturedCardProps) => {
     const location = isAd ? "Global" : (details?.location || "San Francisco, CA");
     const image = isAd ? adProfile?.image_url : (organicProfile?.avatar_url || details?.avatar_url);
 
-    // Mock stats for now as they aren't in the schema yet
+    // Use dynamic metrics if available, otherwise fallbacks (zeros or placeholders)
     const stats = [
-        { label: "Response", value: "98%", sub: "Top 1% of users", icon: "bolt" },
-        { label: "Avg Reply", value: "2h", sub: "Usually faster", icon: "schedule" },
-        { label: "Deals", value: "12", sub: "Active deals", icon: "handshake" }
+        {
+            label: "Response",
+            value: metrics ? `${metrics.response_rate}%` : "-",
+            sub: "Response Rate",
+            icon: "bolt"
+        },
+        {
+            label: "Avg Reply",
+            value: metrics ? metrics.avg_reply_time : "-",
+            sub: "Usually faster",
+            icon: "schedule"
+        },
+        {
+            label: "Deals",
+            value: metrics ? metrics.active_deals_count.toString() : "-",
+            sub: "Active deals",
+            icon: "handshake"
+        }
     ];
+
+    // Heatmap data
+    const heatmapDays = metrics?.activity_heatmap || new Array(90).fill(0);
 
     return (
         <div className="flex flex-col gap-8 pb-32 pt-2 relative">
@@ -90,14 +119,21 @@ export const FeaturedCard = ({ profile, userType }: FeaturedCardProps) => {
                 </div>
                 <div className="p-6 rounded-xl bg-zinc-950 border border-zinc-800/80">
                     <div className="flex flex-col gap-4">
-                        {/* Mock Heatmap Grid */}
+                        {/* Heatmap Grid */}
                         <div className="grid grid-rows-7 grid-flow-col gap-1.5 h-[120px] overflow-hidden opacity-80">
-                            {[...Array(50)].map((_, i) => (
-                                <div
-                                    key={i}
-                                    className={`rounded-[2px] ${Math.random() > 0.7 ? 'bg-white' : Math.random() > 0.4 ? 'bg-white/40' : 'bg-white/5'}`}
-                                ></div>
-                            ))}
+                            {heatmapDays.map((count, i) => {
+                                // Determine opacity based on count
+                                const opacityClass = count === 0 ? 'bg-white/5' :
+                                    count <= 2 ? 'bg-white/40' :
+                                        count <= 5 ? 'bg-white/80' : 'bg-white';
+                                return (
+                                    <div
+                                        key={i}
+                                        className={`rounded-[2px] ${opacityClass}`}
+                                        title={`${count} activities`}
+                                    ></div>
+                                );
+                            })}
                         </div>
                         <div className="flex justify-between items-center mt-1">
                             <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Less</span>
@@ -121,7 +157,7 @@ export const FeaturedCard = ({ profile, userType }: FeaturedCardProps) => {
                 <div className="relative pl-2">
                     <div className="absolute left-2 top-2 bottom-0 w-px bg-zinc-800"></div>
                     <div className="flex flex-col gap-6">
-                        {/* Mock Items */}
+                        {/* Public Item (Most Recent) */}
                         <div className="relative pl-8 group">
                             <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-white border-2 border-black z-10 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
                             <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 shadow-sm hover:border-zinc-700 transition-colors">
@@ -137,22 +173,45 @@ export const FeaturedCard = ({ profile, userType }: FeaturedCardProps) => {
                             </div>
                         </div>
 
+                        {/* Locked/Unlocked Logic */}
                         <div className="relative pl-8">
                             <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-zinc-600 border-2 border-black z-10"></div>
                             <div className="relative bg-zinc-950 p-5 rounded-xl border border-zinc-800 overflow-hidden">
-                                <div className="blur-[5px] opacity-40 select-none">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
-                                        <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
+                                {metrics?.is_history_unlocked ? (
+                                    // UNLOCKED STATE
+                                    <div>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
+                                            <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
+                                        </div>
+                                        <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
+                                            <span className="text-xs text-gray-300 font-medium tracking-wide">FinTech</span>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
-                                </div>
-                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                    <span className="material-symbols-outlined text-white text-[24px] mb-2 opacity-80">lock</span>
-                                    <button className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors">
-                                        Unlock Full History
-                                    </button>
-                                </div>
+                                ) : (
+                                    // LOCKED STATE
+                                    <>
+                                        <div className="blur-[5px] opacity-40 select-none">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
+                                                <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
+                                        </div>
+                                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
+                                            <span className="material-symbols-outlined text-white text-[24px] mb-2 opacity-80">lock</span>
+                                            <button
+                                                onClick={onUnlockHistory}
+                                                disabled={unlockingHistory}
+                                                className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
+                                            >
+                                                {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

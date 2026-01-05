@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
-import { FeaturedCard } from '@/components/FeaturedCard';
+import { FeaturedCard, ProfileMetrics } from '@/components/FeaturedCard';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { MatchModal } from '@/components/MatchModal';
 import { WelcomeBillboard } from '@/components/WelcomeBillboard';
@@ -16,6 +16,7 @@ import { SpotlightPurchaseButton } from '@/components/SpotlightPurchaseButton';
 import { ConciergeMatchButton } from '@/components/ConciergeMatchButton';
 import { TractionLimitBanner } from '@/components/TractionLimitBanner';
 import { AppNavigation } from '@/components/AppNavigation';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -83,6 +84,11 @@ const Dashboard = () => {
   const [matchModalOpen, setMatchModalOpen] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<OrganicProfile | null>(null);
 
+  // New State for Metrics
+  const [metrics, setMetrics] = useState<ProfileMetrics | null>(null);
+  const [metricsLoading, setMetricsLoading] = useState(false);
+  const [unlockingHistory, setUnlockingHistory] = useState(false);
+
   useEffect(() => {
     if (currentUser) {
       // Only show if explicitly false/null in DB
@@ -91,6 +97,99 @@ const Dashboard = () => {
     }
   }, [currentUser]);
 
+  // Fetch Metrics when current item changes
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      if (!currentItem || isCurrentItemAd || !currentUser) {
+        setMetrics(null);
+        return;
+      }
+
+      setMetricsLoading(true);
+      const profileId = currentItem.id;
+
+      try {
+        // Parallel requests for speed
+        // 1. Response Metrics
+        const responseMetricsPromise = supabase.rpc('get_response_metrics', { profile_id: profileId });
+
+        // 2. Active Deals
+        const dealsPromise = supabase.rpc('get_active_deals_count', {
+          profile_id: profileId,
+          user_type: (currentItem as OrganicProfile).user_type
+        });
+
+        // 3. Heatmap
+        const heatmapPromise = supabase.rpc('get_activity_heatmap', { profile_id: profileId });
+
+        // 4. Check if history is unlocked
+        const accessCheckPromise = supabase
+          .from('history_access')
+          .select('id')
+          .eq('viewer_id', currentUser.id)
+          .eq('target_profile_id', profileId)
+          .maybeSingle();
+
+        const [resMetrics, resDeals, resHeatmap, resAccess] = await Promise.all([
+          responseMetricsPromise,
+          dealsPromise,
+          heatmapPromise,
+          accessCheckPromise
+        ]);
+
+        if (resMetrics.error) console.error("Error fetching metrics:", resMetrics.error);
+        if (resDeals.error) console.error("Error fetching deals:", resDeals.error);
+        if (resHeatmap.error) console.error("Error fetching heatmap:", resHeatmap.error);
+
+        // Parse Response
+        const metricsData = resMetrics.data as any || { response_rate: 0, avg_reply_time: 'N/A' };
+
+        setMetrics({
+          response_rate: metricsData.response_rate || 0,
+          avg_reply_time: metricsData.avg_reply_time || 'N/A',
+          active_deals_count: (resDeals.data as number) || 0,
+          activity_heatmap: (resHeatmap.data as number[]) || [],
+          is_history_unlocked: !!resAccess.data
+        });
+
+      } catch (err) {
+        console.error("Failed to fetch dashboard metrics", err);
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+
+    fetchMetrics();
+  }, [currentItem, isCurrentItemAd, currentUser]);
+
+  const handleUnlockHistory = async () => {
+    if (!currentUser || !currentItem) return;
+    setUnlockingHistory(true);
+
+    try {
+      const { data, error } = await supabase.rpc('unlock_deal_history', {
+        viewer_id: currentUser.id,
+        target_id: currentItem.id
+      });
+
+      if (error) throw error;
+
+      if (data === true) {
+        // Success: update local state to reveal history
+        setMetrics(prev => prev ? ({ ...prev, is_history_unlocked: true }) : null);
+      } else {
+        // Failed (likely insufficient tokens)
+        // In a real app, trigger a "Not enough tokens" modal
+        alert("Insufficient tokens to unlock history.");
+      }
+    } catch (err) {
+      console.error("Unlock failed", err);
+      alert("Failed to unlock history.");
+    } finally {
+      setUnlockingHistory(false);
+    }
+  };
+
   const handleSwipe = async (direction: 'left' | 'right' | 'pass' | 'like') => {
     if (!currentItem) return;
     if (swipeCooldown) return;
@@ -98,6 +197,8 @@ const Dashboard = () => {
     // Visual feedback or API call here
     console.log(`Swiped ${direction} on ${currentItem.name}`);
 
+    // If swiping right/like, log activity (if we were implementing that part of the backend too in FE)
+    // For now just existing logic
     if (direction === 'like' || direction === 'right') {
       // Mock match
       if (Math.random() > 0.7 && !currentItem.isAd) {
@@ -233,6 +334,9 @@ const Dashboard = () => {
             <FeaturedCard
               profile={currentProfile}
               userType={currentUser?.user_type || 'founder'}
+              metrics={metrics}
+              onUnlockHistory={handleUnlockHistory}
+              unlockingHistory={unlockingHistory}
             />
             <div className="h-8"></div>
           </div>
