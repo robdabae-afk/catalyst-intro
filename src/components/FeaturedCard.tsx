@@ -274,28 +274,24 @@ export const FeaturedCard = ({
             </section>
 
             <div className="h-24"></div>
+
+            {/* Modals */}
+            {showMessageModal && organicProfile && (
+                <InstantMessageModal
+                    receiverId={organicProfile.id}
+                    receiverName={name || 'User'}
+                    tokenBalance={tokenBalance}
+                    onClose={() => setShowMessageModal(false)}
+                    onSuccess={handleMessageSuccess}
+                    onOpenPurchase={handleOpenPurchase}
+                />
+            )}
+
+            {showPurchaseModal && (
+                <TokenPurchaseModal
+                    onClose={() => setShowPurchaseModal(false)}
+                />
+            )}
         </div>
-
-        {/* Modals */ }
-    {
-        showMessageModal && organicProfile && (
-            <InstantMessageModal
-                receiverId={organicProfile.id}
-                receiverName={name || 'User'}
-                tokenBalance={tokenBalance}
-                onClose={() => setShowMessageModal(false)}
-                onSuccess={handleMessageSuccess}
-                onOpenPurchase={handleOpenPurchase}
-            />
-        )
-    }
-
-    {
-        showPurchaseModal && (
-            <TokenPurchaseModal
-                onClose={() => setShowPurchaseModal(false)}
-            />
-        )
-    }
     );
 };
