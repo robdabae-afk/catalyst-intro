@@ -32,7 +32,7 @@ const Landing = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-100 shadow-lg">
+              <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100 shadow-lg">
                 I'm a Founder
               </Button>
               <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
