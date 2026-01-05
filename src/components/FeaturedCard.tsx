@@ -43,7 +43,15 @@ export const FeaturedCard = ({
 
     // Determine display data
     const name = isAd ? adProfile?.name : organicProfile?.name;
-    const details = isAd ? adProfile?.description : organicProfile?.founder_profiles?.[0]; // or investor_profiles
+
+    // Handle both one-to-one (object) and one-to-many (array) relationships
+    // founder_profiles is one-to-one, so it's an object, not an array
+    const founderDetails = organicProfile?.founder_profiles;
+    const investorDetails = organicProfile?.investor_profiles;
+    const details = isAd
+        ? adProfile?.description
+        : (Array.isArray(founderDetails) ? founderDetails[0] : founderDetails)
+        || (Array.isArray(investorDetails) ? investorDetails[0] : investorDetails);
 
     // Debug logging
     console.log("FeaturedCard - Profile:", profile);

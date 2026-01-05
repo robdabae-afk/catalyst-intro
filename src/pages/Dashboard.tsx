@@ -65,7 +65,8 @@ const Dashboard = () => {
           .from('profiles')
           .select(`
                 *,
-                founder_profiles(*)
+                founder_profiles(*),
+                investor_profiles(*)
             `)
           .neq('id', currentUser.id); // Don't show self
 
@@ -87,8 +88,9 @@ const Dashboard = () => {
           const profiles = data.map((p: any) => ({
             ...p,
             isAd: false,
-            // Ensure founder_profiles array structure matches hook expectation
-            founder_profiles: p.founder_profiles || []
+            // Preserve both types of profiles
+            founder_profiles: p.founder_profiles || null,
+            investor_profiles: p.investor_profiles || null
           }));
           console.log("Processed profiles for queue:", profiles);
           setOrganicProfiles(profiles);
