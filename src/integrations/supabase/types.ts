@@ -611,6 +611,8 @@ export type Database = {
           hidden_by: string | null
           id: string
           is_hidden: boolean
+          is_test_account: boolean | null
+          is_test_mode: boolean | null
           last_profile_update_at: string | null
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
@@ -650,6 +652,8 @@ export type Database = {
           hidden_by?: string | null
           id: string
           is_hidden?: boolean
+          is_test_account?: boolean | null
+          is_test_mode?: boolean | null
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
@@ -689,6 +693,8 @@ export type Database = {
           hidden_by?: string | null
           id?: string
           is_hidden?: boolean
+          is_test_account?: boolean | null
+          is_test_mode?: boolean | null
           last_profile_update_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null

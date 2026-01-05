@@ -132,93 +132,24 @@ const Dashboard = () => {
     }
   }, [currentUser]);
 
-  // Fetch Metrics when current item changes
+  // Metrics are disabled until backend RPCs are implemented
+  // For now, we just set null metrics when currentItem changes
   useEffect(() => {
-    const fetchMetrics = async () => {
-      if (!currentItem || isCurrentItemAd || !currentUser) {
-        setMetrics(null);
-        return;
-      }
-
-      setMetricsLoading(true);
-      const profileId = currentItem.id;
-
-      try {
-        // Parallel requests for speed
-        // 1. Response Metrics
-        const responseMetricsPromise = supabase.rpc('get_response_metrics', { profile_id: profileId });
-
-        // 2. Active Deals
-        const dealsPromise = supabase.rpc('get_active_deals_count', {
-          profile_id: profileId,
-          user_type: (currentItem as OrganicProfile).user_type
-        });
-
-        // 3. Heatmap
-        const heatmapPromise = supabase.rpc('get_activity_heatmap', { profile_id: profileId });
-
-        // 4. Check if history is unlocked
-        const accessCheckPromise = supabase
-          .from('history_access')
-          .select('id')
-          .eq('viewer_id', currentUser.id)
-          .eq('target_profile_id', profileId)
-          .maybeSingle();
-
-        // 5. Fetch "Public" Deal (Last Safe)
-        const safePromise = supabase
-          .from('safes')
-          .select('amount, valuation_cap, created_at')
-          .eq('founder_id', profileId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        const [resMetrics, resDeals, resHeatmap, resAccess, resSafe] = await Promise.all([
-          responseMetricsPromise,
-          dealsPromise,
-          heatmapPromise,
-          accessCheckPromise,
-          safePromise
-        ]);
-
-        if (resMetrics.error) console.error("Error fetching metrics:", resMetrics.error);
-        if (resDeals.error) console.error("Error fetching deals:", resDeals.error);
-        if (resHeatmap.error) console.error("Error fetching heatmap:", resHeatmap.error);
-        if (resSafe.error) console.error("Error fetching safe:", resSafe.error);
-
-        // Parse Response
-        const metricsData = resMetrics.data as any || { response_rate: 0, avg_reply_time: 'N/A' };
-
-        setMetrics({
-          response_rate: metricsData.response_rate || 0,
-          avg_reply_time: metricsData.avg_reply_time || 'N/A',
-          active_deals_count: (resDeals.data as number) || 0,
-          activity_heatmap: (resHeatmap.data as number[]) || [],
-          is_history_unlocked: !!resAccess.data
-        });
-
-        // Set Public Deal Data
-        if (resSafe.data) {
-          setPublicDeal({
-            company_name: "Confidential", // Or fetch from profile
-            round: resSafe.data.valuation_cap ? `$${(resSafe.data.valuation_cap / 1000000).toFixed(1)}M Cap` : "Uncapped",
-            date: new Date(resSafe.data.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-            sector: "Tech" // Placeholder or fetch if available
-          });
-        } else {
-          setPublicDeal(null);
-        }
-
-      } catch (err) {
-        console.error("Failed to fetch dashboard metrics", err);
-      } finally {
-        setMetricsLoading(false);
-      }
-    };
-
-    fetchMetrics();
-  }, [currentItem, isCurrentItemAd, currentUser]);
+    if (!currentItem || isCurrentItemAd) {
+      setMetrics(null);
+      setPublicDeal(null);
+      return;
+    }
+    // Set default empty metrics (features disabled)
+    setMetrics({
+      response_rate: 0,
+      avg_reply_time: 'N/A',
+      active_deals_count: 0,
+      activity_heatmap: [],
+      is_history_unlocked: false
+    });
+    setPublicDeal(null);
+  }, [currentItem, isCurrentItemAd]);
 
   // Check for mutual match when currentItem changes
   useEffect(() => {
@@ -247,32 +178,10 @@ const Dashboard = () => {
     checkMatch();
   }, [currentItem, currentUser]);
 
+  // handleUnlockHistory is disabled until backend RPC is implemented
   const handleUnlockHistory = async () => {
-    if (!currentUser || !currentItem) return;
-    setUnlockingHistory(true);
-
-    try {
-      const { data, error } = await supabase.rpc('unlock_deal_history', {
-        viewer_id: currentUser.id,
-        target_id: currentItem.id
-      });
-
-      if (error) throw error;
-
-      if (data === true) {
-        // Success: update local state to reveal history
-        setMetrics(prev => prev ? ({ ...prev, is_history_unlocked: true }) : null);
-      } else {
-        // Failed (likely insufficient tokens)
-        // In a real app, trigger a "Not enough tokens" modal
-        alert("Insufficient tokens to unlock history.");
-      }
-    } catch (err) {
-      console.error("Unlock failed", err);
-      alert("Failed to unlock history.");
-    } finally {
-      setUnlockingHistory(false);
-    }
+    // Feature disabled - backend RPC not yet available
+    console.log("Unlock history feature not yet implemented");
   };
 
   // Update handleSwipe signature to accept 'priority_like'
