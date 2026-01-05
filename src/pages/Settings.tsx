@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -32,14 +32,14 @@ const Settings = () => {
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [supportChatOpen, setSupportChatOpen] = useState(false);
-  
+
   const [userId, setUserId] = useState<string | null>(null);
   const [userType, setUserType] = useState<'founder' | 'investor' | null>(null);
-  
+
   // Profile fields
   const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  
+
   // Founder fields
   const [startupName, setStartupName] = useState("");
   const [oneLiner, setOneLiner] = useState("");
@@ -54,7 +54,7 @@ const Settings = () => {
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   const [videoUrl, setVideoUrl] = useState("");
   const [fundingAmount, setFundingAmount] = useState("");
-  
+
   // Investor fields
   const [firmName, setFirmName] = useState("");
   const [typicalCheckSize, setTypicalCheckSize] = useState("");
@@ -64,6 +64,30 @@ const Settings = () => {
   const [portfolioLink, setPortfolioLink] = useState("");
   const [investorBannerUrl, setInvestorBannerUrl] = useState("");
 
+  // Test Mode State
+  const [useTestMode, setUseTestMode] = useState(false);
+
+  useEffect(() => {
+    // Determine initial test mode state
+    const checkTestMode = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from('profiles').select('is_test_mode').eq('id', user.id).single();
+        if (data) setUseTestMode(data.is_test_mode || false);
+      }
+    }
+    checkTestMode();
+  }, []);
+
+  const handleTestModeToggle = async (checked: boolean) => {
+    setUseTestMode(checked);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from('profiles').update({ is_test_mode: checked }).eq('id', user.id);
+      toast({ title: checked ? "Test Mode Enabled" : "Test Mode Disabled" });
+    }
+  };
+
   useEffect(() => {
     const loadUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -71,32 +95,32 @@ const Settings = () => {
         navigate('/');
         return;
       }
-      
+
       setUserId(user.id);
-      
+
       // Load profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .single();
-      
+
       if (!profile) {
         navigate('/');
         return;
       }
-      
+
       setUserType(profile.user_type);
       setName(profile.name || "");
       setAvatarUrl(profile.avatar_url || "");
-      
+
       if (profile.user_type === 'founder') {
         const { data: founderProfile } = await supabase
           .from('founder_profiles')
           .select('*')
           .eq('profile_id', user.id)
           .maybeSingle();
-        
+
         if (founderProfile) {
           setStartupName(founderProfile.startup_name || "");
           setOneLiner(founderProfile.one_liner || "");
@@ -118,7 +142,7 @@ const Settings = () => {
           .select('*')
           .eq('profile_id', user.id)
           .maybeSingle();
-        
+
         if (investorProfile) {
           setFirmName(investorProfile.firm_name || "");
           setTypicalCheckSize(investorProfile.typical_check_size || "");
@@ -129,32 +153,32 @@ const Settings = () => {
           setInvestorBannerUrl(investorProfile.banner_url || "");
         }
       }
-      
+
       setLoading(false);
     };
-    
+
     loadUserData();
   }, [navigate]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
-    
+
     setUploadingAvatar(true);
     try {
       const fileExt = file.name.split('.').pop();
       const filePath = `${userId}/avatar.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
-      
+
       if (uploadError) throw uploadError;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
-      
+
       setAvatarUrl(publicUrl);
       toast({ title: "Avatar uploaded successfully" });
     } catch (error: any) {
@@ -167,22 +191,22 @@ const Settings = () => {
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
-    
+
     setUploadingBanner(true);
     try {
       const fileExt = file.name.split('.').pop();
       const filePath = `${userId}/banner.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
-      
+
       if (uploadError) throw uploadError;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
-      
+
       if (userType === 'founder') {
         setFounderBannerUrl(publicUrl);
       } else {
@@ -199,43 +223,43 @@ const Settings = () => {
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
-    
+
     // Validate file size (100MB max)
     if (file.size > 100 * 1024 * 1024) {
-      toast({ 
-        variant: "destructive", 
-        title: "File too large", 
-        description: "Please select a video under 100MB" 
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please select a video under 100MB"
       });
       return;
     }
-    
+
     // Validate file type
     const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
     if (!allowedTypes.includes(file.type)) {
-      toast({ 
-        variant: "destructive", 
-        title: "Invalid file type", 
-        description: "Please select an MP4, WebM, or MOV video" 
+      toast({
+        variant: "destructive",
+        title: "Invalid file type",
+        description: "Please select an MP4, WebM, or MOV video"
       });
       return;
     }
-    
+
     setUploadingVideo(true);
     try {
       const fileExt = file.name.split('.').pop();
       const filePath = `${userId}/pitch-video.${fileExt}`;
-      
+
       const { error: uploadError } = await supabase.storage
         .from('videos')
         .upload(filePath, file, { upsert: true });
-      
+
       if (uploadError) throw uploadError;
-      
+
       const { data: { publicUrl } } = supabase.storage
         .from('videos')
         .getPublicUrl(filePath);
-      
+
       setVideoUrl(publicUrl);
       toast({ title: "Video uploaded successfully" });
     } catch (error: any) {
@@ -247,22 +271,22 @@ const Settings = () => {
 
   const handleSave = async () => {
     if (!userId) return;
-    
+
     setSaving(true);
     try {
       // Update main profile with update tracking
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ 
-          name, 
+        .update({
+          name,
           avatar_url: avatarUrl,
           has_pending_update: true,
           last_profile_update_at: new Date().toISOString()
         })
         .eq('id', userId);
-      
+
       if (profileError) throw profileError;
-      
+
       if (userType === 'founder') {
         const { error: founderError } = await supabase
           .from('founder_profiles')
@@ -282,7 +306,7 @@ const Settings = () => {
             funding_amount: fundingAmount || null
           })
           .eq('profile_id', userId);
-        
+
         if (founderError) throw founderError;
       } else {
         const { error: investorError } = await supabase
@@ -297,10 +321,10 @@ const Settings = () => {
             banner_url: investorBannerUrl
           })
           .eq('profile_id', userId);
-        
+
         if (investorError) throw investorError;
       }
-      
+
       toast({ title: "Profile updated successfully" });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Save failed", description: error.message });
@@ -310,8 +334,8 @@ const Settings = () => {
   };
 
   const toggleSector = (sector: string) => {
-    setSectorsOfInterest(prev => 
-      prev.includes(sector) 
+    setSectorsOfInterest(prev =>
+      prev.includes(sector)
         ? prev.filter(s => s !== sector)
         : [...prev, sector]
     );
@@ -350,7 +374,7 @@ const Settings = () => {
             {/* Banner */}
             <div className="space-y-2">
               <Label>Banner Image (Optional)</Label>
-              <div 
+              <div
                 className="relative h-40 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden cursor-pointer group"
                 onClick={() => document.getElementById('banner-upload')?.click()}
               >
@@ -369,11 +393,11 @@ const Settings = () => {
                   )}
                 </div>
               </div>
-              <input 
-                id="banner-upload" 
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
+              <input
+                id="banner-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
                 onChange={handleBannerUpload}
               />
             </div>
@@ -382,7 +406,7 @@ const Settings = () => {
             <div className="space-y-2">
               <Label>Profile Photo</Label>
               <div className="flex items-center gap-4">
-                <div 
+                <div
                   className="relative cursor-pointer group"
                   onClick={() => document.getElementById('avatar-upload')?.click()}
                 >
@@ -404,11 +428,11 @@ const Settings = () => {
                   Click to upload a new profile photo
                 </div>
               </div>
-              <input 
-                id="avatar-upload" 
-                type="file" 
-                accept="image/*" 
-                className="hidden" 
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
                 onChange={handleAvatarUpload}
               />
             </div>
@@ -425,8 +449,8 @@ const Settings = () => {
             <CardDescription>Set preferences for the profiles you want to see</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/filters')}
               className="w-full sm:w-auto"
             >
@@ -444,10 +468,10 @@ const Settings = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input 
-                id="name" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="Your name"
               />
             </div>
@@ -464,10 +488,10 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="startupName">Startup Name</Label>
-                  <Input 
-                    id="startupName" 
-                    value={startupName} 
-                    onChange={(e) => setStartupName(e.target.value)} 
+                  <Input
+                    id="startupName"
+                    value={startupName}
+                    onChange={(e) => setStartupName(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -496,9 +520,9 @@ const Settings = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="oneLiner">One-Liner</Label>
-                <Textarea 
-                  id="oneLiner" 
-                  value={oneLiner} 
+                <Textarea
+                  id="oneLiner"
+                  value={oneLiner}
                   onChange={(e) => setOneLiner(e.target.value)}
                   placeholder="A brief description of your startup"
                   rows={2}
@@ -506,9 +530,9 @@ const Settings = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="traction">Traction</Label>
-                <Textarea 
-                  id="traction" 
-                  value={traction} 
+                <Textarea
+                  id="traction"
+                  value={traction}
                   onChange={(e) => {
                     if (e.target.value.length <= 250) {
                       setTraction(e.target.value);
@@ -525,57 +549,57 @@ const Settings = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="preferredCity">Preferred City</Label>
-                <Input 
-                  id="preferredCity" 
-                  value={preferredCity} 
-                  onChange={(e) => setPreferredCity(e.target.value)} 
+                <Input
+                  id="preferredCity"
+                  value={preferredCity}
+                  onChange={(e) => setPreferredCity(e.target.value)}
                   placeholder="City for meetings"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="companyName">Legal Company Name</Label>
-                  <Input 
-                    id="companyName" 
-                    value={companyName} 
-                    onChange={(e) => setCompanyName(e.target.value)} 
+                  <Input
+                    id="companyName"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="companyState">State of Incorporation</Label>
-                  <Input 
-                    id="companyState" 
-                    value={companyState} 
-                    onChange={(e) => setCompanyState(e.target.value)} 
+                  <Input
+                    id="companyState"
+                    value={companyState}
+                    onChange={(e) => setCompanyState(e.target.value)}
                     placeholder="e.g., Delaware"
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="companyAddress">Company Address</Label>
-                <Input 
-                  id="companyAddress" 
-                  value={companyAddress} 
-                  onChange={(e) => setCompanyAddress(e.target.value)} 
+                <Input
+                  id="companyAddress"
+                  value={companyAddress}
+                  onChange={(e) => setCompanyAddress(e.target.value)}
                 />
               </div>
-              
+
               {/* Pitch Deck Section */}
               <div className="space-y-4 pt-4 border-t">
                 <div className="space-y-2">
                   <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
-                  <Input 
-                    id="pitchDeckUrl" 
+                  <Input
+                    id="pitchDeckUrl"
                     type="url"
-                    value={pitchDeckUrl} 
-                    onChange={(e) => setPitchDeckUrl(e.target.value)} 
+                    value={pitchDeckUrl}
+                    onChange={(e) => setPitchDeckUrl(e.target.value)}
                     placeholder="https://..."
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Who can see your pitch deck?</Label>
-                  <RadioGroup 
-                    value={pitchDeckVisibility} 
+                  <RadioGroup
+                    value={pitchDeckVisibility}
                     onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
                     className="flex flex-col gap-2"
                   >
@@ -599,11 +623,11 @@ const Settings = () => {
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium">Video Profile (Optional)</h3>
                 <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
-                
+
                 {/* Video Preview/Upload */}
                 <div className="space-y-2">
                   <Label>Upload Video</Label>
-                  <div 
+                  <div
                     className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
                     onClick={() => document.getElementById('video-upload')?.click()}
                   >
@@ -624,20 +648,20 @@ const Settings = () => {
                       )}
                     </div>
                   </div>
-                  <input 
-                    id="video-upload" 
-                    type="file" 
+                  <input
+                    id="video-upload"
+                    type="file"
                     accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
-                    className="hidden" 
+                    className="hidden"
                     onChange={handleVideoUpload}
                   />
                   {videoUrl && (
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-muted-foreground truncate flex-1">Current: {videoUrl.split('/').pop()}</p>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
                         className="text-destructive hover:text-destructive"
                         onClick={() => setVideoUrl('')}
                       >
@@ -648,24 +672,24 @@ const Settings = () => {
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">— or —</div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="videoUrl">Video URL</Label>
-                  <Input 
-                    id="videoUrl" 
+                  <Input
+                    id="videoUrl"
                     type="url"
-                    value={videoUrl} 
-                    onChange={(e) => setVideoUrl(e.target.value)} 
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
                     placeholder="https://... (mp4, webm, or hosted video link)"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
-                  <Input 
-                    id="fundingAmount" 
-                    value={fundingAmount} 
-                    onChange={(e) => setFundingAmount(e.target.value)} 
+                  <Input
+                    id="fundingAmount"
+                    value={fundingAmount}
+                    onChange={(e) => setFundingAmount(e.target.value)}
                     placeholder="e.g., 500K, 1M, 2.5M"
                   />
                   <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
@@ -685,19 +709,19 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firmName">Firm Name (Optional)</Label>
-                  <Input 
-                    id="firmName" 
-                    value={firmName} 
-                    onChange={(e) => setFirmName(e.target.value)} 
+                  <Input
+                    id="firmName"
+                    value={firmName}
+                    onChange={(e) => setFirmName(e.target.value)}
                     placeholder="Leave blank if angel investor"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
-                  <Input 
-                    id="typicalCheckSize" 
-                    value={typicalCheckSize} 
-                    onChange={(e) => setTypicalCheckSize(e.target.value)} 
+                  <Input
+                    id="typicalCheckSize"
+                    value={typicalCheckSize}
+                    onChange={(e) => setTypicalCheckSize(e.target.value)}
                     placeholder="e.g., $25K - $100K"
                   />
                 </div>
@@ -720,10 +744,10 @@ const Settings = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="location">Location</Label>
-                  <Input 
-                    id="location" 
-                    value={location} 
-                    onChange={(e) => setLocation(e.target.value)} 
+                  <Input
+                    id="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                     placeholder="City, Country"
                   />
                 </div>
@@ -746,10 +770,10 @@ const Settings = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="portfolioLink">Portfolio Link (Optional)</Label>
-                <Input 
-                  id="portfolioLink" 
-                  value={portfolioLink} 
-                  onChange={(e) => setPortfolioLink(e.target.value)} 
+                <Input
+                  id="portfolioLink"
+                  value={portfolioLink}
+                  onChange={(e) => setPortfolioLink(e.target.value)}
                   placeholder="https://..."
                 />
               </div>
@@ -802,8 +826,8 @@ const Settings = () => {
             <CardDescription>Invite friends and unlock rewards</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate('/referrals')}
               className="w-full sm:w-auto"
             >
@@ -838,8 +862,8 @@ const Settings = () => {
             <CardDescription>Get help from our support team</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setSupportChatOpen(true)}
               className="w-full sm:w-auto"
             >
@@ -865,10 +889,10 @@ const Settings = () => {
 
         {/* Support Chat Dialog */}
         {userId && (
-          <SupportChat 
-            open={supportChatOpen} 
-            onOpenChange={setSupportChatOpen} 
-            userId={userId} 
+          <SupportChat
+            open={supportChatOpen}
+            onOpenChange={setSupportChatOpen}
+            userId={userId}
           />
         )}
 

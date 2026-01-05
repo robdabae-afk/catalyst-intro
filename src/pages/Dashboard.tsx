@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
@@ -49,15 +48,33 @@ const Dashboard = () => {
         setLoading(true);
         // Fetch profiles excluding current user
         // We'll join with founder_profiles to get details
-        const { data, error } = await supabase
+        // 1. Get current user's preferences (is_test_mode)
+        const { data: userData } = await supabase
+          .from('profiles')
+          .select('is_test_mode')
+          .eq('id', currentUser.id)
+          .single();
+
+        const isTestMode = userData?.is_test_mode || false;
+        console.log("Fetching profiles. Test Mode:", isTestMode);
+
+        let query = supabase
           .from('profiles')
           .select(`
                 *,
                 founder_profiles(*)
             `)
           .neq('id', currentUser.id) // Don't show self
-          .eq('user_type', 'founder') // Only show founders for now (or make dynamic)
-          .limit(20);
+          .eq('user_type', 'founder'); // Only show founders for now
+
+        // Apply Test Mode Filter
+        if (isTestMode) {
+          query = query.eq('is_test_account', true);
+        } else {
+          query = query.eq('is_test_account', false);
+        }
+
+        const { data, error } = await query.limit(20);
 
         if (error) throw error;
 
