@@ -8,9 +8,9 @@ export const BottomNavigation = () => {
 
     const navItems = [
         { name: "Home", icon: "dashboard", path: "/dashboard" },
-        { name: "Discover", icon: "search", path: "/discover" },
+        { name: "Roadmap", icon: "map", path: "/roadmap" },
         { name: "Messages", icon: "chat_bubble_outline", path: "/matches" },
-        { name: "Profile", icon: "person_outline", path: "/profile" },
+        { name: "Profile", icon: "person_outline", path: "/founder-input" },
     ];
 
     return (

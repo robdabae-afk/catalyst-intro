@@ -25,6 +25,8 @@ import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
+import InvestmentRoadmap from "./pages/InvestmentRoadmap";
+import FounderProfileInput from "./pages/FounderProfileInput";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +58,8 @@ const App = () => (
           <Route path="/filters" element={<FilterPreferences />} />
           <Route path="/referrals" element={<ReferralDashboard />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/roadmap" element={<InvestmentRoadmap />} />
+          <Route path="/founder-input" element={<FounderProfileInput />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
