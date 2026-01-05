@@ -67,9 +67,6 @@ export const AdminTestDataSeeder = () => {
             ];
 
             // 1. Insert Profiles
-            // We use upsert on email to avoid duplicates if possible, 
-            // but since ID is random it's better to check existence or use a fixed ID for seed.
-            // Let's use fixed deterministic IDs for seed profiles so we can re-run safely.
             const seedIds = {
                 sarah: "00000000-0000-0000-0000-000000000001",
                 alex: "00000000-0000-0000-0000-000000000002",
@@ -83,13 +80,17 @@ export const AdminTestDataSeeder = () => {
                 referral_code: `TEST${i}`
             }));
 
+            // Supabase upsert defaults to the primary key (id) for conflict resolution
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert(fixedProfiles, { onConflict: 'email' });
+                .upsert(fixedProfiles);
 
             if (profileError) throw profileError;
 
-            // 2. Insert Detail Profiles
+            // 2. Detail Profiles
+            // Note: We use the profile_id to link back to the main profile.
+            // Some tables might use 'id' as the PK, others might use 'profile_id'.
+            // In founder_profiles, 'profile_id' is usually the unique link.
             const founderProfiles = [
                 {
                     profile_id: seedIds.sarah,
@@ -134,13 +135,13 @@ export const AdminTestDataSeeder = () => {
 
             const { error: founderError } = await supabase
                 .from('founder_profiles')
-                .upsert(founderProfiles, { onConflict: 'profile_id' });
+                .upsert(founderProfiles);
 
             if (founderError) throw founderError;
 
             const { error: investorError } = await supabase
                 .from('investor_profiles')
-                .upsert(investorProfiles, { onConflict: 'profile_id' });
+                .upsert(investorProfiles);
 
             if (investorError) throw investorError;
 
