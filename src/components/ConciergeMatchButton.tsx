@@ -291,7 +291,7 @@ export const ConciergeMatchButton = ({
               </Button>
               <Button
                 onClick={handleProceedToPayment}
-                disabled={loading || balanceLoading || balance < tokenCost}
+                disabled={loading || balanceLoading}
                 className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0"
               >
                 {loading ? (
@@ -299,7 +299,7 @@ export const ConciergeMatchButton = ({
                 ) : (
                   <Coins className="w-4 h-4 mr-2" />
                 )}
-                Purchase ({tokenCost} tokens)
+                {balance < tokenCost ? 'Get Tokens' : `Purchase (${tokenCost} tokens)`}
               </Button>
             </div>
           </div>
