@@ -29,43 +29,56 @@ const Dashboard = () => {
   // Actually, looking at Turn 1 code: const { organicProfiles, adProfiles, loading, error } = useProfiles();
   // I need to fetch profiles. But I can't see useProfiles hook code.
   // I will try to use useSwipeQueue with empty arrays and rely on its internal mocks or useEffect fetching if it has it. 
-  // Wait, useSwipeQueue took arguments: (organicProfiles, adProfiles, isPro).
   // I need to fetch them.
   // I will Mock them here for the "Featured Founders" alignment since I don't have the fetching hook visible.
   // Or I can assume `useSwipeQueue` handles it? No, it took args.
   // I'll define mock profiles here to ensure the UI renders.
 
-  const mockOrganicProfiles: OrganicProfile[] = [
-    {
-      id: '1',
-      user_type: 'founder',
-      name: 'Sarah Jenkins',
-      email: 'sarah@example.com',
-      avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop',
-      founder_profiles: [{
-        company_name: 'FinLeap',
-        title: 'Founder',
-        location: 'San Francisco, CA',
-        stage: 'Seed',
-      }],
-    },
-    {
-      id: '2',
-      user_type: 'investor',
-      name: 'Alex Rivera',
-      email: 'alex@example.com',
-      avatar_url: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop',
-      founder_profiles: [{ // mimicking detail structure for investor too if needed
-        company_name: 'Apex Ventures',
-        title: 'Lead Partner',
-        location: 'New York, NY',
-      }],
-    }
-  ];
-
-  const [loading, setLoading] = useState(false);
+  // Fetch Profiles State
+  const [organicProfiles, setOrganicProfiles] = useState<OrganicProfile[]>([]);
+  const [loading, setLoading] = useState(true);
   const [swipeCooldown, setSwipeCooldown] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Initial Profile Fetch
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      if (!currentUser) return;
+
+      try {
+        setLoading(true);
+        // Fetch profiles excluding current user
+        // We'll join with founder_profiles to get details
+        const { data, error } = await supabase
+          .from('profiles')
+          .select(`
+                *,
+                founder_profiles(*)
+            `)
+          .neq('id', currentUser.id) // Don't show self
+          .eq('user_type', 'founder') // Only show founders for now (or make dynamic)
+          .limit(20);
+
+        if (error) throw error;
+
+        if (data) {
+          const profiles = data.map((p: any) => ({
+            ...p,
+            isAd: false,
+            // Ensure founder_profiles array structure matches hook expectation
+            founder_profiles: p.founder_profiles || []
+          }));
+          setOrganicProfiles(profiles);
+        }
+      } catch (err) {
+        console.error("Error fetching profiles:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfiles();
+  }, [currentUser]);
 
   const {
     currentItem,
@@ -75,7 +88,7 @@ const Dashboard = () => {
     isQueueEmpty,
     hasOnlyAds,
     totalOrganic,
-  } = useSwipeQueue(mockOrganicProfiles, [], isPro);
+  } = useSwipeQueue(organicProfiles, [], isPro);
 
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
   const [showLegalNotice, setShowLegalNotice] = useState(false);
@@ -130,16 +143,27 @@ const Dashboard = () => {
           .eq('target_profile_id', profileId)
           .maybeSingle();
 
-        const [resMetrics, resDeals, resHeatmap, resAccess] = await Promise.all([
+        // 5. Fetch "Public" Deal (Last Safe)
+        const safePromise = supabase
+          .from('safes')
+          .select('amount, valuation_cap, created_at')
+          .eq('founder_id', profileId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const [resMetrics, resDeals, resHeatmap, resAccess, resSafe] = await Promise.all([
           responseMetricsPromise,
           dealsPromise,
           heatmapPromise,
-          accessCheckPromise
+          accessCheckPromise,
+          safePromise
         ]);
 
         if (resMetrics.error) console.error("Error fetching metrics:", resMetrics.error);
         if (resDeals.error) console.error("Error fetching deals:", resDeals.error);
         if (resHeatmap.error) console.error("Error fetching heatmap:", resHeatmap.error);
+        if (resSafe.error) console.error("Error fetching safe:", resSafe.error);
 
         // Parse Response
         const metricsData = resMetrics.data as any || { response_rate: 0, avg_reply_time: 'N/A' };
@@ -152,6 +176,18 @@ const Dashboard = () => {
           is_history_unlocked: !!resAccess.data
         });
 
+        // Set Public Deal Data
+        if (resSafe.data) {
+          setPublicDeal({
+            company_name: "Confidential", // Or fetch from profile
+            round: resSafe.data.valuation_cap ? `$${(resSafe.data.valuation_cap / 1000000).toFixed(1)}M Cap` : "Uncapped",
+            date: new Date(resSafe.data.created_at || Date.now()).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+            sector: "Tech" // Placeholder or fetch if available
+          });
+        } else {
+          setPublicDeal(null);
+        }
+
       } catch (err) {
         console.error("Failed to fetch dashboard metrics", err);
       } finally {
@@ -161,6 +197,33 @@ const Dashboard = () => {
 
     fetchMetrics();
   }, [currentItem, isCurrentItemAd, currentUser]);
+
+  // Check for mutual match when currentItem changes
+  useEffect(() => {
+    if (!currentUser || !currentItem) {
+      setHasMutualMatch(false);
+      return;
+    }
+
+    const checkMatch = async () => {
+      // Check if the current profile (swiped_id) has already liked the current user (swiper_id)
+      const { data, error } = await supabase
+        .from('swipes')
+        .select('id')
+        .eq('swiper_id', currentItem.id)
+        .eq('swiped_id', currentUser.id)
+        .eq('action', 'like')
+        .maybeSingle();
+
+      if (data) {
+        setHasMutualMatch(true);
+      } else {
+        setHasMutualMatch(false);
+      }
+    };
+
+    checkMatch();
+  }, [currentItem, currentUser]);
 
   const handleUnlockHistory = async () => {
     if (!currentUser || !currentItem) return;
@@ -205,8 +268,19 @@ const Dashboard = () => {
           alert("You need Priority tokens to use this feature. Please purchase tokens.");
           return;
         }
-        // Proceed (Back-end should handle deduction or we do it here optimistically)
-        // For now, we just proceed to record the swipe
+
+        // Deduct Credit via independent RPC or Update for now (Optimistic)
+        // Ideally we use an RPC to ensure transaction safety: `deduct_spotlight_credit`
+        // Since we don't have that RPC validated in plan, we'll do a client-side update (less secure but functional for task)
+        const { error: creditError } = await supabase
+          .from('profiles')
+          .update({ spotlight_credits: credits - 1 })
+          .eq('id', currentUser.id);
+
+        if (creditError) {
+          console.error("Failed to deduct credit", creditError);
+          return; // Stop if failed
+        }
       }
     }
 
@@ -234,12 +308,13 @@ const Dashboard = () => {
       });
     }
 
-    // If swiping right/like/priority, log activity mock matching
+    // If swiping right/like/priority, check for Match
     if (direction === 'like' || direction === 'right' || direction === 'priority_like') {
-      // Mock match logic
-      if (Math.random() > 0.7 && !currentItem.isAd) {
+      // Logic: If hasMutualMatch is true, then this swipe completes the match!
+      if (hasMutualMatch && !currentItem.isAd) {
+        // Create the Match Record (Optional: Back-end triggers usually handle this)
+        // For UI feedback immediately:
         setMatchedProfile(currentItem as OrganicProfile);
-        // If priority, could pass a flag to MatchModal for special effects
         setMatchModalOpen(true);
       }
     }
@@ -375,7 +450,8 @@ const Dashboard = () => {
               onUnlockHistory={handleUnlockHistory}
               unlockingHistory={unlockingHistory}
               isPro={isPro}
-              isMatch={false} // Default to false in discovery mode
+              isMatch={hasMutualMatch}
+              publicDeal={publicDeal}
             />
             <div className="h-8"></div>
           </div>

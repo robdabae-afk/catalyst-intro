@@ -15,7 +15,13 @@ interface FeaturedCardProps {
     onUnlockHistory?: () => void;
     unlockingHistory?: boolean;
     isPro?: boolean;
-    isMatch?: boolean;
+    // Deal history props
+    publicDeal?: {
+        company_name: string;
+        round: string;
+        date: string;
+        sector: string;
+    } | null;
 }
 
 export const FeaturedCard = ({
@@ -25,7 +31,8 @@ export const FeaturedCard = ({
     onUnlockHistory,
     unlockingHistory,
     isPro = false,
-    isMatch = false
+    isMatch = false,
+    publicDeal
 }: FeaturedCardProps) => {
     const isAd = profile.isAd;
     // Safe access to profile data
@@ -172,13 +179,13 @@ export const FeaturedCard = ({
                             <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-white border-2 border-black z-10 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
                             <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 shadow-sm hover:border-zinc-700 transition-colors">
                                 <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-white font-bold text-base">Series A - DataMinds</h4>
+                                    <h4 className="text-white font-bold text-base">{publicDeal?.round || "Series A"} - {publicDeal?.company_name || "DataMinds"}</h4>
                                     <span className="text-[10px] font-bold uppercase text-black bg-white px-2 py-1 rounded">Lead</span>
                                 </div>
-                                <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wider">Oct 2023 • $5M Round</p>
+                                <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wider">{publicDeal?.date || "Oct 2023"} • {publicDeal?.round ? "Confidential" : "$5M Round"}</p>
                                 <div className="flex items-center gap-2">
                                     <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                    <span className="text-xs text-gray-300 font-medium tracking-wide">AI Infrastructure</span>
+                                    <span className="text-xs text-gray-300 font-medium tracking-wide">{publicDeal?.sector || "AI Infrastructure"}</span>
                                 </div>
                             </div>
                         </div>
