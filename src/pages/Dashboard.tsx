@@ -64,14 +64,15 @@ const Dashboard = () => {
                 *,
                 founder_profiles(*)
             `)
-          .neq('id', currentUser.id) // Don't show self
-          .eq('user_type', 'founder'); // Only show founders for now
+          .neq('id', currentUser.id); // Don't show self
 
         // Apply Test Mode Filter
         if (isTestMode) {
           query = query.eq('is_test_account', true);
         } else {
-          query = query.eq('is_test_account', false);
+          query = query
+            .eq('is_test_account', false)
+            .eq('user_type', 'founder'); // Only show founders for now
         }
 
         const { data, error } = await query.limit(20);
