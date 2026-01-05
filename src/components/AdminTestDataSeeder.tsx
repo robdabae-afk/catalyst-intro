@@ -83,16 +83,15 @@ export const AdminTestDataSeeder = () => {
             // Supabase upsert defaults to the primary key (id) for conflict resolution
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert(fixedProfiles);
+                .upsert(fixedProfiles, { onConflict: 'id' });
 
             if (profileError) throw profileError;
 
             // 2. Detail Profiles
-            // Note: We use the profile_id to link back to the main profile.
-            // Some tables might use 'id' as the PK, others might use 'profile_id'.
-            // In founder_profiles, 'profile_id' is usually the unique link.
+            // We use fixed deterministic IDs here too to ensure we match the unique PK constraint.
             const founderProfiles = [
                 {
+                    id: seedIds.sarah,
                     profile_id: seedIds.sarah,
                     company_name: "FinLeap",
                     startup_name: "FinLeap",
@@ -102,6 +101,7 @@ export const AdminTestDataSeeder = () => {
                     traction: "250k ARR, 15 partners"
                 },
                 {
+                    id: seedIds.marcus,
                     profile_id: seedIds.marcus,
                     company_name: "Solaris Energy",
                     startup_name: "Solaris Energy",
@@ -114,6 +114,7 @@ export const AdminTestDataSeeder = () => {
 
             const investorProfiles = [
                 {
+                    id: seedIds.alex,
                     profile_id: seedIds.alex,
                     firm_name: "Apex Ventures",
                     title: "Lead Partner",
@@ -123,6 +124,7 @@ export const AdminTestDataSeeder = () => {
                     sectors_of_interest: ["FinTech", "AI", "Enterprise"]
                 },
                 {
+                    id: seedIds.elena,
                     profile_id: seedIds.elena,
                     firm_name: "Pioneer Catalyst",
                     title: "Managing Director",
@@ -135,13 +137,13 @@ export const AdminTestDataSeeder = () => {
 
             const { error: founderError } = await supabase
                 .from('founder_profiles')
-                .upsert(founderProfiles);
+                .upsert(founderProfiles, { onConflict: 'id' });
 
             if (founderError) throw founderError;
 
             const { error: investorError } = await supabase
                 .from('investor_profiles')
-                .upsert(investorProfiles);
+                .upsert(investorProfiles, { onConflict: 'id' });
 
             if (investorError) throw investorError;
 
