@@ -130,44 +130,6 @@ export const FeaturedCard = ({
                 </div>
             </section>
 
-            {/* Activity Heatmap Section */}
-            <section className="px-6">
-                <div className="flex items-center justify-between mb-5">
-                    <h3 className="text-white text-sm font-bold uppercase tracking-widest">Activity</h3>
-                    <span className="text-[10px] font-semibold text-gray-400 border border-zinc-800 bg-zinc-950 px-2 py-1 rounded">Last 90 Days</span>
-                </div>
-                <div className="p-6 rounded-xl bg-zinc-950 border border-zinc-800/80">
-                    <div className="flex flex-col gap-4">
-                        {/* Heatmap Grid */}
-                        <div className="grid grid-rows-7 grid-flow-col gap-1.5 h-[120px] overflow-hidden opacity-80">
-                            {heatmapDays.map((count, i) => {
-                                // Determine opacity based on count
-                                const opacityClass = count === 0 ? 'bg-white/5' :
-                                    count <= 2 ? 'bg-white/40' :
-                                        count <= 5 ? 'bg-white/80' : 'bg-white';
-                                return (
-                                    <div
-                                        key={i}
-                                        className={`rounded-[2px] ${opacityClass}`}
-                                        title={`${count} activities`}
-                                    ></div>
-                                );
-                            })}
-                        </div>
-                        <div className="flex justify-between items-center mt-1">
-                            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Less</span>
-                            <div className="flex gap-1.5">
-                                <div className="w-3 h-3 rounded-[2px] bg-white/5"></div>
-                                <div className="w-3 h-3 rounded-[2px] bg-white/40"></div>
-                                <div className="w-3 h-3 rounded-[2px] bg-white/80"></div>
-                                <div className="w-3 h-3 rounded-[2px] bg-white"></div>
-                            </div>
-                            <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">More</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {/* Investment/Deal History Section - Conditional based on type */}
             <section className="px-6">
                 <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8">
