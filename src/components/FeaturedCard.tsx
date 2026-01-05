@@ -15,6 +15,7 @@ interface FeaturedCardProps {
     onUnlockHistory?: () => void;
     unlockingHistory?: boolean;
     isPro?: boolean;
+    isMatch?: boolean;
     // Deal history props
     publicDeal?: {
         company_name: string;
