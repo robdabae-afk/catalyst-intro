@@ -7,7 +7,7 @@ import { FeaturedCard } from '@/components/FeaturedCard';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { MatchModal } from '@/components/MatchModal';
 import { WelcomeBillboard } from '@/components/WelcomeBillboard';
-import { LegalAcceptanceNotice } from '@/components/LegalAcceptanceNotice';
+import LegalAcceptanceNotice from '@/components/LegalAcceptanceNotice';
 import { FeedbackModal } from '@/components/FeedbackModal';
 import { ReferralShareModal } from '@/components/ReferralShareModal';
 import { SwipeLimitReachedFlow } from '@/components/SwipeLimitReachedFlow';
