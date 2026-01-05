@@ -102,6 +102,10 @@ const Dashboard = () => {
   const [metricsLoading, setMetricsLoading] = useState(false);
   const [unlockingHistory, setUnlockingHistory] = useState(false);
 
+  // New Match & Deal Logic State
+  const [hasMutualMatch, setHasMutualMatch] = useState(false);
+  const [publicDeal, setPublicDeal] = useState<{ company_name: string; round: string; date: string; sector: string; } | null>(null);
+
   useEffect(() => {
     if (currentUser) {
       // Only show if explicitly false/null in DB
