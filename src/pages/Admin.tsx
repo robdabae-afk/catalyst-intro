@@ -27,6 +27,7 @@ import { AdminFeedbackPanel } from "@/components/AdminFeedbackPanel";
 import { AdminMatchFeedbackPanel } from "@/components/AdminMatchFeedbackPanel";
 import { AdminRevenueTracker } from "@/components/AdminRevenueTracker";
 import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
+import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 
 interface UserWithStatus {
   id: string;
@@ -401,6 +402,10 @@ const Admin = () => {
               <Download className="w-4 h-4" />
               Deck Leads
             </TabsTrigger>
+            <TabsTrigger value="test-data" className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              Test Data
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="revenue">
@@ -655,6 +660,10 @@ const Admin = () => {
 
           <TabsContent value="deck-leads">
             <AdminDeckLeadsPanel />
+          </TabsContent>
+
+          <TabsContent value="test-data">
+            <AdminTestDataSeeder />
           </TabsContent>
         </Tabs>
       </div>
