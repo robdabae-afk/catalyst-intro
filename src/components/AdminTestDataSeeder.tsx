@@ -35,7 +35,6 @@ export const AdminTestDataSeeder = () => {
                     user_type: "founder" as const,
                     avatar_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop",
                     is_test_account: true,
-                    onboarding_complete: true,
                     spotlight_credits: 20
                 },
                 {
@@ -45,7 +44,6 @@ export const AdminTestDataSeeder = () => {
                     user_type: "investor" as const,
                     avatar_url: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1974&auto=format&fit=crop",
                     is_test_account: true,
-                    onboarding_complete: true,
                     spotlight_credits: 100
                 },
                 {
@@ -55,7 +53,6 @@ export const AdminTestDataSeeder = () => {
                     user_type: "founder" as const,
                     avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop",
                     is_test_account: true,
-                    onboarding_complete: true,
                     spotlight_credits: 15
                 },
                 {
@@ -65,7 +62,6 @@ export const AdminTestDataSeeder = () => {
                     user_type: "investor" as const,
                     avatar_url: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1961&auto=format&fit=crop",
                     is_test_account: true,
-                    onboarding_complete: true,
                     spotlight_credits: 50
                 }
             ];
