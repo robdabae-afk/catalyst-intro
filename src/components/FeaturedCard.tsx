@@ -44,7 +44,9 @@ export const FeaturedCard = ({
     // Determine display data
     const name = isAd ? adProfile?.name : organicProfile?.name;
     const details = isAd ? adProfile?.description : organicProfile?.founder_profiles?.[0]; // or investor_profiles
-    const company = isAd ? (adProfile?.company_name || adProfile?.firm_name) : (details?.company_name || details?.firm_name || "Stealth Mode");
+    const company = isAd
+        ? (adProfile?.company_name || adProfile?.firm_name)
+        : (details?.startup_name || details?.company_name || details?.firm_name || "Stealth Mode");
     const role = isAd ? "Sponsored" : (details?.title || (organicProfile?.user_type === 'founder' ? "Founder" : "Investor"));
     const location = isAd ? "Global" : (details?.location || "San Francisco, CA");
     const image = isAd ? adProfile?.image_url : (organicProfile?.avatar_url || details?.avatar_url);
