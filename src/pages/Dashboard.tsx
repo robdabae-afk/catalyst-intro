@@ -83,12 +83,14 @@ const Dashboard = () => {
         if (error) throw error;
 
         if (data) {
+          console.log("Raw fetched data:", data);
           const profiles = data.map((p: any) => ({
             ...p,
             isAd: false,
             // Ensure founder_profiles array structure matches hook expectation
             founder_profiles: p.founder_profiles || []
           }));
+          console.log("Processed profiles for queue:", profiles);
           setOrganicProfiles(profiles);
         }
       } catch (err) {

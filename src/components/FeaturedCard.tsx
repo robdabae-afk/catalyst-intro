@@ -44,6 +44,16 @@ export const FeaturedCard = ({
     // Determine display data
     const name = isAd ? adProfile?.name : organicProfile?.name;
     const details = isAd ? adProfile?.description : organicProfile?.founder_profiles?.[0]; // or investor_profiles
+
+    // Debug logging
+    console.log("FeaturedCard - Profile:", profile);
+    console.log("FeaturedCard - Details:", details);
+    console.log("FeaturedCard - Checking fields:", {
+        startup_name: details?.startup_name,
+        company_name: details?.company_name,
+        firm_name: details?.firm_name
+    });
+
     const company = isAd
         ? (adProfile?.company_name || adProfile?.firm_name)
         : (details?.startup_name || details?.company_name || details?.firm_name || "Stealth Mode");
