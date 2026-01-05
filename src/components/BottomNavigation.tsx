@@ -9,7 +9,8 @@ export const BottomNavigation = () => {
     const navItems = [
         { name: "Home", icon: "dashboard", path: "/dashboard" },
         { name: "Roadmap", icon: "map", path: "/roadmap" },
-        { name: "Messages", icon: "chat_bubble_outline", path: "/matches" },
+        { name: "Inbox", icon: "mail", path: "/requests" },
+        { name: "Matches", icon: "chat_bubble_outline", path: "/matches" },
         { name: "Profile", icon: "person_outline", path: "/founder-input" },
     ];
 

@@ -112,19 +112,36 @@ const Dashboard = () => {
   return (
     <div className="bg-background-dark font-sans antialiased overflow-hidden h-screen w-full flex flex-col text-white selection:bg-luxury-gold selection:text-black transition-colors duration-500">
 
-      {/* Header */}
-      <header className="flex-none z-50 bg-background-dark/80 backdrop-blur-xl px-5 py-4 flex items-center justify-between border-b border-white/5">
+      {/* Top Navigation - Restores Settings, Admin, Inbox, etc. */}
+      <AppNavigation
+        userType={currentUser?.user_type}
+        userName={currentUser?.name || currentUser?.email?.split('@')[0]}
+        avatarUrl={currentUser?.avatar_url}
+        isPro={isPro}
+      />
+
+      {/* Featured Header - Sub-header for context */}
+      <div className="flex-none px-6 py-4 flex items-center justify-between">
         <div className="flex flex-col">
           <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Featured</h1>
           <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
         </div>
-        <button
-          className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
-          onClick={() => navigate('/filters')} // Mock action
-        >
-          <span className="material-symbols-outlined text-white/90" style={{ fontSize: "20px" }}>tune</span>
-        </button>
-      </header>
+        <div className="flex items-center gap-3">
+          {/* Restore Purchase Options */}
+          {!isPro && currentUser?.user_type === 'founder' && (
+            <>
+              <SpotlightPurchaseButton userId={currentUser.id} />
+              <ConciergeMatchButton userId={currentUser.id} userType={currentUser.user_type} variant="compact" showBenefits={false} />
+            </>
+          )}
+          <button
+            className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
+            onClick={() => navigate('/filters')}
+          >
+            <span className="material-symbols-outlined text-white/90" style={{ fontSize: "20px" }}>tune</span>
+          </button>
+        </div>
+      </div>
 
       {/* Main Swipe/Scroll Area */}
       <main className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-40 bg-background-dark scroll-smooth">
