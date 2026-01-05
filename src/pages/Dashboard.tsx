@@ -39,6 +39,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [swipeCooldown, setSwipeCooldown] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [isTestMode, setIsTestMode] = useState(false);
 
   // Initial Profile Fetch
   useEffect(() => {
@@ -56,8 +57,9 @@ const Dashboard = () => {
           .eq('id', currentUser.id)
           .single();
 
-        const isTestMode = userData?.is_test_mode || false;
-        console.log("Fetching profiles. Test Mode:", isTestMode);
+        const isTestModeValue = userData?.is_test_mode || false;
+        setIsTestMode(isTestModeValue);
+        console.log("Fetching profiles. Test Mode:", isTestModeValue);
 
         let query = supabase
           .from('profiles')
@@ -68,7 +70,7 @@ const Dashboard = () => {
           .neq('id', currentUser.id); // Don't show self
 
         // Apply Test Mode Filter
-        if (isTestMode) {
+        if (isTestModeValue) {
           query = query.eq('is_test_account', true);
         } else {
           query = query
@@ -107,7 +109,7 @@ const Dashboard = () => {
     isQueueEmpty,
     hasOnlyAds,
     totalOrganic,
-  } = useSwipeQueue(organicProfiles, [], isPro);
+  } = useSwipeQueue(organicProfiles, [], isPro, isTestMode);
 
   const [showWelcomeBillboard, setShowWelcomeBillboard] = useState(false);
   const [showLegalNotice, setShowLegalNotice] = useState(false);
