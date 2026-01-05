@@ -29,8 +29,9 @@ export interface OrganicProfile {
   email: string;
   avatar_url?: string;
   instant_message_count?: number;
-  founder_profiles?: any[];
-  investor_profiles?: any[];
+  founder_profiles?: any[] | any;
+  investor_profiles?: any[] | any;
+  is_verified?: boolean;
 }
 
 export type QueueItem = OrganicProfile | AdProfile;

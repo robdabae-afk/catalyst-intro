@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -44,6 +44,7 @@ interface UserWithStatus {
   last_profile_update_at: string | null;
   is_hidden: boolean;
   hidden_at: string | null;
+  is_verified: boolean;
 }
 
 const Admin = () => {
@@ -78,6 +79,31 @@ const Admin = () => {
     }
   };
 
+  const handleToggleVerification = async (userId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_verified: !currentStatus })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      // Refresh users list
+      await loadUsers();
+
+      toast({
+        title: currentStatus ? "User unverified" : "User verified",
+        description: `Verification status updated successfully.`
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message
+      });
+    }
+  };
+
   const handleTestModeToggle = async (checked: boolean) => {
     setUseTestMode(checked);
     const { data: { user } } = await supabase.auth.getUser();
@@ -91,7 +117,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at')
+        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at, is_verified')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -527,6 +553,7 @@ const Admin = () => {
                       <TableHead>Visibility</TableHead>
                       <TableHead>Pro</TableHead>
                       <TableHead>Signed Up</TableHead>
+                      <TableHead>Verification</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -587,6 +614,27 @@ const Admin = () => {
                           </TableCell>
                           <TableCell className="text-muted-foreground">
                             {new Date(user.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {user.is_verified ? (
+                              <Badge
+                                variant="default"
+                                className="cursor-pointer bg-green-600 hover:bg-green-700"
+                                onClick={() => handleToggleVerification(user.id, user.is_verified)}
+                              >
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Verified
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="cursor-pointer"
+                                onClick={() => handleToggleVerification(user.id, user.is_verified)}
+                              >
+                                <Circle className="w-3 h-3 mr-1" />
+                                Unverified
+                              </Badge>
+                            )}
                           </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button

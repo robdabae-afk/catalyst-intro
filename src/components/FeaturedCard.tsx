@@ -104,9 +104,12 @@ export const FeaturedCard = ({
                         style={{ backgroundImage: `url("${image || 'https://github.com/shadcn.png'}")` }}
                     >
                     </div>
-                    <div className="absolute bottom-1 right-1 bg-white text-black rounded-full p-1.5 ring-4 ring-black flex items-center justify-center shadow-lg">
-                        <CheckCircle2 size={14} className="font-bold" />
-                    </div>
+                    {/* Verification Badge - Only show for verified users */}
+                    {!isAd && organicProfile?.is_verified && (
+                        <div className="absolute bottom-1 right-1 bg-white text-black rounded-full p-1.5 ring-4 ring-black flex items-center justify-center shadow-lg">
+                            <CheckCircle2 size={14} className="font-bold" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col items-center justify-center text-center gap-2">
