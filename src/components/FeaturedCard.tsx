@@ -14,9 +14,19 @@ interface FeaturedCardProps {
     metrics?: ProfileMetrics | null;
     onUnlockHistory?: () => void;
     unlockingHistory?: boolean;
+    isPro?: boolean;
+    isMatch?: boolean;
 }
 
-export const FeaturedCard = ({ profile, userType, metrics, onUnlockHistory, unlockingHistory }: FeaturedCardProps) => {
+export const FeaturedCard = ({
+    profile,
+    userType,
+    metrics,
+    onUnlockHistory,
+    unlockingHistory,
+    isPro = false,
+    isMatch = false
+}: FeaturedCardProps) => {
     const isAd = profile.isAd;
     // Safe access to profile data
     const organicProfile = !isAd ? (profile as OrganicProfile) : null;
@@ -84,11 +94,11 @@ export const FeaturedCard = ({ profile, userType, metrics, onUnlockHistory, unlo
                 </div>
 
                 <div className="flex w-full gap-3 mt-10">
-                    <button className="flex-1 h-12 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 text-white text-sm font-semibold hover:bg-zinc-800 transition-all uppercase tracking-wide">
-                        Connect
-                    </button>
-                    <button className="flex-1 h-12 flex items-center justify-center rounded-lg bg-white text-black text-sm font-bold shadow-lg shadow-white/10 hover:bg-gray-200 transition-all uppercase tracking-wide">
-                        Message
+                    <button
+                        className="flex-1 h-12 flex items-center justify-center rounded-lg bg-white text-black text-sm font-bold shadow-lg shadow-white/10 hover:bg-gray-200 transition-all uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!isPro && !isMatch}
+                    >
+                        {isPro || isMatch ? "Message" : "Match to Message"}
                     </button>
                 </div>
             </section>

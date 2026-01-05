@@ -190,19 +190,56 @@ const Dashboard = () => {
     }
   };
 
-  const handleSwipe = async (direction: 'left' | 'right' | 'pass' | 'like') => {
+  // Update handleSwipe signature to accept 'priority_like'
+  const handleSwipe = async (direction: 'left' | 'right' | 'pass' | 'like' | 'priority_like') => {
     if (!currentItem) return;
     if (swipeCooldown) return;
+
+    // Priority Logic Check
+    if (direction === 'priority_like') {
+      // If not Pro, check credits
+      if (!isPro) {
+        const credits = (currentUser as any)?.spotlight_credits || 0;
+        if (credits <= 0) {
+          // In real app, open purchase modal
+          alert("You need Priority tokens to use this feature. Please purchase tokens.");
+          return;
+        }
+        // Proceed (Back-end should handle deduction or we do it here optimistically)
+        // For now, we just proceed to record the swipe
+      }
+    }
 
     // Visual feedback or API call here
     console.log(`Swiped ${direction} on ${currentItem.name}`);
 
-    // If swiping right/like, log activity (if we were implementing that part of the backend too in FE)
-    // For now just existing logic
-    if (direction === 'like' || direction === 'right') {
-      // Mock match
+    // Record Swipe in DB
+    if (currentUser) {
+      const actionMap = {
+        'left': 'pass',
+        'pass': 'pass',
+        'right': 'like',
+        'like': 'like',
+        'priority_like': 'priority'
+      };
+      const dbAction = actionMap[direction];
+
+      // Fire and forget swipe recording
+      supabase.from('swipes').insert({
+        swiper_id: currentUser.id,
+        swiped_id: currentItem.id,
+        action: dbAction
+      }).then(({ error }) => {
+        if (error) console.error("Error recording swipe:", error);
+      });
+    }
+
+    // If swiping right/like/priority, log activity mock matching
+    if (direction === 'like' || direction === 'right' || direction === 'priority_like') {
+      // Mock match logic
       if (Math.random() > 0.7 && !currentItem.isAd) {
         setMatchedProfile(currentItem as OrganicProfile);
+        // If priority, could pass a flag to MatchModal for special effects
         setMatchModalOpen(true);
       }
     }
@@ -337,6 +374,8 @@ const Dashboard = () => {
               metrics={metrics}
               onUnlockHistory={handleUnlockHistory}
               unlockingHistory={unlockingHistory}
+              isPro={isPro}
+              isMatch={false} // Default to false in discovery mode
             />
             <div className="h-8"></div>
           </div>
@@ -355,14 +394,14 @@ const Dashboard = () => {
               <span className="material-symbols-outlined text-white/40 group-hover:text-white/90 text-[32px] transition-colors">close</span>
             </button>
             <button
-              onClick={() => handleSwipe('like')}
+              onClick={() => handleSwipe('priority_like')}
               disabled={swipeCooldown}
-              className="relative group flex flex-col items-center justify-center w-[60px] h-[60px] rounded-full bg-gradient-to-br from-[#FFE5A0] via-[#C5A059] to-[#8a6e1c] border border-white/20 shadow-[0_0_20px_rgba(197,160,89,0.3)] active:scale-95 -mb-2 overflow-visible transform hover:scale-105 transition-all duration-300"
+              className="relative group flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full bg-gradient-to-br from-[#FFE5A0] via-[#C5A059] to-[#8a6e1c] border border-white/20 shadow-[0_0_20px_rgba(197,160,89,0.3)] active:scale-95 -mb-2 overflow-visible transform hover:scale-105 transition-all duration-300"
             >
               <div className="absolute -top-3.5 bg-white text-black text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg tracking-widest uppercase border border-luxury-gold/30 whitespace-nowrap">
                 Priority
               </div>
-              <span className="material-symbols-outlined text-black text-[30px] drop-shadow-sm transition-transform group-hover:scale-110">star</span>
+              <span className="material-symbols-outlined text-black text-[36px] drop-shadow-sm transition-transform group-hover:scale-110">star</span>
             </button>
             <button
               onClick={() => handleSwipe('like')}
