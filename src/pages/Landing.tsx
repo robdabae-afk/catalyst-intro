@@ -77,7 +77,7 @@ const Landing = () => {
           Join the platform where meaningful founder-investor relationships begin
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-primary hover:bg-gray-100">
+          <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100">
             Get Started as Founder
           </Button>
           <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
