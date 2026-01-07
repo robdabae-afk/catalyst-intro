@@ -83,7 +83,7 @@ export const FeaturedProfileCard = () => {
 
       <div className="w-full max-w-md mx-auto">
         {/* Modern Profile Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl border border-zinc-800 h-[700px]">
+        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl border border-zinc-800 h-[600px]">
           {/* Background Image - Full Card */}
           <img
             src={profile.avatar_url || ''}
