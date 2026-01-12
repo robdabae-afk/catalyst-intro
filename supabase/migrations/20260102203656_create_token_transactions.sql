@@ -64,3 +64,4 @@ AFTER INSERT ON public.token_transactions
 FOR EACH ROW
 EXECUTE FUNCTION public.update_token_balance();
 
+

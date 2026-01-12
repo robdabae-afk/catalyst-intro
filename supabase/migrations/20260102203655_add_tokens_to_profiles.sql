@@ -11,3 +11,4 @@ WHERE tokens = 0;
 -- Create index for faster token balance queries
 CREATE INDEX IF NOT EXISTS idx_profiles_tokens ON public.profiles(tokens);
 
+

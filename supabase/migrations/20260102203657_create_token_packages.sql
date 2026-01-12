@@ -42,3 +42,4 @@ INSERT INTO public.token_packages (name, tokens, price_cents, display_order) VAL
   ('Premium Pack', 100, 10000, 4)
 ON CONFLICT DO NOTHING;
 
+

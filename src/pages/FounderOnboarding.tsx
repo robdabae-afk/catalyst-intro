@@ -57,22 +57,22 @@ const FounderOnboarding = () => {
         setReferralValid(null);
         return;
       }
-      
+
       const { data } = await supabase
         .from('profiles')
         .select('id')
         .eq('referral_code', referralCode.toUpperCase())
         .maybeSingle();
-      
+
       setReferralValid(!!data);
     };
-    
+
     const timeout = setTimeout(validateReferralCode, 500);
     return () => clearTimeout(timeout);
   }, [referralCode]);
 
   const handleIndustryToggle = (industry: string) => {
-    setSelectedIndustries(prev => 
+    setSelectedIndustries(prev =>
       prev.includes(industry)
         ? prev.filter(i => i !== industry)
         : [...prev, industry]
@@ -206,7 +206,7 @@ const FounderOnboarding = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (selectedIndustries.length === 0) {
       toast({
         variant: "destructive",
@@ -257,7 +257,7 @@ const FounderOnboarding = () => {
       const avatarUrl = await uploadAvatar(authData.user.id);
       const bannerUrl = await uploadBanner(authData.user.id);
       const uploadedVideoUrl = await uploadVideo(authData.user.id);
-      
+
       // Use uploaded video URL if available, otherwise use the external URL from form
       const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
 
@@ -288,7 +288,7 @@ const FounderOnboarding = () => {
           .select('id')
           .eq('referral_code', referralCode.toUpperCase())
           .single();
-        
+
         if (referrer) {
           await supabase.from('referrals').insert({
             referrer_id: referrer.id,
@@ -353,7 +353,7 @@ const FounderOnboarding = () => {
               {/* Banner Upload */}
               <div className="space-y-2">
                 <Label>Banner Photo (optional)</Label>
-                <div 
+                <div
                   className="relative cursor-pointer group w-full h-32 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
                   onClick={() => bannerInputRef.current?.click()}
                 >
@@ -380,7 +380,7 @@ const FounderOnboarding = () => {
 
               {/* Avatar Upload */}
               <div className="flex flex-col items-center gap-4">
-                <div 
+                <div
                   className="relative cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >
@@ -553,8 +553,8 @@ const FounderOnboarding = () => {
                 </div>
                 <div className="space-y-2">
                   <Label>Who can see your pitch deck?</Label>
-                  <RadioGroup 
-                    value={pitchDeckVisibility} 
+                  <RadioGroup
+                    value={pitchDeckVisibility}
                     onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
                     className="flex flex-col gap-2"
                   >
@@ -607,11 +607,11 @@ const FounderOnboarding = () => {
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="font-medium">Video Profile (Optional)</h3>
                 <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
-                
+
                 {/* Video Upload */}
                 <div className="space-y-2">
                   <Label>Upload Video</Label>
-                  <div 
+                  <div
                     className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
                     onClick={() => videoInputRef.current?.click()}
                   >
@@ -643,7 +643,7 @@ const FounderOnboarding = () => {
                 </div>
 
                 <div className="text-center text-sm text-muted-foreground">— or —</div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="videoUrl">Video URL</Label>
                   <Input

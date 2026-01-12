@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, MessageSquare } from "lucide-react";
+import { Building2, MapPin, TrendingUp, Heart, X, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, MessageSquare, Star, Handshake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FUNDING_STAGES } from "@/lib/constants";
@@ -54,7 +54,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
 
   const handleDragStart = (clientX: number, clientY: number, target: EventTarget) => {
     if (adLocked) return;
-    
+
     // Check if the touch started inside the scrollable content area
     const contentElement = contentRef.current;
     if (contentElement && contentElement.contains(target as Node)) {
@@ -65,7 +65,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         return;
       }
     }
-    
+
     setDragStart({ x: clientX, y: clientY });
     setDragDirection(null);
     setIsDragging(true);
@@ -73,17 +73,17 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
 
   const handleDragMove = (clientX: number, clientY: number) => {
     if (!dragStart || adLocked) return;
-    
+
     const deltaX = clientX - dragStart.x;
     const deltaY = clientY - dragStart.y;
-    
+
     // Determine direction lock on first significant movement (10+ pixels)
     if (!dragDirection && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
       // Calculate angle - if more than ~15 degrees from horizontal, it's vertical
       const angle = Math.abs(Math.atan2(deltaY, deltaX) * (180 / Math.PI));
       const isHorizontal = angle < 30 || angle > 150;
       setDragDirection(isHorizontal ? 'horizontal' : 'vertical');
-      
+
       // If vertical, cancel the drag and let native scroll take over
       if (!isHorizontal) {
         setIsDragging(false);
@@ -92,7 +92,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         return;
       }
     }
-    
+
     // Only apply horizontal offset if direction is confirmed horizontal
     if (dragDirection === 'horizontal') {
       setDragOffset({ x: deltaX, y: 0 });
@@ -130,7 +130,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
   // userType is the CURRENT user's type, so we need to show the OPPOSITE type's profile
   const founderProfile = organicProfile?.founder_profiles?.[0];
   const investorProfile = organicProfile?.investor_profiles?.[0];
-  
+
   // If current user is investor, show founder profiles; if founder, show investor profiles
   const isShowingFounder = userType === 'investor';
   const profileData = isShowingFounder ? founderProfile : investorProfile;
@@ -140,7 +140,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
   const profileName = organicProfile?.name || 'User';
   const instantMessageCount = organicProfile?.instant_message_count || 0;
   const isPopular = instantMessageCount >= 5; // Consider popular if 5+ instant messages received
-  
+
   // Check if founder has a video (video-based profile)
   const hasVideo = isShowingFounder && founderProfile?.video_url;
   const videoUrl = founderProfile?.video_url;
@@ -163,7 +163,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
     <div className="relative w-full max-w-[280px] sm:max-w-md mx-auto h-[480px] sm:h-[600px] perspective-1000">
       <Card
         ref={cardRef}
-        className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl overflow-hidden"
+        className="absolute inset-0 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-2xl overflow-hidden bg-card border-border/50"
         style={{
           transform: `translateX(${dragOffset.x}px) rotate(${rotation}deg)`,
           opacity,
@@ -214,13 +214,13 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
               }}
             />
             {/* Overlay with company name, stage, and funding amount */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 sm:p-6">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 sm:p-6 pb-20 sm:pb-24">
               <div className="space-y-2">
                 {/* Company Name */}
                 <h3 className="text-lg sm:text-2xl font-bold text-white">
                   {founderProfile?.company_name || founderProfile?.startup_name}
                 </h3>
-                
+
                 {/* Stage and Funding Amount */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   {founderProfile?.stage && (
@@ -242,20 +242,20 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
           <>
             <div className="relative h-24 sm:h-44 bg-gradient-to-br from-primary/20 to-accent/20">
               {bannerUrl ? (
-                <img 
-                  src={bannerUrl} 
+                <img
+                  src={bannerUrl}
                   alt="Banner"
                   className="w-full h-full object-cover"
                 />
               ) : isAdProfile && adProfile?.image_url ? (
-                <img 
-                  src={adProfile.image_url} 
+                <img
+                  src={adProfile.image_url}
                   alt={adProfile.name}
                   className="w-full h-full object-cover"
                 />
               ) : avatarUrl ? (
-                <img 
-                  src={avatarUrl} 
+                <img
+                  src={avatarUrl}
                   alt={profile.name}
                   className="w-full h-full object-cover"
                 />
@@ -276,10 +276,10 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <CardTitle className="text-sm sm:text-xl truncate leading-tight">
-                    {isAdProfile 
+                  <CardTitle className="text-sm sm:text-xl truncate leading-tight flex items-center gap-2">
+                    {isAdProfile
                       ? adProfile?.company_name || adProfile?.firm_name || adProfile?.name
-                      : isShowingFounder 
+                      : isShowingFounder
                         ? founderProfile?.startup_name || profile.name
                         : investorProfile?.firm_name || profile.name}
                   </CardTitle>
@@ -292,9 +292,9 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
 
         {/* Content Section - Only show for non-video profiles */}
         {!hasVideo && (
-          <CardContent 
+          <CardContent
             ref={contentRef}
-            className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[320px] sm:max-h-[340px]"
+            className="space-y-1.5 sm:space-y-3 pt-1 sm:pt-2 px-3 sm:px-6 overflow-y-auto max-h-[200px] sm:max-h-[250px] scrollbar-hide"
             style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
           >
             {/* Ad Profile Display */}
@@ -357,9 +357,9 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                 {(adProfile.website_url || adProfile.portfolio_link) && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <LinkIcon className="w-3 h-3 flex-shrink-0" />
-                    <a 
-                      href={adProfile.website_url || adProfile.portfolio_link || '#'} 
-                      target="_blank" 
+                    <a
+                      href={adProfile.website_url || adProfile.portfolio_link || '#'}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
                       onClick={(e) => e.stopPropagation()}
@@ -393,32 +393,49 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                   ))}
                 </div>
 
-                {/* Traction */}
-                {founderProfile.traction && (
-                  <div className="bg-muted/50 rounded-md p-2 sm:p-3">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-primary flex-shrink-0" />
-                      <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">Traction</p>
+                {/* MRR & Backed By Stats Grid */}
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {/* MRR Card */}
+                  <div className="bg-muted/30 border border-border/50 rounded-xl p-3 relative overflow-hidden group hover:bg-muted/50 transition-colors">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <TrendingUp className="w-3 h-3" />
+                        <p className="text-[10px] font-medium uppercase tracking-wider">MRR</p>
+                      </div>
+                      <p className="text-lg font-serif font-medium text-foreground">
+                        {founderProfile.mrr || '$0'}
+                      </p>
                     </div>
-                    <p className="text-xs sm:text-sm">{founderProfile.traction}</p>
+                  </div>
+
+                  {/* Backed By Card */}
+                  <div className="bg-muted/30 border border-border/50 rounded-xl p-3 relative overflow-hidden group hover:bg-muted/50 transition-colors">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Rocket className="w-3 h-3" />
+                        <p className="text-[10px] font-medium uppercase tracking-wider">Backed By</p>
+                      </div>
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {founderProfile.backed_by || '-'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Traction - Simplified if taking too much space */}
+                {founderProfile.traction && (
+                  <div className="bg-muted/30 rounded-md p-2 mt-2">
+                    <p className="text-[10px] font-medium text-muted-foreground mb-1">Traction Highlights</p>
+                    <p className="text-xs line-clamp-3">{founderProfile.traction}</p>
                   </div>
                 )}
 
                 {/* Location & Company inline */}
-                <div className="flex flex-col gap-1 text-xs text-muted-foreground">
+                <div className="flex flex-col gap-1 text-xs text-muted-foreground mt-2">
                   {founderProfile.preferred_city && (
                     <div className="flex items-center gap-1.5">
                       <MapPin className="w-3 h-3 flex-shrink-0" />
                       <span>{founderProfile.preferred_city}</span>
-                    </div>
-                  )}
-                  {(founderProfile.company_name || founderProfile.company_state) && (
-                    <div className="flex items-center gap-1.5">
-                      <Building2 className="w-3 h-3 flex-shrink-0" />
-                      <span>
-                        {founderProfile.company_name}
-                        {founderProfile.company_state && ` (${founderProfile.company_state})`}
-                      </span>
                     </div>
                   )}
                 </div>
@@ -427,21 +444,15 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                 {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'public' && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <FileText className="w-3 h-3 flex-shrink-0" />
-                    <a 
-                      href={founderProfile.pitch_deck_url} 
-                      target="_blank" 
+                    <a
+                      href={founderProfile.pitch_deck_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
                       onClick={(e) => e.stopPropagation()}
                     >
                       View Pitch Deck
                     </a>
-                  </div>
-                )}
-                {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'private' && (
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <FileText className="w-3 h-3 flex-shrink-0" />
-                    <span className="text-muted-foreground italic">Pitch deck available upon request</span>
                   </div>
                 )}
               </>
@@ -516,9 +527,9 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
                 {investorProfile.portfolio_link && (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <LinkIcon className="w-3 h-3 flex-shrink-0" />
-                    <a 
-                      href={investorProfile.portfolio_link} 
-                      target="_blank" 
+                    <a
+                      href={investorProfile.portfolio_link}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
                       onClick={(e) => e.stopPropagation()}
@@ -533,13 +544,13 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         )}
 
         {/* Swipe indicators */}
-        <div 
+        <div
           className="absolute top-24 left-4 text-4xl font-bold text-red-500 opacity-0 rotate-[-20deg] pointer-events-none"
           style={{ opacity: dragOffset.x < -50 ? Math.min(Math.abs(dragOffset.x) / 150, 1) : 0 }}
         >
           PASS
         </div>
-        <div 
+        <div
           className="absolute top-24 right-4 text-4xl font-bold text-green-500 opacity-0 rotate-[20deg] pointer-events-none"
           style={{ opacity: dragOffset.x > 50 ? Math.min(dragOffset.x / 150, 1) : 0 }}
         >
@@ -577,7 +588,7 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
       )}
 
       {/* Action buttons */}
-      <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2 flex gap-4 sm:gap-6">
+      <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2 flex gap-4 sm:gap-6 items-center">
         <Button
           size="lg"
           variant="outline"
@@ -587,17 +598,22 @@ export const SwipeCard = ({ profile, onSwipe, userType, isAd = false, isPro = fa
         >
           <X className="w-5 h-5 sm:w-8 sm:h-8" />
         </Button>
+
+        {/* Priority / Instant Message Center Action */}
         {!isAd && profileId && currentUserId && (
           <Button
             size="lg"
-            variant="outline"
-            className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-blue-500 hover:text-blue-500"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg relative -mt-4 transition-transform hover:scale-105"
             onClick={() => setShowInstantMessage(true)}
-            title="Send Instant Message"
+            title="Send Priority Message"
           >
-            <MessageSquare className="w-5 h-5 sm:w-8 sm:h-8" />
+            <div className="absolute -top-3 bg-white text-black px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-black/5 shadow-sm">
+              Priority
+            </div>
+            <Star className="w-8 h-8 sm:w-10 sm:h-10 fill-black" />
           </Button>
         )}
+
         <Button
           size="lg"
           variant="outline"

@@ -8,3 +8,4 @@ CREATE POLICY "Admins can update all matches"
 ON public.matches FOR UPDATE
 USING (has_role(auth.uid(), 'admin'::app_role));
 
+

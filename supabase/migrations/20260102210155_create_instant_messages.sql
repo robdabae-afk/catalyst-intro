@@ -58,3 +58,4 @@ AFTER INSERT ON public.instant_messages
 FOR EACH ROW
 EXECUTE FUNCTION public.increment_instant_message_count();
 
+
