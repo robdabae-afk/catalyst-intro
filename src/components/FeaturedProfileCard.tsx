@@ -83,19 +83,7 @@ export const FeaturedProfileCard = () => {
 
       <div className="w-full max-w-md mx-auto">
         {/* Modern Profile Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl border border-zinc-800 h-[600px]">
-          {/* Background Image - Full Card */}
-          <img
-            src={profile.avatar_url || ''}
-            alt={profile.name}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-          />
-
-          {/* Gradient Overlays for Text Readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
-
+        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl border border-zinc-800">
           {/* Header Badge */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <div className="flex items-center gap-2">
@@ -111,21 +99,33 @@ export const FeaturedProfileCard = () => {
             </div>
           </div>
 
-          {/* Content Section - Positioned at Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 px-6 pb-6 space-y-4 z-10">
+          {/* Profile Image Section */}
+          <div className="relative h-80 bg-gradient-to-br from-zinc-800 to-zinc-900">
+            <img
+              src={profile.avatar_url || ''}
+              alt={profile.name}
+              className="w-full h-full object-cover"
+              loading="eager"
+              fetchPriority="high"
+            />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-zinc-900 to-transparent" />
+          </div>
+
+          {/* Content Section */}
+          <div className="px-6 pb-6 pt-4 space-y-4">
             {/* Name & Title */}
             <div>
               <h2 className="text-3xl font-bold text-white mb-1">{profile.name}</h2>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-amber-400">⚡</span>
-                <span className="text-sm font-medium text-gray-100">Founder @ {founderProfile.startup_name}</span>
+                <span className="text-sm font-medium text-gray-300">Founder @ {founderProfile.startup_name}</span>
               </div>
             </div>
 
             {/* Industry Tags */}
             <div className="flex flex-wrap gap-2">
               {founderProfile.industry?.map((ind: string) => (
-                <div key={ind} className="bg-white/10 backdrop-blur-sm border border-white/20 px-3 py-1.5 rounded-lg">
+                <div key={ind} className="bg-zinc-800 border border-zinc-700 px-3 py-1.5 rounded-lg">
                   <span className="text-xs font-medium text-white uppercase tracking-wide">{ind}</span>
                 </div>
               ))}
@@ -133,20 +133,20 @@ export const FeaturedProfileCard = () => {
 
             {/* One-liner */}
             {founderProfile.one_liner && (
-              <p className="text-sm text-gray-100 leading-relaxed">
+              <p className="text-sm text-gray-300 leading-relaxed">
                 {founderProfile.one_liner}
               </p>
             )}
 
             {/* Stats Section */}
-            <div className="pt-2 border-t border-white/20">
+            <div className="pt-2 border-t border-zinc-800">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl font-bold text-white">$50k+</span>
                     <TrendingUp size={20} className="text-green-500" />
                   </div>
-                  <span className="text-xs text-gray-300 uppercase tracking-wide">Raised</span>
+                  <span className="text-xs text-gray-500 uppercase tracking-wide">Raised</span>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-1 justify-end">
@@ -154,7 +154,7 @@ export const FeaturedProfileCard = () => {
                       PRIORITY
                     </div>
                   </div>
-                  <span className="text-xs text-gray-300 uppercase tracking-wide mt-1 block">Featured</span>
+                  <span className="text-xs text-gray-500 uppercase tracking-wide mt-1 block">Featured</span>
                 </div>
               </div>
             </div>
