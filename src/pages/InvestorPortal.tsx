@@ -292,7 +292,7 @@ export default function InvestorPortal() {
             {/* Header */}
             <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <button onClick={() => navigate('/')} className="hover:bg-zinc-800 p-2 rounded-full transition-colors">
+                    <button onClick={() => navigate('/dashboard')} className="hover:bg-zinc-800 p-2 rounded-full transition-colors">
                         <ArrowLeft size={20} />
                     </button>
                     <h1 className="text-xl font-serif font-bold tracking-wide">Investor Portal</h1>
