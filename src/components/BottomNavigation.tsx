@@ -1,7 +1,11 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Map, Mail, MessageSquare, User } from "lucide-react";
+import { LayoutDashboard, Map, Mail, MessageSquare, User, DollarSign } from "lucide-react";
 
-export const BottomNavigation = () => {
+interface BottomNavigationProps {
+    userType?: 'founder' | 'investor';
+}
+
+export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -9,7 +13,10 @@ export const BottomNavigation = () => {
 
     const navItems = [
         { name: "Home", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Inbox", icon: Mail, path: "/requests" },
+        // Replace Inbox/Requests with Portal for Investors
+        userType === 'investor'
+            ? { name: "Portal", icon: DollarSign, path: "/portal" }
+            : { name: "Inbox", icon: Mail, path: "/requests" },
         { name: "Matches", icon: MessageSquare, path: "/matches" },
         { name: "Profile", icon: User, path: "/founder-input" },
     ];

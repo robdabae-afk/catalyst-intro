@@ -415,6 +415,53 @@ export type Database = {
           },
         ]
       }
+      investor_deal_flow: {
+        Row: {
+          id: string
+          investor_id: string
+          startup_name: string
+          amount: string | null
+          stage: string | null
+          key_co_investors: string | null
+          verticals: string[] | null
+          notes: string | null
+          status: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          investor_id: string
+          startup_name: string
+          amount?: string | null
+          stage?: string | null
+          key_co_investors?: string | null
+          verticals?: string[] | null
+          notes?: string | null
+          status?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          investor_id?: string
+          startup_name?: string
+          amount?: string | null
+          stage?: string | null
+          key_co_investors?: string | null
+          verticals?: string[] | null
+          notes?: string | null
+          status?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_deal_flow_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investor_profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       investor_profiles: {
         Row: {
           banner_url: string | null
@@ -464,6 +511,53 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      investor_portfolio: {
+        Row: {
+          id: string
+          investor_id: string
+          company_name: string
+          company_url: string | null
+          company_image_url: string | null
+          investment_stage: string | null
+          investment_year: number | null
+          sector: string | null
+          is_lead: boolean | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          investor_id: string
+          company_name: string
+          company_url?: string | null
+          company_image_url?: string | null
+          investment_stage?: string | null
+          investment_year?: number | null
+          sector?: string | null
+          is_lead?: boolean | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          investor_id?: string
+          company_name?: string
+          company_url?: string | null
+          company_image_url?: string | null
+          investment_stage?: string | null
+          investment_year?: number | null
+          sector?: string | null
+          is_lead?: boolean | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investor_portfolio_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "investor_profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
       location_access: {

@@ -691,7 +691,7 @@ const Dashboard = () => {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation />
+      <BottomNavigation userType={currentUser?.user_type as 'founder' | 'investor'} />
     </div>
   );
 };

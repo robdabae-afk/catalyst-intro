@@ -182,6 +182,33 @@ export const FeaturedCard = ({
     // Heatmap data
     const heatmapDays = metrics?.activity_heatmap || new Array(90).fill(0);
 
+    // Dynamic Portfolio State
+    interface PortfolioItem {
+        id: string;
+        company_name: string;
+        investment_year: number | null;
+        sector: string | null;
+        investment_stage: string | null;
+        is_lead: boolean | null;
+        company_image_url: string | null;
+    }
+    const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
+
+    useEffect(() => {
+        const fetchPortfolio = async () => {
+            if (organicProfile?.user_type === 'investor' && details?.id) {
+                const { data } = await supabase
+                    .from('investor_portfolio')
+                    .select('*')
+                    .eq('investor_id', details.id)
+                    .order('investment_year', { ascending: false });
+
+                if (data) setPortfolio(data as PortfolioItem[]);
+            }
+        };
+        fetchPortfolio();
+    }, [details?.id, organicProfile?.user_type]);
+
     // Endorsements State
     interface Endorsement {
         id: string;
@@ -418,107 +445,110 @@ export const FeaturedCard = ({
                 <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8">
                     {organicProfile?.user_type === 'investor' ? "Investment History" : "Deal History"}
                 </h3>
-                {/* ... Existing History Code ... */}
-                <div className="relative pl-2">
-                    <div className="absolute left-2 top-2 bottom-0 w-px bg-zinc-800"></div>
-                    <div className="flex flex-col gap-6">
-                        {/* Public Item (Most Recent) */}
-                        <div className="relative pl-8 group">
-                            <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-white border-2 border-black z-10 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
-                            <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 shadow-sm hover:border-zinc-700 transition-colors">
-                                {publicDeal ? (
-                                    <>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h4 className="text-white font-bold text-base">{publicDeal.round} - {publicDeal.company_name}</h4>
-                                            <span className="text-[10px] font-bold uppercase text-black bg-white px-2 py-1 rounded">Lead</span>
-                                        </div>
-                                        <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wider">{publicDeal.date} • Confidential</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                            <span className="text-xs text-gray-300 font-medium tracking-wide">{publicDeal.sector}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        {isPro ? (
-                                            <div className="flex items-center justify-center py-6">
-                                                <p className="text-gray-500 font-medium text-sm">No history disclosed</p>
-                                            </div>
-                                        ) : (
-                                            <div className="relative overflow-hidden">
-                                                <div className="blur-[5px] opacity-40 select-none">
-                                                    <div className="flex justify-between items-start mb-2">
-                                                        <h4 className="text-white font-bold text-base">Series A - TechCo</h4>
-                                                        <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Lead</span>
-                                                    </div>
-                                                    <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2024 • Undisclosed Round</p>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                                        <span className="text-xs text-gray-300 font-medium tracking-wide">Enterprise</span>
-                                                    </div>
-                                                </div>
-                                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                                    <Lock size={24} className="text-white mb-2 opacity-80" />
-                                                    <button
-                                                        onClick={onUnlockHistory}
-                                                        disabled={unlockingHistory}
-                                                        className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
-                                                    >
-                                                        {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-                            </div>
-                        </div>
 
-                        {/* Locked/Unlocked Logic - Only show as second item if public deal exists */}
-                        {publicDeal && (
-                            <div className="relative pl-8">
-                                <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-zinc-600 border-2 border-black z-10"></div>
-                                <div className="relative bg-zinc-950 p-5 rounded-xl border border-zinc-800 overflow-hidden">
-                                    {metrics?.is_history_unlocked ? (
-                                        // UNLOCKED STATE
-                                        <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
-                                                <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
-                                            </div>
-                                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                                <span className="text-xs text-gray-300 font-medium tracking-wide">FinTech</span>
+                {organicProfile?.user_type === 'investor' ? (
+                    <div className="relative pl-2">
+                        <div className="absolute left-2 top-2 bottom-0 w-px bg-zinc-800"></div>
+                        <div className="flex flex-col gap-6">
+                            {portfolio.length === 0 ? (
+                                <p className="text-gray-500 text-xs italic pl-8">No specific deal history listed.</p>
+                            ) : (
+                                <>
+                                    {/* Most Recent / Highlight Item */}
+                                    {portfolio.length > 0 && (
+                                        <div className="relative pl-8 group">
+                                            <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-white border-2 border-black z-10 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                                            <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 shadow-sm hover:border-zinc-700 transition-colors">
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="text-white font-bold text-base">{portfolio[0].company_name}</h4>
+                                                        {portfolio[0].is_lead && (
+                                                            <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Lead</span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">
+                                                        {portfolio[0].investment_year ? `Inv. ${portfolio[0].investment_year}` : 'Undisclosed Date'}
+                                                        {portfolio[0].investment_stage ? ` • ${portfolio[0].investment_stage}` : ''}
+                                                    </p>
+                                                    <div className="flex items-center gap-2">
+                                                        {portfolio[0].company_image_url ? (
+                                                            <div className="h-6 w-6 rounded-full bg-cover bg-center" style={{ backgroundImage: `url(${portfolio[0].company_image_url})` }}></div>
+                                                        ) : (
+                                                            <div className="h-6 w-6 rounded-full bg-zinc-800 flex items-center justify-center text-[8px] font-bold text-gray-400">
+                                                                {portfolio[0].company_name.substring(0, 2).toUpperCase()}
+                                                            </div>
+                                                        )}
+                                                        <span className="text-xs text-gray-300 font-medium tracking-wide">{portfolio[0].sector || 'General'}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    ) : (
-                                        // LOCKED STATE
-                                        <>
-                                            <div className="blur-[5px] opacity-40 select-none">
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
-                                                    <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
-                                                </div>
-                                                <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
-                                            </div>
-                                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                                <Lock size={24} className="text-white mb-2 opacity-80" />
-                                                <button
-                                                    onClick={onUnlockHistory}
-                                                    disabled={unlockingHistory}
-                                                    className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
-                                                >
-                                                    {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
-                                                </button>
-                                            </div>
-                                        </>
                                     )}
-                                </div>
-                            </div>
-                        )}
+
+                                    {/* Additional Items (Locked logic) */}
+                                    {portfolio.length > 1 && (
+                                        <div className="relative pl-8">
+                                            <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-zinc-600 border-2 border-black z-10"></div>
+                                            <div className="relative bg-zinc-950 p-5 rounded-xl border border-zinc-800 overflow-hidden">
+                                                {metrics?.is_history_unlocked ? (
+                                                    // UNLOCKED STATE - Loop rest
+                                                    <div className="space-y-6">
+                                                        {portfolio.slice(1).map((item) => (
+                                                            <div key={item.id}>
+                                                                <div className="flex justify-between items-start mb-2">
+                                                                    <h4 className="text-white font-bold text-base">{item.company_name}</h4>
+                                                                    {item.is_lead && (
+                                                                        <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Lead</span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">
+                                                                    {item.investment_year ? `Inv. ${item.investment_year}` : ''} • {item.investment_stage || 'Stage N/A'}
+                                                                </p>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs text-gray-300 font-medium tracking-wide">{item.sector || 'N/A'}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    // LOCKED STATE
+                                                    <>
+                                                        <div className="blur-[5px] opacity-40 select-none">
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h4 className="text-white font-bold text-base">{portfolio[1].company_name}</h4>
+                                                                <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Follow-on</span>
+                                                            </div>
+                                                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">2023 • Series A</p>
+                                                        </div>
+                                                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
+                                                            <Lock size={24} className="text-white mb-2 opacity-80" />
+                                                            <button
+                                                                onClick={onUnlockHistory}
+                                                                disabled={unlockingHistory}
+                                                                className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
+                                                            >
+                                                                {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    // FOUNDER DEAL HISTORY (Example hardcoded fallback / logic for founders)
+                    <div className="relative pl-2">
+                        <div className="absolute left-2 top-2 bottom-0 w-px bg-zinc-800"></div>
+                        <div className="space-y-6">
+                            {/* Founders usually don't have "Deal History" in the same way, keeping original placeholder structure or empty */}
+                            <p className="text-gray-500 text-xs italic pl-8">No public deal history.</p>
+                        </div>
+                    </div>
+                )}
             </section>
 
             {/* Endorsements Section */}

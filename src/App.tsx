@@ -25,6 +25,7 @@ import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
+import InvestorPortal from "./pages/InvestorPortal";
 
 import FounderProfileInput from "./pages/FounderProfileInput";
 
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/filters" element={<FilterPreferences />} />
           <Route path="/referrals" element={<ReferralDashboard />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/portal" element={<InvestorPortal />} />
 
           <Route path="/founder-input" element={<FounderProfileInput />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
