@@ -235,26 +235,26 @@ export const FeaturedCard = ({
                 <div className="absolute bottom-0 left-0 right-0 p-8 pb-24 flex flex-col items-start justify-end h-full">
 
                     {/* Badges: Stage & Location */}
-                    <div className="flex flex-row items-center gap-2 mb-4">
+                    <div className="flex flex-row items-center gap-2 mb-3">
                         {details?.stage && (
-                            <span className="px-2 py-1 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
+                            <span className="px-2 py-0.5 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
                                 {details.stage} Stage
                             </span>
                         )}
-                        <span className="flex items-center gap-1 px-2 py-1 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
+                        <span className="flex items-center gap-1 px-2 py-0.5 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
                             <MapPin size={10} />
                             {location}
                         </span>
                     </div>
 
                     {/* Name */}
-                    <h1 className="text-6xl font-serif font-bold text-white mb-3 text-shadow-lg leading-tight">
+                    <h1 className="text-3xl font-serif font-bold text-white mb-2 text-shadow-lg leading-tight">
                         {name}
                     </h1>
 
                     {/* Role & Company */}
-                    <div className="flex items-center gap-2 text-gray-200 text-lg font-medium">
-                        <Briefcase size={20} className="text-[#C5A059]" />
+                    <div className="flex items-center gap-2 text-gray-200 text-sm font-medium">
+                        <Briefcase size={14} className="text-[#C5A059]" />
                         <span>
                             {organicProfile?.user_type === 'founder' ? "Founder" : "Investor"} @ <span className="text-white border-b border-white/30 pb-0.5">{company}</span>
                         </span>

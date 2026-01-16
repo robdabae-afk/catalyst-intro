@@ -659,7 +659,7 @@ const Dashboard = () => {
       {/* Floating Action Buttons */}
       {!loading && !showAllCaughtUp && currentProfile && (
         <>
-          <div className="absolute bottom-6 left-0 w-full px-6 pointer-events-none z-40">
+          <div className="absolute bottom-28 left-0 w-full px-6 pointer-events-none z-50">
             <div className="flex items-center justify-center gap-4 pointer-events-auto">
               <button
                 onClick={() => handleSwipe('pass')}
