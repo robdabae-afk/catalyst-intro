@@ -192,7 +192,7 @@ export const FeaturedCard = ({
     }, [profile]);
 
     return (
-        <div className="flex flex-col gap-8 pb-32 pt-2 relative">
+        <div className={`flex flex-col ${organicProfile?.user_type === 'founder' ? 'gap-2' : 'gap-8'} pb-32 pt-2 relative`}>
             {/* ... Featured Badge ... */}
             {isFeatured && (
                 <div className="px-6 pb-2">
@@ -201,7 +201,7 @@ export const FeaturedCard = ({
                 </div>
             )}
             {/* Profile Header Section - Redesigned */}
-            <section className={`relative w-full ${organicProfile?.user_type === 'founder' ? 'h-[380px] mb-2' : 'h-[480px] mb-6'} group cursor-pointer overflow-hidden rounded-b-3xl transition-all duration-300`}>
+            <section className={`relative w-full ${organicProfile?.user_type === 'founder' ? 'h-[380px] mb-0' : 'h-[480px] mb-6'} group cursor-pointer overflow-hidden rounded-b-3xl transition-all duration-300`}>
                 {/* Background Image */}
                 <div
                     className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
@@ -264,7 +264,7 @@ export const FeaturedCard = ({
 
             {/* Industries Bubbles */}
             {details?.industry && Array.isArray(details.industry) && details.industry.length > 0 && (
-                <div className={`flex flex-wrap justify-center gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-3' : 'mb-6'}`}>
+                <div className={`flex flex-wrap justify-center gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-0' : 'mb-6'}`}>
                     {details.industry.map((ind: string, i: number) => (
                         <span key={i} className="px-4 py-1.5 rounded-full border border-gray-700 bg-black/40 text-[10px] font-bold uppercase tracking-widest text-gray-300">
                             {ind}
@@ -275,7 +275,7 @@ export const FeaturedCard = ({
 
             {/* Two Boxes: MRR & Backed By */}
             {organicProfile?.user_type === 'founder' && (
-                <div className="grid grid-cols-2 gap-3 px-6 mb-6">
+                <div className="grid grid-cols-2 gap-3 px-6 mb-2">
                     <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">MRR</span>
                         <p className="text-xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
