@@ -232,7 +232,7 @@ export const FeaturedCard = ({
                 )}
 
                 {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 pb-24 flex flex-col items-start justify-end h-full">
+                <div className={`absolute bottom-0 left-0 right-0 p-8 ${organicProfile?.user_type === 'founder' ? 'pb-6' : 'pb-24'} flex flex-col items-start justify-end h-full`}>
 
                     {/* Badges: Stage & Location */}
                     <div className="flex flex-row items-center gap-2 mb-3">
