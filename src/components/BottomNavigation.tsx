@@ -18,7 +18,9 @@ export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
             ? { name: "Portal", icon: DollarSign, path: "/portal" }
             : { name: "Inbox", icon: Mail, path: "/requests" },
         { name: "Matches", icon: MessageSquare, path: "/matches" },
-        { name: "Profile", icon: User, path: "/founder-input" },
+        userType === 'investor'
+            ? { name: "Settings", icon: User, path: "/settings" }
+            : { name: "Profile", icon: User, path: "/founder-input" },
     ];
 
     return (
