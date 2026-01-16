@@ -109,7 +109,7 @@ export const FeaturedCard = ({
     const company = isAd
         ? (adProfile?.company_name || adProfile?.firm_name)
         : (details?.startup_name || details?.company_name || details?.firm_name || "Stealth Mode");
-    const role = isAd ? "Sponsored" : (details?.title || (organicProfile?.user_type === 'founder' ? "Founder" : "Investor"));
+    const role = isAd ? "Sponsored" : (details?.position || details?.title || (organicProfile?.user_type === 'founder' ? "Founder" : "Investor"));
     const location = isAd ? "Global" : (details?.location || "San Francisco, CA");
     const image = isAd ? adProfile?.image_url : (organicProfile?.avatar_url || details?.avatar_url);
 

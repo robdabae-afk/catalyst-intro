@@ -33,6 +33,7 @@ const InvestorOnboarding = () => {
     email: "",
     password: "",
     firmName: "",
+    position: "",
     investmentThesis: "",
     checkSize: "",
     preferredStage: "" as "pre-seed" | "seed" | "series-a" | "series-b" | "",
@@ -47,22 +48,22 @@ const InvestorOnboarding = () => {
         setReferralValid(null);
         return;
       }
-      
+
       const { data } = await supabase
         .from('profiles')
         .select('id')
         .eq('referral_code', referralCode.toUpperCase())
         .maybeSingle();
-      
+
       setReferralValid(!!data);
     };
-    
+
     const timeout = setTimeout(validateReferralCode, 500);
     return () => clearTimeout(timeout);
   }, [referralCode]);
 
   const handleSectorToggle = (sector: string) => {
-    setSelectedSectors(prev => 
+    setSelectedSectors(prev =>
       prev.includes(sector)
         ? prev.filter(s => s !== sector)
         : [...prev, sector]
@@ -147,7 +148,7 @@ const InvestorOnboarding = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (selectedSectors.length === 0) {
       toast({
         variant: "destructive",
@@ -225,7 +226,7 @@ const InvestorOnboarding = () => {
           .select('id')
           .eq('referral_code', referralCode.toUpperCase())
           .single();
-        
+
         if (referrer) {
           await supabase.from('referrals').insert({
             referrer_id: referrer.id,
@@ -243,6 +244,7 @@ const InvestorOnboarding = () => {
         .insert({
           profile_id: authData.user.id,
           firm_name: formData.firmName || null,
+          position: formData.position || null,
           investment_thesis: formData.investmentThesis || null,
           typical_check_size: formData.checkSize || null,
           preferred_stage: formData.preferredStage || null,
@@ -284,7 +286,7 @@ const InvestorOnboarding = () => {
               {/* Banner Upload */}
               <div className="space-y-2">
                 <Label>Banner Photo (optional)</Label>
-                <div 
+                <div
                   className="relative cursor-pointer group w-full h-32 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
                   onClick={() => bannerInputRef.current?.click()}
                 >
@@ -311,7 +313,7 @@ const InvestorOnboarding = () => {
 
               {/* Avatar Upload */}
               <div className="flex flex-col items-center gap-4">
-                <div 
+                <div
                   className="relative cursor-pointer group"
                   onClick={() => fileInputRef.current?.click()}
                 >

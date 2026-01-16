@@ -34,6 +34,10 @@ export default function InvestorPortal() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    // User Profile Data
+    const [userName, setUserName] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState("");
+
     // Data
     const [dealFlow, setDealFlow] = useState<DealFlowItem[]>([]);
     const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -72,61 +76,72 @@ export default function InvestorPortal() {
 
     const { toast } = useToast();
 
-    // Fetch initial data
+    // Initial load
     useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                setProfileId(user.id);
+
+                // Get User Profile (Name/Avatar)
+                const { data: userProfile } = await supabase
+                    .from('profiles')
+                    .select('name, avatar_url')
+                    .eq('id', user.id)
+                    .single();
+
+                if (userProfile) {
+                    setUserName(userProfile.name);
+                    setAvatarUrl(userProfile.avatar_url);
+                }
+
+                // Get Investor Profile
+                const { data: profile } = await supabase
+                    .from('investor_profiles')
+                    .select('*')
+                    .eq('profile_id', user.id)
+                    .single();
+
+                if (profile) {
+                    setInvestorId(profile.id);
+                    setDetails({
+                        firm_name: profile.firm_name || "",
+                        typical_check_size: profile.typical_check_size || "",
+                        preferred_stage: profile.preferred_stage || "",
+                        location: profile.location || "",
+                        leads_rounds: profile.leads_rounds || false,
+                        investment_thesis: profile.investment_thesis || ""
+                    });
+                    setSectorsOfInterest(profile.sectors_of_interest || []);
+
+                    // Fetch Deal Flow
+                    const { data: deals } = await supabase
+                        .from('investor_deal_flow')
+                        .select('*')
+                        .eq('investor_id', profile.id)
+                        .order('created_at', { ascending: false });
+
+                    if (deals) setDealFlow(deals as DealFlowItem[]);
+
+                    // Fetch Portfolio
+                    const { data: port } = await supabase
+                        .from('investor_portfolio')
+                        .select('*')
+                        .eq('investor_id', profile.id)
+                        .order('investment_year', { ascending: false });
+
+                    if (port) setPortfolio(port as PortfolioItem[]);
+                }
+            } catch (error) {
+                console.error('Error loading portal data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
         loadData();
     }, []);
-
-    const loadData = async () => {
-        try {
-            setLoading(true);
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-            setProfileId(user.id);
-
-            // Get Investor Profile
-            const { data: profile } = await supabase
-                .from('investor_profiles')
-                .select('*')
-                .eq('profile_id', user.id)
-                .single();
-
-            if (profile) {
-                setInvestorId(profile.id);
-                setDetails({
-                    firm_name: profile.firm_name || "",
-                    typical_check_size: profile.typical_check_size || "",
-                    preferred_stage: profile.preferred_stage || "",
-                    location: profile.location || "",
-                    leads_rounds: profile.leads_rounds || false,
-                    investment_thesis: profile.investment_thesis || ""
-                });
-                setSectorsOfInterest(profile.sectors_of_interest || []);
-
-                // Fetch Deal Flow
-                const { data: deals } = await supabase
-                    .from('investor_deal_flow')
-                    .select('*')
-                    .eq('investor_id', profile.id)
-                    .order('created_at', { ascending: false });
-
-                if (deals) setDealFlow(deals as DealFlowItem[]);
-
-                // Fetch Portfolio
-                const { data: port } = await supabase
-                    .from('investor_portfolio')
-                    .select('*')
-                    .eq('investor_id', profile.id)
-                    .order('investment_year', { ascending: false });
-
-                if (port) setPortfolio(port as PortfolioItem[]);
-            }
-        } catch (error) {
-            console.error('Error loading portal data:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleAddDeal = async () => {
         if (!investorId || !newDeal.startup_name) return;
@@ -240,12 +255,16 @@ export default function InvestorPortal() {
 
             <div className="p-6 max-w-2xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
-                    <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border border-white/10">
-                        <DollarSign className="text-white/50" size={32} />
+                    <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border border-white/10 overflow-hidden">
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt={userName} className="w-full h-full object-cover" />
+                        ) : (
+                            <span className="text-2xl font-bold text-white/30">{userName?.charAt(0) || "I"}</span>
+                        )}
                     </div>
                     <div>
-                        <h2 className="text-2xl font-serif font-bold">{details.firm_name || "New Investor"}</h2>
-                        <p className="text-sm text-gray-500">{details.location || "Location not set"}</p>
+                        <h2 className="text-2xl font-serif font-bold">{userName || "New Investor"}</h2>
+                        <p className="text-sm text-gray-500">{details.firm_name || "Firm not set"} • {details.location || "Location not set"}</p>
                     </div>
                 </div>
 

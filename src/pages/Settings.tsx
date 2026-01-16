@@ -59,14 +59,8 @@ const Settings = () => {
 
     // Investor fields
     const [firmName, setFirmName] = useState("");
-    const [typicalCheckSize, setTypicalCheckSize] = useState("");
-    const [preferredStage, setPreferredStage] = useState("");
-    const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
-    const [location, setLocation] = useState("");
-    const [portfolioLink, setPortfolioLink] = useState("");
+    const [position, setPosition] = useState("");
     const [investorBannerUrl, setInvestorBannerUrl] = useState("");
-    const [leadsRounds, setLeadsRounds] = useState(false);
-    const [investmentThesis, setInvestmentThesis] = useState("");
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -127,14 +121,8 @@ const Settings = () => {
 
                 if (investorProfile) {
                     setFirmName(investorProfile.firm_name || "");
-                    setTypicalCheckSize(investorProfile.typical_check_size || "");
-                    setPreferredStage(investorProfile.preferred_stage || "");
-                    setSectorsOfInterest(investorProfile.sectors_of_interest || []);
-                    setLocation(investorProfile.location || "");
-                    setPortfolioLink(investorProfile.portfolio_link || "");
+                    setPosition(investorProfile.position || "");
                     setInvestorBannerUrl(investorProfile.banner_url || "");
-                    setLeadsRounds(investorProfile.leads_rounds || false);
-                    setInvestmentThesis(investorProfile.investment_thesis || "");
                 }
             }
 
@@ -300,15 +288,8 @@ const Settings = () => {
                     .from('investor_profiles')
                     .update({
                         firm_name: firmName,
-                        typical_check_size: typicalCheckSize,
-                        preferred_stage: preferredStage as any,
-                        sectors_of_interest: sectorsOfInterest,
-                        location,
-                        portfolio_link: portfolioLink,
-
+                        position: position,
                         banner_url: investorBannerUrl,
-                        leads_rounds: leadsRounds,
-                        investment_thesis: investmentThesis
                     })
                     .eq('profile_id', userId);
 
@@ -323,13 +304,7 @@ const Settings = () => {
         }
     };
 
-    const toggleSector = (sector: string) => {
-        setSectorsOfInterest(prev =>
-            prev.includes(sector)
-                ? prev.filter(s => s !== sector)
-                : [...prev, sector]
-        );
-    };
+
 
     if (loading) {
         return (
@@ -733,83 +708,14 @@ const Settings = () => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
+                                    <Label htmlFor="position">Position (Optional)</Label>
                                     <Input
-                                        id="typicalCheckSize"
-                                        value={typicalCheckSize}
-                                        onChange={(e) => setTypicalCheckSize(e.target.value)}
-                                        placeholder="e.g., $25K - $100K"
+                                        id="position"
+                                        value={position}
+                                        onChange={(e) => setPosition(e.target.value)}
+                                        placeholder="e.g. Managing Partner, Associate"
                                     />
                                 </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="preferredStage">Preferred Stage</Label>
-                                    <Select value={preferredStage} onValueChange={setPreferredStage}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select stage" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {FUNDING_STAGES.map(stage => (
-                                                <SelectItem key={stage.value} value={stage.value}>
-                                                    {stage.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="location">Location</Label>
-                                    <Input
-                                        id="location"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                        placeholder="City, Country"
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Checkbox
-                                    id="leadsRounds"
-                                    checked={leadsRounds}
-                                    onCheckedChange={(checked) => setLeadsRounds(checked as boolean)}
-                                />
-                                <Label htmlFor="leadsRounds">Leads Rounds?</Label>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="investmentThesis">Investment Thesis</Label>
-                                <Textarea
-                                    id="investmentThesis"
-                                    value={investmentThesis}
-                                    onChange={(e) => setInvestmentThesis(e.target.value)}
-                                    placeholder="Brief description of what you look for..."
-                                    rows={3}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Sectors of Interest</Label>
-                                <div className="flex flex-wrap gap-2">
-                                    {INDUSTRIES.map(sector => (
-                                        <Button
-                                            key={sector}
-                                            type="button"
-                                            variant={sectorsOfInterest.includes(sector) ? "default" : "outline"}
-                                            size="sm"
-                                            onClick={() => toggleSector(sector)}
-                                        >
-                                            {sector}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="portfolioLink">Portfolio Link (Optional)</Label>
-                                <Input
-                                    id="portfolioLink"
-                                    value={portfolioLink}
-                                    onChange={(e) => setPortfolioLink(e.target.value)}
-                                    placeholder="https://..."
-                                />
                             </div>
                         </CardContent>
                     </Card>
