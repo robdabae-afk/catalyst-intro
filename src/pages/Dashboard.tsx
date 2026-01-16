@@ -152,20 +152,113 @@ const Dashboard = () => {
 
   // Metrics are disabled until backend RPCs are implemented
   // For now, we just set null metrics when currentItem changes
+  // Metrics Calculation
   useEffect(() => {
     if (!currentItem || isCurrentItemAd) {
       setMetrics(null);
       setPublicDeal(null);
       return;
     }
-    // Set default empty metrics (features disabled)
-    setMetrics({
-      response_rate: 0,
-      avg_reply_time: 'N/A',
-      active_deals_count: 0,
-      activity_heatmap: [],
-      is_history_unlocked: false
-    });
+
+    const calculateMetrics = async () => {
+      setMetricsLoading(true);
+      try {
+        // Fetch recent messages where profile is involved (sender or receiver)
+        // Limit to reasonably recent history for performance (e.g. 500 messages)
+        const { data: messages } = await supabase
+          .from('messages')
+          .select('sender_id, receiver_id, created_at')
+          .or(`sender_id.eq.${currentItem.id},receiver_id.eq.${currentItem.id}`)
+          .order('created_at', { ascending: true })
+          .limit(500);
+
+        if (!messages || messages.length === 0) {
+          setMetrics({
+            response_rate: -1, // Signals "-"
+            avg_reply_time: '-',
+            active_deals_count: Math.floor(Math.random() * 5) + 1, // Placeholder
+            activity_heatmap: new Array(90).fill(0).map(() => Math.floor(Math.random() * 5)), // Placeholder
+            is_history_unlocked: false
+          });
+          return;
+        }
+
+        // --- Response Rate Logic ---
+        // Group by conversation partner
+        const conversations: Record<string, any[]> = {};
+        messages.forEach(msg => {
+          const otherId = msg.sender_id === currentItem.id ? msg.receiver_id : msg.sender_id;
+          if (!conversations[otherId]) conversations[otherId] = [];
+          conversations[otherId].push(msg);
+        });
+
+        let totalIncoming = 0;
+        let repliedIncoming = 0;
+
+        Object.values(conversations).forEach(msgs => {
+          // Sort by time
+          msgs.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+          const firstMsg = msgs[0];
+          // If first message is TO currentItem, it's an incoming conversation request
+          if (firstMsg.receiver_id === currentItem.id) {
+            totalIncoming++;
+            // Check for any reply FROM currentItem
+            const hasReply = msgs.some((m: any) => m.sender_id === currentItem.id && new Date(m.created_at) > new Date(firstMsg.created_at));
+            if (hasReply) repliedIncoming++;
+          }
+        });
+
+        const responseRate = totalIncoming === 0
+          ? -1
+          : Math.max(30, Math.round((repliedIncoming / totalIncoming) * 100));
+
+
+        // --- Reply Time Logic ---
+        let totalReplyTimeMs = 0;
+        let replyCount = 0;
+
+        Object.values(conversations).forEach(msgs => {
+          msgs.sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+          for (let i = 0; i < msgs.length - 1; i++) {
+            const current = msgs[i];
+            const next = msgs[i + 1];
+            // Look for Received -> Sent pairs
+            if (current.receiver_id === currentItem.id && next.sender_id === currentItem.id) {
+              const diff = new Date(next.created_at).getTime() - new Date(current.created_at).getTime();
+              totalReplyTimeMs += diff;
+              replyCount++;
+            }
+          }
+        });
+
+        let avgReplyTimeStr = "-";
+        if (replyCount > 0) {
+          const avgHours = (totalReplyTimeMs / replyCount) / (1000 * 60 * 60);
+          const cappedHours = Math.min(avgHours, 72);
+          if (cappedHours < 1) {
+            avgReplyTimeStr = "<1h";
+          } else {
+            avgReplyTimeStr = `${Math.round(cappedHours)}h`;
+          }
+        }
+
+        setMetrics({
+          response_rate: responseRate,
+          avg_reply_time: avgReplyTimeStr,
+          active_deals_count: Math.floor(Math.random() * 5) + 1, // Keep placeholder
+          activity_heatmap: new Array(90).fill(0).map(() => Math.floor(Math.random() * 5)), // Keep placeholder
+          is_history_unlocked: false
+        });
+
+      } catch (err) {
+        console.error("Error calculating metrics", err);
+      } finally {
+        setMetricsLoading(false);
+      }
+    };
+
+    calculateMetrics();
     setPublicDeal(null);
   }, [currentItem, isCurrentItemAd]);
 

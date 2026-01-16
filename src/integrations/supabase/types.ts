@@ -272,6 +272,45 @@ export type Database = {
         }
         Relationships: []
       }
+      endorsements: {
+        Row: {
+          id: string
+          created_at: string
+          text: string
+          endorser_id: string
+          recipient_id: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          text: string
+          endorser_id: string
+          recipient_id: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          text?: string
+          endorser_id?: string
+          recipient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "endorsements_endorser_id_fkey"
+            columns: ["endorser_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "endorsements_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       feedback_prompts: {
         Row: {
           admin_requested_at: string | null

@@ -1,5 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
-import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock } from "lucide-react";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { InstantMessageModal } from './InstantMessageModal';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
@@ -105,15 +105,6 @@ export const FeaturedCard = ({
         : (Array.isArray(founderDetails) ? founderDetails[0] : founderDetails)
         || (Array.isArray(investorDetails) ? investorDetails[0] : investorDetails);
 
-    // Debug logging
-    console.log("FeaturedCard - Profile:", profile);
-    console.log("FeaturedCard - Details:", details);
-    console.log("FeaturedCard - Checking fields:", {
-        startup_name: details?.startup_name,
-        company_name: details?.company_name,
-        firm_name: details?.firm_name
-    });
-
     const company = isAd
         ? (adProfile?.company_name || adProfile?.firm_name)
         : (details?.startup_name || details?.company_name || details?.firm_name || "Stealth Mode");
@@ -125,7 +116,7 @@ export const FeaturedCard = ({
     const stats = [
         {
             label: "Response",
-            value: metrics ? `${metrics.response_rate}%` : "-",
+            value: (metrics && metrics.response_rate !== -1) ? `${metrics.response_rate}%` : "-",
             sub: "Response Rate",
             icon: Zap
         },
@@ -146,9 +137,62 @@ export const FeaturedCard = ({
     // Heatmap data
     const heatmapDays = metrics?.activity_heatmap || new Array(90).fill(0);
 
+    // Endorsements State
+    interface Endorsement {
+        id: string;
+        text: string;
+        endorser: {
+            name: string;
+            avatar_url: string | null;
+            user_type: string;
+            // potential detail: firm/company name
+            founder_profile?: { startup_name: string };
+            investor_profile?: { firm_name: string };
+        };
+    }
+    const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
+
+    useEffect(() => {
+        // Mock Endorsements - "Just TSX" implementation
+        const MOCK_ENDORSEMENTS: Endorsement[] = [
+            {
+                id: '1',
+                text: "Alex provided critical strategic guidance during our pivot. His network is unmatched in the fintech space.",
+                endorser: {
+                    name: "Sarah Jenkins",
+                    avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
+                    user_type: "founder",
+                    founder_profile: { startup_name: "FinLeap" }
+                }
+            },
+            {
+                id: '2',
+                text: "One of the most supportive investors I've worked with. Always there when things get tough, not just for the board meetings.",
+                endorser: {
+                    name: "David Chen",
+                    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
+                    user_type: "founder",
+                    founder_profile: { startup_name: "TechFlow" }
+                }
+            },
+            {
+                id: '3',
+                text: "A true partner. Helped us close our Series A with key introductions.",
+                endorser: {
+                    name: "Emily Wang",
+                    avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+                    user_type: "founder",
+                    founder_profile: { startup_name: "DataSense" }
+                }
+            }
+        ];
+
+        setEndorsements(MOCK_ENDORSEMENTS);
+    }, [profile]);
+
     return (
         <div className="flex flex-col gap-8 pb-32 pt-2 relative">
-            {/* Featured Badge Header - Only if isFeatured is true */}
+            {/* ... Featured Badge ... */}
             {isFeatured && (
                 <div className="px-6 pb-2">
                     <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Featured</h1>
@@ -163,7 +207,6 @@ export const FeaturedCard = ({
                         style={{ backgroundImage: `url("${image || 'https://github.com/shadcn.png'}")` }}
                     >
                     </div>
-                    {/* Verification Badge - Only show for verified users */}
                     {!isAd && organicProfile?.is_verified && (
                         <div className="absolute bottom-1 right-1 bg-white text-black rounded-full p-1.5 ring-4 ring-black flex items-center justify-center shadow-lg">
                             <CheckCircle2 size={14} className="font-bold" />
@@ -183,16 +226,7 @@ export const FeaturedCard = ({
                         <span>{location}</span>
                     </div>
                 </div>
-
-                <div className="flex w-full gap-3 mt-10">
-                    <button
-                        onClick={handleMessageClick}
-                        className="flex-1 h-12 flex items-center justify-center rounded-lg bg-white text-black text-sm font-bold shadow-lg shadow-white/10 hover:bg-gray-200 transition-all uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={!organicProfile}
-                    >
-                        Message
-                    </button>
-                </div>
+                {/* REMOVED MESSAGE BUTTON HERE */}
             </section>
 
             {/* Stats Section */}
@@ -218,6 +252,7 @@ export const FeaturedCard = ({
                 <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8">
                     {organicProfile?.user_type === 'investor' ? "Investment History" : "Deal History"}
                 </h3>
+                {/* ... Existing History Code ... */}
                 <div className="relative pl-2">
                     <div className="absolute left-2 top-2 bottom-0 w-px bg-zinc-800"></div>
                     <div className="flex flex-col gap-6">
@@ -320,9 +355,47 @@ export const FeaturedCard = ({
                 </div>
             </section>
 
+            {/* Endorsements Section */}
+            {endorsements.length > 0 && (
+                <section className="px-6 mt-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-white text-sm font-bold uppercase tracking-widest">ENDORSEMENTS</h3>
+                        <button className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">
+                            VIEW ALL
+                        </button>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+                        {endorsements.map((e) => (
+                            <div key={e.id} className="min-w-[280px] bg-[#111] p-6 rounded-3xl border border-white/5 relative flex flex-col justify-between">
+                                <div>
+                                    <Quote className="text-zinc-700 mb-4 rotate-180" size={24} />
+                                    <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
+                                        "{e.text}"
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3 mt-auto border-t border-white/5 pt-4">
+                                    <div
+                                        className="h-10 w-10 rounded-full bg-cover bg-center bg-gray-700 shrink-0"
+                                        style={{ backgroundImage: `url("${e.endorser.avatar_url || 'https://github.com/shadcn.png'}")` }}
+                                    />
+                                    <div className="min-w-0">
+                                        <p className="text-white font-bold text-sm truncate">{e.endorser.name}</p>
+                                        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider truncate">
+                                            {e.endorser.user_type}
+                                            {/* We can improve this with company name if we join fetch it */}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             <div className="h-24"></div>
 
-            {/* Modals */}
+            {/* Modals ... */}
+
             {showMessageModal && organicProfile && (
                 <InstantMessageModal
                     receiverId={organicProfile.id}

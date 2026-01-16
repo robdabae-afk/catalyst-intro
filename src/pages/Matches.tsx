@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Send, Coffee, Eye, ArrowLeft, MessageSquare, UserX, CheckCircle, Lock, Crown, AlertCircle } from "lucide-react";
+import { Calendar, Send, Coffee, Eye, ArrowLeft, MessageSquare, UserX, CheckCircle, Lock, Crown, AlertCircle, Quote } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { RequestMenu } from "@/components/RequestMenu";
+import { EndorseUserDialog } from "@/components/EndorseUserDialog";
 import { AppNavigation } from "@/components/AppNavigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -130,11 +131,13 @@ const ChatLimitModal = ({
 const ChatActionsMenu = ({
   onUnmatch,
   onMarkSuccessful,
+  onEndorse,
   showMarkSuccessful,
   matchStatus,
 }: {
   onUnmatch: () => void;
   onMarkSuccessful: () => void;
+  onEndorse: () => void;
   showMarkSuccessful: boolean;
   matchStatus: string | null;
 }) => {
@@ -148,6 +151,11 @@ const ChatActionsMenu = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={onEndorse}>
+          <Quote className="w-4 h-4 mr-2" />
+          Endorse User
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         {showMarkSuccessful && (
           <>
             <DropdownMenuItem onClick={onMarkSuccessful} className="text-green-600">
@@ -182,6 +190,7 @@ export default function Matches() {
   const [showChatLimitModal, setShowChatLimitModal] = useState(false);
   const [showUnmatchConfirm, setShowUnmatchConfirm] = useState(false);
   const [showSuccessConfirm, setShowSuccessConfirm] = useState(false);
+  const [showEndorseDialog, setShowEndorseDialog] = useState(false);
 
   // Subscription & membership hooks
   const { isPro } = useSubscription(currentUserId);
@@ -238,10 +247,10 @@ export default function Matches() {
   useEffect(() => {
     if (selectedMatch && currentUserId) {
       fetchMessages(selectedMatch.profile.id);
-      
+
       // Ensure match record exists
       createOrGetMatch();
-      
+
       // Subscribe to new messages
       const channel = supabase
         .channel('messages-channel')
@@ -269,7 +278,7 @@ export default function Matches() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      
+
       setCurrentUserId(user.id);
 
       // Get user info
@@ -278,7 +287,7 @@ export default function Matches() {
         .select("user_type, name, avatar_url")
         .eq("id", user.id)
         .single();
-      
+
       if (profile) {
         setCurrentUserType(profile.user_type as 'founder' | 'investor');
         setCurrentUserName(profile.name);
@@ -335,7 +344,7 @@ export default function Matches() {
       const matchesWithDetails = await Promise.all(
         profiles.map(async (profile) => {
           let additionalProfile = null;
-          
+
           if (profile.user_type === "founder") {
             const { data } = await supabase
               .from("founder_profiles")
@@ -355,7 +364,7 @@ export default function Matches() {
           // Find the match record for this pair
           const matchRecord = matchRecords.find(
             m => (m.user_1_id === user.id && m.user_2_id === profile.id) ||
-                 (m.user_2_id === user.id && m.user_1_id === profile.id)
+              (m.user_2_id === user.id && m.user_1_id === profile.id)
           );
 
           return {
@@ -515,8 +524,8 @@ export default function Matches() {
 
   // Determine if messaging is disabled
   const isMessagingDisabled = currentUserType === 'founder' && !isPro && !canSendMessage && messages.length === 0;
-  const messagingPlaceholder = isMessagingDisabled 
-    ? "Waiting for investor to send first message..." 
+  const messagingPlaceholder = isMessagingDisabled
+    ? "Waiting for investor to send first message..."
     : "Type a message...";
 
   // Mobile: Full-screen chat view when a match is selected
@@ -541,7 +550,7 @@ export default function Matches() {
                 {shouldHideInvestorInfo ? (
                   <HiddenInvestorInfo reveal={investorSentFirstMessage} />
                 ) : (
-                  selectedMatch.founderProfile?.startup_name || 
+                  selectedMatch.founderProfile?.startup_name ||
                   selectedMatch.investorProfile?.firm_name ||
                   selectedMatch.profile.user_type
                 )}
@@ -559,17 +568,18 @@ export default function Matches() {
               <ChatActionsMenu
                 onUnmatch={() => setShowUnmatchConfirm(true)}
                 onMarkSuccessful={() => setShowSuccessConfirm(true)}
+                onEndorse={() => setShowEndorseDialog(true)}
                 showMarkSuccessful={currentUserType === 'investor' && isPro}
                 matchStatus={matchStatus}
               />
               {((currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder') ||
                 (currentUserType === 'founder' && selectedMatch.profile.user_type === 'investor')) && (
-                <RequestMenu 
-                  targetId={selectedMatch.profile.id} 
-                  targetName={getDisplayName(selectedMatch)}
-                  requesterType={currentUserType as 'founder' | 'investor'}
-                />
-              )}
+                  <RequestMenu
+                    targetId={selectedMatch.profile.id}
+                    targetName={getDisplayName(selectedMatch)}
+                    requesterType={currentUserType as 'founder' | 'investor'}
+                  />
+                )}
             </div>
           </div>
         </header>
@@ -602,18 +612,16 @@ export default function Matches() {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${
-                    message.sender_id === currentUserId
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
+                  className={`flex ${message.sender_id === currentUserId
+                    ? "justify-end"
+                    : "justify-start"
+                    }`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                      message.sender_id === currentUserId
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary text-secondary-foreground"
-                    }`}
+                    className={`max-w-[80%] rounded-lg px-4 py-2 ${message.sender_id === currentUserId
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground"
+                      }`}
                   >
                     <p>{message.content}</p>
                     <p className="text-xs opacity-70 mt-1">
@@ -677,6 +685,15 @@ export default function Matches() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {selectedMatch && (
+          <EndorseUserDialog
+            isOpen={showEndorseDialog}
+            onClose={() => setShowEndorseDialog(false)}
+            targetUserId={selectedMatch.profile.id}
+            targetUserName={getDisplayName(selectedMatch)}
+          />
+        )}
       </div>
     );
   }
@@ -684,7 +701,7 @@ export default function Matches() {
   // Desktop layout OR Mobile matches list
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/20">
-      <AppNavigation 
+      <AppNavigation
         userType={currentUserType}
         userName={currentUserName || undefined}
         avatarUrl={currentUserAvatar || undefined}
@@ -732,11 +749,10 @@ export default function Matches() {
                       <div
                         key={match.profile.id}
                         onClick={() => handleSelectMatch(match)}
-                        className={`p-4 rounded-lg cursor-pointer transition-all hover:shadow-md ${
-                          selectedMatch?.profile.id === match.profile.id
-                            ? "bg-primary/10 border-2 border-primary"
-                            : "bg-secondary/50 border border-border/50"
-                        }`}
+                        className={`p-4 rounded-lg cursor-pointer transition-all hover:shadow-md ${selectedMatch?.profile.id === match.profile.id
+                          ? "bg-primary/10 border-2 border-primary"
+                          : "bg-secondary/50 border border-border/50"
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <Avatar className="flex-shrink-0">
@@ -783,7 +799,7 @@ export default function Matches() {
                             {shouldHideInvestorInfo ? (
                               <HiddenInvestorInfo reveal={investorSentFirstMessage} />
                             ) : (
-                              selectedMatch.founderProfile?.one_liner || 
+                              selectedMatch.founderProfile?.one_liner ||
                               selectedMatch.investorProfile?.firm_name ||
                               "Start a conversation"
                             )}
@@ -803,17 +819,18 @@ export default function Matches() {
                         <ChatActionsMenu
                           onUnmatch={() => setShowUnmatchConfirm(true)}
                           onMarkSuccessful={() => setShowSuccessConfirm(true)}
+                          onEndorse={() => setShowEndorseDialog(true)}
                           showMarkSuccessful={currentUserType === 'investor' && isPro}
                           matchStatus={matchStatus}
                         />
                         {((currentUserType === 'investor' && selectedMatch.profile.user_type === 'founder') ||
                           (currentUserType === 'founder' && selectedMatch.profile.user_type === 'investor')) && (
-                          <RequestMenu 
-                            targetId={selectedMatch.profile.id} 
-                            targetName={getDisplayName(selectedMatch)}
-                            requesterType={currentUserType as 'founder' | 'investor'}
-                          />
-                        )}
+                            <RequestMenu
+                              targetId={selectedMatch.profile.id}
+                              targetName={getDisplayName(selectedMatch)}
+                              requesterType={currentUserType as 'founder' | 'investor'}
+                            />
+                          )}
                       </div>
                     </div>
                   ) : (
@@ -851,18 +868,16 @@ export default function Matches() {
                           {messages.map((message) => (
                             <div
                               key={message.id}
-                              className={`flex ${
-                                message.sender_id === currentUserId
-                                  ? "justify-end"
-                                  : "justify-start"
-                              }`}
+                              className={`flex ${message.sender_id === currentUserId
+                                ? "justify-end"
+                                : "justify-start"
+                                }`}
                             >
                               <div
-                                className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                                  message.sender_id === currentUserId
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-secondary text-secondary-foreground"
-                                }`}
+                                className={`max-w-[70%] rounded-lg px-4 py-2 ${message.sender_id === currentUserId
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-secondary text-secondary-foreground"
+                                  }`}
                               >
                                 <p>{message.content}</p>
                                 <p className="text-xs opacity-70 mt-1">
