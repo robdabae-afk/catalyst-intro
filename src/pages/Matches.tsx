@@ -711,9 +711,9 @@ export default function Matches() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Membership Status Bar */}
         <div className="mb-4 flex flex-wrap gap-3 items-center text-sm">
-          <Badge variant={isPro ? "default" : "secondary"} className={isPro ? "bg-amber-500" : ""}>
+          <Badge variant={isPro ? "default" : "secondary"} className={isPro ? "bg-amber-500 text-white hover:bg-amber-600" : "bg-white text-black border border-zinc-200 hover:bg-zinc-100"}>
             {isPro ? <Crown className="w-3 h-3 mr-1" /> : null}
-            {isPro ? "Pro" : "Basic"}
+            {isPro ? "Pro" : "Basic Plan"}
           </Badge>
           <span className="text-muted-foreground">
             <MessageSquare className="w-4 h-4 inline mr-1" />
@@ -751,7 +751,7 @@ export default function Matches() {
                         onClick={() => handleSelectMatch(match)}
                         className={`w-full p-4 rounded-lg cursor-pointer transition-all hover:shadow-md ${selectedMatch?.profile.id === match.profile.id
                           ? "bg-primary/10 border-2 border-primary text-black"
-                          : "bg-white border border-gray-200 text-black"
+                          : "bg-white border border-gray-200 text-black shadow-sm"
                           }`}
                       >
                         <div className="flex items-center gap-2">
