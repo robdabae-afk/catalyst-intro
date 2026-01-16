@@ -276,19 +276,51 @@ export const FeaturedCard = ({
             {/* Two Boxes: MRR & Backed By */}
             {organicProfile?.user_type === 'founder' && (
                 <div className="grid grid-cols-2 gap-3 px-6 mb-2">
+                    {/* MRR Box */}
                     <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">MRR</span>
-                        <p className="text-xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
+                        {isPro || metrics?.is_history_unlocked ? (
+                            <p className="text-xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center">
+                                <div className="absolute inset-x-0 bottom-0 top-6 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+                                    <Lock size={16} className="text-white/70 mb-1" />
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onUnlockHistory && onUnlockHistory(); }}
+                                        className="text-[8px] font-bold bg-white text-black px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+                                    >
+                                        UNLOCK
+                                    </button>
+                                </div>
+                                <p className="text-xl font-serif italic text-white blur-sm select-none">$50k</p>
+                            </div>
+                        )}
                         <div className="absolute top-3 right-3 text-zinc-800 group-hover:text-zinc-700 transition-colors">
                             <TrendingUp size={16} />
                         </div>
                     </div>
 
+                    {/* Backed By Box */}
                     <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Backed By</span>
-                        <p className="text-xl font-serif italic text-white leading-tight break-words line-clamp-2">
-                            {details?.backed_by || 'No lead yet'}
-                        </p>
+                        {isPro || metrics?.is_history_unlocked ? (
+                            <p className="text-xl font-serif italic text-white leading-tight break-words line-clamp-2">
+                                {details?.backed_by || 'No lead yet'}
+                            </p>
+                        ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center">
+                                <div className="absolute inset-x-0 bottom-0 top-6 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+                                    <Lock size={16} className="text-white/70 mb-1" />
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); onUnlockHistory && onUnlockHistory(); }}
+                                        className="text-[8px] font-bold bg-white text-black px-2 py-1 rounded hover:bg-gray-200 transition-colors"
+                                    >
+                                        UNLOCK
+                                    </button>
+                                </div>
+                                <p className="text-xl font-serif italic text-white leading-tight blur-sm select-none">Y Combinator</p>
+                            </div>
+                        )}
                         <div className="absolute top-3 right-3 text-zinc-800 group-hover:text-zinc-700 transition-colors">
                             <Rocket size={16} />
                         </div>
