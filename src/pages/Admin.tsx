@@ -144,7 +144,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at, is_verified, is_featured')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;

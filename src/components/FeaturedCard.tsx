@@ -273,47 +273,49 @@ export const FeaturedCard = ({
                             </div>
                         </div>
 
-                        {/* Locked/Unlocked Logic */}
-                        <div className="relative pl-8">
-                            <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-zinc-600 border-2 border-black z-10"></div>
-                            <div className="relative bg-zinc-950 p-5 rounded-xl border border-zinc-800 overflow-hidden">
-                                {metrics?.is_history_unlocked ? (
-                                    // UNLOCKED STATE
-                                    <div>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
-                                            <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
-                                        </div>
-                                        <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
-                                        <div className="flex items-center gap-2">
-                                            <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                            <span className="text-xs text-gray-300 font-medium tracking-wide">FinTech</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    // LOCKED STATE
-                                    <>
-                                        <div className="blur-[5px] opacity-40 select-none">
+                        {/* Locked/Unlocked Logic - Only show as second item if public deal exists */}
+                        {publicDeal && (
+                            <div className="relative pl-8">
+                                <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-zinc-600 border-2 border-black z-10"></div>
+                                <div className="relative bg-zinc-950 p-5 rounded-xl border border-zinc-800 overflow-hidden">
+                                    {metrics?.is_history_unlocked ? (
+                                        // UNLOCKED STATE
+                                        <div>
                                             <div className="flex justify-between items-start mb-2">
                                                 <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
                                                 <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
                                             </div>
                                             <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
+                                            <div className="flex items-center gap-2">
+                                                <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
+                                                <span className="text-xs text-gray-300 font-medium tracking-wide">FinTech</span>
+                                            </div>
                                         </div>
-                                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                            <Lock size={24} className="text-white mb-2 opacity-80" />
-                                            <button
-                                                onClick={onUnlockHistory}
-                                                disabled={unlockingHistory}
-                                                className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
-                                            >
-                                                {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
+                                    ) : (
+                                        // LOCKED STATE
+                                        <>
+                                            <div className="blur-[5px] opacity-40 select-none">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <h4 className="text-white font-bold text-base">Pre-Seed - Stealth</h4>
+                                                    <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Angel</span>
+                                                </div>
+                                                <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2023 • $500k Round</p>
+                                            </div>
+                                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
+                                                <Lock size={24} className="text-white mb-2 opacity-80" />
+                                                <button
+                                                    onClick={onUnlockHistory}
+                                                    disabled={unlockingHistory}
+                                                    className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
+                                                >
+                                                    {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </section>
