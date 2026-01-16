@@ -201,7 +201,7 @@ export const FeaturedCard = ({
                 </div>
             )}
             {/* Profile Header Section - Redesigned */}
-            <section className="relative w-full h-[480px] mb-6 group cursor-pointer overflow-hidden rounded-b-3xl">
+            <section className={`relative w-full ${organicProfile?.user_type === 'founder' ? 'h-[380px] mb-2' : 'h-[480px] mb-6'} group cursor-pointer overflow-hidden rounded-b-3xl transition-all duration-300`}>
                 {/* Background Image */}
                 <div
                     className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
@@ -264,7 +264,7 @@ export const FeaturedCard = ({
 
             {/* Industries Bubbles */}
             {details?.industry && Array.isArray(details.industry) && details.industry.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-2 px-6 mb-6">
+                <div className={`flex flex-wrap justify-center gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-3' : 'mb-6'}`}>
                     {details.industry.map((ind: string, i: number) => (
                         <span key={i} className="px-4 py-1.5 rounded-full border border-gray-700 bg-black/40 text-[10px] font-bold uppercase tracking-widest text-gray-300">
                             {ind}
@@ -275,22 +275,22 @@ export const FeaturedCard = ({
 
             {/* Two Boxes: MRR & Backed By */}
             {organicProfile?.user_type === 'founder' && (
-                <div className="grid grid-cols-2 gap-4 px-6 mb-8">
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-zinc-700 transition-colors">
+                <div className="grid grid-cols-2 gap-3 px-6 mb-6">
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">MRR</span>
-                        <p className="text-3xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
-                        <div className="absolute top-4 right-4 text-zinc-800 group-hover:text-zinc-700 transition-colors">
-                            <TrendingUp size={20} />
+                        <p className="text-xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
+                        <div className="absolute top-3 right-3 text-zinc-800 group-hover:text-zinc-700 transition-colors">
+                            <TrendingUp size={16} />
                         </div>
                     </div>
 
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-zinc-700 transition-colors">
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4 flex flex-col justify-between h-24 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Backed By</span>
-                        <p className="text-2xl font-serif italic text-white leading-tight break-words">
+                        <p className="text-xl font-serif italic text-white leading-tight break-words line-clamp-2">
                             {details?.backed_by || 'No lead yet'}
                         </p>
-                        <div className="absolute top-4 right-4 text-zinc-800 group-hover:text-zinc-700 transition-colors">
-                            <Rocket size={20} />
+                        <div className="absolute top-3 right-3 text-zinc-800 group-hover:text-zinc-700 transition-colors">
+                            <Rocket size={16} />
                         </div>
                     </div>
                 </div>
