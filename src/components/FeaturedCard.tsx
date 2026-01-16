@@ -217,7 +217,7 @@ export const FeaturedCard = ({
                 )}
 
                 {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col items-start justify-end h-full">
+                <div className="absolute bottom-0 left-0 right-0 p-8 pb-24 flex flex-col items-start justify-end h-full">
 
                     {/* Badges: Stage & Location */}
                     <div className="flex flex-wrap items-center gap-3 mb-4">

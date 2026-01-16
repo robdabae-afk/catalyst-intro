@@ -678,26 +678,26 @@ const Dashboard = () => {
               <button
                 onClick={() => handleSwipe('pass')}
                 disabled={swipeCooldown}
-                className="group flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
+                className="group flex items-center justify-center w-[48px] h-[48px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
               >
-                <X className="text-white/40 group-hover:text-white/90 transition-colors" size={28} />
+                <X className="text-white/40 group-hover:text-white/90 transition-colors" size={20} />
               </button>
               <button
                 onClick={handleInstantMessageClick}
                 disabled={swipeCooldown}
-                className="relative group flex flex-col items-center justify-center w-[66px] h-[66px] rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50"
+                className="relative group flex flex-col items-center justify-center w-[56px] h-[56px] rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50"
               >
                 <div className="absolute -top-3 bg-white text-black text-[8px] font-black px-2 py-0.5 rounded-full shadow-lg tracking-widest uppercase border border-gray-200 whitespace-nowrap">
                   Message
                 </div>
-                <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={30} />
+                <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={24} />
               </button>
               <button
                 onClick={() => handleSwipe('like')}
                 disabled={swipeCooldown}
-                className="group flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
+                className="group flex items-center justify-center w-[48px] h-[48px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
               >
-                <Handshake className="text-white/40 group-hover:text-emerald-400/90 transition-colors duration-300 group-hover:rotate-12" size={28} />
+                <Handshake className="text-white/40 group-hover:text-emerald-400/90 transition-colors duration-300 group-hover:rotate-12" size={20} />
               </button>
             </div>
           </div>
