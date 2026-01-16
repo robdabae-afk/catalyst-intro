@@ -19,6 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { SlidersHorizontal, X, Star, Handshake, MessageCircle } from "lucide-react";
 import { UnlockHistoryModal } from '@/components/UnlockHistoryModal';
 import { InstantMessageModal } from '@/components/InstantMessageModal';
+import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -197,6 +198,7 @@ const Dashboard = () => {
 
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [showInstantMessageModal, setShowInstantMessageModal] = useState(false);
+  const [showTokenPurchaseModal, setShowTokenPurchaseModal] = useState(false);
   const [instantMessageCost, setInstantMessageCost] = useState(30);
   const [instantMessageFreeRemaining, setInstantMessageFreeRemaining] = useState<number | undefined>(undefined);
   const [usageStats, setUsageStats] = useState<{ daily: number, weekly: number }>({ daily: 0, weekly: 0 });
@@ -458,6 +460,8 @@ const Dashboard = () => {
           userType={currentUser?.user_type || 'founder'}
         />
 
+
+
         {showInstantMessageModal && currentProfile && (
           <InstantMessageModal
             receiverId={currentProfile.id}
@@ -471,7 +475,17 @@ const Dashboard = () => {
             }}
             onOpenPurchase={() => {
               setShowInstantMessageModal(false);
-              setShowProModal(true);
+              setShowTokenPurchaseModal(true);
+            }}
+          />
+        )}
+
+        {showTokenPurchaseModal && (
+          <TokenPurchaseModal
+            onClose={() => setShowTokenPurchaseModal(false)}
+            onSuccess={() => {
+              // Refresh user data/tokens
+              setShowTokenPurchaseModal(false);
             }}
           />
         )}
@@ -527,9 +541,7 @@ const Dashboard = () => {
       {/* Floating Action Buttons */}
       {!loading && !showAllCaughtUp && currentProfile && (
         <>
-
-
-          <div className="absolute bottom-[90px] left-0 w-full px-6 pointer-events-none z-40">
+          <div className="absolute bottom-[120px] left-0 w-full px-6 pointer-events-none z-40">
             <div className="flex items-center justify-center gap-4 pointer-events-auto">
               <button
                 onClick={() => handleSwipe('pass')}
