@@ -262,6 +262,15 @@ export const FeaturedCard = ({
                 </div>
             </section>
 
+            {/* One Liner Pitch */}
+            {organicProfile?.user_type === 'founder' && details?.one_liner && (
+                <div className="px-6 mb-2 mt-1">
+                    <p className="text-xs text-gray-300 font-medium leading-relaxed line-clamp-2">
+                        "{details.one_liner}"
+                    </p>
+                </div>
+            )}
+
             {/* Industries Bubbles */}
             {details?.industry && Array.isArray(details.industry) && details.industry.length > 0 && (
                 <div className={`flex flex-wrap justify-start gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-2' : 'mb-6'}`}>
@@ -270,15 +279,6 @@ export const FeaturedCard = ({
                             {ind}
                         </span>
                     ))}
-                </div>
-            )}
-
-            {/* One Liner Pitch */}
-            {organicProfile?.user_type === 'founder' && details?.one_liner && (
-                <div className="px-6 mb-3">
-                    <p className="text-xs text-gray-300 font-medium leading-relaxed line-clamp-2">
-                        "{details.one_liner}"
-                    </p>
                 </div>
             )}
 
