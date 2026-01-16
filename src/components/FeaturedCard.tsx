@@ -135,15 +135,39 @@ export const FeaturedCard = ({
         }
     ];
 
+    const formatCheckSize = (size: string | null | undefined): string => {
+        if (!size) return "-";
+
+        let cleaned = size.trim();
+
+        // Handle specific "k$50" malformed case if present
+        if (cleaned.toLowerCase().startsWith('k$')) {
+            cleaned = '$' + cleaned.substring(2) + 'k';
+            return cleaned;
+        }
+
+        // If it's just a number like "50", assume thousands -> "$50k"
+        if (/^\d+$/.test(cleaned)) {
+            const val = parseInt(cleaned);
+            if (val < 1000) {
+                return `$${val}k`;
+            }
+            // If it's 50000, convert to $50k
+            if (val >= 1000) {
+                return `$${val / 1000}k`;
+            }
+        }
+
+        // If it's already got symbols but looks weird, try to normalize
+        // But for now, just return valid looking strings or the original if uncertain
+        return cleaned;
+    };
+
     // Investor Stats
     const investorStats = [
         {
             label: "Check Size",
-            // If the value already contains currency symbols or 'k'/'M', displays as is. 
-            // The user's issue "k$50" suggests some auto-formatting might be happening elsewhere or 
-            // they want the input value to be respected. 
-            // Assuming the input is something like "25k-100k" or "$50k".
-            value: details?.typical_check_size || "-",
+            value: formatCheckSize(details?.typical_check_size),
             sub: "Typical Amount",
             icon: DollarSign
         },
