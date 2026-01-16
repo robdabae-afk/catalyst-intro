@@ -179,6 +179,51 @@ export type Database = {
           },
         ]
       }
+      advisor_investments: {
+        Row: {
+          id: string
+          founder_id: string
+          advisor_name: string
+          advisor_user_id: string | null
+          amount: number
+          investment_date: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          founder_id: string
+          advisor_name: string
+          advisor_user_id?: string | null
+          amount: number
+          investment_date?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          founder_id?: string
+          advisor_name?: string
+          advisor_user_id?: string | null
+          amount?: number
+          investment_date?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advisor_investments_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "advisor_investments_advisor_user_id_fkey"
+            columns: ["advisor_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       coffee_chats: {
         Row: {
           created_at: string | null

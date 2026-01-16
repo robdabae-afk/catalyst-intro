@@ -128,9 +128,9 @@ export const FeaturedCard = ({
             icon: Clock
         },
         {
-            label: "Deals",
+            label: "History",
             value: metrics ? metrics.active_deals_count.toString() : "-",
-            sub: "Active deals",
+            sub: "Investments",
             icon: Handshake
         }
     ];
@@ -443,7 +443,7 @@ export const FeaturedCard = ({
             {/* Investment/Deal History Section - Conditional based on type */}
             <section className="px-6">
                 <h3 className="text-white text-sm font-bold uppercase tracking-widest mb-8">
-                    {organicProfile?.user_type === 'investor' ? "Investment History" : "Deal History"}
+                    {organicProfile?.user_type === 'investor' ? "Investment History" : "Investment History"}
                 </h3>
 
                 {organicProfile?.user_type === 'investor' ? (

@@ -71,6 +71,13 @@ export const FounderProfileInput = () => {
     const [newMember, setNewMember] = useState<Partial<TeamMember>>({});
     const [newRound, setNewRound] = useState<Partial<FundingRound>>({});
 
+    // New Advisor Investment State
+    const [newAdvisorInvestment, setNewAdvisorInvestment] = useState({
+        advisor_name: "",
+        amount: "",
+        investment_date: new Date().toISOString().split('T')[0]
+    });
+
     useEffect(() => {
         const fetchProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -224,6 +231,30 @@ export const FounderProfileInput = () => {
         setFunding(prev => ({ ...prev, rounds: [...prev.rounds, data] }));
         setNewRound({});
         toast.success("Funding round added");
+    };
+
+    const addAdvisorInvestment = async () => {
+        if (!userId || !newAdvisorInvestment.advisor_name || !newAdvisorInvestment.amount) return;
+
+        const { data, error } = await supabase
+            .from('advisor_investments')
+            .insert({
+                founder_id: userId,
+                advisor_name: newAdvisorInvestment.advisor_name,
+                amount: parseFloat(newAdvisorInvestment.amount),
+                investment_date: newAdvisorInvestment.investment_date
+            })
+            .select()
+            .single();
+
+        if (error) {
+            toast.error("Failed to add advisor investment");
+            return;
+        }
+
+        setFunding(prev => ({ ...prev, advisor_investments: [...prev.advisor_investments, data] }));
+        setNewAdvisorInvestment({ advisor_name: "", amount: "", investment_date: new Date().toISOString().split('T')[0] });
+        toast.success("Advisor investment added");
     };
 
     const sections = [
@@ -430,6 +461,77 @@ export const FounderProfileInput = () => {
                                     </div>
                                     <div className="text-right">
                                         <p className="font-mono text-sm text-luxury-gold">${round.amount?.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Advisor Investments Logic */}
+                        <div className="space-y-3 pt-4 border-t border-white/5">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-500">Advisor Funding</h3>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full hover:bg-zinc-800">
+                                            <Plus className="w-4 h-4" />
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="bg-zinc-950 border-white/10 text-white">
+                                        <DialogHeader>
+                                            <DialogTitle>Add Advisor Investment</DialogTitle>
+                                        </DialogHeader>
+                                        <div className="space-y-4 py-4">
+                                            <div className="space-y-2">
+                                                <Label>Advisor Name</Label>
+                                                <Input
+                                                    className="bg-zinc-900 border-white/10"
+                                                    value={newAdvisorInvestment.advisor_name}
+                                                    onChange={e => setNewAdvisorInvestment({ ...newAdvisorInvestment, advisor_name: e.target.value })}
+                                                    placeholder="John Doe"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Amount</Label>
+                                                <Input
+                                                    type="number"
+                                                    className="bg-zinc-900 border-white/10"
+                                                    value={newAdvisorInvestment.amount}
+                                                    onChange={e => setNewAdvisorInvestment({ ...newAdvisorInvestment, amount: e.target.value })}
+                                                    placeholder="10000"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Date</Label>
+                                                <Input
+                                                    type="date"
+                                                    className="bg-zinc-900 border-white/10"
+                                                    value={newAdvisorInvestment.investment_date}
+                                                    onChange={e => setNewAdvisorInvestment({ ...newAdvisorInvestment, investment_date: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <Button onClick={addAdvisorInvestment} className="w-full bg-white text-black hover:bg-zinc-200">
+                                            Add Investment
+                                        </Button>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+
+                            {funding.advisor_investments.length === 0 && (
+                                <p className="text-sm text-zinc-600 italic">No advisor investments added yet.</p>
+                            )}
+
+                            {funding.advisor_investments.map((inv) => (
+                                <div key={inv.id} className="flex justify-between items-center p-4 rounded-xl bg-zinc-900/50 border border-white/5">
+                                    <div>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-bold text-white">{inv.advisor_name}</p>
+                                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-white/10 text-zinc-400 uppercase">Advisor</span>
+                                        </div>
+                                        <p className="text-xs text-zinc-500">{new Date(inv.investment_date).toLocaleDateString()}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-mono text-sm text-luxury-gold">${inv.amount?.toLocaleString()}</p>
                                     </div>
                                 </div>
                             ))}
