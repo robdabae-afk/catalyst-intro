@@ -1,5 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
-import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket } from "lucide-react";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket, Briefcase } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { InstantMessageModal } from './InstantMessageModal';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
@@ -199,34 +199,52 @@ export const FeaturedCard = ({
                     <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
                 </div>
             )}
-            {/* Profile Header Section */}
-            <section className="flex flex-col items-center px-6 pt-6">
-                <div className="relative mb-6 group cursor-pointer">
-                    <div
-                        className="bg-center bg-no-repeat bg-cover rounded-full h-32 w-32 ring-1 ring-offset-4 ring-offset-black ring-white/20 shadow-2xl shadow-white/5"
-                        style={{ backgroundImage: `url("${image || 'https://github.com/shadcn.png'}")` }}
-                    >
-                    </div>
-                    {!isAd && organicProfile?.is_verified && (
-                        <div className="absolute bottom-1 right-1 bg-white text-black rounded-full p-1.5 ring-4 ring-black flex items-center justify-center shadow-lg">
-                            <CheckCircle2 size={14} className="font-bold" />
-                        </div>
-                    )}
+            {/* Profile Header Section - Redesigned */}
+            <section className="relative w-full h-[600px] mb-6 group cursor-pointer overflow-hidden rounded-b-3xl">
+                {/* Background Image */}
+                <div
+                    className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
+                    style={{ backgroundImage: `url("${image || 'https://github.com/shadcn.png'}")` }}
+                >
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center text-center gap-2">
-                    <h1 className="text-3xl font-bold tracking-tight text-white bg-gradient-to-br from-white via-gray-200 to-gray-500 bg-clip-text text-transparent">
+                {!isAd && organicProfile?.is_verified && (
+                    <div className="absolute top-4 right-4 bg-white text-black rounded-full p-1.5 shadow-lg z-10">
+                        <CheckCircle2 size={16} className="font-bold" />
+                    </div>
+                )}
+
+                {/* Content Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 flex flex-col items-start justify-end h-full">
+
+                    {/* Badges: Stage & Location */}
+                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                        {details?.stage && (
+                            <span className="px-4 py-1.5 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-full shadow-sm">
+                                {details.stage} Stage
+                            </span>
+                        )}
+                        <span className="flex items-center gap-1.5 px-4 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full text-shadow-sm">
+                            <MapPin size={12} />
+                            {location}
+                        </span>
+                    </div>
+
+                    {/* Name */}
+                    <h1 className="text-6xl font-serif font-bold text-white mb-3 text-shadow-lg leading-tight">
                         {name}
                     </h1>
-                    <p className="text-gray-400 text-xs font-medium tracking-[0.2em] uppercase">
-                        {role} • {company}
-                    </p>
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 mt-2">
-                        <MapPin size={16} />
-                        <span>{location}</span>
+
+                    {/* Role & Company */}
+                    <div className="flex items-center gap-2 text-gray-200 text-lg font-medium">
+                        <Briefcase size={20} className="text-[#C5A059]" />
+                        <span>
+                            {organicProfile?.user_type === 'founder' ? "Founder" : "Investor"} @ <span className="text-white border-b border-white/30 pb-0.5">{company}</span>
+                        </span>
                     </div>
                 </div>
-                {/* REMOVED MESSAGE BUTTON HERE */}
             </section>
 
             {/* Industries Bubbles */}
