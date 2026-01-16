@@ -65,6 +65,8 @@ const Settings = () => {
     const [location, setLocation] = useState("");
     const [portfolioLink, setPortfolioLink] = useState("");
     const [investorBannerUrl, setInvestorBannerUrl] = useState("");
+    const [leadsRounds, setLeadsRounds] = useState(false);
+    const [investmentThesis, setInvestmentThesis] = useState("");
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -131,6 +133,8 @@ const Settings = () => {
                     setLocation(investorProfile.location || "");
                     setPortfolioLink(investorProfile.portfolio_link || "");
                     setInvestorBannerUrl(investorProfile.banner_url || "");
+                    setLeadsRounds(investorProfile.leads_rounds || false);
+                    setInvestmentThesis(investorProfile.investment_thesis || "");
                 }
             }
 
@@ -301,7 +305,10 @@ const Settings = () => {
                         sectors_of_interest: sectorsOfInterest,
                         location,
                         portfolio_link: portfolioLink,
-                        banner_url: investorBannerUrl
+
+                        banner_url: investorBannerUrl,
+                        leads_rounds: leadsRounds,
+                        investment_thesis: investmentThesis
                     })
                     .eq('profile_id', userId);
 
@@ -761,6 +768,24 @@ const Settings = () => {
                                     />
                                 </div>
                             </div>
+                            <div className="flex items-center space-x-2">
+                                <Checkbox
+                                    id="leadsRounds"
+                                    checked={leadsRounds}
+                                    onCheckedChange={(checked) => setLeadsRounds(checked as boolean)}
+                                />
+                                <Label htmlFor="leadsRounds">Leads Rounds?</Label>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="investmentThesis">Investment Thesis</Label>
+                                <Textarea
+                                    id="investmentThesis"
+                                    value={investmentThesis}
+                                    onChange={(e) => setInvestmentThesis(e.target.value)}
+                                    placeholder="Brief description of what you look for..."
+                                    rows={3}
+                                />
+                            </div>
                             <div className="space-y-2">
                                 <Label>Sectors of Interest</Label>
                                 <div className="flex flex-wrap gap-2">
@@ -908,7 +933,7 @@ const Settings = () => {
                 {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
                 {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
             </main>
-        </div>
+        </div >
     );
 };
 

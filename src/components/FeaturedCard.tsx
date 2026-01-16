@@ -1,5 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
-import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket, Briefcase, SlidersHorizontal } from "lucide-react";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket, Briefcase, SlidersHorizontal, DollarSign } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { InstantMessageModal } from './InstantMessageModal';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
@@ -132,6 +132,28 @@ export const FeaturedCard = ({
             value: metrics ? metrics.active_deals_count.toString() : "-",
             sub: "Active deals",
             icon: Handshake
+        }
+    ];
+
+    // Investor Stats
+    const investorStats = [
+        {
+            label: "Check Size",
+            value: details?.typical_check_size || "-",
+            sub: "Typical Amount",
+            icon: DollarSign
+        },
+        {
+            label: "Focus",
+            value: details?.preferred_stage || "-",
+            sub: "Preferred Stage",
+            icon: TrendingUp
+        },
+        {
+            label: "Lead?",
+            value: details?.leads_rounds ? "Yes" : "No",
+            sub: "Leads Rounds",
+            icon: CheckCircle2
         }
     ];
 
@@ -339,21 +361,68 @@ export const FeaturedCard = ({
 
             {/* Stats Section */}
             <section className="px-6">
-                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-                    {stats.map((stat, i) => (
-                        <div key={i} className="flex min-w-[130px] flex-1 flex-col gap-3 rounded-xl p-5 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors">
-                            <div className="flex items-center justify-between">
-                                <stat.icon size={20} className="text-white" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{stat.label}</span>
+                {organicProfile?.user_type === 'investor' ? (
+                    // Investor Stats Display
+                    <div className="grid grid-cols-3 gap-3">
+                        {investorStats.map((stat, i) => (
+                            <div key={i} className="flex flex-col items-center justify-center rounded-2xl p-4 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors aspect-square text-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{stat.label}</span>
+                                <p className="text-white text-lg font-bold tracking-tight mb-1">{stat.value}</p>
+                                <p className="text-[9px] text-gray-600">{stat.sub}</p>
                             </div>
-                            <div>
-                                <p className="text-white text-2xl font-bold tracking-tight">{stat.value}</p>
-                                <p className="text-[11px] text-gray-500 mt-1">{stat.sub}</p>
+                        ))}
+                    </div>
+                ) : (
+                    // Founder Stats Display
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                        {stats.map((stat, i) => (
+                            <div key={i} className="flex min-w-[130px] flex-1 flex-col gap-3 rounded-xl p-5 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors">
+                                <div className="flex items-center justify-between">
+                                    <stat.icon size={20} className="text-white" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500">{stat.label}</span>
+                                </div>
+                                <div>
+                                    <p className="text-white text-2xl font-bold tracking-tight">{stat.value}</p>
+                                    <p className="text-[11px] text-gray-500 mt-1">{stat.sub}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {/* Investor Focus & Thesis */}
+            {organicProfile?.user_type === 'investor' && (
+                <section className="px-6 mt-6 space-y-6">
+                    {/* Investment Focus Badges */}
+                    {details?.sectors_of_interest && Array.isArray(details.sectors_of_interest) && details.sectors_of_interest.length > 0 && (
+                        <div>
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Investment Focus</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {details.sectors_of_interest.map((sector: string, i: number) => (
+                                    <span key={i} className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[11px] font-medium text-gray-300">
+                                        {sector}
+                                    </span>
+                                ))}
                             </div>
                         </div>
-                    ))}
-                </div>
-            </section>
+                    )}
+
+                    {/* Investment Thesis Quote */}
+                    {details?.investment_thesis && (
+                        <div className="relative bg-zinc-950/50 rounded-3xl p-6 border border-white/5">
+                            <Quote size={24} className="text-white/20 absolute top-6 left-6 rotate-180" />
+                            <div className="pt-4">
+                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2 ml-2">My Investment Thesis</h3>
+                                <p className="text-xl font-serif text-white/90 leading-relaxed pl-2 relative z-10">
+                                    "{details.investment_thesis}"
+                                </p>
+                            </div>
+                            <Quote size={24} className="text-white/20 absolute bottom-6 right-6" />
+                        </div>
+                    )}
+                </section>
+            )}
 
             {/* Investment/Deal History Section - Conditional based on type */}
             <section className="px-6">

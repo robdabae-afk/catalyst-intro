@@ -428,6 +428,7 @@ export type Database = {
           profile_id: string
           sectors_of_interest: string[] | null
           typical_check_size: string | null
+          leads_rounds: boolean | null
         }
         Insert: {
           banner_url?: string | null
