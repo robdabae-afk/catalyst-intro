@@ -174,41 +174,8 @@ export const FeaturedCard = ({
     const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
 
     useEffect(() => {
-        // Mock Endorsements - "Just TSX" implementation
-        const MOCK_ENDORSEMENTS: Endorsement[] = [
-            {
-                id: '1',
-                text: "Alex provided critical strategic guidance during our pivot. His network is unmatched in the fintech space.",
-                endorser: {
-                    name: "Sarah Jenkins",
-                    avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-                    user_type: "founder",
-                    founder_profile: { startup_name: "FinLeap" }
-                }
-            },
-            {
-                id: '2',
-                text: "One of the most supportive investors I've worked with. Always there when things get tough, not just for the board meetings.",
-                endorser: {
-                    name: "David Chen",
-                    avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-                    user_type: "founder",
-                    founder_profile: { startup_name: "TechFlow" }
-                }
-            },
-            {
-                id: '3',
-                text: "A true partner. Helped us close our Series A with key introductions.",
-                endorser: {
-                    name: "Emily Wang",
-                    avatar_url: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-                    user_type: "founder",
-                    founder_profile: { startup_name: "DataSense" }
-                }
-            }
-        ];
-
-        setEndorsements(MOCK_ENDORSEMENTS);
+        // Real endorsements fetching would go here. For now, empty to show "No endorsements yet"
+        setEndorsements([]);
     }, [profile]);
 
     return (
