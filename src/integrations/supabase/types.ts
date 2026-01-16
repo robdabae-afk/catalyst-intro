@@ -272,6 +272,88 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          id: string
+          founder_id: string
+          name: string
+          role: string
+          image_url: string | null
+          linkedin_url: string | null
+          is_core: boolean | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          founder_id: string
+          name: string
+          role: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          is_core?: boolean | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          founder_id?: string
+          name?: string
+          role?: string
+          image_url?: string | null
+          linkedin_url?: string | null
+          is_core?: boolean | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      funding_rounds: {
+        Row: {
+          id: string
+          founder_id: string
+          round_type: string
+          amount: number | null
+          date: string | null
+          valuation: number | null
+          investors: string[] | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          founder_id: string
+          round_type: string
+          amount?: number | null
+          date?: string | null
+          valuation?: number | null
+          investors?: string[] | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          founder_id?: string
+          round_type: string
+          amount?: number | null
+          date?: string | null
+          valuation?: number | null
+          investors?: string[] | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_rounds_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       endorsements: {
         Row: {
           id: string
@@ -362,6 +444,10 @@ export type Database = {
           video_url: string | null
           mrr: string | null
           backed_by: string | null
+          user_growth: string | null
+          burn_rate: string | null
+          last_round: string | null
+          valuation: string | null
         }
         Insert: {
           banner_url?: string | null
@@ -383,6 +469,10 @@ export type Database = {
           video_url?: string | null
           mrr?: string | null
           backed_by?: string | null
+          user_growth?: string | null
+          burn_rate?: string | null
+          last_round?: string | null
+          valuation?: string | null
         }
         Update: {
           banner_url?: string | null
@@ -404,6 +494,10 @@ export type Database = {
           video_url?: string | null
           mrr?: string | null
           backed_by?: string | null
+          user_growth?: string | null
+          burn_rate?: string | null
+          last_round?: string | null
+          valuation?: string | null
         }
         Relationships: [
           {
