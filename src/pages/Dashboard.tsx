@@ -79,9 +79,12 @@ const Dashboard = () => {
         if (isTestModeValue) {
           query = query.eq('is_test_account', true);
         } else {
+          // Show the opposite type: Founders see Investors, Investors see Founders
+          const targetType = currentUser.user_type === 'founder' ? 'investor' : 'founder';
+
           query = query
             .eq('is_test_account', false)
-            .eq('user_type', 'founder'); // Only show founders for now
+            .eq('user_type', targetType);
         }
 
         const { data, error } = await query.limit(20);
