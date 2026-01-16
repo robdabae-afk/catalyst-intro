@@ -264,12 +264,21 @@ export const FeaturedCard = ({
 
             {/* Industries Bubbles */}
             {details?.industry && Array.isArray(details.industry) && details.industry.length > 0 && (
-                <div className={`flex flex-wrap justify-center gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-0' : 'mb-6'}`}>
+                <div className={`flex flex-wrap justify-start gap-2 px-6 ${organicProfile?.user_type === 'founder' ? 'mb-2' : 'mb-6'}`}>
                     {details.industry.map((ind: string, i: number) => (
                         <span key={i} className="px-4 py-1.5 rounded-full border border-gray-700 bg-black/40 text-[10px] font-bold uppercase tracking-widest text-gray-300">
                             {ind}
                         </span>
                     ))}
+                </div>
+            )}
+
+            {/* One Liner Pitch */}
+            {organicProfile?.user_type === 'founder' && details?.one_liner && (
+                <div className="px-6 mb-3">
+                    <p className="text-xs text-gray-300 font-medium leading-relaxed line-clamp-2">
+                        "{details.one_liner}"
+                    </p>
                 </div>
             )}
 
