@@ -1,4 +1,3 @@
-```typescript
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +33,7 @@ export default function InvestorPortal() {
     const [activeTab, setActiveTab] = useState("dealflow");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    
+
     // Data
     const [dealFlow, setDealFlow] = useState<DealFlowItem[]>([]);
     const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
@@ -103,14 +102,14 @@ export default function InvestorPortal() {
                     investment_thesis: profile.investment_thesis || ""
                 });
                 setSectorsOfInterest(profile.sectors_of_interest || []);
-                
+
                 // Fetch Deal Flow
                 const { data: deals } = await supabase
                     .from('investor_deal_flow')
                     .select('*')
                     .eq('investor_id', profile.id)
                     .order('created_at', { ascending: false });
-                
+
                 if (deals) setDealFlow(deals as DealFlowItem[]);
 
                 // Fetch Portfolio
@@ -119,7 +118,7 @@ export default function InvestorPortal() {
                     .select('*')
                     .eq('investor_id', profile.id)
                     .order('investment_year', { ascending: false });
-                
+
                 if (port) setPortfolio(port as PortfolioItem[]);
             }
         } catch (error) {
@@ -131,7 +130,7 @@ export default function InvestorPortal() {
 
     const handleAddDeal = async () => {
         if (!investorId || !newDeal.startup_name) return;
-        
+
         try {
             const { data, error } = await supabase
                 .from('investor_deal_flow')
@@ -221,7 +220,7 @@ export default function InvestorPortal() {
         setSectorsOfInterest(prev => prev.includes(sector) ? prev.filter(s => s !== sector) : [...prev, sector]);
     };
 
-    if (loading) return <div className="h-screen flex items-center justify-center bg-black text-white"><Loader2 className="animate-spin"/></div>;
+    if (loading) return <div className="h-screen flex items-center justify-center bg-black text-white"><Loader2 className="animate-spin" /></div>;
 
     return (
         <div className="min-h-screen bg-black text-white pb-32">
@@ -229,8 +228,8 @@ export default function InvestorPortal() {
             <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
                 <h1 className="text-xl font-serif font-bold tracking-wide">Investor Portal</h1>
                 {activeTab === 'interests' && (
-                    <button 
-                        onClick={saveInterests} 
+                    <button
+                        onClick={saveInterests}
                         disabled={saving}
                         className="text-[10px] font-bold uppercase tracking-wider bg-white text-black px-4 py-2 rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50"
                     >
@@ -241,13 +240,13 @@ export default function InvestorPortal() {
 
             <div className="p-6 max-w-2xl mx-auto">
                 <div className="flex items-center gap-4 mb-8">
-                     <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border border-white/10">
+                    <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border border-white/10">
                         <DollarSign className="text-white/50" size={32} />
-                     </div>
-                     <div>
+                    </div>
+                    <div>
                         <h2 className="text-2xl font-serif font-bold">{details.firm_name || "New Investor"}</h2>
                         <p className="text-sm text-gray-500">{details.location || "Location not set"}</p>
-                     </div>
+                    </div>
                 </div>
 
                 <Tabs defaultValue="dealflow" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -268,50 +267,50 @@ export default function InvestorPortal() {
                         {/* Add Deal Input */}
                         <div className="bg-zinc-900/30 border border-white/10 rounded-3xl p-6 space-y-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <Target size={16} className="text-emerald-500"/>
+                                <Target size={16} className="text-emerald-500" />
                                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Add New Deal</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 gap-4">
-                                <input 
-                                    type="text" 
-                                    placeholder="Startup Name (e.g. Acme AI)" 
+                                <input
+                                    type="text"
+                                    placeholder="Startup Name (e.g. Acme AI)"
                                     value={newDeal.startup_name}
-                                    onChange={e => setNewDeal({...newDeal, startup_name: e.target.value})}
-                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700" 
+                                    onChange={e => setNewDeal({ ...newDeal, startup_name: e.target.value })}
+                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
                                 />
                                 <div className="grid grid-cols-2 gap-4">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Amount ($)" 
+                                    <input
+                                        type="text"
+                                        placeholder="Amount ($)"
                                         value={newDeal.amount}
-                                        onChange={e => setNewDeal({...newDeal, amount: e.target.value})}
-                                        className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700" 
+                                        onChange={e => setNewDeal({ ...newDeal, amount: e.target.value })}
+                                        className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
                                     />
-                                    <select 
+                                    <select
                                         value={newDeal.stage}
-                                        onChange={e => setNewDeal({...newDeal, stage: e.target.value})}
+                                        onChange={e => setNewDeal({ ...newDeal, stage: e.target.value })}
                                         className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors appearance-none text-gray-300"
                                     >
                                         <option value="">Stage...</option>
                                         {FUNDING_STAGES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                                     </select>
                                 </div>
-                                <input 
-                                    type="text" 
-                                    placeholder="Key Co-Investors (Optional)" 
+                                <input
+                                    type="text"
+                                    placeholder="Key Co-Investors (Optional)"
                                     value={newDeal.key_co_investors}
-                                    onChange={e => setNewDeal({...newDeal, key_co_investors: e.target.value})}
-                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700" 
+                                    onChange={e => setNewDeal({ ...newDeal, key_co_investors: e.target.value })}
+                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
                                 />
                                 <textarea
                                     placeholder="Private Notes..."
                                     value={newDeal.notes}
-                                    onChange={e => setNewDeal({...newDeal, notes: e.target.value})}
+                                    onChange={e => setNewDeal({ ...newDeal, notes: e.target.value })}
                                     className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700 resize-none h-20"
                                 />
                             </div>
-                            <button 
+                            <button
                                 onClick={handleAddDeal}
                                 disabled={!newDeal.startup_name}
                                 className="w-full bg-white text-black font-bold uppercase tracking-wider text-[10px] py-3 rounded-xl mt-2 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -364,8 +363,8 @@ export default function InvestorPortal() {
                                     {FUNDING_STAGES.map(stage => (
                                         <button
                                             key={stage.value}
-                                            onClick={() => setDetails({...details, preferred_stage: stage.value})}
-                                            className={`px - 4 py - 2 rounded - xl text - xs font - bold transition - all ${ details.preferred_stage === stage.value ? 'bg-white text-black' : 'bg-zinc-900 text-gray-400 hover:bg-zinc-800' } `}
+                                            onClick={() => setDetails({ ...details, preferred_stage: stage.value })}
+                                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${details.preferred_stage === stage.value ? 'bg-white text-black' : 'bg-zinc-900 text-gray-400 hover:bg-zinc-800'}`}
                                         >
                                             {stage.label}
                                         </button>
@@ -375,22 +374,22 @@ export default function InvestorPortal() {
 
                             <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Ticket Size</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={details.typical_check_size}
-                                    onChange={e => setDetails({...details, typical_check_size: e.target.value})}
-                                    placeholder="$25k - $100k" 
+                                    onChange={e => setDetails({ ...details, typical_check_size: e.target.value })}
+                                    placeholder="$25k - $100k"
                                     className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-white/30 transition-colors"
                                 />
                             </div>
 
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Location Preference</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={details.location}
-                                    onChange={e => setDetails({...details, location: e.target.value})}
-                                    placeholder="Global / Remote" 
+                                    onChange={e => setDetails({ ...details, location: e.target.value })}
+                                    placeholder="Global / Remote"
                                     className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-white/30 transition-colors"
                                 />
                             </div>
@@ -402,22 +401,22 @@ export default function InvestorPortal() {
                                         <button
                                             key={ind}
                                             onClick={() => toggleSector(ind)}
-                                            className={`px - 3 py - 1.5 rounded - full text - [10px] font - bold uppercase tracking - wide transition - all border ${ sectorsOfInterest.includes(ind) ? 'bg-white text-black border-white' : 'bg-transparent text-gray-500 border-zinc-800 hover:border-zinc-600' } `}
+                                            className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wide transition-all border ${sectorsOfInterest.includes(ind) ? 'bg-white text-black border-white' : 'bg-transparent text-gray-500 border-zinc-800 hover:border-zinc-600'}`}
                                         >
                                             {ind}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                            
+
                             <div className="pt-6 border-t border-white/5">
-                                <button 
-                                    onClick={() => setDetails({...details, leads_rounds: !details.leads_rounds})}
-                                    className={`w - full flex items - center justify - between p - 4 rounded - xl border transition - all ${ details.leads_rounds ? 'bg-emerald-950/30 border-emerald-900' : 'bg-zinc-900/30 border-zinc-800' } `}
+                                <button
+                                    onClick={() => setDetails({ ...details, leads_rounds: !details.leads_rounds })}
+                                    className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${details.leads_rounds ? 'bg-emerald-950/30 border-emerald-900' : 'bg-zinc-900/30 border-zinc-800'}`}
                                 >
-                                    <span className={`text - sm font - bold ${ details.leads_rounds ? 'text-emerald-400' : 'text-gray-400' } `}>Leads Rounds?</span>
-                                    <div className={`w - 10 h - 6 rounded - full p - 1 transition - colors ${ details.leads_rounds ? 'bg-emerald-500' : 'bg-zinc-700' } `}>
-                                        <div className={`w - 4 h - 4 bg - white rounded - full transition - transform ${ details.leads_rounds ? 'translate-x-full' : '' } `} />
+                                    <span className={`text-sm font-bold ${details.leads_rounds ? 'text-emerald-400' : 'text-gray-400'}`}>Leads Rounds?</span>
+                                    <div className={`w-10 h-6 rounded-full p-1 transition-colors ${details.leads_rounds ? 'bg-emerald-500' : 'bg-zinc-700'}`}>
+                                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${details.leads_rounds ? 'translate-x-full' : ''}`} />
                                     </div>
                                 </button>
                             </div>
@@ -426,32 +425,32 @@ export default function InvestorPortal() {
 
                     {/* PORTFOLIO TAB */}
                     <TabsContent value="portfolio" className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                         {/* Add Portfolio Input */}
-                         <div className="bg-zinc-900/30 border border-white/10 rounded-3xl p-6 space-y-4">
+                        {/* Add Portfolio Input */}
+                        <div className="bg-zinc-900/30 border border-white/10 rounded-3xl p-6 space-y-4">
                             <div className="flex items-center gap-2 mb-2">
-                                <Rocket size={16} className="text-blue-500"/>
+                                <Rocket size={16} className="text-blue-500" />
                                 <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Add Investment</h3>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 gap-4">
-                                <input 
-                                    type="text" 
-                                    placeholder="Company Name" 
+                                <input
+                                    type="text"
+                                    placeholder="Company Name"
                                     value={newPortfolio.company_name}
-                                    onChange={e => setNewPortfolio({...newPortfolio, company_name: e.target.value})}
-                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700" 
+                                    onChange={e => setNewPortfolio({ ...newPortfolio, company_name: e.target.value })}
+                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
                                 />
-                                 <div className="grid grid-cols-2 gap-4">
-                                    <input 
-                                        type="number" 
-                                        placeholder="Year (e.g. 2023)" 
+                                <div className="grid grid-cols-2 gap-4">
+                                    <input
+                                        type="number"
+                                        placeholder="Year (e.g. 2023)"
                                         value={newPortfolio.investment_year}
-                                        onChange={e => setNewPortfolio({...newPortfolio, investment_year: e.target.value})}
-                                        className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700" 
+                                        onChange={e => setNewPortfolio({ ...newPortfolio, investment_year: e.target.value })}
+                                        className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
                                     />
-                                    <select 
+                                    <select
                                         value={newPortfolio.sector}
-                                        onChange={e => setNewPortfolio({...newPortfolio, sector: e.target.value})}
+                                        onChange={e => setNewPortfolio({ ...newPortfolio, sector: e.target.value })}
                                         className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors appearance-none text-gray-300"
                                     >
                                         <option value="">Sector...</option>
@@ -459,9 +458,9 @@ export default function InvestorPortal() {
                                     </select>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                     <select 
+                                    <select
                                         value={newPortfolio.investment_stage}
-                                        onChange={e => setNewPortfolio({...newPortfolio, investment_stage: e.target.value})}
+                                        onChange={e => setNewPortfolio({ ...newPortfolio, investment_stage: e.target.value })}
                                         className="bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors appearance-none text-gray-300"
                                     >
                                         <option value="">Stage...</option>
@@ -469,16 +468,16 @@ export default function InvestorPortal() {
                                     </select>
                                     <div className="flex items-center gap-3 px-2">
                                         <label className="text-xs text-gray-400">Lead Investor?</label>
-                                        <input 
-                                            type="checkbox" 
+                                        <input
+                                            type="checkbox"
                                             checked={newPortfolio.is_lead || false}
-                                            onChange={e => setNewPortfolio({...newPortfolio, is_lead: e.target.checked})}
+                                            onChange={e => setNewPortfolio({ ...newPortfolio, is_lead: e.target.checked })}
                                             className="w-5 h-5 rounded border-zinc-700 bg-black text-white focus:ring-0"
                                         />
                                     </div>
                                 </div>
                             </div>
-                            <button 
+                            <button
                                 onClick={handleAddPortfolio}
                                 disabled={!newPortfolio.company_name}
                                 className="w-full bg-white text-black font-bold uppercase tracking-wider text-[10px] py-3 rounded-xl mt-2 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -508,16 +507,16 @@ export default function InvestorPortal() {
                                                     {item.company_name.substring(0, 2).toUpperCase()}
                                                 </div>
                                             )}
-                                            
+
                                             <div>
                                                 <h4 className="font-bold text-base text-white flex items-center gap-2">
                                                     {item.company_name}
                                                     {item.is_lead && <span className="text-[8px] bg-white text-black px-1.5 py-0.5 rounded font-bold uppercase">Lead</span>}
                                                 </h4>
                                                 <div className="flex items-center gap-2 mt-0.5">
-                                                     <span className="text-[10px] text-green-400 font-medium">Inv. {item.investment_year}</span>
-                                                     <span className="text-[10px] text-gray-500">• {item.investment_stage}</span>
-                                                     <span className="text-[10px] text-gray-500">• {item.sector}</span>
+                                                    <span className="text-[10px] text-green-400 font-medium">Inv. {item.investment_year}</span>
+                                                    <span className="text-[10px] text-gray-500">• {item.investment_stage}</span>
+                                                    <span className="text-[10px] text-gray-500">• {item.sector}</span>
                                                 </div>
                                             </div>
                                         </div>
