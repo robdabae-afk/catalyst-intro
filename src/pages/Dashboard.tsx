@@ -458,7 +458,7 @@ const Dashboard = () => {
           userType={currentUser?.user_type || 'founder'}
         />
 
-        {currentProfile && (
+        {showInstantMessageModal && currentProfile && (
           <InstantMessageModal
             receiverId={currentProfile.id}
             receiverName={currentProfile.name}
@@ -473,7 +473,6 @@ const Dashboard = () => {
               setShowInstantMessageModal(false);
               setShowProModal(true);
             }}
-          // We utilize the boolean flag to condition render if needed, but the component has internal null checks or we just condition render it
           />
         )}
         {/* Note: InstantMessageModal is conditionally rendered by showInstantMessageModal inside the component? 
