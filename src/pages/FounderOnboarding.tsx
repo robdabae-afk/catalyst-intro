@@ -47,7 +47,9 @@ const FounderOnboarding = () => {
     companyState: "",
     companyAddress: "",
     videoUrl: "",
-    fundingAmount: ""
+    fundingAmount: "",
+    mrr: "",
+    backedBy: ""
   });
 
   // Validate referral code when it changes
@@ -318,7 +320,9 @@ const FounderOnboarding = () => {
           company_address: formData.companyAddress || null,
           banner_url: bannerUrl,
           video_url: finalVideoUrl,
-          funding_amount: formData.fundingAmount || null
+          funding_amount: formData.fundingAmount || null,
+          mrr: formData.mrr || null,
+          backed_by: formData.backedBy || null
         });
 
       if (founderError) throw founderError;
@@ -538,6 +542,32 @@ const FounderOnboarding = () => {
                 <p className={`text-xs ${formData.traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
                   {formData.traction.length}/250 characters
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="mrr">MRR / Revenue</Label>
+                <Select value={formData.mrr} onValueChange={(value) => setFormData({ ...formData, mrr: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select MRR" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pre-revenue">Pre-revenue</SelectItem>
+                    <SelectItem value="$0 - $1k">$0 - $1k</SelectItem>
+                    <SelectItem value="$1k - $10k">$1k - $10k</SelectItem>
+                    <SelectItem value="$10k - $50k">$10k - $50k</SelectItem>
+                    <SelectItem value="$50k+">$50k+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="backedBy">Backed By</Label>
+                <Input
+                  id="backedBy"
+                  placeholder="e.g. YC S23, or 'No lead yet'"
+                  value={formData.backedBy}
+                  onChange={(e) => setFormData({ ...formData, backedBy: e.target.value })}
+                />
               </div>
 
               <div className="space-y-4">

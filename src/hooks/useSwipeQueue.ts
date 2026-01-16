@@ -56,7 +56,9 @@ const hardcodedTestProfiles: OrganicProfile[] = [
       one_liner: 'Revolutionizing embedded finance for platforms.',
       stage: 'seed',
       industry: ['FinTech', 'SaaS'],
-      traction: '250k ARR, 15 partners'
+      traction: '250k ARR, 15 partners',
+      mrr: '$50k+',
+      backed_by: 'Techstars'
     }]
   },
   {
@@ -89,7 +91,9 @@ const hardcodedTestProfiles: OrganicProfile[] = [
       one_liner: 'Decentralized solar grid management.',
       stage: 'series-a',
       industry: ['CleanTech', 'Energy'],
-      traction: 'Reached 10k homes, $2M Revenue'
+      traction: 'Reached 10k homes, $2M Revenue',
+      mrr: '$50k+',
+      backed_by: 'Y Combinator'
     }]
   },
   {

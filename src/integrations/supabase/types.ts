@@ -360,6 +360,8 @@ export type Database = {
           startup_name: string
           traction: string | null
           video_url: string | null
+          mrr: string | null
+          backed_by: string | null
         }
         Insert: {
           banner_url?: string | null
@@ -379,6 +381,8 @@ export type Database = {
           startup_name: string
           traction?: string | null
           video_url?: string | null
+          mrr?: string | null
+          backed_by?: string | null
         }
         Update: {
           banner_url?: string | null
@@ -398,6 +402,8 @@ export type Database = {
           startup_name?: string
           traction?: string | null
           video_url?: string | null
+          mrr?: string | null
+          backed_by?: string | null
         }
         Relationships: [
           {

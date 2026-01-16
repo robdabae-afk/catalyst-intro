@@ -54,6 +54,8 @@ const Settings = () => {
     const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
     const [videoUrl, setVideoUrl] = useState("");
     const [fundingAmount, setFundingAmount] = useState("");
+    const [mrr, setMrr] = useState("");
+    const [backedBy, setBackedBy] = useState("");
 
     // Investor fields
     const [firmName, setFirmName] = useState("");
@@ -111,6 +113,8 @@ const Settings = () => {
                     setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
                     setVideoUrl(founderProfile.video_url || "");
                     setFundingAmount(founderProfile.funding_amount || "");
+                    setMrr(founderProfile.mrr || "");
+                    setBackedBy(founderProfile.backed_by || "");
                 }
             } else {
                 const { data: investorProfile } = await supabase
@@ -279,7 +283,10 @@ const Settings = () => {
                         pitch_deck_url: pitchDeckUrl,
                         pitch_deck_visibility: pitchDeckVisibility,
                         video_url: videoUrl || null,
-                        funding_amount: fundingAmount || null
+
+                        funding_amount: fundingAmount || null,
+                        mrr: mrr || null,
+                        backed_by: backedBy || null
                     })
                     .eq('profile_id', userId);
 
@@ -470,6 +477,32 @@ const Settings = () => {
                                         onChange={(e) => setStartupName(e.target.value)}
                                     />
                                 </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="mrr">MRR / Revenue</Label>
+                                    <Select value={mrr} onValueChange={setMrr}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select MRR" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Pre-revenue">Pre-revenue</SelectItem>
+                                            <SelectItem value="$0 - $1k">$0 - $1k</SelectItem>
+                                            <SelectItem value="$1k - $10k">$1k - $10k</SelectItem>
+                                            <SelectItem value="$10k - $50k">$10k - $50k</SelectItem>
+                                            <SelectItem value="$50k+">$50k+</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="backedBy">Backed By</Label>
+                                    <Input
+                                        id="backedBy"
+                                        value={backedBy}
+                                        onChange={(e) => setBackedBy(e.target.value)}
+                                        placeholder="e.g. YC S23, or 'No lead yet'"
+                                    />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Industries</Label>
                                     <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">

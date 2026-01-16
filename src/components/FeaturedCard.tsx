@@ -1,5 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
-import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote } from "lucide-react";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { InstantMessageModal } from './InstantMessageModal';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
@@ -228,6 +228,40 @@ export const FeaturedCard = ({
                 </div>
                 {/* REMOVED MESSAGE BUTTON HERE */}
             </section>
+
+            {/* Industries Bubbles */}
+            {details?.industry && Array.isArray(details.industry) && details.industry.length > 0 && (
+                <div className="flex flex-wrap justify-center gap-2 px-6 mb-6">
+                    {details.industry.map((ind: string, i: number) => (
+                        <span key={i} className="px-4 py-1.5 rounded-full border border-gray-700 bg-black/40 text-[10px] font-bold uppercase tracking-widest text-gray-300">
+                            {ind}
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* Two Boxes: MRR & Backed By */}
+            {(details?.mrr || details?.backed_by) && (
+                <div className="grid grid-cols-2 gap-4 px-6 mb-8">
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-zinc-700 transition-colors">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">MRR</span>
+                        <p className="text-3xl font-serif italic text-white">{details?.mrr || 'N/A'}</p>
+                        <div className="absolute top-4 right-4 text-zinc-800 group-hover:text-zinc-700 transition-colors">
+                            <TrendingUp size={20} />
+                        </div>
+                    </div>
+
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-zinc-700 transition-colors">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Backed By</span>
+                        <p className="text-2xl font-serif italic text-white leading-tight break-words">
+                            {details?.backed_by || 'No lead yet'}
+                        </p>
+                        <div className="absolute top-4 right-4 text-zinc-800 group-hover:text-zinc-700 transition-colors">
+                            <Rocket size={20} />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Stats Section */}
             <section className="px-6">

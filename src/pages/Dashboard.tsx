@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { FeaturedCard, ProfileMetrics } from '@/components/FeaturedCard';
@@ -24,6 +25,7 @@ import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
   // In a real scenario, useSwipeQueue likely fetches inside or takes props.
@@ -371,22 +373,59 @@ const Dashboard = () => {
   };
 
   const handleUnlockPurchase = async () => {
-    // Logic to deduct tokens would go here
-    console.log("Purchasing unlock with 30 tokens...");
+    if (!currentUser) return;
+    const currentTokens = (currentUser as any)?.tokens || 0;
 
-    // Simulate API call
+    if (currentTokens < 30) {
+      setShowUnlockModal(false);
+      setShowTokenPurchaseModal(true);
+      return;
+    }
+
+    // Deduct tokens
+    const { error } = await supabase
+      .from('profiles')
+      .update({ tokens: currentTokens - 30 })
+      .eq('id', currentUser.id);
+
+    if (error) {
+      toast({ variant: "destructive", title: "Purchase failed", description: error.message });
+      return;
+    }
+
     setUnlockingHistory(true);
     setShowUnlockModal(false);
+    toast({ title: "Deal History Unlocked!", description: "30 tokens deducted." });
 
     setTimeout(() => {
       setUnlockingHistory(false);
       setMetrics(prev => prev ? { ...prev, is_history_unlocked: true } : null);
-    }, 1500);
+    }, 500);
   };
 
-  const handleUnlockUpgrade = () => {
+  const handleUnlockUpgrade = async () => {
+    if (!currentUser) return;
+
     setShowUnlockModal(false);
-    setShowProModal(true); // Re-use the existing pro/token purchase modal or navigate to settings
+    toast({ title: "Redirecting to checkout..." });
+
+    try {
+      const targetPlan = currentUser.user_type === 'founder' ? 'startup_pro' : 'investor_pro';
+      const { data, error } = await supabase.functions.invoke('manage-subscription', {
+        body: {
+          action: 'create_checkout',
+          plan: targetPlan,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error: any) {
+      console.error("Upgrade error:", error);
+      toast({ variant: "destructive", title: "Upgrade failed", description: error.message || "Could not start checkout" });
+    }
   };
 
   // Update handleSwipe signature to accept 'priority_like'

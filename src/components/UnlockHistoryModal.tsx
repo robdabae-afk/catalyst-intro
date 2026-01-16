@@ -58,7 +58,7 @@ export const UnlockHistoryModal = ({
                     </div>
 
                     <p className="text-[10px] text-gray-500 mt-6">
-                        Pro members get unlimited history access.
+                        Pro members get history access included.
                     </p>
                 </div>
             </DialogContent>
