@@ -516,34 +516,19 @@ const Dashboard = () => {
         isPro={isPro}
       />
 
-      {/* Featured Header - Sub-header for context */}
-      <div className="flex-none px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {/* Modal for Unlocking History */}
-          <UnlockHistoryModal
-            isOpen={showUnlockModal}
-            onClose={() => setShowUnlockModal(false)}
-            onPurchaseWithTokens={handleUnlockPurchase}
-            onUpgrade={handleUnlockUpgrade}
-          />
-          {/* Restore Purchase Options */}
-          {!isPro && currentUser?.user_type === 'founder' && (
-            <>
-              <SpotlightPurchaseButton userId={currentUser.id} />
-              <ConciergeMatchButton userId={currentUser.id} userType={currentUser.user_type} variant="compact" showBenefits={false} />
-            </>
-          )}
-          <button
-            className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
-            onClick={() => navigate('/filters')}
-          >
-            <SlidersHorizontal size={20} className="text-white/90" />
-          </button>
-        </div>
+      {/* Featured Header - Hidden to remove black space, Filter moved to Card */}
+      <div className="hidden">
+        {/* Modal for Unlocking History - Rendered invisible but present in DOM if state needs it, but usage is via prop */}
+        <UnlockHistoryModal
+          isOpen={showUnlockModal}
+          onClose={() => setShowUnlockModal(false)}
+          onPurchaseWithTokens={handleUnlockPurchase}
+          onUpgrade={handleUnlockUpgrade}
+        />
       </div>
 
       {/* Main Swipe/Scroll Area */}
-      <main className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-40 bg-background-dark scroll-smooth">
+      <main className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-0 bg-background-dark scroll-smooth">
 
         {/* Modals & Overlays - Conditionally rendered */}
         {showWelcomeBillboard && currentUser && (
@@ -664,6 +649,7 @@ const Dashboard = () => {
               isMatch={hasMutualMatch}
               publicDeal={publicDeal}
               isFeatured={!currentProfile.isAd && (currentProfile as OrganicProfile).is_featured}
+              onFilterClick={() => navigate('/filters')}
             />
             <div className="h-8"></div>
           </div>
@@ -673,7 +659,7 @@ const Dashboard = () => {
       {/* Floating Action Buttons */}
       {!loading && !showAllCaughtUp && currentProfile && (
         <>
-          <div className="absolute bottom-[120px] left-0 w-full px-6 pointer-events-none z-40">
+          <div className="absolute bottom-6 left-0 w-full px-6 pointer-events-none z-40">
             <div className="flex items-center justify-center gap-4 pointer-events-auto">
               <button
                 onClick={() => handleSwipe('pass')}

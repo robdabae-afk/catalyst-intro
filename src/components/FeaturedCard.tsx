@@ -1,5 +1,5 @@
 import { OrganicProfile, AdProfile } from "@/hooks/useSwipeQueue";
-import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket, Briefcase } from "lucide-react";
+import { Zap, Clock, Handshake, CheckCircle2, MapPin, Lock, Quote, TrendingUp, Rocket, Briefcase, SlidersHorizontal } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { InstantMessageModal } from './InstantMessageModal';
 import { TokenPurchaseModal } from './TokenPurchaseModal';
@@ -40,8 +40,9 @@ export const FeaturedCard = ({
     isPro = false,
     isMatch = false,
     isFeatured = false,
-    publicDeal
-}: FeaturedCardProps) => {
+    publicDeal,
+    onFilterClick
+}: FeaturedCardProps & { onFilterClick?: () => void }) => {
     const isAd = profile.isAd;
     // Safe access to profile data
     const organicProfile = !isAd ? (profile as OrganicProfile) : null;
@@ -210,24 +211,38 @@ export const FeaturedCard = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
                 </div>
 
+
                 {!isAd && organicProfile?.is_verified && (
-                    <div className="absolute top-4 right-4 bg-white text-black rounded-full p-1.5 shadow-lg z-10">
+                    <div className="absolute top-4 left-4 bg-white text-black rounded-full p-1.5 shadow-lg z-10">
                         <CheckCircle2 size={16} className="font-bold" />
                     </div>
+                )}
+
+                {/* Filter Button */}
+                {onFilterClick && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onFilterClick();
+                        }}
+                        className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/20 backdrop-blur-md border border-white/20 text-white hover:bg-black/40 transition-colors z-20"
+                    >
+                        <SlidersHorizontal size={14} />
+                    </button>
                 )}
 
                 {/* Content Overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 pb-24 flex flex-col items-start justify-end h-full">
 
                     {/* Badges: Stage & Location */}
-                    <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <div className="flex flex-row items-center gap-2 mb-4">
                         {details?.stage && (
-                            <span className="px-4 py-1.5 bg-white text-black text-xs font-bold uppercase tracking-wider rounded-full shadow-sm">
+                            <span className="px-2 py-1 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
                                 {details.stage} Stage
                             </span>
                         )}
-                        <span className="flex items-center gap-1.5 px-4 py-1.5 bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full text-shadow-sm">
-                            <MapPin size={12} />
+                        <span className="flex items-center gap-1 px-2 py-1 bg-transparent border border-white/30 text-white text-[10px] font-medium uppercase tracking-wider rounded-lg backdrop-blur-sm">
+                            <MapPin size={10} />
                             {location}
                         </span>
                     </div>
