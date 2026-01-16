@@ -744,12 +744,12 @@ export default function Matches() {
                     No matches yet. Keep swiping!
                   </p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 pr-4">
                     {matches.map((match) => (
                       <div
                         key={match.profile.id}
                         onClick={() => handleSelectMatch(match)}
-                        className={`w-full p-4 rounded-lg cursor-pointer transition-all hover:shadow-md ${selectedMatch?.profile.id === match.profile.id
+                        className={`w-full p-4 rounded-2xl cursor-pointer transition-all hover:shadow-md ${selectedMatch?.profile.id === match.profile.id
                           ? "bg-primary/10 border-2 border-primary text-black"
                           : "bg-white border border-gray-200 text-black shadow-sm"
                           }`}
