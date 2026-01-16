@@ -62,7 +62,8 @@ export const FounderProfileInput = () => {
 
     const [funding, setFunding] = useState({
         total_raised: "", // Calculated or manual? Using manual for now as 'funding_amount' exists
-        rounds: [] as FundingRound[]
+        rounds: [] as FundingRound[],
+        advisor_investments: [] as { id: string; advisor_name: string; amount: number; investment_date: string }[]
     });
 
     const [team, setTeam] = useState<TeamMember[]>([]);
@@ -114,16 +115,19 @@ export const FounderProfileInput = () => {
                     industry: founderProfile.industry || [],
                     startup_name: founderProfile.startup_name || ""
                 });
+                // Metrics are not stored in founder_profiles table yet
+                // Setting empty defaults since these columns don't exist
                 setMetrics({
-                    mrr: founderProfile.mrr || "",
-                    user_growth: founderProfile.user_growth || "",
-                    burn_rate: founderProfile.burn_rate || "",
-                    valuation: founderProfile.valuation || ""
+                    mrr: "",
+                    user_growth: "",
+                    burn_rate: "",
+                    valuation: ""
                 });
-                // setFunding({ total_raised: founderProfile.funding_amount || "", rounds: [] }); 
             }
 
-            // Fetch Team
+            // Note: team_members and funding_rounds tables don't exist yet
+            // Commenting out these queries until tables are created
+            /*
             const { data: teamData } = await supabase
                 .from('team_members')
                 .select('*')
@@ -131,13 +135,13 @@ export const FounderProfileInput = () => {
 
             if (teamData) setTeam(teamData);
 
-            // Fetch Funding Rounds
             const { data: roundsData } = await supabase
                 .from('funding_rounds')
                 .select('*')
                 .eq('founder_id', user.id);
 
             if (roundsData) setFunding(prev => ({ ...prev, rounds: roundsData }));
+            */
         };
 
         fetchProfile();
@@ -148,19 +152,15 @@ export const FounderProfileInput = () => {
         setLoading(true);
 
         try {
-            // Update Founder Profile
+            // Update Founder Profile (only with columns that exist)
             const { error: profileError } = await supabase
                 .from('founder_profiles')
                 .update({
                     company_name: companyInfo.company_name,
                     startup_name: companyInfo.company_name, // Syncing for now
                     one_liner: companyInfo.one_liner,
-                    industry: companyInfo.industry,
-                    mrr: metrics.mrr,
-                    user_growth: metrics.user_growth,
-                    burn_rate: metrics.burn_rate,
-                    valuation: metrics.valuation,
-                    // funding_amount: funding.total_raised // Update this if calculated
+                    industry: companyInfo.industry
+                    // Note: mrr, user_growth, burn_rate, valuation columns don't exist yet
                 })
                 .eq('profile_id', userId);
 
@@ -177,84 +177,51 @@ export const FounderProfileInput = () => {
 
     const addTeamMember = async () => {
         if (!userId || !newMember.name || !newMember.role) return;
-
-        const { data, error } = await supabase
-            .from('team_members')
-            .insert({
-                founder_id: userId,
-                name: newMember.name,
-                role: newMember.role,
-                linkedin_url: newMember.linkedin_url,
-                is_core: true
-            })
-            .select()
-            .single();
-
-        if (error) {
-            toast.error("Failed to add member");
-            return;
-        }
-
-        setTeam([...team, data]);
+        // Note: team_members table doesn't exist yet - mocking locally
+        const mockMember: TeamMember = {
+            id: crypto.randomUUID(),
+            name: newMember.name,
+            role: newMember.role,
+            linkedin_url: newMember.linkedin_url,
+            is_core: true
+        };
+        setTeam([...team, mockMember]);
         setNewMember({});
-        toast.success("Team member added");
+        toast.success("Team member added (local only)");
     };
 
     const deleteTeamMember = async (id: string) => {
-        const { error } = await supabase.from('team_members').delete().eq('id', id);
-        if (!error) {
-            setTeam(team.filter(m => m.id !== id));
-            toast.success("Member removed");
-        }
+        setTeam(team.filter(m => m.id !== id));
+        toast.success("Member removed");
     };
 
     const addFundingRound = async () => {
         if (!userId || !newRound.round_type || !newRound.amount) return;
-
-        const { data, error } = await supabase
-            .from('funding_rounds')
-            .insert({
-                founder_id: userId,
-                round_type: newRound.round_type,
-                amount: newRound.amount,
-                date: newRound.date || new Date().toISOString(),
-                valuation: newRound.valuation
-            })
-            .select()
-            .single();
-
-        if (error) {
-            toast.error("Failed to add round");
-            return;
-        }
-
-        setFunding(prev => ({ ...prev, rounds: [...prev.rounds, data] }));
+        // Note: funding_rounds table doesn't exist yet - mocking locally
+        const mockRound: FundingRound = {
+            id: crypto.randomUUID(),
+            round_type: newRound.round_type,
+            amount: newRound.amount,
+            date: newRound.date || new Date().toISOString(),
+            valuation: newRound.valuation
+        };
+        setFunding(prev => ({ ...prev, rounds: [...prev.rounds, mockRound] }));
         setNewRound({});
-        toast.success("Funding round added");
+        toast.success("Funding round added (local only)");
     };
 
     const addAdvisorInvestment = async () => {
         if (!userId || !newAdvisorInvestment.advisor_name || !newAdvisorInvestment.amount) return;
-
-        const { data, error } = await supabase
-            .from('advisor_investments')
-            .insert({
-                founder_id: userId,
-                advisor_name: newAdvisorInvestment.advisor_name,
-                amount: parseFloat(newAdvisorInvestment.amount),
-                investment_date: newAdvisorInvestment.investment_date
-            })
-            .select()
-            .single();
-
-        if (error) {
-            toast.error("Failed to add advisor investment");
-            return;
-        }
-
-        setFunding(prev => ({ ...prev, advisor_investments: [...prev.advisor_investments, data] }));
+        // Note: advisor_investments table doesn't exist yet - mocking locally
+        const mockInvestment = {
+            id: crypto.randomUUID(),
+            advisor_name: newAdvisorInvestment.advisor_name,
+            amount: parseFloat(newAdvisorInvestment.amount),
+            investment_date: newAdvisorInvestment.investment_date
+        };
+        setFunding(prev => ({ ...prev, advisor_investments: [...prev.advisor_investments, mockInvestment] }));
         setNewAdvisorInvestment({ advisor_name: "", amount: "", investment_date: new Date().toISOString().split('T')[0] });
-        toast.success("Advisor investment added");
+        toast.success("Advisor investment added (local only)");
     };
 
     const sections = [
