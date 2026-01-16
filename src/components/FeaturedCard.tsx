@@ -464,14 +464,17 @@ export const FeaturedCard = ({
             </section>
 
             {/* Endorsements Section */}
-            {endorsements.length > 0 && (
-                <section className="px-6 mt-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-white text-sm font-bold uppercase tracking-widest">ENDORSEMENTS</h3>
+            <section className="px-6 mt-8">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-white text-sm font-bold uppercase tracking-widest">ENDORSEMENTS</h3>
+                    {endorsements.length > 0 && (
                         <button className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">
                             VIEW ALL
                         </button>
-                    </div>
+                    )}
+                </div>
+
+                {endorsements.length > 0 ? (
                     <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
                         {endorsements.map((e) => (
                             <div key={e.id} className="min-w-[280px] bg-[#111] p-6 rounded-3xl border border-white/5 relative flex flex-col justify-between">
@@ -483,43 +486,64 @@ export const FeaturedCard = ({
                                 </div>
                                 <div className="flex items-center gap-3 mt-auto border-t border-white/5 pt-4">
                                     <div
-                                        className="h-10 w-10 rounded-full bg-cover bg-center bg-gray-700 shrink-0"
-                                        style={{ backgroundImage: `url("${e.endorser.avatar_url || 'https://github.com/shadcn.png'}")` }}
-                                    />
-                                    <div className="min-w-0">
-                                        <p className="text-white font-bold text-sm truncate">{e.endorser.name}</p>
-                                        <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider truncate">
-                                            {e.endorser.user_type}
-                                            {/* We can improve this with company name if we join fetch it */}
-                                        </p>
+                                        className="w-8 h-8 rounded-full bg-cover bg-center"
+                                        style={{ backgroundImage: `url(${e.avatar || 'https://github.com/shadcn.png'})` }}
+                                    ></div>
+                                    <div>
+                                        <p className="text-white text-xs font-bold">{e.author}</p>
+                                        <p className="text-gray-500 text-[10px] uppercase tracking-wider">{e.role}</p>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </section>
-            )}
-
-            <div className="h-24"></div>
-
-            {/* Modals ... */}
-
-            {showMessageModal && organicProfile && (
-                <InstantMessageModal
-                    receiverId={organicProfile.id}
-                    receiverName={name || 'User'}
-                    tokenBalance={tokenBalance}
-                    onClose={() => setShowMessageModal(false)}
-                    onSuccess={handleMessageSuccess}
-                    onOpenPurchase={handleOpenPurchase}
-                />
-            )}
-
-            {showPurchaseModal && (
-                <TokenPurchaseModal
-                    onClose={() => setShowPurchaseModal(false)}
-                />
-            )}
+                ) : (
+                    <div className="flex items-center justify-center py-8 border border-dashed border-white/10 rounded-2xl bg-white/5">
+                        <p className="text-gray-500 text-sm italic">No endorsements yet</p>
+                    </div>
+                )}
+            </section>
+            className="h-10 w-10 rounded-full bg-cover bg-center bg-gray-700 shrink-0"
+            style={{ backgroundImage: `url("${e.endorser.avatar_url || 'https://github.com/shadcn.png'}")` }}
+                                    />
+            <div className="min-w-0">
+                <p className="text-white font-bold text-sm truncate">{e.endorser.name}</p>
+                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider truncate">
+                    {e.endorser.user_type}
+                    {/* We can improve this with company name if we join fetch it */}
+                </p>
+            </div>
         </div>
+                            </div >
+                        ))}
+                    </div >
+                </section >
+            )}
+
+<div className="h-24"></div>
+
+{/* Modals ... */ }
+
+{
+    showMessageModal && organicProfile && (
+        <InstantMessageModal
+            receiverId={organicProfile.id}
+            receiverName={name || 'User'}
+            tokenBalance={tokenBalance}
+            onClose={() => setShowMessageModal(false)}
+            onSuccess={handleMessageSuccess}
+            onOpenPurchase={handleOpenPurchase}
+        />
+    )
+}
+
+{
+    showPurchaseModal && (
+        <TokenPurchaseModal
+            onClose={() => setShowPurchaseModal(false)}
+        />
+    )
+}
+        </div >
     );
 };

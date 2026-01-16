@@ -9,7 +9,6 @@ export const BottomNavigation = () => {
 
     const navItems = [
         { name: "Home", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Roadmap", icon: Map, path: "/roadmap" },
         { name: "Inbox", icon: Mail, path: "/requests" },
         { name: "Matches", icon: MessageSquare, path: "/matches" },
         { name: "Profile", icon: User, path: "/founder-input" },

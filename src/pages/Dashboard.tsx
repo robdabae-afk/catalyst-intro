@@ -673,9 +673,6 @@ const Dashboard = () => {
                 disabled={swipeCooldown}
                 className="relative group flex flex-col items-center justify-center w-[56px] h-[56px] rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50"
               >
-                <div className="absolute -top-3 bg-white text-black text-[8px] font-black px-2 py-0.5 rounded-full shadow-lg tracking-widest uppercase border border-gray-200 whitespace-nowrap">
-                  Message
-                </div>
                 <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={24} />
               </button>
               <button
