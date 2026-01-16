@@ -527,34 +527,7 @@ const Dashboard = () => {
       {/* Floating Action Buttons */}
       {!loading && !showAllCaughtUp && currentProfile && (
         <>
-          <InstantMessageModal
-            receiverId={currentProfile.id}
-            receiverName={currentProfile.name}
-            tokenBalance={(currentUser as any)?.tokens || 0}
-            cost={instantMessageCost}
-            freeRemaining={instantMessageFreeRemaining}
-            onClose={() => setShowInstantMessageModal(false)}
-            onSuccess={(newBalance) => {
-              // Update local balance if needed or verify
-              // Could trigger a swipe 'like' here if desired, but user just asked for message
-              // Ideally we refresh the user profile to get new balance/counts
-            }}
-            onOpenPurchase={() => {
-              setShowInstantMessageModal(false);
-              setShowProModal(true); // Or token purchase modal
-            }}
-            // Only render if open
-            {...(showInstantMessageModal ? { open: true } : { open: false })} // Handled by conditional rendering usually, but here I'll conditionally render parent
-          />
-          {showInstantMessageModal && (
-            // Actually rendering it here to ensure it's in the React tree when needed
-            // But typically modals are better placed with other modals.
-            // I'll place it with the other modals in the full file replacement or just simpler here if cleaner.
-            // I will render it ABOVE the buttons container in the ReplacementContent logic?
-            // No, I can just render it. The Modal likely has a Portal or fixed position.
-            // Re-using the logic from other modals:
-            null
-          )}
+
 
           <div className="absolute bottom-[90px] left-0 w-full px-6 pointer-events-none z-40">
             <div className="flex items-center justify-center gap-4 pointer-events-auto">
