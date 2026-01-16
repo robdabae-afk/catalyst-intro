@@ -241,7 +241,7 @@ export const FeaturedCard = ({
             )}
 
             {/* Two Boxes: MRR & Backed By */}
-            {(details?.mrr || details?.backed_by) && (
+            {organicProfile?.user_type === 'founder' && (
                 <div className="grid grid-cols-2 gap-4 px-6 mb-8">
                     <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 flex flex-col justify-between h-32 relative overflow-hidden group hover:border-zinc-700 transition-colors">
                         <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">MRR</span>
