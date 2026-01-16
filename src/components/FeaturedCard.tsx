@@ -200,7 +200,7 @@ export const FeaturedCard = ({
                 </div>
             )}
             {/* Profile Header Section - Redesigned */}
-            <section className="relative w-full h-[600px] mb-6 group cursor-pointer overflow-hidden rounded-b-3xl">
+            <section className="relative w-full h-[480px] mb-6 group cursor-pointer overflow-hidden rounded-b-3xl">
                 {/* Background Image */}
                 <div
                     className="absolute inset-0 bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105"
