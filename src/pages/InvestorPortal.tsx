@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, ExternalLink, Edit2, Rocket, Briefcase, Target, Trash2, DollarSign, Loader2 } from "lucide-react";
+import { Plus, Search, ExternalLink, Edit2, Rocket, Briefcase, Target, Trash2, DollarSign, Loader2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -30,6 +31,7 @@ type PortfolioItem = {
 };
 
 export default function InvestorPortal() {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("dealflow");
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -43,6 +45,11 @@ export default function InvestorPortal() {
     const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
     const [investorId, setInvestorId] = useState<string | null>(null);
     const [profileId, setProfileId] = useState<string | null>(null);
+
+    // Search Data
+    const [companySearchResults, setCompanySearchResults] = useState<{ name: string, sector?: string, stage?: string }[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [activeSearchField, setActiveSearchField] = useState<'deal' | 'portfolio' | null>(null);
 
     // Interests / Settings Data
     const [details, setDetails] = useState({
@@ -231,6 +238,49 @@ export default function InvestorPortal() {
         }
     };
 
+    const searchCompanies = async (query: string, type: 'deal' | 'portfolio') => {
+        if (!query || query.length < 2) {
+            setCompanySearchResults([]);
+            return;
+        }
+
+        setIsSearching(true);
+        setActiveSearchField(type);
+
+        try {
+            const { data } = await supabase
+                .from('founder_profiles')
+                .select('startup_name, industry')
+                .ilike('startup_name', `%${query}%`)
+                .limit(5);
+
+            if (data) {
+                setCompanySearchResults(data.map((d: any) => ({
+                    name: d.startup_name,
+                    sector: Array.isArray(d.industry) ? d.industry[0] : d.industry,
+                })));
+            }
+        } catch (error) {
+            console.error("Error searching companies:", error);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const selectCompany = (company: { name: string, sector?: string }, type: 'deal' | 'portfolio') => {
+        if (type === 'deal') {
+            setNewDeal(prev => ({ ...prev, startup_name: company.name }));
+        } else {
+            setNewPortfolio(prev => ({
+                ...prev,
+                company_name: company.name,
+                sector: company.sector || prev.sector
+            }));
+        }
+        setCompanySearchResults([]);
+        setActiveSearchField(null);
+    };
+
     const toggleSector = (sector: string) => {
         setSectorsOfInterest(prev => prev.includes(sector) ? prev.filter(s => s !== sector) : [...prev, sector]);
     };
@@ -241,7 +291,12 @@ export default function InvestorPortal() {
         <div className="min-h-screen bg-black text-white pb-32">
             {/* Header */}
             <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 py-4 flex justify-between items-center">
-                <h1 className="text-xl font-serif font-bold tracking-wide">Investor Portal</h1>
+                <div className="flex items-center gap-4">
+                    <button onClick={() => navigate('/')} className="hover:bg-zinc-800 p-2 rounded-full transition-colors">
+                        <ArrowLeft size={20} />
+                    </button>
+                    <h1 className="text-xl font-serif font-bold tracking-wide">Investor Portal</h1>
+                </div>
                 {activeTab === 'interests' && (
                     <button
                         onClick={saveInterests}
@@ -291,13 +346,40 @@ export default function InvestorPortal() {
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
-                                <input
-                                    type="text"
-                                    placeholder="Startup Name (e.g. Acme AI)"
-                                    value={newDeal.startup_name}
-                                    onChange={e => setNewDeal({ ...newDeal, startup_name: e.target.value })}
-                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
-                                />
+                                <div className="relative">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-3.5 text-zinc-500" size={16} />
+                                        <input
+                                            type="text"
+                                            placeholder="Startup Name (e.g. Acme AI)"
+                                            value={newDeal.startup_name}
+                                            onChange={e => {
+                                                setNewDeal({ ...newDeal, startup_name: e.target.value });
+                                                searchCompanies(e.target.value, 'deal');
+                                            }}
+                                            className="w-full bg-black border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
+                                        />
+                                        {isSearching && activeSearchField === 'deal' && (
+                                            <div className="absolute right-3 top-3.5"><Loader2 className="animate-spin text-zinc-500" size={16} /></div>
+                                        )}
+                                    </div>
+
+                                    {/* Dropdown */}
+                                    {activeSearchField === 'deal' && companySearchResults.length > 0 && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden z-20 shadow-xl">
+                                            {companySearchResults.map((result, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => selectCompany(result, 'deal')}
+                                                    className="w-full text-left px-4 py-3 hover:bg-zinc-800 transition-colors flex justify-between items-center group"
+                                                >
+                                                    <span className="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">{result.name}</span>
+                                                    {result.sector && <span className="text-[10px] uppercase tracking-wider text-zinc-500">{result.sector}</span>}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <input
                                         type="text"
@@ -452,13 +534,40 @@ export default function InvestorPortal() {
                             </div>
 
                             <div className="grid grid-cols-1 gap-4">
-                                <input
-                                    type="text"
-                                    placeholder="Company Name"
-                                    value={newPortfolio.company_name}
-                                    onChange={e => setNewPortfolio({ ...newPortfolio, company_name: e.target.value })}
-                                    className="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
-                                />
+                                <div className="relative">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-3.5 text-zinc-500" size={16} />
+                                        <input
+                                            type="text"
+                                            placeholder="Company Name"
+                                            value={newPortfolio.company_name}
+                                            onChange={e => {
+                                                setNewPortfolio({ ...newPortfolio, company_name: e.target.value });
+                                                searchCompanies(e.target.value, 'portfolio');
+                                            }}
+                                            className="w-full bg-black border border-zinc-800 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-700"
+                                        />
+                                        {isSearching && activeSearchField === 'portfolio' && (
+                                            <div className="absolute right-3 top-3.5"><Loader2 className="animate-spin text-zinc-500" size={16} /></div>
+                                        )}
+                                    </div>
+
+                                    {/* Dropdown */}
+                                    {activeSearchField === 'portfolio' && companySearchResults.length > 0 && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden z-20 shadow-xl">
+                                            {companySearchResults.map((result, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => selectCompany(result, 'portfolio')}
+                                                    className="w-full text-left px-4 py-3 hover:bg-zinc-800 transition-colors flex justify-between items-center group"
+                                                >
+                                                    <span className="font-bold text-sm text-white group-hover:text-emerald-400 transition-colors">{result.name}</span>
+                                                    {result.sector && <span className="text-[10px] uppercase tracking-wider text-zinc-500">{result.sector}</span>}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <input
                                         type="number"
