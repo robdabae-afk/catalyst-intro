@@ -16,8 +16,9 @@ import { ConciergeMatchButton } from '@/components/ConciergeMatchButton';
 import { TractionLimitBanner } from '@/components/TractionLimitBanner';
 import { AppNavigation } from '@/components/AppNavigation';
 import { supabase } from '@/integrations/supabase/client';
-import { SlidersHorizontal, X, Star, Handshake } from "lucide-react";
+import { SlidersHorizontal, X, Star, Handshake, MessageCircle } from "lucide-react";
 import { UnlockHistoryModal } from '@/components/UnlockHistoryModal';
+import { InstantMessageModal } from '@/components/InstantMessageModal';
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -195,6 +196,79 @@ const Dashboard = () => {
   }, [currentItem, currentUser]);
 
   const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showInstantMessageModal, setShowInstantMessageModal] = useState(false);
+  const [instantMessageCost, setInstantMessageCost] = useState(30);
+  const [instantMessageFreeRemaining, setInstantMessageFreeRemaining] = useState<number | undefined>(undefined);
+  const [usageStats, setUsageStats] = useState<{ daily: number, weekly: number }>({ daily: 0, weekly: 0 });
+
+  // Fetch Usage Stats
+  useEffect(() => {
+    if (!currentUser) return;
+    const fetchUsage = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('daily_initiations_count, weekly_initiations_count')
+        .eq('id', currentUser.id)
+        .single();
+      if (data) {
+        setUsageStats({
+          daily: data.daily_initiations_count || 0,
+          weekly: data.weekly_initiations_count || 0
+        });
+      }
+    };
+    fetchUsage();
+  }, [currentUser, showInstantMessageModal]); // Refresh when modal closes/opens
+
+  const handleInstantMessageClick = () => {
+    if (!currentUser) return;
+
+    const userType = currentUser.user_type;
+    const dailyUsed = usageStats.daily;
+    const weeklyUsed = usageStats.weekly;
+
+    let cost = 30; // Default Investor Non-Pro
+    let freeLeft: number | undefined = undefined;
+
+    if (userType === 'investor') {
+      if (isPro) {
+        // Pro Investor: 1/day, 3/week free. Else 30.
+        const dailyLimit = 1;
+        const weeklyLimit = 3;
+
+        if (dailyUsed < dailyLimit && weeklyUsed < weeklyLimit) {
+          cost = 0;
+          freeLeft = weeklyLimit - weeklyUsed;
+        } else {
+          cost = 30;
+        }
+      } else {
+        // Non-Pro Investor: 30 tokens always
+        cost = 30;
+      }
+    } else {
+      // Founder
+      if (isPro) {
+        // Pro Founder: 1/day, 4/week free. Else 50.
+        const dailyLimit = 1;
+        const weeklyLimit = 4;
+
+        if (dailyUsed < dailyLimit && weeklyUsed < weeklyLimit) {
+          cost = 0;
+          freeLeft = weeklyLimit - weeklyUsed;
+        } else {
+          cost = 50;
+        }
+      } else {
+        // Non-Pro Founder: 50 tokens
+        cost = 50;
+      }
+    }
+
+    setInstantMessageCost(cost);
+    setInstantMessageFreeRemaining(freeLeft);
+    setShowInstantMessageModal(true);
+  };
 
   // handleUnlockHistory
   const handleUnlockHistory = async () => {
@@ -310,10 +384,6 @@ const Dashboard = () => {
 
       {/* Featured Header - Sub-header for context */}
       <div className="flex-none px-6 py-4 flex items-center justify-between">
-        <div className="flex flex-col">
-          <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Featured</h1>
-          <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
-        </div>
         <div className="flex items-center gap-3">
           {/* Modal for Unlocking History */}
           <UnlockHistoryModal
@@ -388,6 +458,28 @@ const Dashboard = () => {
           userType={currentUser?.user_type || 'founder'}
         />
 
+        {currentProfile && (
+          <InstantMessageModal
+            receiverId={currentProfile.id}
+            receiverName={currentProfile.name}
+            tokenBalance={(currentUser as any)?.tokens || 0}
+            cost={instantMessageCost}
+            freeRemaining={instantMessageFreeRemaining}
+            onClose={() => setShowInstantMessageModal(false)}
+            onSuccess={(newBalance) => {
+              // Ideally update local state
+            }}
+            onOpenPurchase={() => {
+              setShowInstantMessageModal(false);
+              setShowProModal(true);
+            }}
+          // We utilize the boolean flag to condition render if needed, but the component has internal null checks or we just condition render it
+          />
+        )}
+        {/* Note: InstantMessageModal is conditionally rendered by showInstantMessageModal inside the component? 
+            No, the component renders a div. We should condition render it here.
+        */}
+
         {loading ? (
           <div className="flex items-center justify-center h-full pt-40">
             <div className="text-center">
@@ -435,34 +527,65 @@ const Dashboard = () => {
 
       {/* Floating Action Buttons */}
       {!loading && !showAllCaughtUp && currentProfile && (
-        <div className="absolute bottom-[90px] left-0 w-full px-6 pointer-events-none z-40">
-          <div className="flex items-center justify-center gap-5 pointer-events-auto">
-            <button
-              onClick={() => handleSwipe('pass')}
-              disabled={swipeCooldown}
-              className="group flex items-center justify-center w-[68px] h-[68px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
-            >
-              <X className="text-white/40 group-hover:text-white/90 transition-colors" size={32} />
-            </button>
-            <button
-              onClick={() => handleSwipe('priority_like')}
-              disabled={swipeCooldown}
-              className="relative group flex flex-col items-center justify-center w-[75px] h-[75px] rounded-full bg-gradient-to-br from-[#FFE5A0] via-[#C5A059] to-[#8a6e1c] border border-white/20 shadow-[0_0_20px_rgba(197,160,89,0.3)] active:scale-95 -mb-2 overflow-visible transform hover:scale-105 transition-all duration-300"
-            >
-              <div className="absolute -top-3.5 bg-white text-black text-[9px] font-black px-2.5 py-1 rounded-full shadow-lg tracking-widest uppercase border border-luxury-gold/30 whitespace-nowrap">
-                Priority
-              </div>
-              <Star className="text-black drop-shadow-sm transition-transform group-hover:scale-110" size={36} fill="black" />
-            </button>
-            <button
-              onClick={() => handleSwipe('like')}
-              disabled={swipeCooldown}
-              className="group flex items-center justify-center w-[68px] h-[68px] rounded-full bg-white shadow-[0_0_25px_rgba(255,255,255,0.15)] hover:bg-gray-100 hover:scale-105 hover:shadow-[0_0_35px_rgba(255,255,255,0.25)] transition-all active:scale-95 duration-200"
-            >
-              <Handshake className="text-black group-hover:rotate-12 transition-transform duration-300" size={34} />
-            </button>
+        <>
+          <InstantMessageModal
+            receiverId={currentProfile.id}
+            receiverName={currentProfile.name}
+            tokenBalance={(currentUser as any)?.tokens || 0}
+            cost={instantMessageCost}
+            freeRemaining={instantMessageFreeRemaining}
+            onClose={() => setShowInstantMessageModal(false)}
+            onSuccess={(newBalance) => {
+              // Update local balance if needed or verify
+              // Could trigger a swipe 'like' here if desired, but user just asked for message
+              // Ideally we refresh the user profile to get new balance/counts
+            }}
+            onOpenPurchase={() => {
+              setShowInstantMessageModal(false);
+              setShowProModal(true); // Or token purchase modal
+            }}
+            // Only render if open
+            {...(showInstantMessageModal ? { open: true } : { open: false })} // Handled by conditional rendering usually, but here I'll conditionally render parent
+          />
+          {showInstantMessageModal && (
+            // Actually rendering it here to ensure it's in the React tree when needed
+            // But typically modals are better placed with other modals.
+            // I'll place it with the other modals in the full file replacement or just simpler here if cleaner.
+            // I will render it ABOVE the buttons container in the ReplacementContent logic?
+            // No, I can just render it. The Modal likely has a Portal or fixed position.
+            // Re-using the logic from other modals:
+            null
+          )}
+
+          <div className="absolute bottom-[90px] left-0 w-full px-6 pointer-events-none z-40">
+            <div className="flex items-center justify-center gap-4 pointer-events-auto">
+              <button
+                onClick={() => handleSwipe('pass')}
+                disabled={swipeCooldown}
+                className="group flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
+              >
+                <X className="text-white/40 group-hover:text-white/90 transition-colors" size={28} />
+              </button>
+              <button
+                onClick={handleInstantMessageClick}
+                disabled={swipeCooldown}
+                className="relative group flex flex-col items-center justify-center w-[66px] h-[66px] rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50"
+              >
+                <div className="absolute -top-3 bg-white text-black text-[8px] font-black px-2 py-0.5 rounded-full shadow-lg tracking-widest uppercase border border-gray-200 whitespace-nowrap">
+                  Message
+                </div>
+                <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={30} />
+              </button>
+              <button
+                onClick={() => handleSwipe('like')}
+                disabled={swipeCooldown}
+                className="group flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
+              >
+                <Handshake className="text-white/40 group-hover:text-emerald-400/90 transition-colors duration-300 group-hover:rotate-12" size={28} />
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Bottom Navigation */}

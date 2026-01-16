@@ -643,6 +643,8 @@ export type Database = {
           weekly_initiations_count?: number
           weekly_initiations_reset_at?: string | null
           weekly_spotlight_used_at?: string | null
+          daily_initiations_count?: number
+          last_initiation_date?: string | null
           is_featured?: boolean
           is_verified?: boolean
         }

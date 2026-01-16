@@ -11,6 +11,8 @@ interface InstantMessageModalProps {
     receiverId: string;
     receiverName: string;
     tokenBalance: number;
+    cost: number;
+    freeRemaining?: number;
     onClose: () => void;
     onSuccess: (newBalance: number) => void;
     onOpenPurchase: () => void;
@@ -20,6 +22,8 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
     receiverId,
     receiverName,
     tokenBalance,
+    cost,
+    freeRemaining,
     onClose,
     onSuccess,
     onOpenPurchase
@@ -28,7 +32,8 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
     const [sending, setSending] = useState(false);
     const { toast } = useToast();
 
-    const hasEnoughTokens = tokenBalance >= TOKEN_COST;
+    const isFree = cost === 0;
+    const hasEnoughTokens = isFree || tokenBalance >= cost;
 
     const handleSend = async () => {
         if (!message.trim()) {
@@ -43,7 +48,7 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
         if (!hasEnoughTokens) {
             toast({
                 title: "Insufficient tokens",
-                description: `You need ${TOKEN_COST} tokens to send an instant message.`,
+                description: `You need ${cost} tokens to send an instant message.`,
                 variant: "destructive"
             });
             return;
@@ -64,7 +69,8 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
                     },
                     body: JSON.stringify({
                         receiverId,
-                        content: message
+                        content: message,
+                        cost: cost // Pass dynamic cost to backend
                     })
                 }
             );
@@ -77,7 +83,9 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
 
             toast({
                 title: "Message sent!",
-                description: `Your message has been sent to ${receiverName}. ${result.tokensSpent} tokens spent.`
+                description: isFree
+                    ? `Your message has been sent to ${receiverName}. Free message used.`
+                    : `Your message has been sent to ${receiverName}. ${cost} tokens spent.`
             });
 
             onSuccess(result.newBalance);
@@ -110,21 +118,36 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
                     </button>
                 </div>
 
-                {/* Token Balance */}
-                <div className="mb-4 flex items-center justify-between bg-zinc-800 p-3 rounded-lg">
-                    <div className="flex items-center gap-2">
-                        <Coins size={18} className="text-amber-500" />
-                        <span className="text-sm text-gray-300">Your Balance:</span>
+                {/* Status Bar: Free or Tokens */}
+                {isFree ? (
+                    <div className="mb-4 flex items-center justify-between bg-green-900/20 p-3 rounded-lg border border-green-900/50">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-green-400 font-bold uppercase tracking-wider">Free Message Available</span>
+                        </div>
+                        {freeRemaining !== undefined && (
+                            <span className="text-xs text-green-300 bg-green-900/40 px-2 py-1 rounded">
+                                {freeRemaining} remaining
+                            </span>
+                        )}
                     </div>
-                    <span className="text-white font-bold">{tokenBalance} tokens</span>
-                </div>
+                ) : (
+                    <div className="mb-4 flex items-center justify-between bg-zinc-800 p-3 rounded-lg">
+                        <div className="flex items-center gap-2">
+                            <Coins size={18} className="text-amber-500" />
+                            <span className="text-sm text-gray-300">Your Balance:</span>
+                        </div>
+                        <span className="text-white font-bold">{tokenBalance} tokens</span>
+                    </div>
+                )}
 
-                {/* Cost Display */}
-                <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                    <p className="text-sm text-amber-200">
-                        <strong>{TOKEN_COST} tokens</strong> will be deducted to send this message
-                    </p>
-                </div>
+                {/* Cost Display (If not free) */}
+                {!isFree && (
+                    <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                        <p className="text-sm text-amber-200">
+                            <strong>{cost} tokens</strong> will be deducted to send this message
+                        </p>
+                    </div>
+                )}
 
                 {/* Message Input */}
                 <Textarea
