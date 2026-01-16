@@ -21,6 +21,7 @@ interface FeaturedCardProps {
     unlockingHistory?: boolean;
     isPro?: boolean;
     isMatch?: boolean;
+    isFeatured?: boolean;
     // Deal history props
     publicDeal?: {
         company_name: string;
@@ -38,6 +39,7 @@ export const FeaturedCard = ({
     unlockingHistory,
     isPro = false,
     isMatch = false,
+    isFeatured = false,
     publicDeal
 }: FeaturedCardProps) => {
     const isAd = profile.isAd;
@@ -146,6 +148,13 @@ export const FeaturedCard = ({
 
     return (
         <div className="flex flex-col gap-8 pb-32 pt-2 relative">
+            {/* Featured Badge Header - Only if isFeatured is true */}
+            {isFeatured && (
+                <div className="px-6 pb-2">
+                    <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Featured</h1>
+                    <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
+                </div>
+            )}
             {/* Profile Header Section */}
             <section className="flex flex-col items-center px-6 pt-6">
                 <div className="relative mb-6 group cursor-pointer">

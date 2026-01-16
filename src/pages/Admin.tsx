@@ -45,6 +45,7 @@ interface UserWithStatus {
   is_hidden: boolean;
   hidden_at: string | null;
   is_verified: boolean;
+  is_featured: boolean;
 }
 
 const Admin = () => {
@@ -104,6 +105,32 @@ const Admin = () => {
     }
   };
 
+  const handleToggleFeatured = async (userId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_featured: !currentStatus })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await loadUsers();
+
+      toast({
+        title: !currentStatus ? "User Featured" : "User Feature Removed",
+        description: !currentStatus
+          ? "User will now appear with the Featured header."
+          : "User removed from Featured list."
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: err.message
+      });
+    }
+  };
+
   const handleTestModeToggle = async (checked: boolean) => {
     setUseTestMode(checked);
     const { data: { user } } = await supabase.auth.getUser();
@@ -117,7 +144,7 @@ const Admin = () => {
     try {
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at, is_verified')
+        .select('id, name, email, user_type, created_at, subscription_status, subscription_plan, subscription_expires_at, weekly_spotlight_used_at, has_pending_update, last_profile_update_at, is_hidden, hidden_at, is_verified, is_featured')
         .order('created_at', { ascending: false });
 
       if (profilesError) throw profilesError;
@@ -616,25 +643,50 @@ const Admin = () => {
                             {new Date(user.created_at).toLocaleDateString()}
                           </TableCell>
                           <TableCell>
-                            {user.is_verified ? (
-                              <Badge
-                                variant="default"
-                                className="cursor-pointer bg-green-600 hover:bg-green-700"
-                                onClick={() => handleToggleVerification(user.id, user.is_verified)}
-                              >
-                                <CheckCircle2 className="w-3 h-3 mr-1" />
-                                Verified
-                              </Badge>
-                            ) : (
-                              <Badge
-                                variant="outline"
-                                className="cursor-pointer"
-                                onClick={() => handleToggleVerification(user.id, user.is_verified)}
-                              >
-                                <Circle className="w-3 h-3 mr-1" />
-                                Unverified
-                              </Badge>
-                            )}
+                            <div className="flex flex-col gap-2">
+                              {user.is_verified ? (
+                                <Badge
+                                  variant="default"
+                                  className="cursor-pointer bg-green-600 hover:bg-green-700 w-fit"
+                                  onClick={() => handleToggleVerification(user.id, user.is_verified)}
+                                >
+                                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                                  Verified
+                                </Badge>
+                              ) : (
+                                <Badge
+                                  variant="outline"
+                                  className="cursor-pointer w-fit"
+                                  onClick={() => handleToggleVerification(user.id, user.is_verified)}
+                                >
+                                  <Circle className="w-3 h-3 mr-1" />
+                                  Unverified
+                                </Badge>
+                              )}
+
+                              {/* Featured Toggle */}
+                              {user.user_type === 'founder' && (
+                                user.is_featured ? (
+                                  <Badge
+                                    variant="default"
+                                    className="cursor-pointer bg-[#C5A059] hover:bg-[#b08d4d] text-black w-fit"
+                                    onClick={() => handleToggleFeatured(user.id, user.is_featured)}
+                                  >
+                                    <Star className="w-3 h-3 mr-1 fill-black" />
+                                    Featured
+                                  </Badge>
+                                ) : (
+                                  <Badge
+                                    variant="outline"
+                                    className="cursor-pointer w-fit opacity-50 hover:opacity-100"
+                                    onClick={() => handleToggleFeatured(user.id, user.is_featured)}
+                                  >
+                                    <Star className="w-3 h-3 mr-1" />
+                                    Feature
+                                  </Badge>
+                                )
+                              )}
+                            </div>
                           </TableCell>
                           <TableCell className="text-right space-x-2">
                             <Button

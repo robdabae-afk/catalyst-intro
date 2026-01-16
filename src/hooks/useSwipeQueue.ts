@@ -32,6 +32,7 @@ export interface OrganicProfile {
   founder_profiles?: any[] | any;
   investor_profiles?: any[] | any;
   is_verified?: boolean;
+  is_featured?: boolean;
 }
 
 export type QueueItem = OrganicProfile | AdProfile;
@@ -46,6 +47,7 @@ const hardcodedTestProfiles: OrganicProfile[] = [
     email: 'sarah@example.com',
     user_type: 'founder',
     avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1976&auto=format&fit=crop',
+    is_featured: true,
     founder_profiles: [{
       id: '00000000-0000-0000-0000-000000000001',
       profile_id: '00000000-0000-0000-0000-000000000001',

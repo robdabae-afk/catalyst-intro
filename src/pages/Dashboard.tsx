@@ -91,7 +91,14 @@ const Dashboard = () => {
             // Preserve both types of profiles
             founder_profiles: p.founder_profiles || null,
             investor_profiles: p.investor_profiles || null
-          }));
+          }))
+            // Prioritize Featured Founders
+            .sort((a: any, b: any) => {
+              // Sort by is_featured (true comes first)
+              if (a.is_featured === b.is_featured) return 0;
+              return a.is_featured ? -1 : 1;
+            });
+
           console.log("Processed profiles for queue:", profiles);
           setOrganicProfiles(profiles);
         }
@@ -390,6 +397,7 @@ const Dashboard = () => {
               isPro={isPro}
               isMatch={hasMutualMatch}
               publicDeal={publicDeal}
+              isFeatured={!currentProfile.isAd && (currentProfile as OrganicProfile).is_featured}
             />
             <div className="h-8"></div>
           </div>
