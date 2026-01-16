@@ -238,29 +238,37 @@ export const FeaturedCard = ({
                                         </div>
                                     </>
                                 ) : (
-                                    <div className="relative overflow-hidden">
-                                        <div className="blur-[5px] opacity-40 select-none">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h4 className="text-white font-bold text-base">Series A - TechCo</h4>
-                                                <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Lead</span>
+                                    <>
+                                        {isPro ? (
+                                            <div className="flex items-center justify-center py-6">
+                                                <p className="text-gray-500 font-medium text-sm">No history disclosed</p>
                                             </div>
-                                            <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2024 • Undisclosed Round</p>
-                                            <div className="flex items-center gap-2">
-                                                <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                                <span className="text-xs text-gray-300 font-medium tracking-wide">Enterprise</span>
+                                        ) : (
+                                            <div className="relative overflow-hidden">
+                                                <div className="blur-[5px] opacity-40 select-none">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="text-white font-bold text-base">Series A - TechCo</h4>
+                                                        <span className="text-[10px] font-bold uppercase text-gray-500 bg-white/10 px-2 py-1 rounded">Lead</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mb-4 font-medium uppercase tracking-wider">Jan 2024 • Undisclosed Round</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
+                                                        <span className="text-xs text-gray-300 font-medium tracking-wide">Enterprise</span>
+                                                    </div>
+                                                </div>
+                                                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
+                                                    <Lock size={24} className="text-white mb-2 opacity-80" />
+                                                    <button
+                                                        onClick={onUnlockHistory}
+                                                        disabled={unlockingHistory}
+                                                        className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
+                                                    >
+                                                        {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/50 backdrop-blur-[2px]">
-                                            <Lock size={24} className="text-white mb-2 opacity-80" />
-                                            <button
-                                                onClick={onUnlockHistory}
-                                                disabled={unlockingHistory}
-                                                className="text-[10px] font-bold text-white uppercase tracking-widest bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full border border-white/20 shadow-sm backdrop-blur-md transition-colors disabled:opacity-50"
-                                            >
-                                                {unlockingHistory ? "Unlocking..." : "Unlock Full History"}
-                                            </button>
-                                        </div>
-                                    </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </div>

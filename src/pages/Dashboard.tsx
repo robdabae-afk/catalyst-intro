@@ -17,6 +17,7 @@ import { TractionLimitBanner } from '@/components/TractionLimitBanner';
 import { AppNavigation } from '@/components/AppNavigation';
 import { supabase } from '@/integrations/supabase/client';
 import { SlidersHorizontal, X, Star, Handshake } from "lucide-react";
+import { UnlockHistoryModal } from '@/components/UnlockHistoryModal';
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -127,6 +128,7 @@ const Dashboard = () => {
   const [showReferralModal, setShowReferralModal] = useState(false);
   const [showUpgradePrompt, setShowUpgradePrompt] = useState(false);
   const [matchModalOpen, setMatchModalOpen] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
   const [matchedProfile, setMatchedProfile] = useState<OrganicProfile | null>(null);
 
   // New State for Metrics
@@ -192,10 +194,30 @@ const Dashboard = () => {
     checkMatch();
   }, [currentItem, currentUser]);
 
-  // handleUnlockHistory is disabled until backend RPC is implemented
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+
+  // handleUnlockHistory
   const handleUnlockHistory = async () => {
-    // Feature disabled - backend RPC not yet available
-    console.log("Unlock history feature not yet implemented");
+    setShowUnlockModal(true);
+  };
+
+  const handleUnlockPurchase = async () => {
+    // Logic to deduct tokens would go here
+    console.log("Purchasing unlock with 30 tokens...");
+
+    // Simulate API call
+    setUnlockingHistory(true);
+    setShowUnlockModal(false);
+
+    setTimeout(() => {
+      setUnlockingHistory(false);
+      setMetrics(prev => prev ? { ...prev, is_history_unlocked: true } : null);
+    }, 1500);
+  };
+
+  const handleUnlockUpgrade = () => {
+    setShowUnlockModal(false);
+    setShowProModal(true); // Re-use the existing pro/token purchase modal or navigate to settings
   };
 
   // Update handleSwipe signature to accept 'priority_like'
@@ -293,6 +315,13 @@ const Dashboard = () => {
           <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
         </div>
         <div className="flex items-center gap-3">
+          {/* Modal for Unlocking History */}
+          <UnlockHistoryModal
+            isOpen={showUnlockModal}
+            onClose={() => setShowUnlockModal(false)}
+            onPurchaseWithTokens={handleUnlockPurchase}
+            onUpgrade={handleUnlockUpgrade}
+          />
           {/* Restore Purchase Options */}
           {!isPro && currentUser?.user_type === 'founder' && (
             <>
