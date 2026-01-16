@@ -618,9 +618,9 @@ export default function Matches() {
                     }`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-4 py-2 ${message.sender_id === currentUserId
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground"
+                    className={`max-w-[80%] rounded-lg px-4 py-2 text-white ${message.sender_id === currentUserId
+                      ? "bg-zinc-900 border border-zinc-700"
+                      : "bg-zinc-800 border border-zinc-700"
                       }`}
                   >
                     <p>{message.content}</p>
@@ -750,8 +750,8 @@ export default function Matches() {
                         key={match.profile.id}
                         onClick={() => handleSelectMatch(match)}
                         className={`w-full p-4 rounded-lg cursor-pointer transition-all hover:shadow-md ${selectedMatch?.profile.id === match.profile.id
-                          ? "bg-primary/10 border-2 border-primary"
-                          : "bg-white border border-gray-200"
+                          ? "bg-primary/10 border-2 border-primary text-black"
+                          : "bg-white border border-gray-200 text-black"
                           }`}
                       >
                         <div className="flex items-center gap-2">
@@ -767,7 +767,7 @@ export default function Matches() {
                               {match.founderProfile?.startup_name || match.investorProfile?.firm_name || match.profile.user_type}
                             </p>
                           </div>
-                          <Badge variant="outline" className="capitalize shrink-0 text-[10px] px-2 py-0.5 whitespace-nowrap min-w-fit">
+                          <Badge variant="outline" className="capitalize shrink-0 text-[10px] px-2 py-0.5 whitespace-nowrap min-w-fit text-black border-zinc-200">
                             {match.profile.user_type}
                           </Badge>
                         </div>
@@ -874,9 +874,9 @@ export default function Matches() {
                                 }`}
                             >
                               <div
-                                className={`max-w-[70%] rounded-lg px-4 py-2 ${message.sender_id === currentUserId
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-secondary text-secondary-foreground"
+                                className={`max-w-[70%] rounded-lg px-4 py-2 text-white ${message.sender_id === currentUserId
+                                  ? "bg-zinc-900 border border-zinc-700"
+                                  : "bg-zinc-800 border border-zinc-700"
                                   }`}
                               >
                                 <p>{message.content}</p>

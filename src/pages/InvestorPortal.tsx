@@ -54,6 +54,7 @@ export default function InvestorPortal() {
     // Interests / Settings Data
     const [details, setDetails] = useState({
         firm_name: "",
+        position: "",
         typical_check_size: "",
         preferred_stage: "",
         location: "",
@@ -115,6 +116,7 @@ export default function InvestorPortal() {
                     setInvestorId(profile.id);
                     setDetails({
                         firm_name: profile.firm_name || "",
+                        position: profile.position || "",
                         typical_check_size: profile.typical_check_size || "",
                         preferred_stage: profile.preferred_stage || "",
                         location: profile.location || "",
@@ -220,6 +222,7 @@ export default function InvestorPortal() {
                 .from('investor_profiles')
                 .update({
                     firm_name: details.firm_name,
+                    position: details.position,
                     typical_check_size: details.typical_check_size,
                     preferred_stage: details.preferred_stage as any,
                     location: details.location,
@@ -458,6 +461,35 @@ export default function InvestorPortal() {
                     {/* INTERESTS TAB */}
                     <TabsContent value="interests" className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Firm Name</label>
+                                    <input
+                                        type="text"
+                                        value={details.firm_name}
+                                        onChange={e => setDetails({ ...details, firm_name: e.target.value })}
+                                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-white/30 transition-colors"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Position</label>
+                                    <input
+                                        type="text"
+                                        value={details.position}
+                                        onChange={e => setDetails({ ...details, position: e.target.value })}
+                                        className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-white/30 transition-colors"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Investment Thesis</label>
+                                <textarea
+                                    value={details.investment_thesis}
+                                    onChange={e => setDetails({ ...details, investment_thesis: e.target.value })}
+                                    className="w-full bg-zinc-900/50 border border-zinc-800 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-white/30 transition-colors min-h-[100px] resize-y"
+                                />
+                            </div>
+
                             <div className="space-y-2">
                                 <label className="text-xs font-bold uppercase tracking-widest text-gray-500 pl-1">Ideal Stage</label>
                                 <div className="flex flex-wrap gap-2">

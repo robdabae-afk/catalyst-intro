@@ -1,10 +1,31 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { ArrowRight, Lock, CheckCircle2, UploadCloud } from "lucide-react";
 import { BottomNavigation } from "@/components/BottomNavigation";
 
 export const FounderProfileInput = () => {
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState("company");
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('user_type')
+                .eq('id', user.id)
+                .single();
+
+            if (profile?.user_type === 'investor') {
+                navigate('/dashboard');
+            }
+        };
+        checkUser();
+    }, []);
 
     const sections = [
         { id: "company", label: "Company Info", status: "current" },
