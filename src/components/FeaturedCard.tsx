@@ -216,15 +216,23 @@ export const FeaturedCard = ({
                         <div className="relative pl-8 group">
                             <div className="absolute left-[3px] top-1.5 w-[11px] h-[11px] rounded-full bg-white border-2 border-black z-10 shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
                             <div className="bg-zinc-950 p-5 rounded-xl border border-zinc-800 shadow-sm hover:border-zinc-700 transition-colors">
-                                <div className="flex justify-between items-start mb-2">
-                                    <h4 className="text-white font-bold text-base">{publicDeal?.round || "Series A"} - {publicDeal?.company_name || "DataMinds"}</h4>
-                                    <span className="text-[10px] font-bold uppercase text-black bg-white px-2 py-1 rounded">Lead</span>
-                                </div>
-                                <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wider">{publicDeal?.date || "Oct 2023"} • {publicDeal?.round ? "Confidential" : "$5M Round"}</p>
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
-                                    <span className="text-xs text-gray-300 font-medium tracking-wide">{publicDeal?.sector || "AI Infrastructure"}</span>
-                                </div>
+                                {publicDeal ? (
+                                    <>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h4 className="text-white font-bold text-base">{publicDeal.round} - {publicDeal.company_name}</h4>
+                                            <span className="text-[10px] font-bold uppercase text-black bg-white px-2 py-1 rounded">Lead</span>
+                                        </div>
+                                        <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-wider">{publicDeal.date} • Confidential</p>
+                                        <div className="flex items-center gap-2">
+                                            <div className="bg-gray-700 h-6 w-6 rounded-full bg-cover bg-center grayscale opacity-80"></div>
+                                            <span className="text-xs text-gray-300 font-medium tracking-wide">{publicDeal.sector}</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex items-center justify-center py-6">
+                                        <p className="text-gray-500 font-medium text-sm">No history disclosed</p>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
