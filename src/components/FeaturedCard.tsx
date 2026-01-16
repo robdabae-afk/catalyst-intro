@@ -139,6 +139,10 @@ export const FeaturedCard = ({
     const investorStats = [
         {
             label: "Check Size",
+            // If the value already contains currency symbols or 'k'/'M', displays as is. 
+            // The user's issue "k$50" suggests some auto-formatting might be happening elsewhere or 
+            // they want the input value to be respected. 
+            // Assuming the input is something like "25k-100k" or "$50k".
             value: details?.typical_check_size || "-",
             sub: "Typical Amount",
             icon: DollarSign
@@ -148,12 +152,6 @@ export const FeaturedCard = ({
             value: details?.preferred_stage || "-",
             sub: "Preferred Stage",
             icon: TrendingUp
-        },
-        {
-            label: "Lead?",
-            value: details?.leads_rounds ? "Yes" : "No",
-            sub: "Leads Rounds",
-            icon: CheckCircle2
         }
     ];
 
@@ -363,7 +361,7 @@ export const FeaturedCard = ({
             <section className="px-6">
                 {organicProfile?.user_type === 'investor' ? (
                     // Investor Stats Display
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                         {investorStats.map((stat, i) => (
                             <div key={i} className="flex flex-col items-center justify-center rounded-2xl p-4 bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors aspect-square text-center">
                                 <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-2">{stat.label}</span>
