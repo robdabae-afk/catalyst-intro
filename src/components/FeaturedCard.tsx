@@ -503,47 +503,32 @@ export const FeaturedCard = ({
                     </div>
                 )}
             </section>
-            className="h-10 w-10 rounded-full bg-cover bg-center bg-gray-700 shrink-0"
-            style={{ backgroundImage: `url("${e.endorser.avatar_url || 'https://github.com/shadcn.png'}")` }}
-                                    />
-            <div className="min-w-0">
-                <p className="text-white font-bold text-sm truncate">{e.endorser.name}</p>
-                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-wider truncate">
-                    {e.endorser.user_type}
-                    {/* We can improve this with company name if we join fetch it */}
-                </p>
-            </div>
-        </div>
-                            </div >
-                        ))}
-                    </div >
-                </section >
-            )}
 
-<div className="h-24"></div>
 
-{/* Modals ... */ }
+            <div className="h-24"></div>
 
-{
-    showMessageModal && organicProfile && (
-        <InstantMessageModal
-            receiverId={organicProfile.id}
-            receiverName={name || 'User'}
-            tokenBalance={tokenBalance}
-            onClose={() => setShowMessageModal(false)}
-            onSuccess={handleMessageSuccess}
-            onOpenPurchase={handleOpenPurchase}
-        />
-    )
-}
+            {/* Modals ... */}
 
-{
-    showPurchaseModal && (
-        <TokenPurchaseModal
-            onClose={() => setShowPurchaseModal(false)}
-        />
-    )
-}
+            {
+                showMessageModal && organicProfile && (
+                    <InstantMessageModal
+                        receiverId={organicProfile.id}
+                        receiverName={name || 'User'}
+                        tokenBalance={tokenBalance}
+                        onClose={() => setShowMessageModal(false)}
+                        onSuccess={handleMessageSuccess}
+                        onOpenPurchase={handleOpenPurchase}
+                    />
+                )
+            }
+
+            {
+                showPurchaseModal && (
+                    <TokenPurchaseModal
+                        onClose={() => setShowPurchaseModal(false)}
+                    />
+                )
+            }
         </div >
     );
 };
