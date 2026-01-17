@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
-import { FeaturedCard, ProfileMetrics } from '@/components/FeaturedCard';
+import { SwipeCard } from '@/components/SwipeCard';
+import { ProfileMetrics } from '@/components/FeaturedCard'; // Keeping type import only if needed, logic moved
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { MatchModal } from '@/components/MatchModal';
 import { WelcomeBillboard } from '@/components/WelcomeBillboard';
@@ -642,17 +643,20 @@ const Dashboard = () => {
               </div>
             )}
 
-            <FeaturedCard
+// Add import at the top of the file
+// import {SwipeCard} from '@/components/SwipeCard';
+
+            <SwipeCard
               profile={currentProfile}
               userType={currentUser?.user_type || 'founder'}
+              currentUserId={currentUser?.id}
               metrics={metrics}
               onUnlockHistory={handleUnlockHistory}
               unlockingHistory={unlockingHistory}
               isPro={isPro}
               isMatch={hasMutualMatch}
               publicDeal={publicDeal}
-              isFeatured={!currentProfile.isAd && (currentProfile as OrganicProfile).is_featured}
-              onFilterClick={() => navigate('/filters')}
+              onSwipe={handleSwipe}
             />
             <div className="h-8"></div>
           </div>
