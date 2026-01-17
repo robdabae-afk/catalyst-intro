@@ -491,16 +491,7 @@ export const SwipeCard = ({
         </Alert>
       )}
 
-      <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2 flex gap-4 sm:gap-6 items-center">
-        <Button size="lg" variant="outline" className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-red-500 hover:text-red-500 ${adLocked ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => !adLocked && onSwipe('pass')} disabled={adLocked}><X className="w-5 h-5 sm:w-8 sm:h-8" /></Button>
-        {!isAd && profileId && currentUserId && (
-          <Button size="lg" className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black shadow-lg relative -mt-4 transition-transform hover:scale-105" onClick={() => setShowInstantMessage(true)} title="Send Priority Message">
-            <div className="absolute -top-3 bg-white text-black px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-black/5 shadow-sm">Priority</div>
-            <Star className="w-8 h-8 sm:w-10 sm:h-10 fill-black" />
-          </Button>
-        )}
-        <Button size="lg" variant="outline" className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 hover:border-green-500 hover:text-green-500 ${adLocked ? 'opacity-50 cursor-not-allowed' : ''}`} onClick={() => !adLocked && onSwipe('like')} disabled={adLocked}><Heart className="w-5 h-5 sm:w-8 sm:h-8" /></Button>
-      </div>
+      {/* Button row moved to Dashboard.tsx - removed from here to avoid duplicate UI */}
 
       {!isAd && profileId && currentUserId && (
         <InstantMessageDialog open={showInstantMessage} onOpenChange={setShowInstantMessage} senderId={currentUserId} receiverId={profileId} receiverName={profileName} userType={userType} isPopular={isPopular} onMessageSent={() => { }} />
