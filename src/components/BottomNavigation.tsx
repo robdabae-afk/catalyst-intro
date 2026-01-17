@@ -24,7 +24,7 @@ export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-2xl border-t border-white/5 pb-8 pt-4 px-8 flex justify-between items-center z-50">
+        <div className="fixed bottom-0 left-0 w-full bg-black/95 backdrop-blur-2xl border-t border-white/5 pb-8 pt-4 px-8 flex justify-between items-center z-[60]">
             {navItems.map((item) => {
                 const active = isActive(item.path);
                 const Icon = item.icon;
