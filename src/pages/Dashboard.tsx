@@ -643,9 +643,6 @@ const Dashboard = () => {
               </div>
             )}
 
-// Add import at the top of the file
-// import {SwipeCard} from '@/components/SwipeCard';
-
             <SwipeCard
               profile={currentProfile}
               userType={currentUser?.user_type || 'founder'}
