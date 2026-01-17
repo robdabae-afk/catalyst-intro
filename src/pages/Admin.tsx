@@ -515,7 +515,7 @@ const Admin = () => {
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
-                            <Badge variant="secondary" className="capitalize">
+                            <Badge variant="secondary" className="capitalize text-black bg-white hover:bg-gray-100">
                               {user.user_type}
                             </Badge>
                           </TableCell>
@@ -605,7 +605,7 @@ const Admin = () => {
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>
-                            <Badge variant="secondary" className="capitalize">
+                            <Badge variant="secondary" className="capitalize text-black bg-white hover:bg-gray-100">
                               {user.user_type}
                             </Badge>
                           </TableCell>
