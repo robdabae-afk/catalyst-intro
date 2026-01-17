@@ -334,6 +334,7 @@ export type Database = {
       }
       founder_profiles: {
         Row: {
+          backed_by: string | null
           banner_url: string | null
           company_address: string | null
           company_name: string | null
@@ -342,6 +343,7 @@ export type Database = {
           funding_amount: string | null
           id: string
           industry: string[] | null
+          mrr: string | null
           one_liner: string
           pitch_deck_url: string | null
           pitch_deck_visibility: string
@@ -353,6 +355,7 @@ export type Database = {
           video_url: string | null
         }
         Insert: {
+          backed_by?: string | null
           banner_url?: string | null
           company_address?: string | null
           company_name?: string | null
@@ -361,6 +364,7 @@ export type Database = {
           funding_amount?: string | null
           id?: string
           industry?: string[] | null
+          mrr?: string | null
           one_liner: string
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
@@ -372,6 +376,7 @@ export type Database = {
           video_url?: string | null
         }
         Update: {
+          backed_by?: string | null
           banner_url?: string | null
           company_address?: string | null
           company_name?: string | null
@@ -380,6 +385,7 @@ export type Database = {
           funding_amount?: string | null
           id?: string
           industry?: string[] | null
+          mrr?: string | null
           one_liner?: string
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
@@ -610,6 +616,7 @@ export type Database = {
           hidden_at: string | null
           hidden_by: string | null
           id: string
+          is_featured: boolean | null
           is_hidden: boolean
           is_test_account: boolean | null
           is_test_mode: boolean | null
@@ -651,6 +658,7 @@ export type Database = {
           hidden_at?: string | null
           hidden_by?: string | null
           id: string
+          is_featured?: boolean | null
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
@@ -692,6 +700,7 @@ export type Database = {
           hidden_at?: string | null
           hidden_by?: string | null
           id?: string
+          is_featured?: boolean | null
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null

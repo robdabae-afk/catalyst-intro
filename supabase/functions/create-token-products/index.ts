@@ -98,7 +98,7 @@ serve(async (req) => {
         });
         
         const existingProduct = existingProducts.data.find(
-          p => p.name === productName && p.active
+          (p: { name: string; active: boolean }) => p.name === productName && p.active
         );
 
         if (existingProduct) {
