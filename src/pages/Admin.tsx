@@ -82,11 +82,12 @@ const Admin = () => {
   };
 
   const handleToggleVerification = async (userId: string, currentStatus: boolean) => {
-    // TODO: is_verified column doesn't exist yet
-    toast({ variant: "destructive", title: "Not available", description: "is_verified column not in database" });
-    return;
     try {
-      const error = null; // Skip until column exists
+      // Cast to any to bypass type check until types are regenerated
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_verified: !currentStatus } as any)
+        .eq('id', userId);
 
       if (error) throw error;
 
@@ -94,7 +95,7 @@ const Admin = () => {
       await loadUsers();
 
       toast({
-        title: currentStatus ? "User unverified" : "User verified",
+        title: !currentStatus ? "User verified" : "User unverified",
         description: `Verification status updated successfully.`
       });
     } catch (err: any) {
@@ -107,11 +108,11 @@ const Admin = () => {
   };
 
   const handleToggleFeatured = async (userId: string, currentStatus: boolean) => {
-    // TODO: is_featured column doesn't exist yet
-    toast({ variant: "destructive", title: "Not available", description: "is_featured column not in database" });
-    return;
     try {
-      const error = null; // Skip until column exists
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_featured: !currentStatus })
+        .eq('id', userId);
 
       if (error) throw error;
 
