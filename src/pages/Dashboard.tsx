@@ -631,7 +631,7 @@ const Dashboard = () => {
             />
           </div>
         ) : currentProfile ? (
-          <div className="flex flex-col w-full px-3 pt-3 gap-4 pb-10">
+          <div className="flex-1 flex flex-col w-full px-4 pt-2 pb-2 overflow-hidden">
             {/* Cooldown Overlay */}
             {swipeCooldown && (
               <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -652,42 +652,12 @@ const Dashboard = () => {
               isMatch={hasMutualMatch}
               publicDeal={publicDeal}
               onSwipe={handleSwipe}
+              onMessage={handleInstantMessageClick}
+              swipeCooldown={swipeCooldown}
             />
-            <div className="h-8"></div>
           </div>
         ) : null}
       </main>
-
-      {/* Floating Action Buttons */}
-      {!loading && !showAllCaughtUp && currentProfile && !showInstantMessageModal && (
-        <>
-          <div className="absolute bottom-28 left-0 w-full px-6 pointer-events-none z-50">
-            <div className="flex items-center justify-center gap-4 pointer-events-auto">
-              <button
-                onClick={() => handleSwipe('pass')}
-                disabled={swipeCooldown}
-                className="group flex items-center justify-center w-[48px] h-[48px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
-              >
-                <X className="text-white/40 group-hover:text-white/90 transition-colors" size={20} />
-              </button>
-              <button
-                onClick={handleInstantMessageClick}
-                disabled={swipeCooldown}
-                className="relative group flex flex-col items-center justify-center w-[56px] h-[56px] rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50"
-              >
-                <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={24} />
-              </button>
-              <button
-                onClick={() => handleSwipe('like')}
-                disabled={swipeCooldown}
-                className="group flex items-center justify-center w-[48px] h-[48px] rounded-full bg-[#1A1A1A] border border-white/5 shadow-2xl hover:border-white/20 hover:bg-[#222] transition-all active:scale-95 duration-200"
-              >
-                <Handshake className="text-white/40 group-hover:text-emerald-400/90 transition-colors duration-300 group-hover:rotate-12" size={20} />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
 
       {/* Bottom Navigation */}
       <BottomNavigation userType={currentUser?.user_type as 'founder' | 'investor'} />
