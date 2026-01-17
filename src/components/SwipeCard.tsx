@@ -31,21 +31,7 @@ interface SwipeCardProps {
   swipeCooldown?: boolean;
 }
 
-// Mock endorsements data - in production this would come from database
-const mockEndorsements = [
-  {
-    id: '1',
-    text: "One of the most driven founders I've worked with. Exceptional execution.",
-    endorserName: "Sarah Chen",
-    endorserTitle: "Partner @ Sequoia"
-  },
-  {
-    id: '2', 
-    text: "Brilliant product vision and ability to iterate fast based on customer feedback.",
-    endorserName: "Michael Ross",
-    endorserTitle: "Angel Investor"
-  }
-];
+// Endorsements would come from database - empty by default until user receives real endorsements
 
 export const SwipeCard = ({
   profile,
@@ -164,7 +150,7 @@ export const SwipeCard = ({
   const location = founderProfile?.preferred_city || investorProfile?.location;
 
   // Endorsements Component
-  const EndorsementsSection = ({ endorsements = [] as typeof mockEndorsements }) => (
+  const EndorsementsSection = ({ endorsements = [] }: { endorsements: Array<{ id: string; text: string; endorserName: string; endorserTitle: string }> }) => (
     <div className="space-y-3">
       <div className="flex items-center gap-2 text-zinc-400">
         <span className="text-xs font-bold uppercase tracking-[0.2em]">Endorsements</span>
@@ -354,19 +340,19 @@ export const SwipeCard = ({
 
               {/* Vitals Row - MRR and Backed By with glassmorphism */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-xs font-medium uppercase tracking-wider">MRR</span>
+                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-3 hover:bg-zinc-800/80 transition-colors min-h-[72px] flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5 text-zinc-400">
+                    <TrendingUp className="w-3 h-3" />
+                    <span className="text-[10px] font-medium uppercase tracking-wider">MRR</span>
                   </div>
-                  <p className="text-2xl font-serif font-semibold text-white">{founderProfile.mrr || '$0'}</p>
+                  <p className="text-base font-serif font-semibold text-white truncate">{founderProfile.mrr || '-'}</p>
                 </div>
-                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
-                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                    <Rocket className="w-4 h-4" />
-                    <span className="text-xs font-medium uppercase tracking-wider">Backed By</span>
+                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-3 hover:bg-zinc-800/80 transition-colors min-h-[72px] flex flex-col justify-between">
+                  <div className="flex items-center gap-1.5 text-zinc-400">
+                    <Rocket className="w-3 h-3" />
+                    <span className="text-[10px] font-medium uppercase tracking-wider">Backed By</span>
                   </div>
-                  <p className="text-base font-medium text-white truncate">{founderProfile.backed_by || 'Bootstrapped'}</p>
+                  <p className="text-sm font-medium text-white truncate">{founderProfile.backed_by || '-'}</p>
                 </div>
               </div>
 
@@ -407,7 +393,7 @@ export const SwipeCard = ({
               )}
 
               {/* Endorsements Section */}
-              <EndorsementsSection endorsements={mockEndorsements} />
+              <EndorsementsSection endorsements={[]} />
             </div>
           </div>
         ) : investorProfile ? (
@@ -459,10 +445,10 @@ export const SwipeCard = ({
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2">
                 {investorStats.map((stat, idx) => (
-                  <div key={idx} className="bg-zinc-800/60 backdrop-blur-sm rounded-xl p-3 border border-zinc-700/50 text-center">
-                    <stat.icon className="w-4 h-4 mx-auto text-zinc-400 mb-1" />
-                    <p className="text-lg font-semibold text-white">{stat.value}</p>
-                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{stat.label}</p>
+                  <div key={idx} className="bg-zinc-800/60 backdrop-blur-sm rounded-xl p-2 border border-zinc-700/50 text-center min-h-[68px] flex flex-col justify-between">
+                    <stat.icon className="w-3 h-3 mx-auto text-zinc-400" />
+                    <p className="text-sm font-semibold text-white truncate px-1">{stat.value}</p>
+                    <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{stat.label}</p>
                   </div>
                 ))}
               </div>
@@ -493,7 +479,7 @@ export const SwipeCard = ({
               </div>
 
               {/* Endorsements Section */}
-              <EndorsementsSection endorsements={mockEndorsements} />
+              <EndorsementsSection endorsements={[]} />
             </div>
           </div>
         ) : (
