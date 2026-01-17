@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, MessageSquare, CheckCircle2, Handshake, Star, X, MessageCircle } from "lucide-react";
+import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, MessageSquare, CheckCircle2, Handshake, Star, X, MessageCircle, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AdProfile, QueueItem } from "@/hooks/useSwipeQueue";
@@ -31,6 +31,22 @@ interface SwipeCardProps {
   swipeCooldown?: boolean;
 }
 
+// Mock endorsements data - in production this would come from database
+const mockEndorsements = [
+  {
+    id: '1',
+    text: "One of the most driven founders I've worked with. Exceptional execution.",
+    endorserName: "Sarah Chen",
+    endorserTitle: "Partner @ Sequoia"
+  },
+  {
+    id: '2', 
+    text: "Brilliant product vision and ability to iterate fast based on customer feedback.",
+    endorserName: "Michael Ross",
+    endorserTitle: "Angel Investor"
+  }
+];
+
 export const SwipeCard = ({
   profile,
   onSwipe,
@@ -58,6 +74,13 @@ export const SwipeCard = ({
       setAdLocked(false);
     }
   }, [isAd, profile, isPro]);
+
+  // Reset scroll position when profile changes
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [profile]);
 
   // Handle button press with haptic feedback and scale animation
   const handleButtonPress = (action: 'like' | 'pass' | 'message') => {
@@ -141,45 +164,49 @@ export const SwipeCard = ({
   const companyName = founderProfile?.company_name || founderProfile?.startup_name;
   const location = founderProfile?.preferred_city || investorProfile?.location;
 
-  // Action Button Tray Component
-  const ActionTray = () => (
-    <div className="absolute bottom-0 left-0 right-0 z-30 p-4 pb-6">
-      <div className="flex items-center justify-center gap-6 bg-black/40 backdrop-blur-[10px] rounded-2xl py-4 px-6 border border-white/10">
-        {/* Decline Button */}
-        <button
-          onClick={() => handleButtonPress('pass')}
-          disabled={swipeCooldown || adLocked}
-          className="group flex items-center justify-center w-14 h-14 rounded-full bg-zinc-900/80 border border-white/10 shadow-lg hover:border-white/30 hover:bg-zinc-800 transition-all duration-200 active:scale-95 disabled:opacity-50"
-        >
-          <X className="text-white/60 group-hover:text-white transition-colors" size={24} />
-        </button>
-        
-        {/* Message Button - Central & Largest */}
-        <button
-          onClick={() => handleButtonPress('message')}
-          disabled={swipeCooldown || adLocked}
-          className="group flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:scale-105 transition-all duration-300 active:scale-95 border border-white/50 disabled:opacity-50"
-        >
-          <MessageCircle className="text-black fill-black group-hover:scale-110 transition-transform duration-300" size={28} />
-        </button>
-        
-        {/* Connect Button */}
-        <button
-          onClick={() => handleButtonPress('like')}
-          disabled={swipeCooldown || adLocked}
-          className="group flex items-center justify-center w-14 h-14 rounded-full bg-zinc-900/80 border border-white/10 shadow-lg hover:border-emerald-500/50 hover:bg-zinc-800 transition-all duration-200 active:scale-95 disabled:opacity-50"
-        >
-          <Handshake className="text-white/60 group-hover:text-emerald-400 transition-colors duration-300 group-hover:rotate-12" size={24} />
-        </button>
+  // Endorsements Component
+  const EndorsementsSection = ({ endorsements = [] as typeof mockEndorsements }) => (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 text-zinc-400">
+        <span className="text-xs font-bold uppercase tracking-[0.2em]">Endorsements</span>
       </div>
+      {endorsements.length > 0 ? (
+        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+          {endorsements.map((endorsement) => (
+            <div 
+              key={endorsement.id}
+              className="flex-shrink-0 w-[280px] bg-zinc-800/60 backdrop-blur-sm rounded-xl p-4 border border-zinc-700/50"
+            >
+              <Quote className="w-6 h-6 text-[#C5A059]/60 mb-2" />
+              <p className="text-sm text-zinc-300 italic leading-relaxed mb-3">
+                "{endorsement.text}"
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center">
+                  <User className="w-4 h-4 text-zinc-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{endorsement.endorserName}</p>
+                  <p className="text-xs text-zinc-500">{endorsement.endorserTitle}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-6 text-zinc-500 text-sm">
+          No endorsements yet.
+        </div>
+      )}
     </div>
   );
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full flex flex-col">
       <Card
         ref={cardRef}
-        className="relative w-full h-full overflow-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl"
+        className="relative w-full flex-1 overflow-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl mx-auto"
+        style={{ maxWidth: 'calc(100vw - 32px)' }}
       >
         {/* Ad Badge */}
         {isAdProfile && (
@@ -191,17 +218,17 @@ export const SwipeCard = ({
 
         {/* Video Card Layout */}
         {hasVideo ? (
-          <div className="relative w-full h-full bg-black">
+          <div className="relative w-full h-full bg-black flex flex-col">
             <video
               src={videoUrl}
-              className="w-full h-full object-cover"
+              className="w-full flex-1 object-cover"
               autoPlay
               loop
               playsInline
               controls
               onError={(e) => console.error('Video load error:', e)}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-32">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-8">
               <div className="space-y-2">
                 <h3 className="text-2xl sm:text-3xl font-bold text-white">
                   {companyName}
@@ -220,7 +247,6 @@ export const SwipeCard = ({
                 </div>
               </div>
             </div>
-            <ActionTray />
           </div>
         ) : isAdProfile && adProfile ? (
           /* Ad Profile Layout */
@@ -238,7 +264,7 @@ export const SwipeCard = ({
                 <h3 className="text-2xl sm:text-3xl font-bold text-white">{adProfile.company_name || adProfile.name}</h3>
               </div>
             </div>
-            <div ref={contentRef} className="flex-1 p-4 space-y-4 overflow-y-auto pb-28">
+            <div ref={contentRef} className="flex-1 p-4 space-y-4 overflow-y-auto pb-8">
               {(adProfile.one_liner || adProfile.description) && (
                 <p className="text-base text-zinc-300">{adProfile.one_liner || adProfile.description}</p>
               )}
@@ -259,7 +285,6 @@ export const SwipeCard = ({
                 </a>
               )}
             </div>
-            <ActionTray />
           </div>
         ) : isShowingFounder && founderProfile ? (
           /* FOUNDER PROFILE - Full Height Design */
@@ -277,8 +302,8 @@ export const SwipeCard = ({
               </div>
             )}
 
-            {/* Hero Image Section - 40% of card height */}
-            <div className="relative h-[40%] flex-shrink-0">
+            {/* Hero Image Section - 40% of card height with 3:4 aspect feel */}
+            <div className="relative h-[45%] flex-shrink-0">
               {displayImage ? (
                 <img src={displayImage} alt={profileName} className="w-full h-full object-cover" />
               ) : (
@@ -318,10 +343,19 @@ export const SwipeCard = ({
             {/* Scrollable Content Section */}
             <div
               ref={contentRef}
-              className="flex-1 overflow-y-auto bg-zinc-900 pb-28"
+              className="flex-1 overflow-y-auto bg-zinc-900 pb-44 no-scrollbar"
               style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
             >
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-5">
+                {/* One-Liner Pitch - High Impact Typography */}
+                {founderProfile.one_liner && (
+                  <div className="py-2">
+                    <p className="text-xl font-serif text-white leading-relaxed italic">
+                      "{founderProfile.one_liner}"
+                    </p>
+                  </div>
+                )}
+
                 {/* Industry Tags - Pill Cloud */}
                 {founderProfile.industry && founderProfile.industry.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -351,17 +385,6 @@ export const SwipeCard = ({
                   </div>
                 </div>
 
-                {/* Vision / The Ask Section */}
-                {founderProfile.one_liner && (
-                  <div className="bg-zinc-800/40 backdrop-blur-sm rounded-xl p-4 border border-zinc-700/30">
-                    <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                      <Target className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wider">The Vision</span>
-                    </div>
-                    <p className="text-base text-zinc-200 leading-relaxed line-clamp-3">{founderProfile.one_liner}</p>
-                  </div>
-                )}
-
                 {/* Traction */}
                 {founderProfile.traction && (
                   <div className="bg-zinc-800/40 backdrop-blur-sm rounded-xl p-4 border border-zinc-700/30">
@@ -386,15 +409,17 @@ export const SwipeCard = ({
                     <span>View Pitch Deck</span>
                   </a>
                 )}
+
+                {/* Endorsements Section */}
+                <EndorsementsSection endorsements={mockEndorsements} />
               </div>
             </div>
-            <ActionTray />
           </div>
         ) : investorProfile ? (
           /* INVESTOR PROFILE */
           <div className="h-full flex flex-col overflow-hidden">
             {/* Background Image Section */}
-            <div className="relative h-[40%] flex-shrink-0">
+            <div className="relative h-[45%] flex-shrink-0">
               {displayImage ? (
                 <img src={displayImage} alt={profileName} className="w-full h-full object-cover" />
               ) : (
@@ -428,10 +453,19 @@ export const SwipeCard = ({
             {/* Content Section */}
             <div
               ref={contentRef}
-              className="flex-1 overflow-y-auto bg-zinc-900 pb-28"
+              className="flex-1 overflow-y-auto bg-zinc-900 pb-44 no-scrollbar"
               style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
             >
-              <div className="p-4 space-y-4">
+              <div className="p-4 space-y-5">
+                {/* Investment Thesis - High Impact Quote */}
+                {investorProfile.investment_thesis && (
+                  <div className="py-2">
+                    <p className="text-xl font-serif text-white leading-relaxed italic">
+                      "{investorProfile.investment_thesis}"
+                    </p>
+                  </div>
+                )}
+
                 {/* Stats Grid */}
                 <div className="grid grid-cols-3 gap-2">
                   {investorStats.map((stat, idx) => (
@@ -454,17 +488,6 @@ export const SwipeCard = ({
                   </div>
                 )}
 
-                {/* Investment Thesis */}
-                {investorProfile.investment_thesis && (
-                  <div className="bg-zinc-800/40 backdrop-blur-sm rounded-xl p-4 border border-zinc-700/30">
-                    <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                      <Target className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wider">Investment Thesis</span>
-                    </div>
-                    <p className="text-base text-zinc-200 leading-relaxed">{investorProfile.investment_thesis}</p>
-                  </div>
-                )}
-
                 {/* Footer Links */}
                 <div className="flex items-center justify-between text-sm text-zinc-400 pt-2 border-t border-zinc-800">
                   {investorProfile.location && (
@@ -478,18 +501,52 @@ export const SwipeCard = ({
                     </a>
                   )}
                 </div>
+
+                {/* Endorsements Section */}
+                <EndorsementsSection endorsements={mockEndorsements} />
               </div>
             </div>
-            <ActionTray />
           </div>
         ) : (
           /* Fallback for empty profile */
           <div className="h-full flex flex-col items-center justify-center bg-zinc-900">
             <User className="w-24 h-24 text-zinc-700" />
-            <ActionTray />
           </div>
         )}
       </Card>
+
+      {/* Floating Action Tray - Fixed position above bottom nav */}
+      <div className="absolute bottom-24 left-0 right-0 z-40 px-4">
+        <div className="flex items-center justify-center gap-4 bg-black/60 backdrop-blur-md rounded-full py-3 px-6 border border-white/10 mx-auto max-w-xs shadow-2xl">
+          {/* Pass Button */}
+          <button
+            onClick={() => handleButtonPress('pass')}
+            disabled={swipeCooldown || adLocked}
+            className="group flex items-center justify-center w-14 h-14 rounded-full bg-zinc-900/90 border border-white/10 shadow-lg hover:border-red-500/50 hover:bg-zinc-800 transition-all duration-200 active:scale-95 disabled:opacity-50"
+          >
+            <X className="text-white/70 group-hover:text-red-400 transition-colors" size={26} strokeWidth={2.5} />
+          </button>
+          
+          {/* Priority / Instant Message Button - Center & Gold */}
+          <button
+            onClick={() => handleButtonPress('message')}
+            disabled={swipeCooldown || adLocked}
+            className="group relative flex flex-col items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#C5A059] via-[#D4AF6B] to-[#B8956A] shadow-[0_0_30px_rgba(197,160,89,0.4)] hover:scale-105 transition-all duration-300 active:scale-95 border border-[#D4AF6B]/50 disabled:opacity-50"
+          >
+            <Star className="text-black fill-black" size={24} />
+            <span className="absolute -bottom-6 text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">Priority</span>
+          </button>
+          
+          {/* Connect Button */}
+          <button
+            onClick={() => handleButtonPress('like')}
+            disabled={swipeCooldown || adLocked}
+            className="group flex items-center justify-center w-14 h-14 rounded-full bg-white shadow-lg hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-200 active:scale-95 disabled:opacity-50"
+          >
+            <Handshake className="text-black group-hover:rotate-12 transition-transform duration-300" size={26} />
+          </button>
+        </div>
+      </div>
 
       {/* Popular Profile Prompt */}
       {showPopularPrompt && !isAd && profileId && (
