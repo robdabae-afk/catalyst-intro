@@ -445,7 +445,7 @@ export const SwipeCard = ({
                 {investorStats.map((stat, idx) => (
                   <div key={idx} className="bg-zinc-800/60 backdrop-blur-sm rounded-xl p-2 border border-zinc-700/50 text-center min-h-[68px] flex flex-col justify-between">
                     <stat.icon className="w-3 h-3 mx-auto text-zinc-400" />
-                    <p className="text-sm font-semibold text-white truncate px-1">{stat.value}</p>
+                    <p className="text-[11px] font-semibold text-white leading-tight px-0.5 break-words">{stat.value}</p>
                     <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{stat.label}</p>
                   </div>
                 ))}
