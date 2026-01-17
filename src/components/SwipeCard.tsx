@@ -506,7 +506,7 @@ export const SwipeCard = ({
 
       {/* Floating Action Tray - Fixed to viewport, above bottom nav */}
       <div className="fixed bottom-28 left-0 right-0 z-50 px-4 pointer-events-none">
-        <div className="flex items-center justify-center gap-4 bg-black/60 backdrop-blur-md rounded-full py-3 px-6 border border-white/10 mx-auto max-w-xs shadow-2xl pointer-events-auto">
+        <div className="flex items-center justify-center gap-4 mx-auto max-w-xs pointer-events-auto">
           {/* Pass Button */}
           <button
             onClick={() => handleButtonPress('pass')}
