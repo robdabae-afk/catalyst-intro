@@ -299,22 +299,23 @@ export const SwipeCard = ({
               {/* Gradient overlay at bottom for text legibility */}
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent" />
 
-              {/* Stage & Location Badges - Top of image */}
+              {/* Stage Badge - Top of image */}
               <div className="absolute top-4 left-4 flex flex-wrap gap-2" style={{ marginTop: isFeatured ? '3.5rem' : 0 }}>
                 {founderProfile?.stage && (
                   <Badge className="bg-zinc-800/80 backdrop-blur-sm text-white border-0 text-xs uppercase tracking-wider">
                     {formatStage(founderProfile.stage)}
                   </Badge>
                 )}
-                {location && (
-                  <Badge className="bg-zinc-800/80 backdrop-blur-sm text-white border-0 text-xs">
-                    <MapPin className="w-3 h-3 mr-1" />{location}
-                  </Badge>
-                )}
               </div>
 
-              {/* Name and Company - Bottom of image */}
+              {/* Location & Name - Bottom of image */}
               <div className="absolute bottom-4 left-4 right-4">
+                {location && (
+                  <div className="flex items-center gap-1 text-zinc-300 text-sm mb-1">
+                    <MapPin className="w-3 h-3" />
+                    <span>{location}</span>
+                  </div>
+                )}
                 <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
@@ -410,7 +411,7 @@ export const SwipeCard = ({
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent" />
 
-              {/* Stage Badge */}
+              {/* Stage Badge - Top of image */}
               {investorProfile.preferred_stage && (
                 <div className="absolute top-4 left-4">
                   <Badge className="bg-zinc-800/80 backdrop-blur-sm text-white border-0 text-xs uppercase tracking-wider">
@@ -419,8 +420,14 @@ export const SwipeCard = ({
                 </div>
               )}
 
-              {/* Name and Firm - Bottom of image */}
+              {/* Location & Name - Bottom of image */}
               <div className="absolute bottom-4 left-4 right-4">
+                {investorProfile.location && (
+                  <div className="flex items-center gap-1 text-zinc-300 text-sm mb-1">
+                    <MapPin className="w-3 h-3" />
+                    <span>{investorProfile.location}</span>
+                  </div>
+                )}
                 <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
@@ -433,15 +440,6 @@ export const SwipeCard = ({
 
             {/* Content Section */}
             <div className="p-4 space-y-5">
-              {/* Investment Thesis - High Impact Quote */}
-              {investorProfile.investment_thesis && (
-                <div className="py-2">
-                  <p className="text-xl font-serif text-white leading-relaxed italic">
-                    "{investorProfile.investment_thesis}"
-                  </p>
-                </div>
-              )}
-
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2">
                 {investorStats.map((stat, idx) => (
@@ -452,6 +450,15 @@ export const SwipeCard = ({
                   </div>
                 ))}
               </div>
+
+              {/* Investment Thesis - After stats, before sectors */}
+              {investorProfile.investment_thesis && (
+                <div className="py-2">
+                  <p className="text-lg font-serif text-white leading-relaxed italic">
+                    "{investorProfile.investment_thesis}"
+                  </p>
+                </div>
+              )}
 
               {/* Sectors of Interest */}
               {investorProfile.sectors_of_interest && investorProfile.sectors_of_interest.length > 0 && (
@@ -465,18 +472,13 @@ export const SwipeCard = ({
               )}
 
               {/* Footer Links */}
-              <div className="flex items-center justify-between text-sm text-zinc-400 pt-2 border-t border-zinc-800">
-                {investorProfile.location && (
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={14} /> {investorProfile.location}
-                  </div>
-                )}
-                {investorProfile.portfolio_link && (
+              {investorProfile.portfolio_link && (
+                <div className="flex items-center justify-end text-sm text-zinc-400 pt-2 border-t border-zinc-800">
                   <a href={investorProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#C5A059] hover:text-[#D4AF6B]">
                     <LinkIcon size={14} /> Portfolio
                   </a>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Endorsements Section */}
               <EndorsementsSection endorsements={[]} />
