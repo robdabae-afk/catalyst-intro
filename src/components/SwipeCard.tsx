@@ -63,7 +63,6 @@ export const SwipeCard = ({
   const [showInstantMessage, setShowInstantMessage] = useState(false);
   const [showPopularPrompt, setShowPopularPrompt] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isAd && !isPro) {
@@ -77,8 +76,8 @@ export const SwipeCard = ({
 
   // Reset scroll position when profile changes
   useEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.scrollTop = 0;
+    if (cardRef.current) {
+      cardRef.current.scrollTop = 0;
     }
   }, [profile]);
 
@@ -205,8 +204,8 @@ export const SwipeCard = ({
     <div className="relative w-full h-full flex flex-col">
       <Card
         ref={cardRef}
-        className="relative w-full flex-1 overflow-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl mx-auto"
-        style={{ maxWidth: 'calc(100vw - 32px)' }}
+        className="relative w-full flex-1 overflow-y-auto overflow-x-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl mx-auto no-scrollbar"
+        style={{ maxWidth: 'calc(100vw - 32px)', touchAction: 'pan-y', overscrollBehavior: 'contain' }}
       >
         {/* Ad Badge */}
         {isAdProfile && (
@@ -218,17 +217,17 @@ export const SwipeCard = ({
 
         {/* Video Card Layout */}
         {hasVideo ? (
-          <div className="relative w-full h-full bg-black flex flex-col">
+          <div className="relative w-full min-h-full bg-black flex flex-col pb-48">
             <video
               src={videoUrl}
-              className="w-full flex-1 object-cover"
+              className="w-full aspect-video object-cover"
               autoPlay
               loop
               playsInline
               controls
               onError={(e) => console.error('Video load error:', e)}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-8">
+            <div className="p-6">
               <div className="space-y-2">
                 <h3 className="text-2xl sm:text-3xl font-bold text-white">
                   {companyName}
@@ -250,8 +249,8 @@ export const SwipeCard = ({
           </div>
         ) : isAdProfile && adProfile ? (
           /* Ad Profile Layout */
-          <div className="h-full flex flex-col">
-            <div className="relative h-[40%] bg-gradient-to-br from-amber-500/20 to-orange-500/20">
+          <div className="min-h-full flex flex-col pb-48">
+            <div className="relative h-[40vh] flex-shrink-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20">
               {adProfile.image_url ? (
                 <img src={adProfile.image_url} alt={adProfile.name} className="w-full h-full object-cover" />
               ) : (
@@ -264,7 +263,7 @@ export const SwipeCard = ({
                 <h3 className="text-2xl sm:text-3xl font-bold text-white">{adProfile.company_name || adProfile.name}</h3>
               </div>
             </div>
-            <div ref={contentRef} className="flex-1 p-4 space-y-4 overflow-y-auto pb-8">
+            <div className="p-4 space-y-4">
               {(adProfile.one_liner || adProfile.description) && (
                 <p className="text-base text-zinc-300">{adProfile.one_liner || adProfile.description}</p>
               )}
@@ -287,12 +286,12 @@ export const SwipeCard = ({
             </div>
           </div>
         ) : isShowingFounder && founderProfile ? (
-          /* FOUNDER PROFILE - Full Height Design */
-          <div className="h-full flex flex-col overflow-hidden">
-            {/* Featured Badge - Top Left */}
+          /* FOUNDER PROFILE - Full Card Scrollable Design */
+          <div className="min-h-full pb-48">
+            {/* Featured Badge - Sticky Top Left */}
             {isFeatured && (
-              <div className="absolute top-4 left-4 z-20">
-                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2 border border-[#C5A059]/30">
+              <div className="sticky top-4 left-4 z-20 w-fit">
+                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-2 border border-[#C5A059]/30 ml-4">
                   <Star className="w-4 h-4 text-[#C5A059] fill-[#C5A059]" />
                   <div className="flex flex-col">
                     <span className="text-xs font-serif text-white leading-none">Featured</span>
@@ -302,8 +301,8 @@ export const SwipeCard = ({
               </div>
             )}
 
-            {/* Hero Image Section - 40% of card height with 3:4 aspect feel */}
-            <div className="relative h-[45%] flex-shrink-0">
+            {/* Hero Image Section */}
+            <div className="relative w-full aspect-[3/4] max-h-[50vh]" style={{ marginTop: isFeatured ? '-52px' : 0 }}>
               {displayImage ? (
                 <img src={displayImage} alt={profileName} className="w-full h-full object-cover" />
               ) : (
@@ -311,7 +310,7 @@ export const SwipeCard = ({
                   <User className="w-24 h-24 text-zinc-700" />
                 </div>
               )}
-              {/* Subtle dark gradient overlay at bottom for text legibility */}
+              {/* Gradient overlay at bottom for text legibility */}
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/40 to-transparent" />
 
               {/* Stage & Location Badges - Top of image */}
@@ -340,86 +339,82 @@ export const SwipeCard = ({
               </div>
             </div>
 
-            {/* Scrollable Content Section */}
-            <div
-              ref={contentRef}
-              className="flex-1 overflow-y-auto bg-zinc-900 pb-44 no-scrollbar"
-              style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
-            >
-              <div className="p-4 space-y-5">
-                {/* One-Liner Pitch - High Impact Typography */}
-                {founderProfile.one_liner && (
-                  <div className="py-2">
-                    <p className="text-xl font-serif text-white leading-relaxed italic">
-                      "{founderProfile.one_liner}"
-                    </p>
-                  </div>
-                )}
-
-                {/* Industry Tags - Pill Cloud */}
-                {founderProfile.industry && founderProfile.industry.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {founderProfile.industry.map((ind: string) => (
-                      <Badge key={ind} className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border-0 text-sm px-3 py-1">
-                        {ind}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-
-                {/* Vitals Row - MRR and Backed By with glassmorphism */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
-                    <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wider">MRR</span>
-                    </div>
-                    <p className="text-2xl font-serif font-semibold text-white">{founderProfile.mrr || '$0'}</p>
-                  </div>
-                  <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
-                    <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                      <Rocket className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wider">Backed By</span>
-                    </div>
-                    <p className="text-base font-medium text-white truncate">{founderProfile.backed_by || 'Bootstrapped'}</p>
-                  </div>
+            {/* Content Section - Part of scrollable area */}
+            <div className="p-4 space-y-5">
+              {/* Industry Tags - Pill Cloud */}
+              {founderProfile.industry && founderProfile.industry.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {founderProfile.industry.map((ind: string) => (
+                    <Badge key={ind} className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border-0 text-sm px-3 py-1">
+                      {ind}
+                    </Badge>
+                  ))}
                 </div>
+              )}
 
-                {/* Traction */}
-                {founderProfile.traction && (
-                  <div className="bg-zinc-800/40 backdrop-blur-sm rounded-xl p-4 border border-zinc-700/30">
-                    <div className="flex items-center gap-2 text-zinc-400 mb-2">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="text-xs font-medium uppercase tracking-wider">Traction</span>
-                    </div>
-                    <p className="text-base text-zinc-200">{founderProfile.traction}</p>
+              {/* Vitals Row - MRR and Backed By with glassmorphism */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
+                    <TrendingUp className="w-4 h-4" />
+                    <span className="text-xs font-medium uppercase tracking-wider">MRR</span>
                   </div>
-                )}
-
-                {/* Pitch Deck Link */}
-                {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'public' && (
-                  <a
-                    href={founderProfile.pitch_deck_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-[#C5A059] hover:text-[#D4AF6B] transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <FileText className="w-4 h-4" />
-                    <span>View Pitch Deck</span>
-                  </a>
-                )}
-
-                {/* Endorsements Section */}
-                <EndorsementsSection endorsements={mockEndorsements} />
+                  <p className="text-2xl font-serif font-semibold text-white">{founderProfile.mrr || '$0'}</p>
+                </div>
+                <div className="bg-zinc-800/60 backdrop-blur-[10px] border border-zinc-700/50 rounded-xl p-4 hover:bg-zinc-800/80 transition-colors">
+                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
+                    <Rocket className="w-4 h-4" />
+                    <span className="text-xs font-medium uppercase tracking-wider">Backed By</span>
+                  </div>
+                  <p className="text-base font-medium text-white truncate">{founderProfile.backed_by || 'Bootstrapped'}</p>
+                </div>
               </div>
+
+              {/* One-Liner Pitch - High Impact Typography */}
+              {founderProfile.one_liner && (
+                <div className="py-2">
+                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em]">My superpower is</span>
+                  </div>
+                  <p className="text-lg font-serif text-white leading-relaxed">
+                    {founderProfile.one_liner}
+                  </p>
+                </div>
+              )}
+
+              {/* Traction / Looking For */}
+              {founderProfile.traction && (
+                <div className="py-2">
+                  <div className="flex items-center gap-2 text-zinc-400 mb-2">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em]">I'm looking for</span>
+                  </div>
+                  <p className="text-base text-zinc-200">{founderProfile.traction}</p>
+                </div>
+              )}
+
+              {/* Pitch Deck Link */}
+              {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'public' && (
+                <a
+                  href={founderProfile.pitch_deck_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm text-[#C5A059] hover:text-[#D4AF6B] transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>View Pitch Deck</span>
+                </a>
+              )}
+
+              {/* Endorsements Section */}
+              <EndorsementsSection endorsements={mockEndorsements} />
             </div>
           </div>
         ) : investorProfile ? (
-          /* INVESTOR PROFILE */
-          <div className="h-full flex flex-col overflow-hidden">
-            {/* Background Image Section */}
-            <div className="relative h-[45%] flex-shrink-0">
+          /* INVESTOR PROFILE - Full Card Scrollable */
+          <div className="min-h-full pb-48">
+            {/* Hero Image Section */}
+            <div className="relative w-full aspect-[3/4] max-h-[50vh]">
               {displayImage ? (
                 <img src={displayImage} alt={profileName} className="w-full h-full object-cover" />
               ) : (
@@ -451,73 +446,67 @@ export const SwipeCard = ({
             </div>
 
             {/* Content Section */}
-            <div
-              ref={contentRef}
-              className="flex-1 overflow-y-auto bg-zinc-900 pb-44 no-scrollbar"
-              style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
-            >
-              <div className="p-4 space-y-5">
-                {/* Investment Thesis - High Impact Quote */}
-                {investorProfile.investment_thesis && (
-                  <div className="py-2">
-                    <p className="text-xl font-serif text-white leading-relaxed italic">
-                      "{investorProfile.investment_thesis}"
-                    </p>
-                  </div>
-                )}
+            <div className="p-4 space-y-5">
+              {/* Investment Thesis - High Impact Quote */}
+              {investorProfile.investment_thesis && (
+                <div className="py-2">
+                  <p className="text-xl font-serif text-white leading-relaxed italic">
+                    "{investorProfile.investment_thesis}"
+                  </p>
+                </div>
+              )}
 
-                {/* Stats Grid */}
-                <div className="grid grid-cols-3 gap-2">
-                  {investorStats.map((stat, idx) => (
-                    <div key={idx} className="bg-zinc-800/60 backdrop-blur-sm rounded-xl p-3 border border-zinc-700/50 text-center">
-                      <stat.icon className="w-4 h-4 mx-auto text-zinc-400 mb-1" />
-                      <p className="text-lg font-semibold text-white">{stat.value}</p>
-                      <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{stat.label}</p>
-                    </div>
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-2">
+                {investorStats.map((stat, idx) => (
+                  <div key={idx} className="bg-zinc-800/60 backdrop-blur-sm rounded-xl p-3 border border-zinc-700/50 text-center">
+                    <stat.icon className="w-4 h-4 mx-auto text-zinc-400 mb-1" />
+                    <p className="text-lg font-semibold text-white">{stat.value}</p>
+                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sectors of Interest */}
+              {investorProfile.sectors_of_interest && investorProfile.sectors_of_interest.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {investorProfile.sectors_of_interest.map((sector: string) => (
+                    <Badge key={sector} className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border-0 text-sm px-3 py-1">
+                      {sector}
+                    </Badge>
                   ))}
                 </div>
+              )}
 
-                {/* Sectors of Interest */}
-                {investorProfile.sectors_of_interest && investorProfile.sectors_of_interest.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {investorProfile.sectors_of_interest.map((sector: string) => (
-                      <Badge key={sector} className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border-0 text-sm px-3 py-1">
-                        {sector}
-                      </Badge>
-                    ))}
+              {/* Footer Links */}
+              <div className="flex items-center justify-between text-sm text-zinc-400 pt-2 border-t border-zinc-800">
+                {investorProfile.location && (
+                  <div className="flex items-center gap-1.5">
+                    <MapPin size={14} /> {investorProfile.location}
                   </div>
                 )}
-
-                {/* Footer Links */}
-                <div className="flex items-center justify-between text-sm text-zinc-400 pt-2 border-t border-zinc-800">
-                  {investorProfile.location && (
-                    <div className="flex items-center gap-1.5">
-                      <MapPin size={14} /> {investorProfile.location}
-                    </div>
-                  )}
-                  {investorProfile.portfolio_link && (
-                    <a href={investorProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#C5A059] hover:text-[#D4AF6B]">
-                      <LinkIcon size={14} /> Portfolio
-                    </a>
-                  )}
-                </div>
-
-                {/* Endorsements Section */}
-                <EndorsementsSection endorsements={mockEndorsements} />
+                {investorProfile.portfolio_link && (
+                  <a href={investorProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[#C5A059] hover:text-[#D4AF6B]">
+                    <LinkIcon size={14} /> Portfolio
+                  </a>
+                )}
               </div>
+
+              {/* Endorsements Section */}
+              <EndorsementsSection endorsements={mockEndorsements} />
             </div>
           </div>
         ) : (
           /* Fallback for empty profile */
-          <div className="h-full flex flex-col items-center justify-center bg-zinc-900">
+          <div className="min-h-full flex flex-col items-center justify-center bg-zinc-900 pb-48">
             <User className="w-24 h-24 text-zinc-700" />
           </div>
         )}
       </Card>
 
-      {/* Floating Action Tray - Fixed position above bottom nav */}
-      <div className="absolute bottom-24 left-0 right-0 z-40 px-4">
-        <div className="flex items-center justify-center gap-4 bg-black/60 backdrop-blur-md rounded-full py-3 px-6 border border-white/10 mx-auto max-w-xs shadow-2xl">
+      {/* Floating Action Tray - Fixed to viewport, above bottom nav */}
+      <div className="fixed bottom-28 left-0 right-0 z-50 px-4 pointer-events-none">
+        <div className="flex items-center justify-center gap-4 bg-black/60 backdrop-blur-md rounded-full py-3 px-6 border border-white/10 mx-auto max-w-xs shadow-2xl pointer-events-auto">
           {/* Pass Button */}
           <button
             onClick={() => handleButtonPress('pass')}

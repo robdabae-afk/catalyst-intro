@@ -631,7 +631,7 @@ const Dashboard = () => {
             />
           </div>
         ) : currentProfile ? (
-          <div className="absolute inset-0 flex flex-col w-full px-4 pt-2 pb-2">
+          <div className="absolute inset-0 flex flex-col w-full px-4">
             {/* Cooldown Overlay */}
             {swipeCooldown && (
               <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
