@@ -529,8 +529,8 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Main Swipe/Scroll Area */}
-      <main className="flex-1 overflow-y-auto no-scrollbar relative w-full pb-0 bg-background-dark scroll-smooth">
+      {/* Main Swipe/Scroll Area - Fixed height container */}
+      <main className="flex-1 overflow-hidden relative w-full bg-background-dark">
 
         {/* Modals & Overlays - Conditionally rendered */}
         {showWelcomeBillboard && currentUser && (
@@ -631,7 +631,7 @@ const Dashboard = () => {
             />
           </div>
         ) : currentProfile ? (
-          <div className="flex-1 flex flex-col w-full px-4 pt-2 pb-2 overflow-hidden">
+          <div className="absolute inset-0 flex flex-col w-full px-4 pt-2 pb-2">
             {/* Cooldown Overlay */}
             {swipeCooldown && (
               <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
@@ -659,8 +659,10 @@ const Dashboard = () => {
         ) : null}
       </main>
 
-      {/* Bottom Navigation */}
-      <BottomNavigation userType={currentUser?.user_type as 'founder' | 'investor'} />
+      {/* Bottom Navigation - Higher z-index than action buttons */}
+      <div className="relative z-50">
+        <BottomNavigation userType={currentUser?.user_type as 'founder' | 'investor'} />
+      </div>
     </div>
   );
 };
