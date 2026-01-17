@@ -60,7 +60,7 @@ export const InstantMessageModal: React.FC<InstantMessageModalProps> = ({
             if (!session) throw new Error('Not authenticated');
 
             const response = await fetch(
-                `${supabase.supabaseUrl}/functions/v1/send-instant-message`,
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-instant-message`,
                 {
                     method: 'POST',
                     headers: {

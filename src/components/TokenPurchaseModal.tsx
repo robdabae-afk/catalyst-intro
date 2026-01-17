@@ -24,7 +24,7 @@ export const TokenPurchaseModal: React.FC<TokenPurchaseModalProps> = ({
             if (!session) throw new Error('Not authenticated');
 
             const response = await fetch(
-                `${supabase.supabaseUrl}/functions/v1/manage-tokens`,
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-tokens`,
                 {
                     method: 'POST',
                     headers: {

@@ -109,8 +109,9 @@ const Settings = () => {
                     setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
                     setVideoUrl(founderProfile.video_url || "");
                     setFundingAmount(founderProfile.funding_amount || "");
-                    setMrr(founderProfile.mrr || "");
-                    setBackedBy(founderProfile.backed_by || "");
+                    // TODO: mrr and backed_by columns don't exist in founder_profiles yet
+                    setMrr("");
+                    setBackedBy("");
                 }
             } else {
                 const { data: investorProfile } = await supabase
@@ -121,7 +122,8 @@ const Settings = () => {
 
                 if (investorProfile) {
                     setFirmName(investorProfile.firm_name || "");
-                    setPosition(investorProfile.position || "");
+                    // TODO: position column doesn't exist in investor_profiles yet
+                    setPosition("");
                     setInvestorBannerUrl(investorProfile.banner_url || "");
                 }
             }

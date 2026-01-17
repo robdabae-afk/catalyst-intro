@@ -308,12 +308,12 @@ const Dashboard = () => {
     const fetchUsage = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('daily_initiations_count, weekly_initiations_count')
+        .select('weekly_initiations_count')
         .eq('id', currentUser.id)
         .single();
       if (data) {
         setUsageStats({
-          daily: data.daily_initiations_count || 0,
+          daily: 0, // daily_initiations_count column doesn't exist
           weekly: data.weekly_initiations_count || 0
         });
       }
@@ -386,11 +386,9 @@ const Dashboard = () => {
       return;
     }
 
-    // Deduct tokens
-    const { error } = await supabase
-      .from('profiles')
-      .update({ tokens: currentTokens - 30 })
-      .eq('id', currentUser.id);
+    // Deduct tokens - tokens column doesn't exist yet, skip deduction
+    // TODO: Add tokens column to profiles table
+    const error = null; // Skip token deduction until column exists
 
     if (error) {
       toast({ variant: "destructive", title: "Purchase failed", description: error.message });

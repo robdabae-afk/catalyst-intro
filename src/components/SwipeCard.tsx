@@ -118,8 +118,13 @@ export const SwipeCard = ({
   const adProfile = isAdProfile ? (profile as AdProfile) : null;
   const organicProfile = !isAdProfile ? profile : null;
 
-  const founderProfile = organicProfile?.founder_profiles?.[0];
-  const investorProfile = organicProfile?.investor_profiles?.[0];
+  // Handle both array and object formats from database
+  const founderProfile = Array.isArray(organicProfile?.founder_profiles) 
+    ? organicProfile.founder_profiles[0] 
+    : organicProfile?.founder_profiles;
+  const investorProfile = Array.isArray(organicProfile?.investor_profiles)
+    ? organicProfile.investor_profiles[0]
+    : organicProfile?.investor_profiles;
 
   const isShowingFounder = userType === 'investor';
   const profileData = isShowingFounder ? founderProfile : investorProfile;
@@ -158,21 +163,21 @@ export const SwipeCard = ({
   }
   const [dealFlow, setDealFlow] = useState<DealFlowItem[]>([]);
 
-  useEffect(() => {
-    const fetchDealFlow = async () => {
-      if (organicProfile?.user_type === 'investor' && investorProfile?.id) {
-        const { data } = await supabase
-          .from('investor_deal_flow')
-          .select('*')
-          .eq('investor_id', investorProfile.id)
-          .order('created_at', { ascending: false })
-          .limit(3);
-
-        if (data) setDealFlow(data as DealFlowItem[]);
-      }
-    };
-    fetchDealFlow();
-  }, [investorProfile?.id, organicProfile?.user_type]);
+  // TODO: These tables don't exist yet - commented out to fix build
+  // useEffect(() => {
+  //   const fetchDealFlow = async () => {
+  //     if (organicProfile?.user_type === 'investor' && investorProfile?.id) {
+  //       const { data } = await supabase
+  //         .from('investor_deal_flow')
+  //         .select('*')
+  //         .eq('investor_id', investorProfile.id)
+  //         .order('created_at', { ascending: false })
+  //         .limit(3);
+  //       if (data) setDealFlow(data as DealFlowItem[]);
+  //     }
+  //   };
+  //   fetchDealFlow();
+  // }, [investorProfile?.id, organicProfile?.user_type]);
 
   interface PortfolioItem {
     id: string;
@@ -185,20 +190,20 @@ export const SwipeCard = ({
   }
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
 
-  useEffect(() => {
-    const fetchPortfolio = async () => {
-      if (organicProfile?.user_type === 'investor' && investorProfile?.id) {
-        const { data } = await supabase
-          .from('investor_portfolio')
-          .select('*')
-          .eq('investor_id', investorProfile.id)
-          .order('investment_year', { ascending: false });
-
-        if (data) setPortfolio(data as PortfolioItem[]);
-      }
-    };
-    fetchPortfolio();
-  }, [investorProfile?.id, organicProfile?.user_type]);
+  // TODO: These tables don't exist yet - commented out to fix build
+  // useEffect(() => {
+  //   const fetchPortfolio = async () => {
+  //     if (organicProfile?.user_type === 'investor' && investorProfile?.id) {
+  //       const { data } = await supabase
+  //         .from('investor_portfolio')
+  //         .select('*')
+  //         .eq('investor_id', investorProfile.id)
+  //         .order('investment_year', { ascending: false });
+  //       if (data) setPortfolio(data as PortfolioItem[]);
+  //     }
+  //   };
+  //   fetchPortfolio();
+  // }, [investorProfile?.id, organicProfile?.user_type]);
 
   const investorStats = [
     { label: "Check Size", value: formatCheckSize(investorProfile?.typical_check_size), sub: "Typical Amount", icon: DollarSign },

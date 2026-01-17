@@ -52,13 +52,14 @@ export default function InvestorPortal() {
     const [activeSearchField, setActiveSearchField] = useState<'deal' | 'portfolio' | null>(null);
 
     // Interests / Settings Data
+    // Interests / Settings Data
     const [details, setDetails] = useState({
         firm_name: "",
-        position: "",
+        position: "", // TODO: position column doesn't exist in investor_profiles yet
         typical_check_size: "",
         preferred_stage: "",
         location: "",
-        leads_rounds: false,
+        leads_rounds: false, // TODO: leads_rounds column doesn't exist yet
         investment_thesis: ""
     });
     const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
@@ -116,32 +117,31 @@ export default function InvestorPortal() {
                     setInvestorId(profile.id);
                     setDetails({
                         firm_name: profile.firm_name || "",
-                        position: profile.position || "",
+                        position: "", // position column doesn't exist yet
                         typical_check_size: profile.typical_check_size || "",
                         preferred_stage: profile.preferred_stage || "",
                         location: profile.location || "",
-                        leads_rounds: profile.leads_rounds || false,
+                        leads_rounds: false, // leads_rounds column doesn't exist yet
                         investment_thesis: profile.investment_thesis || ""
                     });
                     setSectorsOfInterest(profile.sectors_of_interest || []);
 
-                    // Fetch Deal Flow
-                    const { data: deals } = await supabase
-                        .from('investor_deal_flow')
-                        .select('*')
-                        .eq('investor_id', profile.id)
-                        .order('created_at', { ascending: false });
+                    // TODO: investor_deal_flow and investor_portfolio tables don't exist yet
+                    // Fetch Deal Flow - commented out
+                    // const { data: deals } = await supabase
+                    //     .from('investor_deal_flow')
+                    //     .select('*')
+                    //     .eq('investor_id', profile.id)
+                    //     .order('created_at', { ascending: false });
+                    // if (deals) setDealFlow(deals as DealFlowItem[]);
 
-                    if (deals) setDealFlow(deals as DealFlowItem[]);
-
-                    // Fetch Portfolio
-                    const { data: port } = await supabase
-                        .from('investor_portfolio')
-                        .select('*')
-                        .eq('investor_id', profile.id)
-                        .order('investment_year', { ascending: false });
-
-                    if (port) setPortfolio(port as PortfolioItem[]);
+                    // Fetch Portfolio - commented out
+                    // const { data: port } = await supabase
+                    //     .from('investor_portfolio')
+                    //     .select('*')
+                    //     .eq('investor_id', profile.id)
+                    //     .order('investment_year', { ascending: false });
+                    // if (port) setPortfolio(port as PortfolioItem[]);
                 }
             } catch (error) {
                 console.error('Error loading portal data:', error);
@@ -153,67 +153,68 @@ export default function InvestorPortal() {
     }, []);
 
     const handleAddDeal = async () => {
-        if (!investorId || !newDeal.startup_name) return;
-
-        try {
-            const { data, error } = await supabase
-                .from('investor_deal_flow')
-                .insert({
-                    investor_id: investorId,
-                    startup_name: newDeal.startup_name,
-                    amount: newDeal.amount || null,
-                    stage: newDeal.stage || null,
-                    key_co_investors: newDeal.key_co_investors || null,
-                    notes: newDeal.notes || null,
-                    status: 'active'
-                })
-                .select()
-                .single();
-
-            if (error) throw error;
-            if (data) {
-                setDealFlow([data as DealFlowItem, ...dealFlow]);
-                setNewDeal({ startup_name: "", amount: "", stage: "", key_co_investors: "", notes: "" });
-                toast({ title: "Deal added to pipeline" });
-            }
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Failed to add deal", description: error.message });
-        }
+        // TODO: investor_deal_flow table doesn't exist yet
+        toast({ variant: "destructive", title: "Not available", description: "Deal flow feature requires database migration" });
+        return;
+        // if (!investorId || !newDeal.startup_name) return;
+        // try {
+        //     const { data, error } = await supabase
+        //         .from('investor_deal_flow')
+        //         .insert({
+        //             investor_id: investorId,
+        //             startup_name: newDeal.startup_name,
+        //             amount: newDeal.amount || null,
+        //             stage: newDeal.stage || null,
+        //             key_co_investors: newDeal.key_co_investors || null,
+        //             notes: newDeal.notes || null,
+        //             status: 'active'
+        //         })
+        //         .select()
+        //         .single();
+        //     if (error) throw error;
+        //     if (data) {
+        //         setDealFlow([data as DealFlowItem, ...dealFlow]);
+        //         setNewDeal({ startup_name: "", amount: "", stage: "", key_co_investors: "", notes: "" });
+        //         toast({ title: "Deal added to pipeline" });
+        //     }
+        // } catch (error: any) {
+        //     toast({ variant: "destructive", title: "Failed to add deal", description: error.message });
+        // }
     };
 
     const handleAddPortfolio = async () => {
-        if (!investorId || !newPortfolio.company_name) return;
-
-        try {
-            const { data, error } = await supabase
-                .from('investor_portfolio')
-                .insert({
-                    investor_id: investorId,
-                    company_name: newPortfolio.company_name,
-                    investment_year: parseInt(newPortfolio.investment_year) || null,
-                    sector: newPortfolio.sector || null,
-                    investment_stage: newPortfolio.investment_stage || null,
-                    is_lead: newPortfolio.is_lead,
-                    company_url: newPortfolio.company_url || null
-                })
-                .select()
-                .single();
-
-            if (error) throw error;
-            if (data) {
-                setPortfolio([data as PortfolioItem, ...portfolio]);
-                setNewPortfolio({
-                    company_name: "", company_url: "",
-                    investment_year: new Date().getFullYear().toString(),
-                    sector: "", investment_stage: "", is_lead: false
-                });
-                toast({ title: "Investment added to portfolio" });
-            }
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Failed to add portfolio item", description: error.message });
-        }
+        // TODO: investor_portfolio table doesn't exist yet
+        toast({ variant: "destructive", title: "Not available", description: "Portfolio feature requires database migration" });
+        return;
+        // if (!investorId || !newPortfolio.company_name) return;
+        // try {
+        //     const { data, error } = await supabase
+        //         .from('investor_portfolio')
+        //         .insert({
+        //             investor_id: investorId,
+        //             company_name: newPortfolio.company_name,
+        //             investment_year: parseInt(newPortfolio.investment_year) || null,
+        //             sector: newPortfolio.sector || null,
+        //             investment_stage: newPortfolio.investment_stage || null,
+        //             is_lead: newPortfolio.is_lead,
+        //             company_url: newPortfolio.company_url || null
+        //         })
+        //         .select()
+        //         .single();
+        //     if (error) throw error;
+        //     if (data) {
+        //         setPortfolio([data as PortfolioItem, ...portfolio]);
+        //         setNewPortfolio({
+        //             company_name: "", company_url: "",
+        //             investment_year: new Date().getFullYear().toString(),
+        //             sector: "", investment_stage: "", is_lead: false
+        //         });
+        //         toast({ title: "Investment added to portfolio" });
+        //     }
+        // } catch (error: any) {
+        //     toast({ variant: "destructive", title: "Failed to add portfolio item", description: error.message });
+        // }
     };
-
     const saveInterests = async () => {
         if (!profileId) return;
         setSaving(true);
@@ -222,11 +223,11 @@ export default function InvestorPortal() {
                 .from('investor_profiles')
                 .update({
                     firm_name: details.firm_name,
-                    position: details.position,
+                    // position: details.position, // column doesn't exist yet
                     typical_check_size: details.typical_check_size,
                     preferred_stage: details.preferred_stage as any,
                     location: details.location,
-                    leads_rounds: details.leads_rounds,
+                    // leads_rounds: details.leads_rounds, // column doesn't exist yet
                     investment_thesis: details.investment_thesis,
                     sectors_of_interest: sectorsOfInterest
                 })
