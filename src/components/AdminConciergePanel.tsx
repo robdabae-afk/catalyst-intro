@@ -105,10 +105,10 @@ export const AdminConciergePanel = () => {
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || 'Failed to fulfill match');
 
-      toast({ 
+      toast({
         title: 'Match fulfilled successfully!',
-        description: data.repaired?.introSent 
-          ? 'Intro message sent to both users.' 
+        description: data.repaired?.introSent
+          ? 'Intro message sent to both users.'
           : 'Users can now chat.'
       });
       setFulfillDialogOpen(false);
@@ -130,13 +130,13 @@ export const AdminConciergePanel = () => {
   const handleBackfill = async () => {
     try {
       toast({ title: 'Running backfill...', description: 'This may take a moment.' });
-      
+
       const { data, error } = await supabase.functions.invoke('admin-backfill-concierge-chats');
 
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || 'Backfill failed');
 
-      toast({ 
+      toast({
         title: 'Backfill complete!',
         description: `Processed ${data.results?.total} matches. Created ${data.results?.introsCreated} intro messages.`
       });
@@ -162,9 +162,9 @@ export const AdminConciergePanel = () => {
       case 'fulfilled':
         return <Badge className="bg-green-500/20 text-green-400"><Check className="w-3 h-3 mr-1" />Fulfilled</Badge>;
       case 'pending':
-        return <Badge variant="secondary">Payment Pending</Badge>;
+        return <Badge variant="secondary" className="text-black">Payment Pending</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="outline" className="text-black">{status}</Badge>;
     }
   };
 
@@ -215,7 +215,7 @@ export const AdminConciergePanel = () => {
                 {paidUnfulfilledMatches.map(match => (
                   <TableRow key={match.id}>
                     <TableCell>
-                      {match.requester?.name}<br/>
+                      {match.requester?.name}<br />
                       <span className="text-xs text-muted-foreground">{match.requester?.email}</span>
                     </TableCell>
                     <TableCell><Badge variant="outline" className="capitalize">{match.user_type}</Badge></TableCell>
@@ -290,15 +290,14 @@ export const AdminConciergePanel = () => {
                 }}
               />
             </div>
-            
+
             {searchResults.length > 0 && (
               <div className="border rounded-md max-h-48 overflow-y-auto">
                 {searchResults.map(user => (
                   <div
                     key={user.id}
-                    className={`p-3 cursor-pointer hover:bg-muted transition-colors ${
-                      selectedUser?.id === user.id ? 'bg-primary/10 border-l-2 border-primary' : ''
-                    }`}
+                    className={`p-3 cursor-pointer hover:bg-muted transition-colors ${selectedUser?.id === user.id ? 'bg-primary/10 border-l-2 border-primary' : ''
+                      }`}
                     onClick={() => setSelectedUser(user)}
                   >
                     <p className="font-medium">{user.name}</p>

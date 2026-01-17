@@ -83,7 +83,7 @@ export const AdminEmailComposer = () => {
 
   const loadUsers = async () => {
     if (users.length > 0) return;
-    
+
     setLoadingUsers(true);
     try {
       const { data, error } = await supabase
@@ -196,7 +196,7 @@ export const AdminEmailComposer = () => {
         if (error) throw error;
         setUsers(data || []);
         currentUsers = data || [];
-        
+
         if (!data || data.length === 0) {
           toast({
             variant: "destructive",
@@ -251,7 +251,7 @@ export const AdminEmailComposer = () => {
     // Start sending process
     setSending(true);
     abortControllerRef.current = new AbortController();
-    
+
     const progressState: SendProgress = {
       current: 0,
       total: recipients.length,
@@ -265,7 +265,7 @@ export const AdminEmailComposer = () => {
     try {
       for (let i = 0; i < recipients.length; i++) {
         const recipient = recipients[i];
-        
+
         // Update progress before sending
         progressState.current = i + 1;
         progressState.currentEmail = recipient.email;
@@ -275,7 +275,7 @@ export const AdminEmailComposer = () => {
 
         // Send the email
         const success = await sendSingleEmail(recipient.id);
-        
+
         if (success) {
           progressState.successCount++;
           console.log(`Successfully sent to ${recipient.email}`);
@@ -284,7 +284,7 @@ export const AdminEmailComposer = () => {
           progressState.failedEmails.push(recipient.email);
           console.error(`Failed to send to ${recipient.email}`);
         }
-        
+
         setProgress({ ...progressState });
 
         // Wait 15 seconds before sending the next email (unless it's the last one)
@@ -301,7 +301,7 @@ export const AdminEmailComposer = () => {
           title: "Emails partially sent",
           description: `Sent ${progressState.successCount} email(s), ${progressState.failedCount} failed.`,
         });
-        
+
         // Log failed emails
         console.error("Failed emails:", progressState.failedEmails);
       } else {
@@ -331,8 +331,8 @@ export const AdminEmailComposer = () => {
     }
   };
 
-  const progressPercentage = progress 
-    ? Math.round((progress.current / progress.total) * 100) 
+  const progressPercentage = progress
+    ? Math.round((progress.current / progress.total) * 100)
     : 0;
 
   return (
@@ -352,7 +352,7 @@ export const AdminEmailComposer = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Continue Sending</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
                 abortControllerRef.current?.abort();
@@ -449,7 +449,7 @@ export const AdminEmailComposer = () => {
                                 {user.email}
                               </p>
                             </div>
-                            <Badge variant="secondary" className="capitalize">
+                            <Badge variant="secondary" className="capitalize mt-1 text-black bg-white hover:bg-gray-100">
                               {user.user_type}
                             </Badge>
                           </div>
@@ -556,7 +556,7 @@ export const AdminEmailComposer = () => {
 
           {getRecipientCount() > 1 && !sending && (
             <p className="text-xs text-muted-foreground text-center">
-              Emails will be sent one at a time with 15 second delays. 
+              Emails will be sent one at a time with 15 second delays.
               Estimated time: ~{Math.ceil((getRecipientCount() - 1) * 15 / 60)} minute(s)
             </p>
           )}

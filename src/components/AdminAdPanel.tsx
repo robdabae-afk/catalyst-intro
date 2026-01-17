@@ -72,7 +72,7 @@ interface ExistingProfile {
 }
 
 const INDUSTRIES = [
-  'SaaS', 'AI', 'Fintech', 'HealthTech', 'EdTech', 
+  'SaaS', 'AI', 'Fintech', 'HealthTech', 'EdTech',
   'Consumer', 'Marketplace', 'Robotics', 'Biotech', 'Climate',
   'Enterprise', 'Web3', 'Hardware', 'Gaming', 'Media'
 ];
@@ -466,8 +466,8 @@ export const AdminAdPanel = () => {
 
       toast({
         title: ad.is_active ? "Ad Deactivated" : "Ad Activated",
-        description: ad.is_active 
-          ? "The ad profile is now inactive." 
+        description: ad.is_active
+          ? "The ad profile is now inactive."
           : "The ad profile is now live in the swipe deck."
       });
 
@@ -576,7 +576,7 @@ export const AdminAdPanel = () => {
                   <Link2 className="w-4 h-4" />
                   Link to Existing Profile (Optional)
                 </Label>
-              <Select
+                <Select
                   value={formData.linked_profile_id || "none"}
                   onValueChange={handleProfileSelect}
                 >
@@ -619,23 +619,23 @@ export const AdminAdPanel = () => {
                 />
                 {formData.image_url ? (
                   <div className="flex items-center gap-3">
-                    <img 
-                      src={formData.image_url} 
-                      alt="Profile" 
+                    <img
+                      src={formData.image_url}
+                      alt="Profile"
                       className="w-16 h-16 rounded-full object-cover border"
                     />
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       size="sm"
                       onClick={() => imageInputRef.current?.click()}
                       disabled={uploadingImage}
                     >
                       {uploadingImage ? "Uploading..." : "Change"}
                     </Button>
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
+                    <Button
+                      type="button"
+                      variant="ghost"
                       size="sm"
                       onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
                     >
@@ -643,9 +643,9 @@ export const AdminAdPanel = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => imageInputRef.current?.click()}
                     disabled={uploadingImage}
                     className="w-full"
@@ -678,24 +678,24 @@ export const AdminAdPanel = () => {
                 />
                 {formData.banner_url ? (
                   <div className="space-y-2">
-                    <img 
-                      src={formData.banner_url} 
-                      alt="Banner" 
+                    <img
+                      src={formData.banner_url}
+                      alt="Banner"
                       className="w-full h-24 rounded-md object-cover border"
                     />
                     <div className="flex gap-2">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
+                      <Button
+                        type="button"
+                        variant="outline"
                         size="sm"
                         onClick={() => bannerInputRef.current?.click()}
                         disabled={uploadingBanner}
                       >
                         {uploadingBanner ? "Uploading..." : "Change Banner"}
                       </Button>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
+                      <Button
+                        type="button"
+                        variant="ghost"
                         size="sm"
                         onClick={() => setFormData(prev => ({ ...prev, banner_url: '' }))}
                       >
@@ -705,9 +705,9 @@ export const AdminAdPanel = () => {
                     </div>
                   </div>
                 ) : (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => bannerInputRef.current?.click()}
                     disabled={uploadingBanner}
                     className="w-full"
@@ -961,14 +961,14 @@ export const AdminAdPanel = () => {
                 <TableRow key={ad.id}>
                   <TableCell className="font-medium">{ad.name}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className="flex items-center gap-1 w-fit">
+                    <Badge variant="secondary" className="flex items-center gap-1 w-fit text-black">
                       {AD_TYPE_ICONS[ad.ad_type]}
                       {AD_TYPE_LABELS[ad.ad_type]}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     {ad.linked_profile_id ? (
-                      <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                      <Badge variant="outline" className="flex items-center gap-1 w-fit text-black">
                         <Link2 className="w-3 h-3" />
                         Linked
                       </Badge>
@@ -989,7 +989,7 @@ export const AdminAdPanel = () => {
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {ad.spotlight_end_date 
+                    {ad.spotlight_end_date
                       ? new Date(ad.spotlight_end_date).toLocaleDateString()
                       : '-'
                     }
