@@ -61,15 +61,16 @@ export const FeaturedCard = ({
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return;
 
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('tokens')
-                    .eq('id', user.id)
-                    .single();
-
-                if (profile) {
-                    setTokenBalance(profile.tokens || 0);
-                }
+                // TODO: tokens column doesn't exist yet in profiles table
+                // const { data: profile } = await supabase
+                //     .from('profiles')
+                //     .select('tokens')
+                //     .eq('id', user.id)
+                //     .single();
+                // if (profile) {
+                //     setTokenBalance(profile.tokens || 0);
+                // }
+                setTokenBalance(0); // Default to 0 until tokens column exists
             } catch (error) {
                 console.error('Error fetching token balance:', error);
             } finally {
@@ -194,20 +195,20 @@ export const FeaturedCard = ({
     }
     const [portfolio, setPortfolio] = useState<PortfolioItem[]>([]);
 
-    useEffect(() => {
-        const fetchPortfolio = async () => {
-            if (organicProfile?.user_type === 'investor' && details?.id) {
-                const { data } = await supabase
-                    .from('investor_portfolio')
-                    .select('*')
-                    .eq('investor_id', details.id)
-                    .order('investment_year', { ascending: false });
-
-                if (data) setPortfolio(data as PortfolioItem[]);
-            }
-        };
-        fetchPortfolio();
-    }, [details?.id, organicProfile?.user_type]);
+    // TODO: investor_portfolio table doesn't exist yet
+    // useEffect(() => {
+    //     const fetchPortfolio = async () => {
+    //         if (organicProfile?.user_type === 'investor' && details?.id) {
+    //             const { data } = await supabase
+    //                 .from('investor_portfolio')
+    //                 .select('*')
+    //                 .eq('investor_id', details.id)
+    //                 .order('investment_year', { ascending: false });
+    //             if (data) setPortfolio(data as PortfolioItem[]);
+    //         }
+    //     };
+    //     fetchPortfolio();
+    // }, [details?.id, organicProfile?.user_type]);
 
     // Endorsements State
     interface Endorsement {
@@ -575,11 +576,11 @@ export const FeaturedCard = ({
                                 <div className="flex items-center gap-3 mt-auto border-t border-white/5 pt-4">
                                     <div
                                         className="w-8 h-8 rounded-full bg-cover bg-center"
-                                        style={{ backgroundImage: `url(${e.avatar || 'https://github.com/shadcn.png'})` }}
+                                        style={{ backgroundImage: `url(${e.endorser?.avatar_url || 'https://github.com/shadcn.png'})` }}
                                     ></div>
                                     <div>
-                                        <p className="text-white text-xs font-bold">{e.author}</p>
-                                        <p className="text-gray-500 text-[10px] uppercase tracking-wider">{e.role}</p>
+                                        <p className="text-white text-xs font-bold">{e.endorser?.name || 'Anonymous'}</p>
+                                        <p className="text-gray-500 text-[10px] uppercase tracking-wider">{e.endorser?.user_type || 'Member'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -603,6 +604,7 @@ export const FeaturedCard = ({
                         receiverId={organicProfile.id}
                         receiverName={name || 'User'}
                         tokenBalance={tokenBalance}
+                        cost={30}
                         onClose={() => setShowMessageModal(false)}
                         onSuccess={handleMessageSuccess}
                         onOpenPurchase={handleOpenPurchase}
