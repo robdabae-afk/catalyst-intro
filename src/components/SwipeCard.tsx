@@ -204,7 +204,7 @@ export const SwipeCard = ({
     <div className="relative w-full h-full flex flex-col">
       <Card
         ref={cardRef}
-        className="relative w-full flex-1 overflow-y-auto overflow-x-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl mx-auto no-scrollbar"
+        className="relative w-full flex-1 overflow-y-auto overflow-x-hidden bg-zinc-900 border-zinc-800 rounded-3xl shadow-2xl mx-auto"
         style={{ maxWidth: 'calc(100vw - 32px)', touchAction: 'pan-y', overscrollBehavior: 'contain' }}
       >
         {/* Ad Badge */}
@@ -506,33 +506,33 @@ export const SwipeCard = ({
 
       {/* Floating Action Tray - Fixed to viewport, above bottom nav */}
       <div className="fixed bottom-28 left-0 right-0 z-50 px-4 pointer-events-none">
-        <div className="flex items-center justify-center gap-4 mx-auto max-w-xs pointer-events-auto">
+        <div className="flex items-center justify-center gap-3 mx-auto max-w-xs pointer-events-auto">
           {/* Pass Button */}
           <button
             onClick={() => handleButtonPress('pass')}
             disabled={swipeCooldown || adLocked}
-            className="group flex items-center justify-center w-14 h-14 rounded-full bg-zinc-900/90 border border-white/10 shadow-lg hover:border-red-500/50 hover:bg-zinc-800 transition-all duration-200 active:scale-95 disabled:opacity-50"
+            className="group flex items-center justify-center w-11 h-11 rounded-full bg-zinc-900/90 border border-white/10 shadow-lg hover:border-red-500/50 hover:bg-zinc-800 transition-all duration-200 active:scale-95 disabled:opacity-50"
           >
-            <X className="text-white/70 group-hover:text-red-400 transition-colors" size={26} strokeWidth={2.5} />
+            <X className="text-white/70 group-hover:text-red-400 transition-colors" size={20} strokeWidth={2.5} />
           </button>
           
           {/* Priority / Instant Message Button - Center & Gold */}
           <button
             onClick={() => handleButtonPress('message')}
             disabled={swipeCooldown || adLocked}
-            className="group relative flex flex-col items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#C5A059] via-[#D4AF6B] to-[#B8956A] shadow-[0_0_30px_rgba(197,160,89,0.4)] hover:scale-105 transition-all duration-300 active:scale-95 border border-[#D4AF6B]/50 disabled:opacity-50"
+            className="group relative flex flex-col items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-[#C5A059] via-[#D4AF6B] to-[#B8956A] shadow-[0_0_25px_rgba(197,160,89,0.4)] hover:scale-105 transition-all duration-300 active:scale-95 border border-[#D4AF6B]/50 disabled:opacity-50"
           >
-            <Star className="text-black fill-black" size={24} />
-            <span className="absolute -bottom-6 text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">Priority</span>
+            <Star className="text-black fill-black" size={18} />
+            <span className="absolute -bottom-5 text-[8px] font-bold uppercase tracking-widest text-[#C5A059]">Priority</span>
           </button>
           
           {/* Connect Button */}
           <button
             onClick={() => handleButtonPress('like')}
             disabled={swipeCooldown || adLocked}
-            className="group flex items-center justify-center w-14 h-14 rounded-full bg-white shadow-lg hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-200 active:scale-95 disabled:opacity-50"
+            className="group flex items-center justify-center w-11 h-11 rounded-full bg-white shadow-lg hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-200 active:scale-95 disabled:opacity-50"
           >
-            <Handshake className="text-black group-hover:rotate-12 transition-transform duration-300" size={26} />
+            <Handshake className="text-black group-hover:rotate-12 transition-transform duration-300" size={20} />
           </button>
         </div>
       </div>
