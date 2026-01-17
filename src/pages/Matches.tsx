@@ -472,6 +472,9 @@ export default function Matches() {
       // Record first message if this is the first
       if (isFirstMessage) {
         await recordFirstMessage(currentUserId);
+        // Refresh matches to update the list with the new match record
+        // This ensures the match is seen as "active" in the list so re-entry isn't blocked by limits
+        await fetchMatches();
       }
 
       setNewMessage("");
@@ -520,6 +523,7 @@ export default function Matches() {
   const handleBackToList = () => {
     setSelectedMatch(null);
     setMessages([]);
+    fetchMatches();
   };
 
   // Determine if messaging is disabled
