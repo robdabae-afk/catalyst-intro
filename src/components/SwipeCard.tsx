@@ -294,7 +294,7 @@ export const SwipeCard = ({
               {/* Location & Name Information Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-5 pt-12 bg-gradient-to-t from-black to-transparent">
                 {location && (
-                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
                     <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                     <span>{location}</span>
                   </div>
@@ -423,7 +423,7 @@ export const SwipeCard = ({
 
               <div className="absolute bottom-0 left-0 right-0 p-5 pt-12 bg-gradient-to-t from-black to-transparent">
                 {investorProfile.location && (
-                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 border border-white/10 backdrop-blur-md text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
                     <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                     <span>{investorProfile.location}</span>
                   </div>
@@ -439,7 +439,7 @@ export const SwipeCard = ({
 
               {investorProfile.preferred_stage && (
                 <div className="absolute top-4 left-4">
-                  <Badge className="bg-black/40 backdrop-blur-md text-white border border-white/10 px-3 py-1 text-xs tracking-wider uppercase">
+                  <Badge className="bg-black/40 backdrop-blur-md text-white border border-white/10 px-3 py-1 rounded-full text-xs tracking-wider uppercase font-inter font-semibold">
                     {formatStage(investorProfile.preferred_stage)}
                   </Badge>
                 </div>
