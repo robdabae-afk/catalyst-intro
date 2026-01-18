@@ -294,24 +294,24 @@ export const SwipeCard = ({
               {/* Location & Name Information Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-5 pt-12 bg-gradient-to-t from-black to-transparent">
                 {location && (
-                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-medium">
+                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
                     <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                     <span>{location}</span>
                   </div>
                 )}
-                <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-1">
+                <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
                 <div className="flex items-center gap-2 text-[#C5A059]">
                   <Briefcase className="w-4 h-4" />
-                  <span className="text-base font-medium">Founder @ {companyName}</span>
+                  <span className="text-base font-inter font-normal">Founder @ {companyName}</span>
                 </div>
               </div>
 
               {/* Stage Badge on Image */}
               {founderProfile?.stage && (
                 <div className="absolute top-4 right-4">
-                  <Badge className="bg-black/40 backdrop-blur-md text-white border border-white/10 px-3 py-1 text-xs tracking-wider uppercase">
+                  <Badge className="bg-black/40 backdrop-blur-md text-white border border-white/10 px-3 py-1 text-xs tracking-wider uppercase font-inter font-semibold">
                     {formatStage(founderProfile.stage)}
                   </Badge>
                 </div>
@@ -423,7 +423,7 @@ export const SwipeCard = ({
 
               <div className="absolute bottom-0 left-0 right-0 p-5 pt-12 bg-gradient-to-t from-black to-transparent">
                 {investorProfile.location && (
-                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-medium">
+                  <div className="flex items-center gap-1.5 text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
                     <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                     <span>{investorProfile.location}</span>
                   </div>
@@ -433,7 +433,7 @@ export const SwipeCard = ({
                 </h2>
                 <div className="flex items-center gap-2 text-[#C5A059]">
                   <Briefcase className="w-4 h-4" />
-                  <span className="text-base font-medium">{investorProfile.firm_name || 'Angel Investor'}</span>
+                  <span className="text-base font-inter font-normal">{investorProfile.firm_name || 'Angel Investor'}</span>
                 </div>
               </div>
 

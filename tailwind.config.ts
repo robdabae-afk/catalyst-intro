@@ -69,6 +69,7 @@ export default {
       fontFamily: {
         "sans": ["Plus Jakarta Sans", "sans-serif"],
         "serif": ["Playfair Display", "serif"],
+        "inter": ["Inter", "sans-serif"],
       },
       boxShadow: {
         "glow": "0 0 25px -5px rgba(255, 255, 255, 0.05)",
