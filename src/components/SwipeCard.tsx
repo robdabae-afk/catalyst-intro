@@ -188,10 +188,10 @@ export const SwipeCard = ({
   );
 
   return (
-    <div className="relative w-full h-full flex flex-col bg-black"> {/* Pure Black Background */}
+    <div className="relative w-full h-full flex flex-col items-center bg-black"> {/* Pure Black Background */}
       <Card
         ref={cardRef}
-        className="relative w-full flex-1 overflow-y-auto overflow-x-hidden bg-black border-none rounded-none shadow-none mx-auto"
+        className="relative w-full md:max-w-md lg:max-w-lg flex-1 overflow-y-auto overflow-x-hidden bg-black border-none md:border md:border-zinc-800 rounded-none md:rounded-3xl shadow-none md:shadow-2xl mx-auto md:my-4"
         style={{ touchAction: 'pan-y', overscrollBehavior: 'contain' }}
       >
         {/* Ad Badge */}
