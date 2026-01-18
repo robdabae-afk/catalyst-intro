@@ -303,8 +303,8 @@ export const SwipeCard = ({
                   {profileName}
                 </h2>
                 <div className="flex items-center gap-2 text-[#C5A059]">
-                  <Briefcase className="w-4 h-4" />
-                  <span className="text-base font-inter font-normal">Founder @ {companyName}</span>
+                  <Briefcase className="w-3.5 h-3.5" />
+                  <span className="text-sm font-inter font-normal">Founder @ {companyName}</span>
                 </div>
               </div>
 
@@ -432,8 +432,8 @@ export const SwipeCard = ({
                   {profileName}
                 </h2>
                 <div className="flex items-center gap-2 text-[#C5A059]">
-                  <Briefcase className="w-4 h-4" />
-                  <span className="text-base font-inter font-normal">{investorProfile.firm_name || 'Angel Investor'}</span>
+                  <Briefcase className="w-3.5 h-3.5" />
+                  <span className="text-sm font-inter font-normal">{investorProfile.firm_name || 'Angel Investor'}</span>
                 </div>
               </div>
 
