@@ -18,10 +18,13 @@ import { ConciergeMatchButton } from '@/components/ConciergeMatchButton';
 import { TractionLimitBanner } from '@/components/TractionLimitBanner';
 import { AppNavigation } from '@/components/AppNavigation';
 import { supabase } from '@/integrations/supabase/client';
-import { SlidersHorizontal, X, Star, Handshake, MessageCircle } from "lucide-react";
+import { SlidersHorizontal, X, Star, Handshake, MessageCircle, Zap } from "lucide-react";
 import { UnlockHistoryModal } from '@/components/UnlockHistoryModal';
 import { InstantMessageModal } from '@/components/InstantMessageModal';
 import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
+import { BoostPurchaseDialog } from '@/components/BoostPurchaseDialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
@@ -298,17 +301,19 @@ const Dashboard = () => {
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [showInstantMessageModal, setShowInstantMessageModal] = useState(false);
   const [showTokenPurchaseModal, setShowTokenPurchaseModal] = useState(false);
+  const [showBoostDialog, setShowBoostDialog] = useState(false);
+  const [boostCredits, setBoostCredits] = useState(0);
   const [instantMessageCost, setInstantMessageCost] = useState(30);
   const [instantMessageFreeRemaining, setInstantMessageFreeRemaining] = useState<number | undefined>(undefined);
   const [usageStats, setUsageStats] = useState<{ daily: number, weekly: number }>({ daily: 0, weekly: 0 });
 
-  // Fetch Usage Stats
+  // Fetch Usage Stats and Boost Credits
   useEffect(() => {
     if (!currentUser) return;
     const fetchUsage = async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('weekly_initiations_count')
+        .select('weekly_initiations_count, spotlight_credits')
         .eq('id', currentUser.id)
         .single();
       if (data) {
@@ -316,10 +321,11 @@ const Dashboard = () => {
           daily: 0, // daily_initiations_count column doesn't exist
           weekly: data.weekly_initiations_count || 0
         });
+        setBoostCredits(data.spotlight_credits || 0);
       }
     };
     fetchUsage();
-  }, [currentUser, showInstantMessageModal]); // Refresh when modal closes/opens
+  }, [currentUser, showInstantMessageModal, showBoostDialog]); // Refresh when modals close/open
 
   const handleInstantMessageClick = () => {
     if (!currentUser) return;
@@ -511,12 +517,31 @@ const Dashboard = () => {
     <div className="bg-background-dark font-sans antialiased overflow-hidden h-screen w-full flex flex-col text-white selection:bg-luxury-gold selection:text-black transition-colors duration-500">
 
       {/* Top Navigation - Restores Settings, Admin, Inbox, etc. */}
-      <AppNavigation
-        userType={currentUser?.user_type}
-        userName={currentUser?.name || currentUser?.email?.split('@')[0]}
-        avatarUrl={currentUser?.avatar_url}
-        isPro={isPro}
-      />
+      <div className="relative">
+        <AppNavigation
+          userType={currentUser?.user_type}
+          userName={currentUser?.name || currentUser?.email?.split('@')[0]}
+          avatarUrl={currentUser?.avatar_url}
+          isPro={isPro}
+        />
+        
+        {/* Boost Button - Top Right */}
+        {currentUser && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowBoostDialog(true)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
+          >
+            <Zap className="w-5 h-5 text-luxury-gold" />
+            {boostCredits > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 p-0 text-[10px] flex items-center justify-center bg-luxury-gold text-primary-foreground">
+                {boostCredits}
+              </Badge>
+            )}
+          </Button>
+        )}
+      </div>
 
       {/* Featured Header - Hidden to remove black space, Filter moved to Card */}
       <div className="hidden">
@@ -608,9 +633,15 @@ const Dashboard = () => {
             }}
           />
         )}
-        {/* Note: InstantMessageModal is conditionally rendered by showInstantMessageModal inside the component? 
-            No, the component renders a div. We should condition render it here.
-        */}
+
+        {/* Boost Purchase Dialog */}
+        {currentUser && (
+          <BoostPurchaseDialog
+            userId={currentUser.id}
+            open={showBoostDialog}
+            onOpenChange={setShowBoostDialog}
+          />
+        )}
 
         {loading ? (
           <div className="flex items-center justify-center h-full pt-40">

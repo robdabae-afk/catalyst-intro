@@ -108,7 +108,7 @@ export const TokenPurchaseDialog = ({
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Coins className="w-5 h-5 text-amber-500" />
+            <Coins className="w-5 h-5 text-luxury-gold" />
             Purchase Tokens
           </DialogTitle>
           <DialogDescription>
@@ -125,7 +125,7 @@ export const TokenPurchaseDialog = ({
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <div className="flex items-center gap-2">
-                  <Coins className="w-5 h-5 text-amber-500" />
+                  <Coins className="w-5 h-5 text-luxury-gold" />
                   <span className="text-2xl font-bold">{balance}</span>
                   <span className="text-sm text-muted-foreground">tokens</span>
                 </div>
@@ -140,7 +140,7 @@ export const TokenPurchaseDialog = ({
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                    <Badge variant="secondary">{pkg.tokens} tokens</Badge>
+                    <Badge variant="secondary" className="text-foreground">{pkg.tokens} tokens</Badge>
                   </div>
                   <CardDescription>
                     {pkg.displayPrice}
@@ -166,7 +166,7 @@ export const TokenPurchaseDialog = ({
           </div>
 
           {/* Info */}
-          <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 text-sm text-muted-foreground">
+          <div className="bg-muted/30 rounded-lg p-4 text-sm text-muted-foreground">
             <p className="font-medium mb-1">How tokens work:</p>
             <ul className="list-disc list-inside space-y-1">
               <li>Pro subscriptions grant monthly tokens automatically</li>

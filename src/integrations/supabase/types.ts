@@ -637,6 +637,7 @@ export type Database = {
           subscription_expires_at: string | null
           subscription_plan: string | null
           subscription_status: string | null
+          tokens: number
           updated_at: string | null
           user_type: Database["public"]["Enums"]["user_type"]
           weekly_initiations_count: number
@@ -679,6 +680,7 @@ export type Database = {
           subscription_expires_at?: string | null
           subscription_plan?: string | null
           subscription_status?: string | null
+          tokens?: number
           updated_at?: string | null
           user_type: Database["public"]["Enums"]["user_type"]
           weekly_initiations_count?: number
@@ -721,6 +723,7 @@ export type Database = {
           subscription_expires_at?: string | null
           subscription_plan?: string | null
           subscription_status?: string | null
+          tokens?: number
           updated_at?: string | null
           user_type?: Database["public"]["Enums"]["user_type"]
           weekly_initiations_count?: number
