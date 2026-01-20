@@ -518,6 +518,7 @@ const Dashboard = () => {
 
       {/* Top Navigation - Restores Settings, Admin, Inbox, etc. */}
       <AppNavigation
+        userId={currentUser?.id}
         userType={currentUser?.user_type}
         userName={currentUser?.name || currentUser?.email?.split('@')[0]}
         avatarUrl={currentUser?.avatar_url}

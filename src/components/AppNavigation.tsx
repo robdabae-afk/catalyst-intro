@@ -11,15 +11,14 @@ import {
 import { NavLink } from "@/components/NavLink";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
-import { useNewMatches } from "@/hooks/useNewMatches";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { useUnreadSupportReplies } from "@/hooks/useUnreadSupportReplies";
 import { supabase } from "@/integrations/supabase/client";
 import { GetProButton } from "@/components/GetProButton";
 import { 
   ArrowLeft, 
   Users, 
-  Heart, 
   Inbox, 
   TrendingUp, 
   FileText, 
@@ -32,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 interface AppNavigationProps {
+  userId?: string;
   userType?: 'founder' | 'investor' | null;
   userName?: string;
   avatarUrl?: string;
@@ -40,6 +40,7 @@ interface AppNavigationProps {
 }
 
 export const AppNavigation = ({ 
+  userId,
   userType, 
   userName, 
   avatarUrl,
@@ -50,7 +51,6 @@ export const AppNavigation = ({
   const location = useLocation();
   const pendingRequests = usePendingRequests();
   const unreadMessages = useUnreadMessages();
-  const newMatches = useNewMatches();
   const { isAdmin } = useIsAdmin();
   const { count: supportReplies } = useUnreadSupportReplies();
   
@@ -146,13 +146,19 @@ export const AppNavigation = ({
             )}
           </div>
           <div className="flex items-center gap-1 sm:gap-4">
+            {/* Concierge Match Button - Left of Discover */}
+            {userId && userType && (
+              <ConciergeMatchButton
+                userId={userId}
+                userType={userType}
+                variant="compact"
+                showBenefits={false}
+              />
+            )}
+            
             <NavLink to="/dashboard">
               <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Discover</span>
-            </NavLink>
-            <NavLink to="/matches" badge={newMatches}>
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Matches</span>
             </NavLink>
             <NavLink to="/requests" badge={pendingRequests + unreadMessages}>
               <Inbox className="w-4 h-4 sm:w-5 sm:h-5" />

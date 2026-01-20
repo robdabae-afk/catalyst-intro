@@ -405,7 +405,7 @@ export const SwipeCard = ({
               {founderProfile.traction && (
                 <Island>
                   <div className="flex items-center gap-2 text-zinc-500 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Looking For</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest">Traction</span>
                   </div>
                   <p className="text-base text-zinc-300 leading-relaxed font-light">{founderProfile.traction}</p>
                 </Island>
