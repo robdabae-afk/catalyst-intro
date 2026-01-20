@@ -364,6 +364,34 @@ export const ConciergeMatchButton = ({
     );
   }
 
+  // Compact variant - small button for navigation bar
+  if (variant === 'compact') {
+    return (
+      <>
+        {explanationModal}
+        <Button
+          onClick={handleButtonClick}
+          disabled={loading || verifying}
+          size="sm"
+          className="h-7 px-2 text-[10px] sm:text-xs sm:h-8 sm:px-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0 font-medium whitespace-nowrap"
+        >
+          {loading || verifying ? (
+            <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+          ) : (
+            <Crown className="w-3 h-3 mr-1" />
+          )}
+          {verifying ? '...' : (
+            <>
+              <span className="hidden sm:inline">Premium Match</span>
+              <span className="sm:hidden">Match</span>
+              <span className="ml-1">({tokenCost})</span>
+            </>
+          )}
+        </Button>
+      </>
+    );
+  }
+
   // Limit reached variant - card style with benefits
   if (variant === 'limit-reached') {
     return (

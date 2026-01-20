@@ -6,11 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Token costs for concierge match
-const TOKEN_COSTS = {
-  FOUNDER: 50, // $50 = 50 tokens
-  INVESTOR: 25, // $25 = 25 tokens
-};
+// Token costs for concierge match - unified pricing
+const TOKEN_COST = 60; // 60 tokens for Premium Match (all users)
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -67,7 +64,7 @@ serve(async (req) => {
     if (!profile) throw new Error("User profile not found");
     
     const userType = profile.user_type;
-    const tokenCost = userType === 'founder' ? TOKEN_COSTS.FOUNDER : TOKEN_COSTS.INVESTOR;
+    const tokenCost = TOKEN_COST; // Unified 60 tokens for all users
     const currentBalance = profile.tokens || 0;
     
     logStep("Determined token cost", { userType, tokenCost, currentBalance });
