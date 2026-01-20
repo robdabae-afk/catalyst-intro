@@ -57,8 +57,8 @@ export const getConciergePrice = (userType: 'founder' | 'investor') => {
 // Token-based economy constants
 // Token costs for products (1 token = $1)
 export const TOKEN_COSTS = {
-  CONCIERGE_FOUNDER: 50, // $50 = 50 tokens
-  CONCIERGE_INVESTOR: 25, // $25 = 25 tokens
+  CONCIERGE_FOUNDER: 60, // 60 tokens for Premium Match
+  CONCIERGE_INVESTOR: 60, // 60 tokens for Premium Match
   SPOTLIGHT_BOOST: 30, // 30 tokens
   INSTANT_MESSAGE_FOUNDER: 35, // 35 tokens for founders
   INSTANT_MESSAGE_INVESTOR: 30, // 30 tokens for investors
