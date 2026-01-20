@@ -140,7 +140,7 @@ export const TokenPurchaseDialog = ({
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                    <Badge variant="secondary" className="text-foreground">{pkg.tokens} tokens</Badge>
+                    <Badge variant="secondary" className="text-black dark:text-white">{pkg.tokens} tokens</Badge>
                   </div>
                   <CardDescription>
                     {pkg.displayPrice}
