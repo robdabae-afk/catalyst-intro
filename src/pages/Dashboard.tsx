@@ -517,31 +517,12 @@ const Dashboard = () => {
     <div className="bg-background-dark font-sans antialiased overflow-hidden h-screen w-full flex flex-col text-white selection:bg-luxury-gold selection:text-black transition-colors duration-500">
 
       {/* Top Navigation - Restores Settings, Admin, Inbox, etc. */}
-      <div className="relative">
-        <AppNavigation
-          userType={currentUser?.user_type}
-          userName={currentUser?.name || currentUser?.email?.split('@')[0]}
-          avatarUrl={currentUser?.avatar_url}
-          isPro={isPro}
-        />
-        
-        {/* Boost Button - Top Right */}
-        {currentUser && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowBoostDialog(true)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10"
-          >
-            <Zap className="w-5 h-5 text-luxury-gold" />
-            {boostCredits > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-4 min-w-4 p-0 text-[10px] flex items-center justify-center bg-luxury-gold text-primary-foreground">
-                {boostCredits}
-              </Badge>
-            )}
-          </Button>
-        )}
-      </div>
+      <AppNavigation
+        userType={currentUser?.user_type}
+        userName={currentUser?.name || currentUser?.email?.split('@')[0]}
+        avatarUrl={currentUser?.avatar_url}
+        isPro={isPro}
+      />
 
       {/* Featured Header - Hidden to remove black space, Filter moved to Card */}
       <div className="hidden">
@@ -685,6 +666,9 @@ const Dashboard = () => {
               onSwipe={handleSwipe}
               onMessage={handleInstantMessageClick}
               swipeCooldown={swipeCooldown}
+              onBoostClick={() => setShowBoostDialog(true)}
+              boostCredits={boostCredits}
+              isBoostActive={false}
             />
           </div>
         ) : null}

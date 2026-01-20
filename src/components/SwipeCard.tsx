@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, CheckCircle2, Handshake, Star, X, MessageSquare, Quote } from "lucide-react";
+import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, CheckCircle2, Handshake, Star, X, MessageSquare, Quote, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AdProfile, QueueItem } from "@/hooks/useSwipeQueue";
@@ -30,6 +30,9 @@ interface SwipeCardProps {
   isMatch?: boolean;
   publicDeal?: any;
   swipeCooldown?: boolean;
+  onBoostClick?: () => void;
+  boostCredits?: number;
+  isBoostActive?: boolean;
 }
 
 // Island Component for distinct sections
@@ -55,7 +58,10 @@ export const SwipeCard = ({
   currentUserId,
   metrics,
   onUnlockHistory,
-  swipeCooldown = false
+  swipeCooldown = false,
+  onBoostClick,
+  boostCredits = 0,
+  isBoostActive = false
 }: SwipeCardProps) => {
   const [adLocked, setAdLocked] = useState(isAd && !isPro);
   const [showInstantMessage, setShowInstantMessage] = useState(false);
@@ -201,6 +207,32 @@ export const SwipeCard = ({
           </div>
         )}
         {adLocked && <div className="absolute inset-0 z-10 bg-transparent" />}
+
+        {/* Boost Button - Top Left Transparent Bubble */}
+        {!isAdProfile && onBoostClick && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onBoostClick();
+            }}
+            className="absolute top-4 left-4 z-20 p-2.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10 transition-all hover:bg-black/60 active:scale-95"
+          >
+            <Zap className={cn(
+              "w-5 h-5",
+              isBoostActive ? "text-luxury-gold fill-luxury-gold animate-pulse" : "text-luxury-gold"
+            )} />
+            {boostCredits > 0 && !isBoostActive && (
+              <span className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px] font-bold bg-luxury-gold text-primary-foreground rounded-full flex items-center justify-center">
+                {boostCredits}
+              </span>
+            )}
+            {isBoostActive && (
+              <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-luxury-gold uppercase tracking-wider">
+                Live
+              </span>
+            )}
+          </button>
+        )}
 
         {/* Video Card Layout */}
         {hasVideo ? (
