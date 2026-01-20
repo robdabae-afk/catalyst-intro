@@ -384,7 +384,6 @@ export const ConciergeMatchButton = ({
             <>
               <span className="hidden sm:inline">Premium Match</span>
               <span className="sm:hidden">Match</span>
-              <span className="ml-1">({tokenCost})</span>
             </>
           )}
         </Button>
