@@ -6,6 +6,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
+import { useDailySwipes } from '@/hooks/useDailySwipes';
 import { SwipeCard } from '@/components/SwipeCard';
 import { ProfileMetrics } from '@/components/FeaturedCard'; // Keeping type import only if needed, logic moved
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -56,7 +57,16 @@ const Dashboard = () => {
   const [isTestMode, setIsTestMode] = useState(false);
 
   // Swipe history for filtering out recently swiped profiles
-  const { filterProfiles, loading: historyLoading, refetch: refetchHistory } = useSwipeHistory(currentUser?.id);
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory } = useSwipeHistory(currentUser?.id);
+
+  // Daily swipe limits
+  const {
+    canSwipe,
+    remainingSwipes,
+    incrementSwipe,
+    dailyLimit,
+    loading: swipeLimitLoading
+  } = useDailySwipes(currentUser?.id ?? null, isPro, currentUser?.user_type as 'founder' | 'investor' | null);
 
   // Initial Profile Fetch
   useEffect(() => {
@@ -454,6 +464,12 @@ const Dashboard = () => {
     if (!currentItem) return;
     if (swipeCooldown) return;
 
+    // Check daily swipe limit
+    if (!canSwipe) {
+      setShowUpgradePrompt(true);
+      return;
+    }
+
     // Priority Logic Check
     if (direction === 'priority_like') {
       // If not Pro, check credits
@@ -515,12 +531,18 @@ const Dashboard = () => {
       }
     }
 
-    // Advance queue
+    // Advance queue and increment daily swipe count
     advanceQueue();
+    incrementSwipe();
   };
 
   const handleReset = () => {
     resetQueue();
+  };
+
+  const handleResetHistory = async () => {
+    await resetSwipeHistory();
+    refetchHistory();
   };
 
   const showAllCaughtUp = isQueueEmpty && !hasOnlyAds;
@@ -659,6 +681,7 @@ const Dashboard = () => {
               adProfile={null}
               onReset={handleReset}
               onExpandFilters={() => navigate('/filters')}
+              onResetHistory={handleResetHistory}
             />
           </div>
         ) : currentProfile ? (
