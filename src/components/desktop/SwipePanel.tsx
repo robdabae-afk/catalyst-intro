@@ -53,31 +53,25 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
     const list: { id: string; title: string; content: React.ReactNode }[] = [];
 
     if (isFounderProfile && founderData) {
-      // Section 1: MRR & Backed By
-      if (founderData.mrr || founderData.backed_by) {
-        list.push({
-          id: 'traction',
-          title: 'Traction & Backing',
-          content: (
-            <div className="space-y-6">
-              {founderData.mrr && (
-                <div>
-                  <h4 className="text-luxury-gold text-xs uppercase tracking-wider mb-2">MRR / Revenue</h4>
-                  <p className="text-white text-2xl font-semibold">{founderData.mrr}</p>
-                </div>
-              )}
-              {founderData.backed_by && (
-                <div>
-                  <h4 className="text-luxury-gold text-xs uppercase tracking-wider mb-2">Backed By</h4>
-                  <p className="text-white text-lg">{founderData.backed_by}</p>
-                </div>
-              )}
+      // Section 1: MRR & Backed By (ALWAYS show with fallbacks)
+      list.push({
+        id: 'traction',
+        title: 'Traction & Backing',
+        content: (
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-luxury-gold text-xs uppercase tracking-wider mb-2">MRR / Revenue</h4>
+              <p className="text-white text-2xl font-semibold">{founderData.mrr || '-'}</p>
             </div>
-          )
-        });
-      }
+            <div>
+              <h4 className="text-luxury-gold text-xs uppercase tracking-wider mb-2">Backed By</h4>
+              <p className="text-white text-lg">{founderData.backed_by || '-'}</p>
+            </div>
+          </div>
+        )
+      });
 
-      // Section 2: One-liner / Super Power
+      // Section 2: One-liner / Super Power (only if exists)
       if (founderData.one_liner) {
         list.push({
           id: 'pitch',
@@ -93,7 +87,7 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
         });
       }
 
-      // Section 3: Pitch Deck
+      // Section 3: Pitch Deck (only if exists)
       if (founderData.pitch_deck_url) {
         list.push({
           id: 'deck',
@@ -116,7 +110,21 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
         });
       }
 
-      // Section 4: Website / Demo
+      // Section 4: Endorsements (always show with fallback)
+      list.push({
+        id: 'endorsements',
+        title: 'Endorsements',
+        content: (
+          <div>
+            <h4 className="text-luxury-gold text-xs uppercase tracking-wider mb-3">Endorsements</h4>
+            <div className="py-6 border border-dashed border-zinc-700 rounded-xl bg-zinc-900/30">
+              <p className="text-center text-zinc-500 text-sm italic">No endorsements yet</p>
+            </div>
+          </div>
+        )
+      });
+
+      // Section 5: Website / Demo (only if exists)
       const hasLinks = founderData.website_url || founderData.demo_url;
       if (hasLinks) {
         list.push({

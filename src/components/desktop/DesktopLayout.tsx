@@ -2,14 +2,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Sidebar } from './Sidebar';
 import { ChatPanel } from './ChatPanel';
 import { SwipePanel } from './SwipePanel';
+import { PendingApprovalOverlay } from './PendingApprovalOverlay';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AppNavigation } from '@/components/AppNavigation';
+import { BottomNavigation } from '@/components/BottomNavigation';
 import { MatchModal } from '@/components/MatchModal';
 import { InstantMessageModal } from '@/components/InstantMessageModal';
 import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 import { BoostPurchaseDialog } from '@/components/BoostPurchaseDialog';
 import { OrganicProfile, useSwipeQueue } from '@/hooks/useSwipeQueue';
+import { useApprovalCheck } from '@/hooks/useApprovalCheck';
 
 interface Match {
   profile: {
@@ -43,6 +46,10 @@ interface DesktopLayoutProps {
 type ViewMode = 'swipe' | 'chat';
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro }) => {
+  // Approval check for pending users
+  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
+  const [showPendingBanner, setShowPendingBanner] = useState(true);
+  
   // View mode state - binary swipe/chat
   const [viewMode, setViewMode] = useState<ViewMode>('swipe');
   
@@ -68,6 +75,9 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   const [showBoostDialog, setShowBoostDialog] = useState(false);
   const [boostCredits, setBoostCredits] = useState(0);
   const [hasMutualMatch, setHasMutualMatch] = useState(false);
+
+  // If pending user, block swiping and show overlay
+  const isPendingUser = !approvalLoading && isApproved === false;
 
   // Initialize swipe queue
   const {
@@ -349,7 +359,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
       />
 
       {/* Main Content - Two Column Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden pb-24">
         {/* Left Sidebar - Always Visible */}
         <Sidebar
           matches={matches}
@@ -360,16 +370,21 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
 
         {/* Right Panel - Swipe Mode or Chat Mode */}
         <div className="flex-1 overflow-hidden relative">
+          {/* Pending Approval Overlay - blocks swipe panel */}
+          {isPendingUser && showPendingBanner && viewMode === 'swipe' && (
+            <PendingApprovalOverlay onDismiss={() => setShowPendingBanner(false)} />
+          )}
+          
           {viewMode === 'swipe' ? (
             <SwipePanel
-              profile={currentItem as OrganicProfile}
+              profile={isPendingUser ? null : (currentItem as OrganicProfile)}
               onSwipe={handleSwipe}
               onMessage={handleInstantMessageClick}
               isPro={isPro}
               boostCredits={boostCredits}
               isBoostActive={false}
               onBoostClick={() => setShowBoostDialog(true)}
-              loading={loadingProfiles}
+              loading={loadingProfiles && !isPendingUser}
             />
           ) : (
             <ChatPanel
@@ -383,6 +398,9 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
           )}
         </div>
       </div>
+
+      {/* Bottom Navigation - Desktop */}
+      <BottomNavigation userType={currentUser?.user_type} />
 
       {/* Modals */}
       <MatchModal
