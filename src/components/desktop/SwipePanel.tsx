@@ -455,7 +455,7 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
           variant="ghost"
           size="lg"
           onClick={() => onSwipe('pass')}
-          className="w-14 h-14 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 hover:border-red-500/50 hover:bg-red-500/10 transition-all group"
+          className="w-14 h-14 rounded-full bg-transparent border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 transition-all group"
         >
           <X className="w-6 h-6 text-zinc-400 group-hover:text-red-400 transition-colors" />
         </Button>
@@ -465,7 +465,7 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
           variant="ghost"
           size="lg"
           onClick={() => onMessage?.()}
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 backdrop-blur-sm border border-luxury-gold/50 hover:border-luxury-gold hover:from-amber-500/30 hover:to-orange-500/30 transition-all group"
+          className="w-16 h-16 rounded-full bg-transparent border border-luxury-gold/50 hover:border-luxury-gold hover:bg-luxury-gold/10 transition-all group"
         >
           <Star className="w-7 h-7 text-luxury-gold group-hover:scale-110 transition-transform" />
         </Button>
@@ -475,7 +475,7 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
           variant="ghost"
           size="lg"
           onClick={() => onSwipe('like')}
-          className="w-14 h-14 rounded-full bg-zinc-900/80 backdrop-blur-sm border border-zinc-700 hover:border-green-500/50 hover:bg-green-500/10 transition-all group"
+          className="w-14 h-14 rounded-full bg-transparent border border-white/10 hover:border-green-500/50 hover:bg-green-500/10 transition-all group"
         >
           <Handshake className="w-6 h-6 text-zinc-400 group-hover:text-green-400 transition-colors" />
         </Button>
