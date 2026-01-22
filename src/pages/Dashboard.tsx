@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { SwipeCard } from '@/components/SwipeCard';
 import { ProfileMetrics } from '@/components/FeaturedCard'; // Keeping type import only if needed, logic moved
@@ -30,6 +32,8 @@ const Dashboard = () => {
   const { user: currentUser, isPro } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
+
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
   // In a real scenario, useSwipeQueue likely fetches inside or takes props.
@@ -512,6 +516,11 @@ const Dashboard = () => {
 
   const showAllCaughtUp = isQueueEmpty && !hasOnlyAds;
   const currentProfile = currentItem as OrganicProfile | AdProfile | null;
+
+  // Desktop view: show 3-column layout
+  if (!isMobile && currentUser) {
+    return <DesktopLayout currentUser={currentUser} isPro={isPro} />;
+  }
 
   return (
     <div className="bg-background-dark font-sans antialiased overflow-hidden h-screen w-full flex flex-col text-white selection:bg-luxury-gold selection:text-black transition-colors duration-500">
