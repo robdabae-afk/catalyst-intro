@@ -4,6 +4,7 @@ import { ChatPanel } from './ChatPanel';
 import { ProfilePanel } from './ProfilePanel';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { AppNavigation } from '@/components/AppNavigation';
 
 // Interfaces duplicated from Matches.tsx to ensure compatibility
 interface Profile {
@@ -197,49 +198,57 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
     };
 
     return (
-        <div className="flex w-full h-full overflow-hidden bg-black text-white">
-            {/* 1. Sidebar */}
-            <Sidebar
-                currentUser={currentUser}
-                matches={matches}
-                selectedMatchId={selectedMatch?.profile.id || null}
-                onSelectMatch={setSelectedMatch}
-                loading={loadingMatches}
+        <div className="flex flex-col h-screen w-full overflow-hidden bg-black text-white">
+            <AppNavigation
+                userType={currentUser?.user_type}
+                userName={currentUser?.name}
+                avatarUrl={currentUser?.avatar_url}
+                isPro={isPro}
             />
-
-            {/* 2. Center Chat */}
-            <div className="flex-1 min-w-[300px] border-r border-[#333]">
-                <ChatPanel
-                    match={selectedMatch}
-                    messages={messages}
-                    currentUserId={currentUser?.id}
-                    onSendMessage={handleSendMessage}
-                    loading={loadingMessages}
+            <div className="flex flex-1 overflow-hidden">
+                {/* 1. Sidebar */}
+                <Sidebar
+                    currentUser={currentUser}
+                    matches={matches}
+                    selectedMatchId={selectedMatch?.profile.id || null}
+                    onSelectMatch={setSelectedMatch}
+                    loading={loadingMatches}
                 />
-            </div>
 
-            {/* 3. Right Profile Panel */}
-            <div className={`w-[600px] flex-shrink-0 transition-all duration-500 ease-in-out ${selectedMatch ? 'translate-x-0 opacity-100' : 'translate-x-[100px] opacity-0 hidden'}`}>
-                {/* Only render if we have a match selected */}
-                {selectedMatch && (
-                    <ProfilePanel
-                        profile={{
-                            ...selectedMatch.profile,
-                            founder_profiles: selectedMatch.founderProfile,
-                            investor_profiles: selectedMatch.investorProfile
-                        }}
-                        userType={selectedMatch.profile.user_type}
+                {/* 2. Center Chat */}
+                <div className="flex-1 min-w-[300px] border-r border-[#333]">
+                    <ChatPanel
+                        match={selectedMatch}
+                        messages={messages}
+                        currentUserId={currentUser?.id}
+                        onSendMessage={handleSendMessage}
+                        loading={loadingMessages}
                     />
+                </div>
+
+                {/* 3. Right Profile Panel */}
+                <div className={`w-[600px] flex-shrink-0 transition-all duration-500 ease-in-out ${selectedMatch ? 'translate-x-0 opacity-100' : 'translate-x-[100px] opacity-0 hidden'}`}>
+                    {/* Only render if we have a match selected */}
+                    {selectedMatch && (
+                        <ProfilePanel
+                            profile={{
+                                ...selectedMatch.profile,
+                                founder_profiles: selectedMatch.founderProfile,
+                                investor_profiles: selectedMatch.investorProfile
+                            }}
+                            userType={selectedMatch.profile.user_type}
+                        />
+                    )}
+                </div>
+                {!selectedMatch && (
+                    <div className="w-[600px] flex-shrink-0 bg-[#050505] flex items-center justify-center border-l border-[#333]">
+                        <div className="text-zinc-700 text-center">
+                            <p className="text-lg font-playfair mb-2">Select a match</p>
+                            <p className="text-sm">to view their profile details</p>
+                        </div>
+                    </div>
                 )}
             </div>
-            {!selectedMatch && (
-                <div className="w-[600px] flex-shrink-0 bg-[#050505] flex items-center justify-center border-l border-[#333]">
-                    <div className="text-zinc-700 text-center">
-                        <p className="text-lg font-playfair mb-2">Select a match</p>
-                        <p className="text-sm">to view their profile details</p>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
