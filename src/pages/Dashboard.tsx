@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
+import { useSwipeHistory } from '@/hooks/useSwipeHistory';
 import { SwipeCard } from '@/components/SwipeCard';
 import { ProfileMetrics } from '@/components/FeaturedCard'; // Keeping type import only if needed, logic moved
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -53,6 +54,9 @@ const Dashboard = () => {
   const [swipeCooldown, setSwipeCooldown] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [isTestMode, setIsTestMode] = useState(false);
+
+  // Swipe history for filtering out recently swiped profiles
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory } = useSwipeHistory(currentUser?.id);
 
   // Initial Profile Fetch
   useEffect(() => {
@@ -115,8 +119,10 @@ const Dashboard = () => {
               return a.is_featured ? -1 : 1;
             });
 
-          console.log("Processed profiles for queue:", profiles);
-          setOrganicProfiles(profiles);
+          // Filter out recently swiped profiles (within 14-day cooldown)
+          const filteredProfiles = filterProfiles(profiles);
+          console.log("Processed profiles for queue:", filteredProfiles.length, "of", profiles.length);
+          setOrganicProfiles(filteredProfiles);
         }
       } catch (err) {
         console.error("Error fetching profiles:", err);
@@ -125,8 +131,11 @@ const Dashboard = () => {
       }
     };
 
-    fetchProfiles();
-  }, [currentUser]);
+    // Wait for history to load before fetching
+    if (!historyLoading) {
+      fetchProfiles();
+    }
+  }, [currentUser, historyLoading, filterProfiles]);
 
   const {
     currentItem,

@@ -12,6 +12,7 @@ import { InstantMessageModal } from '@/components/InstantMessageModal';
 import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 import { BoostPurchaseDialog } from '@/components/BoostPurchaseDialog';
 import { OrganicProfile, useSwipeQueue } from '@/hooks/useSwipeQueue';
+import { useSwipeHistory } from '@/hooks/useSwipeHistory';
 import { useApprovalCheck } from '@/hooks/useApprovalCheck';
 
 interface Match {
@@ -79,6 +80,9 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   // If pending user, block swiping and show overlay
   const isPendingUser = !approvalLoading && isApproved === false;
 
+  // Swipe history for filtering out recently swiped profiles
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory } = useSwipeHistory(currentUser?.id);
+
   // Initialize swipe queue
   const {
     currentItem,
@@ -115,7 +119,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
           query = query.eq('is_test_account', false).eq('user_type', targetType);
         }
 
-        const { data, error } = await query.limit(20);
+        const { data, error } = await query.limit(50); // Fetch more to account for filtering
         if (error) throw error;
 
         if (data) {
@@ -128,7 +132,10 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
             if (a.is_featured === b.is_featured) return 0;
             return a.is_featured ? -1 : 1;
           });
-          setOrganicProfiles(profiles);
+          
+          // Filter out recently swiped profiles (within 14-day cooldown)
+          const filteredProfiles = filterProfiles(profiles);
+          setOrganicProfiles(filteredProfiles);
         }
       } catch (err) {
         console.error("Error fetching profiles:", err);
@@ -137,8 +144,11 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
       }
     };
 
-    fetchProfiles();
-  }, [currentUser]);
+    // Wait for history to load before fetching
+    if (!historyLoading) {
+      fetchProfiles();
+    }
+  }, [currentUser, historyLoading, filterProfiles]);
 
   // Fetch matches for sidebar
   useEffect(() => {
