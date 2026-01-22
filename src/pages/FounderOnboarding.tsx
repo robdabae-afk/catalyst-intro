@@ -219,6 +219,42 @@ const FounderOnboarding = () => {
       return;
     }
 
+    if (!formData.stage) {
+      toast({
+        variant: "destructive",
+        title: "Stage required",
+        description: "Please select your current funding stage",
+      });
+      return;
+    }
+
+    if (!formData.mrr) {
+      toast({
+        variant: "destructive",
+        title: "MRR / Revenue required",
+        description: "Please select your MRR / Revenue level",
+      });
+      return;
+    }
+
+    if (!formData.traction.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Traction required",
+        description: "Please describe your traction",
+      });
+      return;
+    }
+
+    if (!formData.fundingAmount.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Funding amount required",
+        description: "Please enter the funding amount you're seeking",
+      });
+      return;
+    }
+
     if (selectedIndustries.length === 0) {
       toast({
         variant: "destructive",
@@ -526,9 +562,9 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="stage">Stage</Label>
+                <Label htmlFor="stage">Stage *</Label>
                 <Select value={formData.stage} onValueChange={(value: any) => setFormData({ ...formData, stage: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className={!formData.stage ? 'border-destructive/50' : ''}>
                     <SelectValue placeholder="Select your current stage" />
                   </SelectTrigger>
                   <SelectContent>
@@ -542,9 +578,10 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="traction">Traction</Label>
+                <Label htmlFor="traction">Traction *</Label>
                 <Textarea
                   id="traction"
+                  required
                   placeholder="Revenue, users, key milestones..."
                   value={formData.traction}
                   onChange={(e) => {
@@ -553,6 +590,7 @@ const FounderOnboarding = () => {
                     }
                   }}
                   maxLength={250}
+                  className={!formData.traction.trim() ? 'border-destructive/50' : ''}
                 />
                 <p className={`text-xs ${formData.traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
                   {formData.traction.length}/250 characters
@@ -560,9 +598,9 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="mrr">MRR / Revenue</Label>
+                <Label htmlFor="mrr">MRR / Revenue *</Label>
                 <Select value={formData.mrr} onValueChange={(value) => setFormData({ ...formData, mrr: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className={!formData.mrr ? 'border-destructive/50' : ''}>
                     <SelectValue placeholder="Select MRR" />
                   </SelectTrigger>
                   <SelectContent>
@@ -712,14 +750,16 @@ const FounderOnboarding = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
+                  <Label htmlFor="fundingAmount">Funding Amount Sought *</Label>
                   <Input
                     id="fundingAmount"
+                    required
                     placeholder="e.g., 500K, 1M, 2.5M"
                     value={formData.fundingAmount}
                     onChange={(e) => setFormData({ ...formData, fundingAmount: e.target.value })}
+                    className={!formData.fundingAmount.trim() ? 'border-destructive/50' : ''}
                   />
-                  <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
+                  <p className="text-xs text-muted-foreground">This will be displayed on your profile card</p>
                 </div>
               </div>
 
