@@ -14,6 +14,7 @@ import { RequestMenu } from "@/components/RequestMenu";
 import { EndorseUserDialog } from "@/components/EndorseUserDialog";
 import { AppNavigation } from "@/components/AppNavigation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DesktopLayout } from "@/components/desktop/DesktopLayout"; // Import DesktopLayout
 import { useSubscription } from "@/hooks/useSubscription";
 import { useActiveConversations } from "@/hooks/useActiveConversations";
 import { useWeeklyInitiations } from "@/hooks/useWeeklyInitiations";
@@ -703,6 +704,19 @@ export default function Matches() {
   }
 
   // Desktop layout OR Mobile matches list
+  if (!isMobile) {
+    const currentUser = {
+      id: currentUserId,
+      user_type: currentUserType,
+      name: currentUserName,
+      avatar_url: currentUserAvatar
+    };
+
+    if (!currentUserId) return <div className="h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+
+    return <DesktopLayout currentUser={currentUser} isPro={isPro} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/20">
       <AppNavigation
