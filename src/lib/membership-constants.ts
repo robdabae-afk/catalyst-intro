@@ -1,10 +1,10 @@
 // Membership tier limits
 
 // Swipe limits
-export const BASIC_INVESTOR_DAILY_SWIPES = 5;
-export const PRO_INVESTOR_DAILY_SWIPES = 10;
+export const BASIC_INVESTOR_DAILY_SWIPES = 3;
+export const PRO_INVESTOR_DAILY_SWIPES = 5;
 export const BASIC_FOUNDER_DAILY_SWIPES = 3;
-export const PRO_FOUNDER_DAILY_SWIPES = 10;
+export const PRO_FOUNDER_DAILY_SWIPES = 5;
 
 // Active conversation limits
 export const BASIC_FOUNDER_ACTIVE_CHATS = 1;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { ChatPanel } from './ChatPanel';
 import { SwipePanel } from './SwipePanel';
@@ -14,6 +15,9 @@ import { BoostPurchaseDialog } from '@/components/BoostPurchaseDialog';
 import { OrganicProfile, useSwipeQueue } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
 import { useApprovalCheck } from '@/hooks/useApprovalCheck';
+import { useDailySwipes } from '@/hooks/useDailySwipes';
+import { SwipeLimitReachedFlow } from '@/components/SwipeLimitReachedFlow';
+import { CaughtUpState } from '@/components/CaughtUpState';
 
 interface Match {
   profile: {
@@ -47,6 +51,8 @@ interface DesktopLayoutProps {
 type ViewMode = 'swipe' | 'chat';
 
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro }) => {
+  const navigate = useNavigate();
+  
   // Approval check for pending users
   const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
   const [showPendingBanner, setShowPendingBanner] = useState(true);
@@ -81,13 +87,26 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   const isPendingUser = !approvalLoading && isApproved === false;
 
   // Swipe history for filtering out recently swiped profiles
-  const { filterProfiles, loading: historyLoading, refetch: refetchHistory } = useSwipeHistory(currentUser?.id);
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory } = useSwipeHistory(currentUser?.id);
+
+  // Daily swipe limits
+  const {
+    canSwipe,
+    remainingSwipes,
+    incrementSwipe,
+    dailyLimit,
+  } = useDailySwipes(currentUser?.id ?? null, isPro, currentUser?.user_type as 'founder' | 'investor' | null);
+
+  // State for swipe limit flow
+  const [showSwipeLimitFlow, setShowSwipeLimitFlow] = useState(false);
 
   // Initialize swipe queue
   const {
     currentItem,
     handleSwipe: advanceQueue,
     isQueueEmpty,
+    resetQueue,
+    totalOrganic,
   } = useSwipeQueue(organicProfiles, [], isPro, isTestMode);
 
   // Fetch profiles for swiping
@@ -334,6 +353,12 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   const handleSwipe = async (direction: 'pass' | 'like' | 'priority_like') => {
     if (!currentItem || !currentUser) return;
 
+    // Check daily swipe limit
+    if (!canSwipe) {
+      setShowSwipeLimitFlow(true);
+      return;
+    }
+
     // Record swipe
     const actionMap = { 'pass': 'pass', 'like': 'like', 'priority_like': 'priority' };
     supabase.from('swipes').insert({
@@ -351,6 +376,12 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
     }
 
     advanceQueue();
+    incrementSwipe();
+  };
+
+  const handleResetHistory = async () => {
+    await resetSwipeHistory();
+    refetchHistory();
   };
 
   const handleInstantMessageClick = () => {
@@ -386,16 +417,30 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
           )}
           
           {viewMode === 'swipe' ? (
-            <SwipePanel
-              profile={isPendingUser ? null : (currentItem as OrganicProfile)}
-              onSwipe={handleSwipe}
-              onMessage={handleInstantMessageClick}
-              isPro={isPro}
-              boostCredits={boostCredits}
-              isBoostActive={false}
-              onBoostClick={() => setShowBoostDialog(true)}
-              loading={loadingProfiles && !isPendingUser}
-            />
+            isQueueEmpty ? (
+              <div className="h-full flex flex-col items-center justify-center p-6">
+                <CaughtUpState
+                  userType={currentUser?.user_type || 'founder'}
+                  totalOrganic={totalOrganic}
+                  isPro={isPro}
+                  adProfile={null}
+                  onReset={resetQueue}
+                  onExpandFilters={() => navigate('/filters')}
+                  onResetHistory={handleResetHistory}
+                />
+              </div>
+            ) : (
+              <SwipePanel
+                profile={isPendingUser ? null : (currentItem as OrganicProfile)}
+                onSwipe={handleSwipe}
+                onMessage={handleInstantMessageClick}
+                isPro={isPro}
+                boostCredits={boostCredits}
+                isBoostActive={false}
+                onBoostClick={() => setShowBoostDialog(true)}
+                loading={loadingProfiles && !isPendingUser}
+              />
+            )
           ) : (
             <ChatPanel
               match={selectedMatch}
@@ -448,6 +493,16 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
           userId={currentUser.id}
           open={showBoostDialog}
           onOpenChange={setShowBoostDialog}
+        />
+      )}
+
+      {/* Swipe Limit Reached Flow */}
+      {showSwipeLimitFlow && currentUser && (
+        <SwipeLimitReachedFlow
+          adProfile={null}
+          userId={currentUser.id}
+          userType={currentUser.user_type}
+          onClose={() => setShowSwipeLimitFlow(false)}
         />
       )}
     </div>

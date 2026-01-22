@@ -8,7 +8,8 @@ import {
   Heart, 
   ExternalLink, 
   Megaphone,
-  Sparkles
+  Sparkles,
+  History
 } from 'lucide-react';
 import type { AdProfile } from '@/hooks/useSwipeQueue';
 
@@ -19,6 +20,7 @@ interface CaughtUpStateProps {
   adProfile: AdProfile | null;
   onReset: () => void;
   onExpandFilters: () => void;
+  onResetHistory?: () => void;
 }
 
 export const CaughtUpState = ({ 
@@ -27,7 +29,8 @@ export const CaughtUpState = ({
   isPro, 
   adProfile,
   onReset,
-  onExpandFilters
+  onExpandFilters,
+  onResetHistory
 }: CaughtUpStateProps) => {
   const navigate = useNavigate();
   const oppositeType = userType === 'founder' ? 'investors' : 'founders';
@@ -137,6 +140,13 @@ export const CaughtUpState = ({
             <RotateCcw className="w-4 h-4 mr-2" />
             Review Again
           </Button>
+
+          {onResetHistory && (
+            <Button onClick={onResetHistory} variant="secondary" className="w-full">
+              <History className="w-4 h-4 mr-2" />
+              Reset Swipe History
+            </Button>
+          )}
           
           <Button 
             onClick={() => navigate('/matches')} 
