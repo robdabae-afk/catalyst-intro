@@ -319,7 +319,8 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
   const industries = isFounderProfile
     ? founderData?.industry 
     : investorData?.sectors_of_interest;
-  const bannerUrl = founderData?.banner_url || investorData?.banner_url || profile.avatar_url;
+  // Use avatar (profile photo) as primary, fall back to banner only if no avatar
+  const profileImageUrl = profile.avatar_url || founderData?.banner_url || investorData?.banner_url;
 
   return (
     <div className="h-full flex flex-col bg-black relative overflow-hidden">
@@ -343,9 +344,9 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
       <div className="flex-1 flex m-6 rounded-3xl overflow-hidden border border-zinc-800/50 shadow-2xl">
         {/* Left Half: Media */}
         <div className="w-1/2 bg-zinc-900 relative flex items-center justify-center overflow-hidden">
-          {bannerUrl ? (
+          {profileImageUrl ? (
             <img
-              src={bannerUrl}
+              src={profileImageUrl}
               alt={displayName}
               className="w-full h-full object-cover"
             />
