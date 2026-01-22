@@ -149,6 +149,16 @@ const InvestorOnboarding = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Require profile photo
+    if (!avatarFile) {
+      toast({
+        variant: "destructive",
+        title: "Profile photo required",
+        description: "Please upload a profile photo to continue",
+      });
+      return;
+    }
+
     if (selectedSectors.length === 0) {
       toast({
         variant: "destructive",
@@ -311,30 +321,35 @@ const InvestorOnboarding = () => {
                 />
               </div>
 
-              {/* Avatar Upload */}
-              <div className="flex flex-col items-center gap-4">
-                <div
-                  className="relative cursor-pointer group"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Avatar className="w-24 h-24 border-4 border-primary/20">
-                    <AvatarImage src={avatarPreview || undefined} />
-                    <AvatarFallback className="bg-primary/10">
-                      <User className="w-10 h-10 text-muted-foreground" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="w-6 h-6 text-white" />
+              {/* Avatar Upload - REQUIRED */}
+              <div className="space-y-2">
+                <Label>Profile Photo *</Label>
+                <div className="flex flex-col items-center gap-4">
+                  <div
+                    className={`relative cursor-pointer group ${!avatarPreview ? 'ring-2 ring-destructive/50 ring-offset-2 ring-offset-background rounded-full' : ''}`}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Avatar className="w-24 h-24 border-4 border-primary/20">
+                      <AvatarImage src={avatarPreview || undefined} />
+                      <AvatarFallback className="bg-primary/10">
+                        <User className="w-10 h-10 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera className="w-6 h-6 text-white" />
+                    </div>
                   </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="hidden"
+                  />
+                  <p className={`text-sm ${avatarPreview ? 'text-muted-foreground' : 'text-destructive'}`}>
+                    {avatarPreview ? 'Click to change profile photo' : 'Profile photo is required'}
+                  </p>
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                />
-                <p className="text-sm text-muted-foreground">Click to upload profile photo</p>
               </div>
 
               <div className="space-y-2">
