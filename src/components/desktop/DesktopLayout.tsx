@@ -208,7 +208,6 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
             <div className="flex flex-1 overflow-hidden">
                 {/* 1. Sidebar */}
                 <Sidebar
-                    currentUser={currentUser}
                     matches={matches}
                     selectedMatchId={selectedMatch?.profile.id || null}
                     onSelectMatch={setSelectedMatch}
@@ -236,7 +235,7 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
                                 founder_profiles: selectedMatch.founderProfile,
                                 investor_profiles: selectedMatch.investorProfile
                             }}
-                            userType={selectedMatch.profile.user_type}
+                            userType={selectedMatch.profile.user_type as 'founder' | 'investor'}
                         />
                     )}
                 </div>
