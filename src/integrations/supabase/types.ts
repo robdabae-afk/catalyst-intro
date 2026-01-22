@@ -263,6 +263,21 @@ export type Database = {
         }
         Relationships: []
       }
+      discover_resets: {
+        Row: {
+          reset_at: string
+          user_id: string
+        }
+        Insert: {
+          reset_at?: string
+          user_id: string
+        }
+        Update: {
+          reset_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       document_requests: {
         Row: {
           created_at: string

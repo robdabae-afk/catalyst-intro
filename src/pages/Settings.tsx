@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
@@ -21,6 +21,18 @@ import { TokenBalance } from "@/components/TokenBalance";
 import { TokenPurchaseDialog } from "@/components/TokenPurchaseDialog";
 import { useTokens } from "@/hooks/useTokens";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useSwipeHistory } from "@/hooks/useSwipeHistory";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Settings = () => {
     const navigate = useNavigate();
@@ -28,6 +40,7 @@ const Settings = () => {
     const { isAdmin } = useIsAdmin();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [resettingHistory, setResettingHistory] = useState(false);
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [uploadingVideo, setUploadingVideo] = useState(false);
@@ -35,6 +48,20 @@ const Settings = () => {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [userType, setUserType] = useState<'founder' | 'investor' | null>(null);
+    
+    // Swipe history hook
+    const { resetSwipeHistory } = useSwipeHistory(userId || undefined);
+
+    const handleResetSwipeHistory = async () => {
+        setResettingHistory(true);
+        const success = await resetSwipeHistory();
+        setResettingHistory(false);
+        if (success) {
+            toast({ title: "Swipe history reset", description: "You can now see all profiles again." });
+        } else {
+            toast({ variant: "destructive", title: "Failed to reset", description: "Please try again." });
+        }
+    };
 
     // Profile fields
     const [name, setName] = useState("");
@@ -757,6 +784,53 @@ const Settings = () => {
                 {userId && userType && (
                     <SpotlightManager userId={userId} userType={userType} />
                 )}
+
+                {/* Reset Swipe History */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <RotateCcw className="w-5 h-5 text-primary" />
+                            Discovery Settings
+                        </CardTitle>
+                        <CardDescription>Manage your swipe history and profile visibility</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div>
+                                <h4 className="text-sm font-medium mb-2">Reset Swipe History</h4>
+                                <p className="text-sm text-muted-foreground mb-3">
+                                    Profiles you've swiped on will reappear after 14 days. Reset to see all profiles immediately (except matches).
+                                </p>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" disabled={resettingHistory}>
+                                            {resettingHistory ? (
+                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                            ) : (
+                                                <RotateCcw className="w-4 h-4 mr-2" />
+                                            )}
+                                            Reset Swipe History
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Reset Swipe History?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This will let you see all profiles again that you've previously swiped on. Your matches and conversations will not be affected.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleResetSwipeHistory}>
+                                                Reset History
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* Referral Program */}
                 <Card>
