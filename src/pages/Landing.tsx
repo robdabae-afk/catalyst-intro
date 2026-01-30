@@ -66,32 +66,31 @@ const Landing = () => {
           <FeatureCard icons={[<TrendingUp className="w-8 h-8" />]} title="Track Cap Table" description="Manage equity and investments in one place" />
         </div>
       </div>
-  </div>
-    </section >
+    </section>
 
-  {/* Concierge Preview Section */ }
-  < ConciergePreview />
+    {/* Concierge Preview Section */}
+    <ConciergePreview />
 
-  {/* CTA Section */ }
-  < section className = "py-24 px-6 bg-primary text-primary-foreground" >
-    <div className="max-w-4xl mx-auto text-center">
-      <h2 className="text-4xl md:text-5xl font-bold mb-6">
-        Ready to Connect?
-      </h2>
-      <p className="text-xl mb-10 opacity-90">
-        Join the platform where meaningful founder-investor relationships begin
-      </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100">
-          Get Started as Founder
-        </Button>
-        <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
-          Get Started as Investor
-        </Button>
+    {/* CTA Section */}
+    <section className="py-24 px-6 bg-primary text-primary-foreground">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          Ready to Connect?
+        </h2>
+        <p className="text-xl mb-10 opacity-90">
+          Join the platform where meaningful founder-investor relationships begin
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100">
+            Get Started as Founder
+          </Button>
+          <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
+            Get Started as Investor
+          </Button>
+        </div>
       </div>
-    </div>
-    </section >
-  </div >;
+    </section>
+  </div>;
 };
 const FeatureCard = ({
   icons,
