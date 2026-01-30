@@ -9,7 +9,6 @@ import {
     GlassWater,
     ArrowRight
 } from "lucide-react";
-import { motion } from "framer-motion";
 
 const services = [
     {
@@ -78,13 +77,10 @@ export const ConciergePreview = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
                     {services.map((service, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1, duration: 0.5 }}
-                            viewport={{ once: true }}
-                            className="group p-6 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:border-purple-500/50 hover:bg-neutral-900 transition-all duration-300 cursor-pointer"
+                            className="group p-6 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:border-purple-500/50 hover:bg-neutral-900 transition-all duration-300 cursor-pointer animate-in fade-in slide-in-from-bottom-4 fill-mode-backwards"
+                            style={{ animationDelay: `${index * 100}ms` }}
                             onClick={() => navigate(service.link)}
                         >
                             <div className="w-12 h-12 rounded-lg bg-neutral-800/50 flex items-center justify-center mb-6 border border-neutral-700/50 group-hover:border-purple-500/30 group-hover:bg-purple-500/10 transition-colors">
@@ -99,7 +95,7 @@ export const ConciergePreview = () => {
                             <div className="flex items-center text-sm font-medium text-neutral-500 group-hover:text-white transition-colors">
                                 Learn More <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
                             </div>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 
