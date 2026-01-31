@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Users, FileText, Zap, Megaphone, TrendingUp, GlassWater, Check, ChevronLeft } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, Users, FileText, Zap, Megaphone, TrendingUp, GlassWater, ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 
 // --- Types ---
@@ -61,22 +57,6 @@ const SERVICES: ServiceData[] = [
     description: 'Maximize your profile\'s impact with professional bio rewrites and asset selection.',
     budgets: [
       { id: 'essential', label: '$75', price: 75, stripeLink: 'https://buy.stripe.com/7sY14n5jm3VHdPl4PI8k80c', action: 'stripe', description: 'Bio/Tagline makeover + Logo support' },
-      { id: 'pro', label: '$200', price: 200, stripeLink: 'https://buy.stripe.com/4gM3cvaDG77TfXt4PI8k80e', action: 'stripe', description: 'Pro Badge + Full Rewrite + Token Bundle' } // Wait, prompt said $200 for Profile is different? Actually prompt for Profile $200 link is NOT explicitly mapped correctly in the specific "Data Mapping" section for Profile, it lists "Front Page" under "Spotlights" with that link. 
-      // Checking prompt "Profile Optimization": 
-      // If Budget = $75 -> Essential. Link ...80c
-      // The prompt MISSING $200 for Profile in "Data Mapping" section but present in "Specific Service Data & Pricing" section.
-      // "Profile Optimization... $200: Pro Badge...".
-      // I will use a placeholder or check if I missed it.
-      // Ah, under "Spotlights": "If Budget = $200 -> Show 'Front Page'... Link ...80e".
-      // The prompt seems to have mixed up or I should look closer.
-      // Prompt section 2 "Specific Service Data": "Profile Optimization... $200: Pro Badge".
-      // Prompt section 2 "Data Mapping (Insert Stripe Links Here)": "Profile Optimization: If Budget = $75...". It DOES NOT list $200 here.
-      // However, I need to implement it. I'll use the $200 link from Spotlights (80e) ?? No, that's for Front Page. 
-      // I will leave the $200 link empty/placeholder or re-use one if logically similar, but for now I will use 'https://buy.stripe.com/4gM3cvaDG77TfXt4PI8k80e' (Front Page) as a temporary fallback or just omit stripe link and use Inquire if unsafe. 
-      // actually, looking at the IDs: 80e is Front Page ($200). 
-      // Let's look for a $200 link. 
-      // I will use ACTION 'inquire' for the Missing $200 Profile link to be safe, OR I will assume the user wants me to use the $200 Front Page link as it shares the price. 
-      // Actually, I'll set it to inquire to avoid wrong billing.
       { id: 'pro_profile', label: '$200', price: 200, action: 'inquire', description: 'Pro Badge + Full Rewrite + Token Bundle' }
     ]
   },
@@ -97,77 +77,25 @@ const SERVICES: ServiceData[] = [
     id: 'investor-spotlights',
     title: 'Investor Spotlights',
     icon: TrendingUp,
-    description: 'Promote your investment thesis and portfolio to Trail’s top-tier founders.',
-    budgets: [
-      // Copied from Spotlights logic as prompt groups them or implies similarity? 
-      // actually prompt doesn't explicitly list "Investor Spotlights" in Data Mapping. 
-      // It lists "Spotlights". I will assume Founder Spotlights logic applies here or make it Inquire only.
-      // Prompt Part 1 says "Founder Spotlights". Part 2 says "Spotlights".
-      // "Investor Spotlights" text description in Part 2 is "Promote your investment thesis...".
-      // I will just use Inquire for this to be safe as no specific links were provided for "Investor Spotlights" specifically distinct from "Spotlights".
-      { id: 'inv_spot_inquire', label: 'Contact Us', price: 0, action: 'inquire', description: 'Custom promotion package' }
-    ]
+    description: 'Promote your investment thesis and portfolio to Trail's top- tier founders.',
+      budgets: [
+    { id: 'inv_spot_inquire', label: 'Contact Us', price: 0, action: 'inquire', description: 'Custom promotion package' }
+  ]
   },
-  {
-    id: 'vip-events',
+{
+  id: 'vip-events',
     title: 'VIP Event Access',
-    icon: GlassWater,
-    description: 'Priority access to exclusive demo days, mixer events, and private dinners.',
-    budgets: [
-      { id: 'vip_club', label: '$99/mo', price: 99, stripeLink: 'https://buy.stripe.com/7sY14n5jm3VHdPl4PI8k80c', action: 'stripe', description: 'All-access pass to dinners and demo days' }
-      // Note: 80c is used for Profile Essential $75 in mapping. 
-      // Prompt "VIP Event Access... $99/mo... [Join Club]". 
-      // Data Mapping doesn't list VIP Event Access links. 
-      // I will use Inquire or a placeholder link. Reduplicating 80c seems wrong (price mismatch).
-      // I will set to Inquire.
-    ]
-  }
+      icon: GlassWater,
+        description: 'Priority access to exclusive demo days, mixer events, and private dinners.',
+          budgets: [
+            { id: 'vip_club', label: '$99/mo', price: 99, action: 'inquire', description: 'All-access pass to dinners and demo days' }
+          ]
+}
 ];
-
-// --- Components ---
-
-const InquireDialog = ({ isOpen, onClose, serviceName, budgetLabel }: { isOpen: boolean; onClose: () => void; serviceName: string; budgetLabel: string }) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Inquiry received! We'll reach out shortly.");
-    onClose();
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-neutral-900 border-neutral-800 text-white sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Inquire about {serviceName}</DialogTitle>
-          <DialogDescription className="text-neutral-400">
-            Interested in the {budgetLabel} package? Leave your details below.
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right text-neutral-300">Name</Label>
-            <Input id="name" className="col-span-3 bg-neutral-800 border-neutral-700 text-white" required />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="email" className="text-right text-neutral-300">Email</Label>
-            <Input id="email" type="email" className="col-span-3 bg-neutral-800 border-neutral-700 text-white" required />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="message" className="text-right text-neutral-300">Message</Label>
-            <Textarea id="message" className="col-span-3 bg-neutral-800 border-neutral-700 text-white" />
-          </div>
-          <DialogFooter>
-            <Button type="submit" className="bg-amber-500 text-black hover:bg-amber-400">Send Inquiry</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-};
 
 const ServiceCard = ({ service }: { service: ServiceData }) => {
   const [stage, setStage] = useState<ServiceStage>('intro');
   const [selectedBudget, setSelectedBudget] = useState<BudgetOption | null>(null);
-  const [showInquire, setShowInquire] = useState(false);
 
   const handleBudgetClick = (budget: BudgetOption) => {
     setSelectedBudget(budget);
@@ -177,6 +105,10 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
   const handleReset = () => {
     setStage('budget');
     setSelectedBudget(null);
+  };
+
+  const handleInquire = () => {
+    toast.success("We'll reach out shortly! Please contact support@catalyst.com for custom packages.");
   };
 
   const currentPrice = selectedBudget?.price || 0;
@@ -231,7 +163,7 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
               onClick={() => handleBudgetClick(budget)}
             >
               <span>{budget.label}</span>
-              <ArrowRight className="w-4 h-4 opacity-50" />
+              <ArrowLeft className="w-4 h-4 opacity-50 rotate-180" />
             </Button>
           ))}
         </div>
@@ -242,13 +174,6 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
   // Render Reveal Stage
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-neutral-900 to-neutral-900/50 border border-amber-500/30 rounded-xl p-6 relative overflow-hidden animate-in zoom-in-95 duration-300">
-      <InquireDialog
-        isOpen={showInquire}
-        onClose={() => setShowInquire(false)}
-        serviceName={service.title}
-        budgetLabel={selectedBudget?.label || ''}
-      />
-
       {hasTokenBonus && (
         <div className="absolute top-4 right-4 animate-in fade-in slide-in-from-top-2 delay-300">
           <span className="bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
@@ -278,9 +203,9 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
         ) : (
           <Button
             className="w-full bg-white hover:bg-neutral-200 text-black font-bold h-12"
-            onClick={() => setShowInquire(true)}
+            onClick={handleInquire}
           >
-            Inquire Now
+            Contact Us
           </Button>
         )}
 
