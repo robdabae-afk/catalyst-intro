@@ -1,182 +1,93 @@
 
 
-# Plan: Fix Daily Swipe Limits & Add Reset Swipe History Option
+# Plan: Create concierge_inquiries Table
 
-## Problem Summary
-1. **Daily swipe limits not enforced** - The `useDailySwipes` hook exists but is never used
-2. **Wrong limit values** - Constants show 5/10 but you want 3/5
-3. **Missing Reset Swipe History** - The "Caught Up" state needs the database-level reset option
+## Problem
+The `concierge_inquiries` table is referenced in code but doesn't exist in the database, causing:
+1. **Network 404 errors** - POST requests to `concierge_inquiries` fail with "Could not find the table"
+2. **TypeScript build errors** - The Supabase types don't include this table, breaking `AdminConciergePanel.tsx` and `Concierge.tsx`
+3. **White screen** - Build fails, preventing the app from loading
+
+## Solution
+Run a database migration to create the `concierge_inquiries` table with proper RLS policies.
 
 ---
 
-## Part 1: Update Swipe Limit Constants
+## Migration SQL
 
-### File: `src/lib/membership-constants.ts`
+```sql
+-- Create the concierge_inquiries table
+CREATE TABLE IF NOT EXISTS public.concierge_inquiries (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    created_at timestamptz DEFAULT now(),
+    full_name text NOT NULL,
+    email text NOT NULL,
+    phone text NOT NULL,
+    service_name text NOT NULL,
+    product_name text NOT NULL,
+    budget numeric NOT NULL,
+    status text DEFAULT 'pending'
+);
 
-Update the values to match your requirements:
+-- Enable Row Level Security
+ALTER TABLE public.concierge_inquiries ENABLE ROW LEVEL SECURITY;
 
-| User Type | Current Basic | New Basic | Current Pro | New Pro |
-|-----------|---------------|-----------|-------------|---------|
-| Investor  | 5             | **3**     | 10          | **5**   |
-| Founder   | 3             | 3 (same)  | 10          | **5**   |
+-- Allow anyone to submit inquiries (public form)
+CREATE POLICY "Anyone can submit inquiries"
+    ON public.concierge_inquiries
+    FOR INSERT
+    WITH CHECK (true);
 
-```typescript
-export const BASIC_INVESTOR_DAILY_SWIPES = 3;  // was 5
-export const PRO_INVESTOR_DAILY_SWIPES = 5;    // was 10
-export const BASIC_FOUNDER_DAILY_SWIPES = 3;   // unchanged
-export const PRO_FOUNDER_DAILY_SWIPES = 5;     // was 10
+-- Only admins can view inquiries
+CREATE POLICY "Admins can view inquiries"
+    ON public.concierge_inquiries
+    FOR SELECT
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_roles.user_id = auth.uid()
+            AND user_roles.role = 'admin'
+        )
+    );
+
+-- Only admins can update inquiry status
+CREATE POLICY "Admins can update inquiries"
+    ON public.concierge_inquiries
+    FOR UPDATE
+    TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_roles.user_id = auth.uid()
+            AND user_roles.role = 'admin'
+        )
+    )
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_roles.user_id = auth.uid()
+            AND user_roles.role = 'admin'
+        )
+    );
 ```
 
 ---
 
-## Part 2: Integrate Daily Swipe Limits in Dashboard.tsx
+## What This Fixes
 
-### Changes:
-
-1. **Import the hook:**
-   ```typescript
-   import { useDailySwipes } from '@/hooks/useDailySwipes';
-   ```
-
-2. **Initialize the hook:**
-   ```typescript
-   const {
-     canSwipe,
-     remainingSwipes,
-     shouldShowUpgradePrompt,
-     incrementSwipe,
-     dailyLimit,
-     swipesToday
-   } = useDailySwipes(currentUser?.id, isPro, currentUser?.user_type);
-   ```
-
-3. **Block swipes when limit reached in `handleSwipe`:**
-   ```typescript
-   const handleSwipe = async (direction) => {
-     if (!currentItem) return;
-     if (swipeCooldown) return;
-     
-     // NEW: Check daily limit
-     if (!canSwipe) {
-       setShowUpgradePrompt(true);  // Trigger SwipeLimitReachedFlow
-       return;
-     }
-     
-     // ... existing swipe logic ...
-     
-     // NEW: Increment counter after successful swipe
-     incrementSwipe();
-     advanceQueue();
-   };
-   ```
-
-4. **Show SwipeLimitReachedFlow when limit hit:**
-   ```typescript
-   {shouldShowUpgradePrompt && (
-     <SwipeLimitReachedFlow
-       adProfile={null}
-       userId={currentUser?.id}
-       userType={currentUser?.user_type}
-       onClose={() => setShowUpgradePrompt(false)}
-     />
-   )}
-   ```
-
-5. **Display remaining swipes in UI** (optional but recommended):
-   - Add a badge/counter showing "{remainingSwipes} swipes left today"
+| Issue | Resolution |
+|-------|------------|
+| Network 404 errors | Table will exist, POST/GET requests will work |
+| TypeScript errors | Types will regenerate automatically after migration |
+| White screen | Build will succeed once types are updated |
+| Admin panel empty | Admins can view and manage inquiries |
 
 ---
 
-## Part 3: Integrate Daily Swipe Limits in DesktopLayout.tsx
+## Security Notes
 
-Apply the same changes as Dashboard.tsx:
-
-1. Import `useDailySwipes` hook
-2. Initialize with user data
-3. Add `canSwipe` check in `handleSwipe`
-4. Call `incrementSwipe()` after successful swipes
-5. Show `SwipeLimitReachedFlow` when limit reached
-
----
-
-## Part 4: Add "Reset Swipe History" to CaughtUpState
-
-### File: `src/components/CaughtUpState.tsx`
-
-Add a new prop and button for resetting swipe history (the database-level reset):
-
-```typescript
-interface CaughtUpStateProps {
-  // ... existing props ...
-  onResetHistory?: () => void;  // NEW: database-level reset
-}
-
-// In the Actions section, add a new button:
-{onResetHistory && (
-  <Button 
-    onClick={onResetHistory} 
-    variant="secondary" 
-    className="w-full"
-  >
-    <History className="w-4 h-4 mr-2" />
-    Reset Swipe History
-  </Button>
-)}
-```
-
-### Update Dashboard.tsx and DesktopLayout.tsx
-
-Pass the `resetSwipeHistory` function from `useSwipeHistory` hook:
-
-```typescript
-const { resetSwipeHistory } = useSwipeHistory(currentUser?.id);
-
-<CaughtUpState
-  // ... existing props ...
-  onResetHistory={async () => {
-    await resetSwipeHistory();
-    // Refetch profiles after reset
-    refetchHistory();
-  }}
-/>
-```
-
----
-
-## Part 5: Add Visual Feedback for Limits
-
-### Remaining Swipes Counter
-
-Add a small indicator near the swipe buttons showing remaining swipes:
-
-```typescript
-<div className="text-xs text-muted-foreground text-center mb-2">
-  {remainingSwipes} swipe{remainingSwipes !== 1 ? 's' : ''} remaining today
-</div>
-```
-
----
-
-## Summary of Files to Modify
-
-| File | Changes |
-|------|---------|
-| `src/lib/membership-constants.ts` | Update limit values (3/5) |
-| `src/pages/Dashboard.tsx` | Import + integrate `useDailySwipes`, block swipes, show limit UI |
-| `src/components/desktop/DesktopLayout.tsx` | Same as Dashboard.tsx |
-| `src/components/CaughtUpState.tsx` | Add `onResetHistory` prop and button |
-
----
-
-## Testing Checklist
-
-After implementation:
-- [ ] Non-pro founder can only swipe 3 times, then sees limit modal
-- [ ] Pro founder can swipe 5 times, then sees limit modal
-- [ ] Non-pro investor can swipe 3 times, then sees limit modal  
-- [ ] Pro investor can swipe 5 times, then sees limit modal
-- [ ] Limit resets at midnight (check database query uses start of day)
-- [ ] "Reset Swipe History" button appears in Caught Up state
-- [ ] Clicking "Reset Swipe History" makes previously swiped profiles reappear
-- [ ] "Expand Filters" navigates to filter preferences page
+- **Public INSERT**: Anyone can submit inquiry forms (no auth required)
+- **Admin-only SELECT/UPDATE**: Only users with `admin` role can view or update inquiries
+- Uses existing `user_roles` table for authorization (follows your security pattern)
 
