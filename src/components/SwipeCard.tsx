@@ -103,7 +103,7 @@ export const SwipeCard = ({
   const handleShareProfile = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!profileId) return;
-    
+
     const profileUrl = `${window.location.origin}/profile/${profileId}`;
     try {
       await navigator.clipboard.writeText(profileUrl);
@@ -259,11 +259,11 @@ export const SwipeCard = ({
           </button>
         )}
 
-        {/* Share Button - Top Right Transparent Bubble (next to Ad badge position) */}
+        {/* Share Button - Top Right Transparent Bubble (below stage badge) */}
         {!isAdProfile && profileId && (
           <button
             onClick={handleShareProfile}
-            className="absolute top-4 right-4 z-20 p-2.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10 transition-all hover:bg-black/60 active:scale-95"
+            className="absolute top-16 right-4 z-20 p-2.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10 transition-all hover:bg-black/60 active:scale-95"
           >
             {shareCopied ? (
               <CheckCircle2 className="w-5 h-5 text-green-400" />
