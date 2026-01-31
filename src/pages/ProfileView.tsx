@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Building2, MapPin, TrendingUp, DollarSign, Briefcase, Globe, User, Mail } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, TrendingUp, DollarSign, Briefcase, Globe, User, Mail, Share2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileData {
   id: string;
@@ -16,7 +18,7 @@ interface ProfileData {
   founder_profile?: {
     startup_name: string;
     one_liner: string;
-    industry: string | null;
+    industry: string[] | null;
     traction: string | null;
     preferred_city: string | null;
     company_name: string | null;
@@ -33,12 +35,17 @@ interface ProfileData {
     location: string | null;
     portfolio_link: string | null;
     banner_url: string | null;
+    investment_thesis: string | null;
   };
 }
+
+// OG Image - CATALYST banner from public assets
+const OG_IMAGE_URL = "/favicon.jpg";
 
 export default function ProfileView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUserType, setCurrentUserType] = useState<string | null>(null);
@@ -105,6 +112,23 @@ export default function ProfileView() {
     fetchProfile();
   }, [id, navigate]);
 
+  const handleShareProfile = async () => {
+    const profileUrl = `${window.location.origin}/profile/${id}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast({
+        title: "Link copied to clipboard!",
+        description: "Share this profile with others.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to copy",
+        description: "Please try again.",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
@@ -119,9 +143,37 @@ export default function ProfileView() {
 
   const isFounder = profile.user_type === 'founder';
   const bannerUrl = isFounder ? profile.founder_profile?.banner_url : profile.investor_profile?.banner_url;
+  
+  // Dynamic OG meta content
+  const ogTitle = `${profile.name} on Catalyst`;
+  const headline = isFounder 
+    ? (profile.founder_profile?.industry?.join(", ") || "Founder")
+    : (profile.investor_profile?.sectors_of_interest?.join(", ") || "Investor");
+  const ogDescription = `${headline} - Join the platform where meaningful founder-investor relationships begin.`;
+  const ogImageUrl = `${window.location.origin}${OG_IMAGE_URL}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      {/* Dynamic SEO/OG Tags */}
+      <Helmet>
+        <title>{ogTitle}</title>
+        <meta name="description" content={ogDescription} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="profile" />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:url" content={`${window.location.origin}/profile/${id}`} />
+        <meta property="og:site_name" content="Catalyst" />
+        
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={ogTitle} />
+        <meta name="twitter:description" content={ogDescription} />
+        <meta name="twitter:image" content={ogImageUrl} />
+      </Helmet>
+
       {/* Banner */}
       <div className="relative h-48 md:h-64 bg-gradient-to-br from-primary/20 to-accent/20">
         {bannerUrl ? (
@@ -135,15 +187,27 @@ export default function ProfileView() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="absolute top-4 left-4 bg-background/50 backdrop-blur-sm hover:bg-background/80"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back
-        </Button>
+        <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="bg-background/50 backdrop-blur-sm hover:bg-background/80"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleShareProfile}
+            className="bg-background/50 backdrop-blur-sm hover:bg-background/80"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+        </div>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 -mt-20 relative z-10 pb-12">
@@ -191,12 +255,12 @@ export default function ProfileView() {
                       <p className="font-medium">{profile.founder_profile.one_liner}</p>
                     </div>
 
-                    {profile.founder_profile.industry && (
+                    {profile.founder_profile.industry && profile.founder_profile.industry.length > 0 && (
                       <div className="flex items-center gap-3">
                         <TrendingUp className="w-5 h-5 text-primary" />
                         <div>
                           <p className="text-sm text-muted-foreground">Industry</p>
-                          <p className="font-medium">{profile.founder_profile.industry}</p>
+                          <p className="font-medium">{profile.founder_profile.industry.join(", ")}</p>
                         </div>
                       </div>
                     )}
@@ -224,6 +288,13 @@ export default function ProfileView() {
               {!isFounder && profile.investor_profile && (
                 <>
                   <div className="space-y-3">
+                    {profile.investor_profile.investment_thesis && (
+                      <div className="p-4 bg-muted/50 rounded-lg">
+                        <p className="text-sm text-muted-foreground mb-1">Investment Thesis</p>
+                        <p className="font-medium">{profile.investor_profile.investment_thesis}</p>
+                      </div>
+                    )}
+
                     {profile.investor_profile.typical_check_size && (
                       <div className="flex items-center gap-3">
                         <DollarSign className="w-5 h-5 text-primary" />

@@ -16,6 +16,7 @@ import { ConciergeMatchButton } from "@/components/ConciergeMatchButton";
 import { useUnreadSupportReplies } from "@/hooks/useUnreadSupportReplies";
 import { supabase } from "@/integrations/supabase/client";
 import { GetProButton } from "@/components/GetProButton";
+import { useToast } from "@/hooks/use-toast";
 import { 
   ArrowLeft, 
   Users, 
@@ -26,7 +27,8 @@ import {
   Settings, 
   LogOut,
   ChevronDown,
-  Crown
+  Crown,
+  Share2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -49,6 +51,7 @@ export const AppNavigation = ({
 }: AppNavigationProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
   const pendingRequests = usePendingRequests();
   const unreadMessages = useUnreadMessages();
   const { isAdmin } = useIsAdmin();
@@ -60,6 +63,24 @@ export const AppNavigation = ({
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/');
+  };
+
+  const handleShareMyProfile = async () => {
+    if (!userId) return;
+    const profileUrl = `${window.location.origin}/profile/${userId}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast({
+        title: "Link copied to clipboard!",
+        description: "Share this link to invite others to view your profile.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to copy",
+        description: "Please try again.",
+      });
+    }
   };
 
   // Spoke navigation - minimal back button header
@@ -109,6 +130,11 @@ export const AppNavigation = ({
                     <DropdownMenuSeparator />
                   </>
                 )}
+                <DropdownMenuItem onClick={handleShareMyProfile}>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share My Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   <Settings className="w-4 h-4 mr-2" />
                   Settings
@@ -228,6 +254,11 @@ export const AppNavigation = ({
                     <DropdownMenuSeparator />
                   </>
                 )}
+                <DropdownMenuItem onClick={handleShareMyProfile}>
+                  <Share2 className="w-4 h-4 mr-2" />
+                  Share My Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate('/settings')}>
                   <Settings className="w-4 h-4 mr-2" />
                   Settings
