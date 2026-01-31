@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
@@ -358,6 +358,48 @@ const Settings = () => {
             </header>
 
             <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+                {/* Share Profile Section - Top of Settings */}
+                <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative">
+                    <div className="absolute top-2 right-3 text-[10px] font-bold tracking-widest text-primary/40 uppercase">
+                        CATALYST
+                    </div>
+                    <CardContent className="p-6">
+                        <div 
+                            className="flex items-center gap-4 cursor-pointer group"
+                            onClick={async () => {
+                                if (!userId) return;
+                                const profileUrl = `${window.location.origin}/profile/${userId}`;
+                                try {
+                                    await navigator.clipboard.writeText(profileUrl);
+                                    toast({
+                                        title: "Link copied to clipboard!",
+                                        description: "Share this link to invite others to view your profile.",
+                                    });
+                                } catch (error) {
+                                    toast({
+                                        variant: "destructive",
+                                        title: "Failed to copy",
+                                        description: "Please try again.",
+                                    });
+                                }
+                            }}
+                        >
+                            <div className="flex-shrink-0 p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                                <Share2 className="w-8 h-8 text-primary" />
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-xl">Share My Profile</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Copy your unique CATALYST profile link to share with investors, founders, or anyone
+                                </p>
+                            </div>
+                            <Button variant="default" size="lg" className="flex-shrink-0">
+                                Copy Link
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
                 {/* Banner & Avatar Section */}
                 <Card>
                     <CardHeader>

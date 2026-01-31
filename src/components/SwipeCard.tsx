@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, CheckCircle2, Handshake, Star, X, MessageSquare, Quote, Zap } from "lucide-react";
+import { MapPin, TrendingUp, User, Briefcase, DollarSign, Target, Link as LinkIcon, FileText, Rocket, ExternalLink, Megaphone, CheckCircle2, Handshake, Star, X, MessageSquare, Quote, Zap, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AdProfile, QueueItem } from "@/hooks/useSwipeQueue";
 import { InstantMessageDialog } from "@/components/InstantMessageDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProfileMetricsLocal {
   response_rate: number;
@@ -63,9 +64,11 @@ export const SwipeCard = ({
   boostCredits = 0,
   isBoostActive = false
 }: SwipeCardProps) => {
+  const { toast } = useToast();
   const [adLocked, setAdLocked] = useState(isAd && !isPro);
   const [showInstantMessage, setShowInstantMessage] = useState(false);
   const [showPopularPrompt, setShowPopularPrompt] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -94,6 +97,28 @@ export const SwipeCard = ({
       onMessage?.();
     } else {
       onSwipe(action);
+    }
+  };
+
+  const handleShareProfile = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!profileId) return;
+    
+    const profileUrl = `${window.location.origin}/profile/${profileId}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      setShareCopied(true);
+      toast({
+        title: "Link copied to clipboard!",
+        description: "Share this profile with others.",
+      });
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to copy",
+        description: "Please try again.",
+      });
     }
   };
 
@@ -230,6 +255,20 @@ export const SwipeCard = ({
               <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[8px] font-bold text-luxury-gold uppercase tracking-wider">
                 Live
               </span>
+            )}
+          </button>
+        )}
+
+        {/* Share Button - Top Right Transparent Bubble (next to Ad badge position) */}
+        {!isAdProfile && profileId && (
+          <button
+            onClick={handleShareProfile}
+            className="absolute top-4 right-4 z-20 p-2.5 bg-black/40 backdrop-blur-sm rounded-full border border-white/10 transition-all hover:bg-black/60 active:scale-95"
+          >
+            {shareCopied ? (
+              <CheckCircle2 className="w-5 h-5 text-green-400" />
+            ) : (
+              <Share2 className="w-5 h-5 text-white/80" />
             )}
           </button>
         )}
