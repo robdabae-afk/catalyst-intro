@@ -31,11 +31,11 @@ const SERVICES: ServiceData[] = [
     icon: Users,
     description: 'Personalized warm intros to investors that match your industry and stage.',
     budgets: [
-      { id: 'starter', label: '$150', price: 150, stripeLink: 'https://buy.stripe.com/eVq9AT136fEpfXteqi8k803', action: 'stripe', description: '1 Warm Intro + Tokens' },
-      { id: 'growth', label: '$300', price: 300, stripeLink: 'https://buy.stripe.com/8x2cN5h241Nz26Daa28k804', action: 'stripe', description: '2-3 Warm Intros + Tokens' },
-      { id: 'targeted', label: '$500 (Targeted)', price: 500, stripeLink: 'https://buy.stripe.com/28EaEXh24fEph1x81U8k805', action: 'stripe', description: '10 Targeted Intros + Tokens' },
-      { id: 'broadcast', label: '$500 (Broadcast)', price: 500, stripeLink: 'https://buy.stripe.com/5kQbJ1cLOak526D5TM8k806', action: 'stripe', description: 'Investor Broadcast' },
-      { id: 'lifetime', label: '$750', price: 750, action: 'inquire', description: 'Round Lifetime Access' },
+      { id: 'starter', label: '$150', price: 150, stripeLink: 'https://buy.stripe.com/eVq9AT136fEpfXteqi8k803', action: 'stripe', description: 'Starter Intro: One (1) warm, high-intent introduction to a vetted investor matching your sector and stage. Includes a blurb review and bonus platform tokens.' },
+      { id: 'growth', label: '$300', price: 300, stripeLink: 'https://buy.stripe.com/8x2cN5h241Nz26Daa28k804', action: 'stripe', description: 'Growth Intros: 2-3 targeted warm introductions to investors looking for deals in your space. We handle double opt-in to ensure interest. Includes bonus tokens.' },
+      { id: 'targeted', label: '$500 (Targeted)', price: 500, stripeLink: 'https://buy.stripe.com/28EaEXh24fEph1x81U8k805', action: 'stripe', description: 'Targeted 10-Pack: A curated 10-intro power list. We personally broker connections to 10 investors matching your check-size and industry. Includes bonus tokens.' },
+      { id: 'broadcast', label: '$500 (Broadcast)', price: 500, stripeLink: 'https://buy.stripe.com/5kQbJ1cLOak526D5TM8k806', action: 'stripe', description: 'Investor Broadcast: A platform-wide email feature sent to our entire investor network. Your startup story delivered directly to every investor\'s inbox. Includes bonus tokens.' },
+      { id: 'lifetime', label: '$750', price: 750, action: 'inquire', description: 'Round Lifetime Access: Full coverage for your current raise. Get warm intros to every current investor on Trail—plus every new investor who joins. Includes bonus tokens.' },
     ]
   },
   {
@@ -44,8 +44,8 @@ const SERVICES: ServiceData[] = [
     icon: FileText,
     description: 'Narrative and design experts to help you nail your pitch and storytelling.',
     budgets: [
-      { id: 'audit', label: '< $500', price: 399, stripeLink: 'https://buy.stripe.com/eVq4gzaDG1NzcLh2HA8k80a', action: 'stripe', description: 'Narrative Audit & Feedback' },
-      { id: 'pro', label: '> $500', price: 4000, deposit: true, stripeLink: 'https://buy.stripe.com/eVq00jeTWbo95iPeqi8k80b', action: 'stripe', description: 'Full Redesign ($500 Deposit)' }
+      { id: 'audit', label: '< $500', price: 399, stripeLink: 'https://buy.stripe.com/eVq4gzaDG1NzcLh2HA8k80a', action: 'stripe', description: 'Narrative Audit: A slide-by-slide audit of your deck\'s story. Our experts provide text feedback to sharpen your value prop and fix narrative gaps. Includes bonus tokens.' },
+      { id: 'pro', label: '> $500', price: 4000, deposit: true, stripeLink: 'https://buy.stripe.com/eVq00jeTWbo95iPeqi8k80b', action: 'stripe', description: 'Pro Visual Redesign: A total visual and financial overhaul. We turn your raw data into an institutional-grade deck with pro design and modeling. $500 Deposit.' }
     ]
   },
   {
@@ -54,8 +54,8 @@ const SERVICES: ServiceData[] = [
     icon: Zap,
     description: 'Maximize your profile\'s impact with professional bio rewrites.',
     budgets: [
-      { id: 'essential', label: '$75', price: 75, stripeLink: 'https://buy.stripe.com/7sY14n5jm3VHdPl4PI8k80c', action: 'stripe', description: 'Bio/Tagline Makeover' },
-      { id: 'pro_profile', label: '$200', price: 200, action: 'inquire', description: 'Pro Badge + Full Rewrite' }
+      { id: 'essential', label: '< $100', price: 75, stripeLink: 'https://buy.stripe.com/7sY14n5jm3VHdPl4PI8k80c', action: 'stripe', description: 'Essential Polish: A professional makeover of your bio and taglines. Optimized for searchability to ensure your first impression is crystal clear.' },
+      { id: 'pro_profile', label: '$200+', price: 200, action: 'inquire', description: 'Pro Upgrade: A full professional rewrite of your profile, a verified "Pro" Badge for trust, and a massive bundle of platform tokens.' }
     ]
   },
   {
@@ -64,29 +64,29 @@ const SERVICES: ServiceData[] = [
     icon: Megaphone,
     description: 'Get featured in our 50k+ subscriber newsletter and social channels.',
     budgets: [
-      { id: 'newsletter', label: '$150', price: 150, stripeLink: 'https://buy.stripe.com/6oUeVd9zCgIt26D95Y8k80d', action: 'stripe', description: 'Newsletter Feature' },
-      { id: 'frontpage', label: '$200', price: 200, stripeLink: 'https://buy.stripe.com/4gM3cvaDG77TfXt4PI8k80e', action: 'stripe', description: 'Front Page + Social Blast' },
-      { id: 'podcast_std', label: '< $300', price: 300, deposit: true, stripeLink: 'https://buy.stripe.com/3cIfZh8vy63P9z51Dw8k808', action: 'stripe', description: '25-min Podcast ($150 Deposit)' },
-      { id: 'podcast_deep', label: '$300 - $500', price: 400, deposit: true, stripeLink: 'https://buy.stripe.com/fZucN59zC1Nz5iPaa28k809', action: 'stripe', description: '45-min Podcast ($250 Deposit)' },
-      { id: 'podcast_inf', label: '> $500', price: 1000, action: 'inquire', description: 'Influencer Podcast' }
+      { id: 'newsletter', label: '$150', price: 150, stripeLink: 'https://buy.stripe.com/6oUeVd9zCgIt26D95Y8k80d', action: 'stripe', description: 'Newsletter Feature: A dedicated feature in our weekly newsletter reaching 50,000+ active founders and investors. Includes 150 words and direct links.' },
+      { id: 'frontpage', label: '$200', price: 200, stripeLink: 'https://buy.stripe.com/4gM3cvaDG77TfXt4PI8k80e', action: 'stripe', description: 'Front Page Spotlight: 7 days of guaranteed top-row visibility on the Trail homepage + a dedicated social media shoutout on X and LinkedIn.' },
+      { id: 'podcast_std', label: '$150 (Podcast)', price: 300, deposit: true, stripeLink: 'https://buy.stripe.com/3cIfZh8vy63P9z51Dw8k808', action: 'stripe', description: 'Standard Podcast: A 25-minute recorded interview. Includes 3 high-quality video clips and 5 stills for your own social media use. $150 Deposit.' },
+      { id: 'podcast_deep', label: '$250 (Podcast)', price: 400, deposit: true, stripeLink: 'https://buy.stripe.com/fZucN59zC1Nz5iPaa28k809', action: 'stripe', description: 'Deep Dive Podcast: A 45-minute masterclass interview. Includes full asset kit: 10 video clips, 10 stills, and a dedicated social blast. $250 Deposit.' },
+      { id: 'podcast_inf', label: '$500+ (Podcast)', price: 1000, action: 'inquire', description: 'Influencer Series: A 45-minute featured podcast alongside a high-profile guest or famous founder. Includes full asset kit and maximum reach. $500 Deposit.' }
     ]
   },
   {
     id: 'investor-spotlights',
     title: 'Investor Spotlights',
     icon: TrendingUp,
-    description: 'Promote your investment thesis to top-tier founders.',
+    description: 'Promote your investment thesis and portfolio to Trail\'s top-tier founders.',
     budgets: [
-      { id: 'inv_spot', label: 'Contact Us', price: 0, action: 'inquire', description: 'Custom Package' }
+      { id: 'inv_spot', label: '$350', price: 350, action: 'inquire', description: 'Thesis Feature: Highlight your fund\'s investment thesis and deal-flow needs in our newsletter and homepage to attract top-tier founders.' }
     ]
   },
   {
     id: 'vip-events',
     title: 'VIP Event Access',
     icon: GlassWater,
-    description: 'Priority access to exclusive demo days and dinners.',
+    description: 'Priority access to exclusive demo days, mixer events, and private dinners.',
     budgets: [
-      { id: 'vip_club', label: '$99/mo', price: 99, action: 'inquire', description: 'All-Access Pass' }
+      { id: 'vip_club', label: '$99/mo', price: 99, action: 'inquire', description: 'The Club: Monthly all-access pass to Trail\'s private ecosystem: exclusive demo days, mixer events, and curated private dinners.' }
     ]
   }
 ];
