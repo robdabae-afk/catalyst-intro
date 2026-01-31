@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Users, FileText, Zap, Megaphone, TrendingUp, GlassWater, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type ServiceStage = 'intro' | 'budget' | 'reveal';
 
@@ -94,6 +95,9 @@ const SERVICES: ServiceData[] = [
 const ServiceCard = ({ service }: { service: ServiceData }) => {
   const [stage, setStage] = useState<ServiceStage>('intro');
   const [selectedBudget, setSelectedBudget] = useState<BudgetOption | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [formData, setFormData] = useState({ fullName: '', email: '', phone: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBudgetClick = (budget: BudgetOption) => {
     setSelectedBudget(budget);
@@ -187,13 +191,75 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
           >
             Purchase Now
           </Button>
+        ) : showContactForm ? (
+          <div className="space-y-3 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700">
+            <h4 className="text-sm font-semibold text-white">Contact Information</h4>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={formData.fullName}
+              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+              className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded text-white placeholder-neutral-500"
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded text-white placeholder-neutral-500"
+              required
+            />
+            <input
+              type="tel"
+              placeholder="Phone (with country code, e.g., +1 555-1234)"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded text-white placeholder-neutral-500"
+              required
+            />
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold"
+                disabled={isSubmitting || !formData.fullName || !formData.email || !formData.phone}
+                onClick={async () => {
+                  setIsSubmitting(true);
+                  try {
+                    const { error } = await supabase.from('concierge_inquiries').insert({
+                      full_name: formData.fullName,
+                      email: formData.email,
+                      phone: formData.phone,
+                      service_name: service.title,
+                      product_name: selectedBudget?.description.split(':')[0] || '',
+                      budget: selectedBudget?.price || 0,
+                    });
+                    if (error) throw error;
+                    toast.success('Inquiry submitted! We\'ll reach out shortly.');
+                    setFormData({ fullName: '', email: '', phone: '' });
+                    setShowContactForm(false);
+                  } catch (error) {
+                    toast.error('Failed to submit. Please try again.');
+                    console.error(error);
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit Inquiry'}
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-neutral-400 hover:text-white"
+                onClick={() => setShowContactForm(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         ) : (
           <Button
             className="w-full bg-white hover:bg-neutral-200 text-black font-bold"
-            onClick={() => {
-              toast.success("We'll reach out shortly!");
-              window.location.href = 'mailto:support@catalyst.com';
-            }}
+            onClick={() => setShowContactForm(true)}
           >
             Contact Us
           </Button>

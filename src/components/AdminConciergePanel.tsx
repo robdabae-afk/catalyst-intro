@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Crown, Search, Check, Clock, DollarSign, Users, RefreshCw } from 'lucide-react';
+import { Crown, Search, Check, Clock, DollarSign, Users, RefreshCw, Mail } from 'lucide-react';
 
 interface ManualMatch {
   id: string;
@@ -30,9 +30,22 @@ interface UserProfile {
   user_type: string;
 }
 
+interface ConciergeInquiry {
+  id: string;
+  created_at: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  service_name: string;
+  product_name: string;
+  budget: number;
+  status: string;
+}
+
 export const AdminConciergePanel = () => {
   const { toast } = useToast();
   const [matches, setMatches] = useState<ManualMatch[]>([]);
+  const [inquiries, setInquiries] = useState<ConciergeInquiry[]>([]);
   const [loading, setLoading] = useState(true);
   const [fulfillDialogOpen, setFulfillDialogOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<ManualMatch | null>(null);
@@ -43,7 +56,37 @@ export const AdminConciergePanel = () => {
 
   useEffect(() => {
     loadMatches();
+    loadInquiries();
   }, []);
+
+  const loadInquiries = async () => {
+    const { data } = await supabase
+      .from('concierge_inquiries')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (data) {
+      setInquiries(data);
+    }
+  };
+
+  const updateInquiryStatus = async (id: string, status: string) => {
+    const { error } = await supabase
+      .from('concierge_inquiries')
+      .update({ status })
+      .eq('id', id);
+
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Failed to update status'
+      });
+    } else {
+      toast({ title: 'Status updated' });
+      loadInquiries();
+    }
+  };
 
   const loadMatches = async () => {
     const { data } = await supabase
@@ -228,6 +271,72 @@ export const AdminConciergePanel = () => {
                         <Users className="w-4 h-4 mr-1" />
                         Assign Match
                       </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Concierge Inquiries */}
+      {inquiries.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Mail className="w-5 h-5" />
+              Contact Form Inquiries ({inquiries.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>Service</TableHead>
+                  <TableHead>Product</TableHead>
+                  <TableHead>Budget</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {inquiries.map(inquiry => (
+                  <TableRow key={inquiry.id}>
+                    <TableCell className="font-medium">{inquiry.full_name}</TableCell>
+                    <TableCell>{inquiry.email}</TableCell>
+                    <TableCell>{inquiry.phone}</TableCell>
+                    <TableCell>{inquiry.service_name}</TableCell>
+                    <TableCell className="text-sm">{inquiry.product_name}</TableCell>
+                    <TableCell>${inquiry.budget}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={inquiry.status === 'pending' ? 'secondary' : inquiry.status === 'contacted' ? 'default' : 'outline'}
+                        className="capitalize"
+                      >
+                        {inquiry.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(inquiry.created_at).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        {inquiry.status === 'pending' && (
+                          <Button size="sm" onClick={() => updateInquiryStatus(inquiry.id, 'contacted')}>
+                            Mark Contacted
+                          </Button>
+                        )}
+                        {inquiry.status === 'contacted' && (
+                          <Button size="sm" variant="outline" onClick={() => updateInquiryStatus(inquiry.id, 'completed')}>
+                            Complete
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
