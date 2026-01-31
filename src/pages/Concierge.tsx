@@ -167,10 +167,15 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
 
       <div className="mb-8 mt-4">
         <div className="text-sm text-neutral-400 mb-2">Selected Package</div>
-        <h3 className="text-2xl font-bold text-white mb-2">{selectedBudget?.description}</h3>
-        <div className="text-3xl font-bold text-white">
+        <h3 className="text-xl font-bold text-white mb-3">
+          {selectedBudget?.description.split(':')[0]}
+        </h3>
+        <p className="text-neutral-300 mb-4 leading-relaxed">
+          {selectedBudget?.description.split(':')[1]?.trim()}
+        </p>
+        <div className="text-3xl text-white underline decoration-2">
           ${selectedBudget?.price}
-          {selectedBudget?.deposit && <span className="text-sm text-neutral-500 ml-2">(Deposit)</span>}
+          {selectedBudget?.deposit && <span className="text-sm text-neutral-500 ml-2 no-underline">(Deposit)</span>}
         </div>
       </div>
 
