@@ -39,7 +39,7 @@ export const FeaturedProfileCard = () => {
     user_type: 'founder',
     founder_profile: {
       startup_name: 'Catalyst Intro',
-      one_liner: 'Tinder for Founders and Investors',
+      one_liner: 'A next generation securities exchange platform—Supporting pre-IPO founders & investors',
       stage: 'Pre Seed',
       industry: ['FinTech', 'B2B SaaS'],
       traction: '-Helping 65+ users\n-Launched "Pro" our initial monetization feature\n-Over 10 investor X founder matches per week',
