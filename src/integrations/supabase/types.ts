@@ -233,6 +233,42 @@ export type Database = {
           },
         ]
       }
+      concierge_inquiries: {
+        Row: {
+          budget: number
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          product_name: string
+          service_name: string
+          status: string | null
+        }
+        Insert: {
+          budget: number
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          phone: string
+          product_name: string
+          service_name: string
+          status?: string | null
+        }
+        Update: {
+          budget?: number
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string
+          product_name?: string
+          service_name?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       deck_leads: {
         Row: {
           check_size: string | null
