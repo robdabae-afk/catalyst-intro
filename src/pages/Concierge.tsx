@@ -187,7 +187,11 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
         {selectedBudget?.action === 'stripe' ? (
           <Button
             className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold"
-            onClick={() => window.open(selectedBudget.stripeLink, '_blank')}
+            onClick={() => {
+              if (selectedBudget.stripeLink) {
+                window.location.href = selectedBudget.stripeLink;
+              }
+            }}
           >
             Purchase Now
           </Button>
