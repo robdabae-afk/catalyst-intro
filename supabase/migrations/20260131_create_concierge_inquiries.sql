@@ -14,11 +14,10 @@ CREATE TABLE IF NOT EXISTS public.concierge_inquiries (
 -- Enable RLS
 ALTER TABLE public.concierge_inquiries ENABLE ROW LEVEL SECURITY;
 
--- Allow anyone to insert (for form submissions)
+-- Allow anyone (anonymous and authenticated) to insert (for form submissions)
 CREATE POLICY "Anyone can submit inquiries"
     ON public.concierge_inquiries
     FOR INSERT
-    TO public
     WITH CHECK (true);
 
 -- Only admins can read inquiries
