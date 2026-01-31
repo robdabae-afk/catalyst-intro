@@ -237,9 +237,10 @@ const ServiceCard = ({ service }: { service: ServiceData }) => {
                     toast.success('Inquiry submitted! We\'ll reach out shortly.');
                     setFormData({ fullName: '', email: '', phone: '' });
                     setShowContactForm(false);
-                  } catch (error) {
-                    toast.error('Failed to submit. Please try again.');
-                    console.error(error);
+                  } catch (error: any) {
+                    const errorMessage = error?.message || 'Failed to submit. Please try again.';
+                    toast.error(errorMessage);
+                    console.error('Inquiry submission error:', error);
                   } finally {
                     setIsSubmitting(false);
                   }
