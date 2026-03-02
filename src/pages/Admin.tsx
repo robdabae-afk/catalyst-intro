@@ -61,6 +61,7 @@ const Admin = () => {
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
   const [editSuggestionUser, setEditSuggestionUser] = useState<UserWithStatus | null>(null);
+  const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -367,8 +368,9 @@ const Admin = () => {
     );
   }
 
-  const pendingUsers = users.filter(u => getStatus(u.roles) === 'pending');
-  const approvedUsers = users.filter(u => getStatus(u.roles) !== 'pending');
+  const filteredUsers = userTypeFilter === 'all' ? users : users.filter(u => u.user_type === userTypeFilter);
+  const pendingUsers = filteredUsers.filter(u => getStatus(u.roles) === 'pending');
+  const approvedUsers = filteredUsers.filter(u => getStatus(u.roles) !== 'pending');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -576,10 +578,25 @@ const Admin = () => {
 
             {/* All Users */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-foreground">
-                <Shield className="w-5 h-5" />
-                All Users ({users.length})
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold flex items-center gap-2 text-foreground">
+                  <Shield className="w-5 h-5" />
+                  All Users ({filteredUsers.length})
+                </h2>
+                <div className="flex items-center gap-2">
+                  {(['all', 'founder', 'investor'] as const).map((type) => (
+                    <Button
+                      key={type}
+                      size="sm"
+                      variant={userTypeFilter === type ? 'default' : 'outline'}
+                      onClick={() => setUserTypeFilter(type)}
+                      className="capitalize"
+                    >
+                      {type === 'all' ? 'All' : type === 'founder' ? 'Founders' : 'Investors'}
+                    </Button>
+                  ))}
+                </div>
+              </div>
               <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
                 <Table>
                   <TableHeader>
@@ -596,7 +613,7 @@ const Admin = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {users.map(user => {
+                    {filteredUsers.map(user => {
                       const status = getStatus(user.roles);
                       return (
                         <TableRow key={user.id}>
