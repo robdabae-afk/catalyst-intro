@@ -375,6 +375,11 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
       setMatchModalOpen(true);
     }
 
+    // Track this swiped ID locally to prevent re-showing
+    if (currentItem) {
+      addSwipedId(currentItem.id);
+    }
+
     advanceQueue();
     incrementSwipe();
   };

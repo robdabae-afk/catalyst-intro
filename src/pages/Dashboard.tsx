@@ -531,6 +531,11 @@ const Dashboard = () => {
       }
     }
 
+    // Track this swiped ID locally to prevent re-showing
+    if (currentItem && !currentItem.isAd) {
+      addSwipedId(currentItem.id);
+    }
+
     // Advance queue and increment daily swipe count
     advanceQueue();
     incrementSwipe();
