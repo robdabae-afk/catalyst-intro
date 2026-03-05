@@ -21,6 +21,8 @@ export function useSwipeHistory(userId: string | undefined) {
     resetAt: null,
     loading: true
   });
+  // Track IDs swiped during this session (not yet in DB query results)
+  const [sessionSwipedIds, setSessionSwipedIds] = useState<Set<string>>(new Set());
 
   const fetchSwipeHistory = useCallback(async () => {
     if (!userId) {
@@ -126,12 +128,23 @@ export function useSwipeHistory(userId: string | undefined) {
   }, [userId, fetchSwipeHistory]);
 
   /**
-   * Filter profiles to exclude recently swiped and matched ones
+   * Track a newly swiped profile ID in the current session
+   */
+  const addSwipedId = useCallback((id: string) => {
+    setSessionSwipedIds(prev => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  /**
+   * Filter profiles to exclude recently swiped, session-swiped, and matched ones
    */
   const filterProfiles = useCallback(<T extends { id: string }>(profiles: T[]): T[] => {
     if (data.loading) return profiles;
-    return profiles.filter(p => !data.swipedIds.has(p.id));
-  }, [data.swipedIds, data.loading]);
+    return profiles.filter(p => !data.swipedIds.has(p.id) && !sessionSwipedIds.has(p.id));
+  }, [data.swipedIds, data.loading, sessionSwipedIds]);
 
   return {
     excludedIds: data.swipedIds,
@@ -139,6 +152,7 @@ export function useSwipeHistory(userId: string | undefined) {
     loading: data.loading,
     resetSwipeHistory,
     filterProfiles,
+    addSwipedId,
     refetch: fetchSwipeHistory
   };
 }

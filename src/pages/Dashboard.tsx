@@ -57,7 +57,7 @@ const Dashboard = () => {
   const [isTestMode, setIsTestMode] = useState(false);
 
   // Swipe history for filtering out recently swiped profiles
-  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory } = useSwipeHistory(currentUser?.id);
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory, addSwipedId } = useSwipeHistory(currentUser?.id);
 
   // Daily swipe limits
   const {
@@ -529,6 +529,11 @@ const Dashboard = () => {
         setMatchedProfile(currentItem as OrganicProfile);
         setMatchModalOpen(true);
       }
+    }
+
+    // Track this swiped ID locally to prevent re-showing
+    if (currentItem && !currentItem.isAd) {
+      addSwipedId(currentItem.id);
     }
 
     // Advance queue and increment daily swipe count
