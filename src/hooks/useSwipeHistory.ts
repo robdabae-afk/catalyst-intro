@@ -21,6 +21,8 @@ export function useSwipeHistory(userId: string | undefined) {
     resetAt: null,
     loading: true
   });
+  // Track IDs swiped during this session (not yet in DB query results)
+  const [sessionSwipedIds, setSessionSwipedIds] = useState<Set<string>>(new Set());
 
   const fetchSwipeHistory = useCallback(async () => {
     if (!userId) {
