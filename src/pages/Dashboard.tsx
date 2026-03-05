@@ -57,7 +57,7 @@ const Dashboard = () => {
   const [isTestMode, setIsTestMode] = useState(false);
 
   // Swipe history for filtering out recently swiped profiles
-  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory } = useSwipeHistory(currentUser?.id);
+  const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory, addSwipedId } = useSwipeHistory(currentUser?.id);
 
   // Daily swipe limits
   const {
