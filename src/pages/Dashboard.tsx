@@ -32,10 +32,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
-  const { user: currentUser, isPro } = useAuth();
+  const { user: currentUser, isPro, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
+
+  // Redirect unapproved users to pending-approval page
+  useEffect(() => {
+    if (!approvalLoading && !authLoading && currentUser && isApproved === false) {
+      navigate('/pending-approval', { replace: true });
+    }
+  }, [approvalLoading, authLoading, currentUser, isApproved, navigate]);
 
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
