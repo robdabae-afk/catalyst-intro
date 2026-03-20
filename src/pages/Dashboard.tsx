@@ -562,6 +562,18 @@ const Dashboard = () => {
   const showAllCaughtUp = isQueueEmpty && !hasOnlyAds;
   const currentProfile = currentItem as OrganicProfile | AdProfile | null;
 
+  // Show loading while checking approval status
+  if (approvalLoading || authLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background-dark">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C5A059] mx-auto mb-4"></div>
+          <p className="text-white/50 text-sm tracking-widest uppercase">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Desktop view: show 3-column layout
   if (!isMobile && currentUser) {
     return <DesktopLayout currentUser={currentUser} isPro={isPro} />;
