@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useApprovalCheck } from '@/hooks/useApprovalCheck';
 import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
