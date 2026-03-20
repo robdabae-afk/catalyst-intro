@@ -83,7 +83,13 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   const [boostCredits, setBoostCredits] = useState(0);
   const [hasMutualMatch, setHasMutualMatch] = useState(false);
 
-  // If pending user, block swiping and show overlay
+  // If pending user, redirect to pending-approval page
+  useEffect(() => {
+    if (!approvalLoading && isApproved === false) {
+      navigate('/pending-approval', { replace: true });
+    }
+  }, [approvalLoading, isApproved, navigate]);
+
   const isPendingUser = !approvalLoading && isApproved === false;
 
   // Swipe history for filtering out recently swiped profiles
