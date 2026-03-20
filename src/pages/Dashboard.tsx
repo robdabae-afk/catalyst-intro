@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useApprovalCheck } from '@/hooks/useApprovalCheck';
 import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
@@ -31,10 +32,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
-  const { user: currentUser, isPro } = useAuth();
+  const { user: currentUser, isPro, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
+
+  // Redirect unapproved users to pending-approval page
+  useEffect(() => {
+    if (!approvalLoading && !authLoading && currentUser && isApproved === false) {
+      navigate('/pending-approval', { replace: true });
+    }
+  }, [approvalLoading, authLoading, currentUser, isApproved, navigate]);
 
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
@@ -552,6 +561,18 @@ const Dashboard = () => {
 
   const showAllCaughtUp = isQueueEmpty && !hasOnlyAds;
   const currentProfile = currentItem as OrganicProfile | AdProfile | null;
+
+  // Show loading while checking approval status
+  if (approvalLoading || authLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background-dark">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C5A059] mx-auto mb-4"></div>
+          <p className="text-white/50 text-sm tracking-widest uppercase">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Desktop view: show 3-column layout
   if (!isMobile && currentUser) {
