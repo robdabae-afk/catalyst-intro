@@ -983,22 +983,22 @@ export default function CatalystDeck() {
                 );
             case 'cta-final':
                 return (
-                    <div className="text-center w-full max-w-xl">
-                        <div className="flex flex-col gap-6 justify-center items-center">
+                    <div className="text-center w-full max-w-xl px-4">
+                        <div className="flex flex-col gap-4 md:gap-6 justify-center items-center">
                             <Button
-                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-sm md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => setShowFundingForm(true)}
                             >
                                 <span className="whitespace-nowrap">Express interest in funding Catalyst Intro</span>
                             </Button>
                             <Button
-                                className="bg-[#FFFFFF] text-[#000000] border border-[#333333] hover:bg-[#E5E5E5] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] border border-[#333333] hover:bg-[#E5E5E5] text-sm md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => navigate('/')}
                             >
                                 Sign Up
                             </Button>
                         </div>
-                        <div className="mt-12 pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
+                        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
                             {slide.content}
                         </div>
                     </div>
