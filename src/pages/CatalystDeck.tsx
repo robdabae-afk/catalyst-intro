@@ -983,22 +983,22 @@ export default function CatalystDeck() {
                 );
             case 'cta-final':
                 return (
-                    <div className="text-center w-full max-w-xl">
-                        <div className="flex flex-col gap-6 justify-center items-center">
+                    <div className="text-center w-full max-w-xl px-4">
+                        <div className="flex flex-col gap-4 md:gap-6 justify-center items-center">
                             <Button
-                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] text-sm md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => setShowFundingForm(true)}
                             >
                                 <span className="whitespace-nowrap">Express interest in funding Catalyst Intro</span>
                             </Button>
                             <Button
-                                className="bg-[#FFFFFF] text-[#000000] border border-[#333333] hover:bg-[#E5E5E5] text-lg px-8 py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
+                                className="bg-[#FFFFFF] text-[#000000] border border-[#333333] hover:bg-[#E5E5E5] text-sm md:text-lg px-6 md:px-8 py-4 md:py-6 rounded-full font-bold w-full max-w-lg no-print transition-all hover:scale-105"
                                 onClick={() => navigate('/')}
                             >
                                 Sign Up
                             </Button>
                         </div>
-                        <div className="mt-12 pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
+                        <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-[#1A1A1A] text-[10px] text-[#444444] text-justify leading-relaxed">
                             {slide.content}
                         </div>
                     </div>
@@ -1147,12 +1147,12 @@ export default function CatalystDeck() {
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0 relative h-[100dvh] flex flex-col items-center embla-slide slide-page overflow-y-auto no-scrollbar scroll-smooth"
                         >
-                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full ${slide.type === 'cta-final' ? '' : ''} overflow-hidden`}>
-                                <div className={`w-[240vw] md:w-full max-w-7xl grid grid-cols-2 gap-8 md:gap-24 items-center transition-opacity duration-500 origin-top md:origin-center transform scale-[0.4] sm:scale-75 md:scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center !w-full !scale-100' : ''} print:opacity-100`}>
+                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full overflow-hidden`}>
+                                <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                     {/* Left Content (Text) */}
-                                    <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-24' : ''}`}>
+                                    <div className={`space-y-6 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-8 md:mt-24' : ''}`}>
                                             <div className="h-[1px] w-12 bg-[#333333]"></div>
                                             <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
                                                 {slide.subtitle}
