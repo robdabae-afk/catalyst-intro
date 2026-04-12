@@ -264,22 +264,22 @@ export default function CatalystDeck() {
         return (
             <>
                 {/* Dynamic Header Area */}
-                <div className="h-32 mb-8 text-center flex flex-col justify-center transition-all duration-300">
+                <div className="h-20 md:h-32 mb-4 md:mb-8 text-center flex flex-col justify-center transition-all duration-300">
                     {hoveredProblem ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                            <div className="text-sm md:text-base text-[#AAAAAA] font-mono mb-2 uppercase tracking-widest">
+                            <div className="text-[10px] md:text-base text-[#AAAAAA] font-mono mb-1 md:mb-2 uppercase tracking-widest">
                                 The Problem
                             </div>
-                            <h3 className="text-2xl md:text-4xl font-bold text-[#FFFFFF] max-w-2xl mx-auto leading-tight">
+                            <h3 className="text-base md:text-4xl font-bold text-[#FFFFFF] max-w-2xl mx-auto leading-tight">
                                 {hoveredProblem.desc}
                             </h3>
                         </div>
                     ) : (
                         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                            <div className="text-sm md:text-base text-[#DD5555] font-mono mb-2 uppercase tracking-widest">
+                            <div className="text-[10px] md:text-base text-[#DD5555] font-mono mb-1 md:mb-2 uppercase tracking-widest">
                                 {slide.subtitle}
                             </div>
-                            <h3 className="text-3xl md:text-5xl font-bold text-[#FFFFFF] mb-6 tracking-tight">
+                            <h3 className="text-lg md:text-5xl font-bold text-[#FFFFFF] mb-3 md:mb-6 tracking-tight">
                                 {slide.title}
                             </h3>
                         </div>
@@ -287,24 +287,24 @@ export default function CatalystDeck() {
                 </div>
 
                 {/* Interaction cue */}
-                <div className={`text-center text-sm text-[#AAAAAA] mb-4 transition-opacity duration-300 ${showCue ? 'opacity-100' : 'opacity-0'}`}>
+                <div className={`text-center text-[10px] md:text-sm text-[#AAAAAA] mb-2 md:mb-4 transition-opacity duration-300 ${showCue ? 'opacity-100' : 'opacity-0'}`}>
                     Hover to reveal
                 </div>
 
                 {/* Interactive Columns */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full px-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 w-full px-2 md:px-4">
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-[3000ms] transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
+                            className={`p-4 md:p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-xl md:rounded-2xl text-left transition-all duration-[3000ms] transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
                             onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
-                            <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-[3000ms] group-hover:bg-[#FFFFFF]">
-                                <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
+                            <div className="w-8 h-8 md:w-12 md:h-12 bg-[#222222] rounded-full flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform duration-[3000ms] group-hover:bg-[#FFFFFF]">
+                                <item.icon className="w-4 h-4 md:w-6 md:h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
                             </div>
-                            <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
-                            <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-[3000ms] ease-out"></div>
+                            <h4 className="text-sm md:text-xl font-bold mb-2 md:mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
+                            <div className="h-1 w-8 md:w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-[3000ms] ease-out"></div>
                         </div>
                     ))}
                 </div>
@@ -329,27 +329,27 @@ export default function CatalystDeck() {
                 );
             case 'thesis-swipe':
                 return (
-                    <div className="flex flex-col items-center gap-8 relative">
+                    <div className="flex flex-col items-center gap-4 md:gap-8 relative">
                         {/* Card Stack Effect Removed */}
 
                         {/* Main Glass Card with Swipe Animation */}
-                        <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-3xl p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
+                        <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
                             {/* Founder Profile Header */}
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-[#222222] rounded-full border border-[#333333] flex items-center justify-center">
-                                    <Users className="w-6 h-6 text-[#444444]" />
+                            <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-6">
+                                <div className="w-8 h-8 md:w-12 md:h-12 bg-[#222222] rounded-full border border-[#333333] flex items-center justify-center">
+                                    <Users className="w-4 h-4 md:w-6 md:h-6 text-[#444444]" />
                                 </div>
 
                                 <div>
-                                    <div className="h-4 w-32 bg-[#333333] rounded mb-1.5 animate-pulse"></div>
-                                    <div className="h-3 w-20 bg-[#222222] rounded animate-pulse"></div>
+                                    <div className="h-3 md:h-4 w-24 md:w-32 bg-[#333333] rounded mb-1 md:mb-1.5 animate-pulse"></div>
+                                    <div className="h-2 md:h-3 w-16 md:w-20 bg-[#222222] rounded animate-pulse"></div>
                                 </div>
                             </div>
 
                             {/* Tags */}
-                            <div className="flex gap-2 w-full justify-center mb-8">
-                                <span className="px-3 py-1 rounded-full border border-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] tracking-wider uppercase">Fintech</span>
-                                <span className="px-3 py-1 rounded-full border border-[#333333] bg-[#000000] text-[10px] font-bold text-[#AAAAAA] tracking-wider uppercase">Pre-Seed</span>
+                            <div className="flex gap-2 w-full justify-center mb-4 md:mb-8">
+                                <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-[#FFFFFF] text-[8px] md:text-[10px] font-bold text-[#FFFFFF] tracking-wider uppercase">Fintech</span>
+                                <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-[#333333] bg-[#000000] text-[8px] md:text-[10px] font-bold text-[#AAAAAA] tracking-wider uppercase">Pre-Seed</span>
                             </div>
 
                             {/* Traction Section */}
@@ -417,13 +417,13 @@ export default function CatalystDeck() {
                             </div>
                         )}
 
-                        <div className="flex gap-4 w-full justify-between items-stretch relative z-10 mb-8 md:mb-12">
+                        <div className="flex gap-2 md:gap-4 w-full justify-between items-stretch relative z-10 mb-4 md:mb-12">
                             {slide.items.map((item: any, i: number) => (
-                                <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center flex flex-col justify-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
-                                    <div className={`text-2xl md:text-5xl font-bold mb-1 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
+                                <div key={i} className={`flex-1 p-2 md:p-8 border border-[#333333] bg-[#050505] rounded-xl md:rounded-2xl text-center flex flex-col justify-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
+                                    <div className={`text-lg md:text-5xl font-bold mb-0.5 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
                                         {item.value}
                                     </div>
-                                    <div className="text-[10px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
+                                    <div className="text-[8px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
                                 </div>
                             ))}
                         </div>
@@ -589,7 +589,7 @@ export default function CatalystDeck() {
                 );
             case 'tam-sam-som':
                 return (
-                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center scale-75 md:scale-100">
+                    <div className="relative w-full max-w-lg aspect-square flex items-center justify-center scale-50 md:scale-100">
                         {/* Legend / Clarifier */}
                         <div className="absolute top-0 right-0 text-right">
                             <div className="flex items-center justify-end gap-2 text-[10px] text-[#AAAAAA] uppercase tracking-widest mb-1">
@@ -701,24 +701,24 @@ export default function CatalystDeck() {
                 );
             case 'phase-execution':
                 return (
-                    <div className="w-full space-y-6">
+                    <div className="w-full space-y-3 md:space-y-6">
                         {slide.items.map((item: any, i: number) => (
-                            <div key={i} className="flex items-center gap-6 group">
-                                <div className="text-right w-24 shrink-0">
-                                    <div className="text-xs font-bold text-[#444444] uppercase tracking-widest group-hover:text-[#FFFFFF] transition-colors">{item.phase}</div>
+                            <div key={i} className="flex items-center gap-3 md:gap-6 group">
+                                <div className="text-right w-16 md:w-24 shrink-0">
+                                    <div className="text-[10px] md:text-xs font-bold text-[#444444] uppercase tracking-widest group-hover:text-[#FFFFFF] transition-colors">{item.phase}</div>
                                 </div>
                                 <div className="h-full w-[1px] bg-[#333333] relative self-stretch flex items-center justify-center">
-                                    <div className={`w-3 h-3 rounded-full ${i === 2 ? 'bg-[#FFFFFF] shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#333333]'} transition-all`}></div>
+                                    <div className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${i === 2 ? 'bg-[#FFFFFF] shadow-[0_0_15px_rgba(255,255,255,0.8)]' : 'bg-[#333333]'} transition-all`}></div>
                                 </div>
-                                <div className={`flex-1 p-6 border rounded-xl transition-all duration-300 ${i === 2 ? 'border-[#FFFFFF] bg-[#0A0A0A]' : 'border-[#222222] bg-[#000000] opacity-60 group-hover:opacity-100'}`}>
-                                    <div className="flex justify-between items-start">
+                                <div className={`flex-1 p-3 md:p-6 border rounded-lg md:rounded-xl transition-all duration-300 ${i === 2 ? 'border-[#FFFFFF] bg-[#0A0A0A]' : 'border-[#222222] bg-[#000000] opacity-60 group-hover:opacity-100'}`}>
+                                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1 md:gap-0">
                                         <div>
-                                            <h4 className="font-bold text-[#FFFFFF] text-lg mb-1">{item.title}</h4>
-                                            <p className="text-sm text-[#AAAAAA]">{item.desc}</p>
+                                            <h4 className="font-bold text-[#FFFFFF] text-xs md:text-lg mb-0.5 md:mb-1">{item.title}</h4>
+                                            <p className="text-[10px] md:text-sm text-[#AAAAAA]">{item.desc}</p>
                                         </div>
-                                        <div className="text-right bg-[#111111] px-3 py-2 rounded-lg border border-[#333333]">
-                                            <div className="text-[9px] text-[#555555] uppercase tracking-wider mb-0.5">Est. Revenue</div>
-                                            <div className="text-sm font-mono font-bold text-[#FFFFFF]">{item.revenue}</div>
+                                        <div className="md:text-right bg-[#111111] px-2 md:px-3 py-1 md:py-2 rounded-lg border border-[#333333] mt-1 md:mt-0">
+                                            <div className="text-[8px] md:text-[9px] text-[#555555] uppercase tracking-wider mb-0.5">Est. Revenue</div>
+                                            <div className="text-[10px] md:text-sm font-mono font-bold text-[#FFFFFF]">{item.revenue}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -728,44 +728,44 @@ export default function CatalystDeck() {
                 );
             case 'flow-revenue':
                 return (
-                    <div className="flex flex-col items-center justify-center w-full gap-8">
+                    <div className="flex flex-col items-center justify-center w-full gap-4 md:gap-8">
                         {/* Flow Diagram */}
-                        <div className="flex flex-col md:flex-row items-center gap-4 w-full justify-center">
+                        <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 w-full justify-center">
                             {/* Capital Flow */}
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="w-48 h-24 border border-[#FFFFFF] bg-[#0A0A0A] rounded-xl flex flex-col items-center justify-center p-4 text-center">
-                                    <div className="text-xs text-[#AAAAAA] uppercase tracking-widest mb-2">Capital Flow (SOM)</div>
-                                    <div className="text-3xl font-bold text-[#FFFFFF]">{slide.items.som}</div>
+                            <div className="flex flex-col items-center gap-1 md:gap-3">
+                                <div className="w-36 md:w-48 h-16 md:h-24 border border-[#FFFFFF] bg-[#0A0A0A] rounded-lg md:rounded-xl flex flex-col items-center justify-center p-2 md:p-4 text-center">
+                                    <div className="text-[10px] md:text-xs text-[#AAAAAA] uppercase tracking-widest mb-1 md:mb-2">Capital Flow (SOM)</div>
+                                    <div className="text-xl md:text-3xl font-bold text-[#FFFFFF]">{slide.items.som}</div>
                                 </div>
-                                <div className="text-[10px] text-[#555555]">Investable Volume</div>
+                                <div className="text-[8px] md:text-[10px] text-[#555555]">Investable Volume</div>
                             </div>
 
-                            <ArrowRight className="w-8 h-8 text-[#333333] rotate-90 md:rotate-0" />
+                            <ArrowRight className="w-5 h-5 md:w-8 md:h-8 text-[#333333] rotate-90 md:rotate-0" />
 
                             {/* Take Rate */}
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="w-32 h-24 border border-[#333333] bg-[#000000] rounded-xl flex flex-col items-center justify-center p-4 text-center">
-                                    <div className="text-xs text-[#555555] uppercase tracking-widest mb-2">Take Rate</div>
-                                    <div className="text-xl font-bold text-[#AAAAAA]">{slide.items.rate}</div>
+                            <div className="flex flex-col items-center gap-1 md:gap-3">
+                                <div className="w-28 md:w-32 h-16 md:h-24 border border-[#333333] bg-[#000000] rounded-lg md:rounded-xl flex flex-col items-center justify-center p-2 md:p-4 text-center">
+                                    <div className="text-[10px] md:text-xs text-[#555555] uppercase tracking-widest mb-1 md:mb-2">Take Rate</div>
+                                    <div className="text-base md:text-xl font-bold text-[#AAAAAA]">{slide.items.rate}</div>
                                 </div>
-                                <div className="text-[10px] text-[#333333]">Blended Fee</div>
+                                <div className="text-[8px] md:text-[10px] text-[#333333]">Blended Fee</div>
                             </div>
 
-                            <ArrowRight className="w-8 h-8 text-[#FFFFFF] rotate-90 md:rotate-0" />
+                            <ArrowRight className="w-5 h-5 md:w-8 md:h-8 text-[#FFFFFF] rotate-90 md:rotate-0" />
 
                             {/* Revenue */}
-                            <div className="flex flex-col items-center gap-3">
-                                <div className="w-48 h-24 border-2 border-[#FFFFFF] bg-[#FFFFFF] rounded-xl flex flex-col items-center justify-center p-4 text-center shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-                                    <div className="text-xs text-[#000000] uppercase tracking-widest mb-2 font-bold">Projected ARR</div>
-                                    <div className="text-3xl font-bold text-[#000000] leading-none">{slide.items.revenue}</div>
+                            <div className="flex flex-col items-center gap-1 md:gap-3">
+                                <div className="w-36 md:w-48 h-16 md:h-24 border-2 border-[#FFFFFF] bg-[#FFFFFF] rounded-lg md:rounded-xl flex flex-col items-center justify-center p-2 md:p-4 text-center shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                                    <div className="text-[10px] md:text-xs text-[#000000] uppercase tracking-widest mb-1 md:mb-2 font-bold">Projected ARR</div>
+                                    <div className="text-xl md:text-3xl font-bold text-[#000000] leading-none">{slide.items.revenue}</div>
                                 </div>
-                                <div className="text-[10px] text-[#FFFFFF] font-bold">Platform Revenue</div>
+                                <div className="text-[8px] md:text-[10px] text-[#FFFFFF] font-bold">Platform Revenue</div>
                             </div>
                         </div>
 
                         {/* Math Explanation */}
-                        <div className="mt-8 text-center">
-                            <div className="inline-flex items-center gap-3 text-lg font-mono text-[#AAAAAA] border border-[#333333] px-6 py-3 rounded-full bg-[#050505]">
+                        <div className="mt-4 md:mt-8 text-center">
+                            <div className="inline-flex items-center gap-2 md:gap-3 text-xs md:text-lg font-mono text-[#AAAAAA] border border-[#333333] px-3 md:px-6 py-2 md:py-3 rounded-full bg-[#050505]">
                                 <span className="text-[#FFFFFF]">{slide.items.som}</span>
                                 <span>×</span>
                                 <span className="text-[#FFFFFF]">2.5%</span>
@@ -777,24 +777,24 @@ export default function CatalystDeck() {
                 );
             case 'revenue-comparison':
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 w-full max-w-4xl">
                         {/* Current Revenue */}
-                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.current.title}</h3>
-                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.current.description}</p>
-                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.current.revenue}</div>
+                        <div className="bg-[#111111] border border-[#333333] rounded-lg md:rounded-xl p-3 md:p-6 flex flex-col items-center text-center">
+                            <h3 className="text-sm md:text-lg font-bold text-[#FFFFFF] mb-1 md:mb-2">{slide.items.current.title}</h3>
+                            <p className="text-[10px] md:text-xs text-[#AAAAAA] mb-1 md:mb-2">{slide.items.current.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-xs md:text-sm">{slide.items.current.revenue}</div>
                         </div>
                         {/* Post‑CF Approval */}
-                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.cfApproved.title}</h3>
-                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.cfApproved.description}</p>
-                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.cfApproved.revenue}</div>
+                        <div className="bg-[#111111] border border-[#333333] rounded-lg md:rounded-xl p-3 md:p-6 flex flex-col items-center text-center">
+                            <h3 className="text-sm md:text-lg font-bold text-[#FFFFFF] mb-1 md:mb-2">{slide.items.cfApproved.title}</h3>
+                            <p className="text-[10px] md:text-xs text-[#AAAAAA] mb-1 md:mb-2">{slide.items.cfApproved.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-xs md:text-sm">{slide.items.cfApproved.revenue}</div>
                         </div>
                         {/* Mini‑IPO */}
-                        <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 flex flex-col items-center text-center">
-                            <h3 className="text-lg font-bold text-[#FFFFFF] mb-2">{slide.items.miniIPO.title}</h3>
-                            <p className="text-xs text-[#AAAAAA] mb-2">{slide.items.miniIPO.description}</p>
-                            <div className="text-[#FFFFFF] font-mono text-sm">{slide.items.miniIPO.revenue}</div>
+                        <div className="bg-[#111111] border border-[#333333] rounded-lg md:rounded-xl p-3 md:p-6 flex flex-col items-center text-center">
+                            <h3 className="text-sm md:text-lg font-bold text-[#FFFFFF] mb-1 md:mb-2">{slide.items.miniIPO.title}</h3>
+                            <p className="text-[10px] md:text-xs text-[#AAAAAA] mb-1 md:mb-2">{slide.items.miniIPO.description}</p>
+                            <div className="text-[#FFFFFF] font-mono text-xs md:text-sm">{slide.items.miniIPO.revenue}</div>
                         </div>
                     </div>
                 );
@@ -1147,19 +1147,19 @@ export default function CatalystDeck() {
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0 relative h-[100dvh] flex flex-col items-center embla-slide slide-page overflow-y-auto no-scrollbar scroll-smooth"
                         >
-                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full overflow-hidden`}>
-                                <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-3 md:px-24 py-6 md:py-12 min-h-full overflow-hidden`}>
+                                <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                     {/* Left Content (Text) */}
-                                    <div className={`space-y-6 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-8 md:mt-24' : ''}`}>
-                                            <div className="h-[1px] w-12 bg-[#333333]"></div>
-                                            <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
+                                    <div className={`space-y-3 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                        <div className={`flex items-center gap-2 md:gap-4 ${slide.type === 'cta-final' ? 'mt-4 md:mt-24' : ''}`}>
+                                            <div className="h-[1px] w-8 md:w-12 bg-[#333333]"></div>
+                                            <h3 className="text-[10px] md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
                                                 {slide.subtitle}
                                             </h3>
                                         </div>
 
-                                        <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
+                                        <h1 className="text-lg md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
                                             {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
                                                 part === 'IGNORED' ? (
                                                     <span key={i} id="ignored-text" className="highlight-ignored">
@@ -1170,20 +1170,20 @@ export default function CatalystDeck() {
                                         </h1>
 
                                         {slide.subhead && (
-                                            <p className="text-lg md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
+                                            <p className="text-sm md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
                                                 {slide.subhead}
                                             </p>
                                         )}
 
                                         {slide.content && (
-                                            <p className="text-base md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
+                                            <p className="text-xs md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
                                                 {slide.content}
                                             </p>
                                         )}
 
                                         {slide.narrative && (
-                                            <div className={`pl-6 border-l-2 border-[#FFFFFF] py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
-                                                <p className="text-lg text-[#FFFFFF] italic font-serif">
+                                            <div className={`pl-4 md:pl-6 border-l-2 border-[#FFFFFF] py-1 md:py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
+                                                <p className="text-sm md:text-lg text-[#FFFFFF] italic font-serif">
                                                     {slide.narrative}
                                                 </p>
                                             </div>
@@ -1191,7 +1191,7 @@ export default function CatalystDeck() {
                                     </div>
 
                                     {/* Right Content (Visuals) */}
-                                    <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
+                                    <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[180px] md:min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
                                         {renderVisual(slide, index === selectedIndex)}
                                     </div>
                                 </div>
@@ -1205,7 +1205,7 @@ export default function CatalystDeck() {
             <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none no-print">
 
                 {/* Navigation & Progress Wrapper */}
-                <div className="flex justify-between items-end px-12 pb-12 pointer-events-auto w-full">
+                <div className="flex justify-between items-end px-4 md:px-12 pb-4 md:pb-12 pointer-events-auto w-full">
 
                     {/* Left Nav (Custom 3-Circle) */}
                     <div className={`transition-opacity duration-300 ${!canScrollPrev ? 'opacity-0' : 'opacity-100'}`}>
