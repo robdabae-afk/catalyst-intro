@@ -417,13 +417,13 @@ export default function CatalystDeck() {
                             </div>
                         )}
 
-                        <div className="flex gap-4 w-full justify-between items-stretch relative z-10 mb-8 md:mb-12">
+                        <div className="flex gap-2 md:gap-4 w-full justify-between items-stretch relative z-10 mb-4 md:mb-12">
                             {slide.items.map((item: any, i: number) => (
-                                <div key={i} className={`flex-1 p-4 md:p-8 border border-[#333333] bg-[#050505] rounded-2xl text-center flex flex-col justify-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
-                                    <div className={`text-2xl md:text-5xl font-bold mb-1 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
+                                <div key={i} className={`flex-1 p-2 md:p-8 border border-[#333333] bg-[#050505] rounded-xl md:rounded-2xl text-center flex flex-col justify-center overflow-visible shadow-2xl transition-all duration-300 ${item.value === 'Chaos' ? 'border-[#442222]' : ''}`}>
+                                    <div className={`text-lg md:text-5xl font-bold mb-0.5 md:mb-2 ${item.value === 'Chaos' ? 'chaos-animate' : (i < 2 ? 'text-[#DD5555]' : 'text-[#FFFFFF]')}`}>
                                         {item.value}
                                     </div>
-                                    <div className="text-[10px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
+                                    <div className="text-[8px] md:text-sm uppercase tracking-widest text-[#666666]">{item.label}</div>
                                 </div>
                             ))}
                         </div>
@@ -1205,7 +1205,7 @@ export default function CatalystDeck() {
             <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none no-print">
 
                 {/* Navigation & Progress Wrapper */}
-                <div className="flex justify-between items-end px-12 pb-12 pointer-events-auto w-full">
+                <div className="flex justify-between items-end px-4 md:px-12 pb-4 md:pb-12 pointer-events-auto w-full">
 
                     {/* Left Nav (Custom 3-Circle) */}
                     <div className={`transition-opacity duration-300 ${!canScrollPrev ? 'opacity-0' : 'opacity-100'}`}>
