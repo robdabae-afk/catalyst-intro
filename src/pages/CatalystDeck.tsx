@@ -329,27 +329,27 @@ export default function CatalystDeck() {
                 );
             case 'thesis-swipe':
                 return (
-                    <div className="flex flex-col items-center gap-8 relative">
+                    <div className="flex flex-col items-center gap-4 md:gap-8 relative">
                         {/* Card Stack Effect Removed */}
 
                         {/* Main Glass Card with Swipe Animation */}
-                        <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-3xl p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
+                        <div className="relative w-full bg-[#0A0A0A]/90 backdrop-blur-xl border border-[#FFFFFF]/20 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-2xl overflow-hidden animate-[swipe-hint_4s_ease-in-out_infinite]">
                             {/* Founder Profile Header */}
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 bg-[#222222] rounded-full border border-[#333333] flex items-center justify-center">
-                                    <Users className="w-6 h-6 text-[#444444]" />
+                            <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-6">
+                                <div className="w-8 h-8 md:w-12 md:h-12 bg-[#222222] rounded-full border border-[#333333] flex items-center justify-center">
+                                    <Users className="w-4 h-4 md:w-6 md:h-6 text-[#444444]" />
                                 </div>
 
                                 <div>
-                                    <div className="h-4 w-32 bg-[#333333] rounded mb-1.5 animate-pulse"></div>
-                                    <div className="h-3 w-20 bg-[#222222] rounded animate-pulse"></div>
+                                    <div className="h-3 md:h-4 w-24 md:w-32 bg-[#333333] rounded mb-1 md:mb-1.5 animate-pulse"></div>
+                                    <div className="h-2 md:h-3 w-16 md:w-20 bg-[#222222] rounded animate-pulse"></div>
                                 </div>
                             </div>
 
                             {/* Tags */}
-                            <div className="flex gap-2 w-full justify-center mb-8">
-                                <span className="px-3 py-1 rounded-full border border-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] tracking-wider uppercase">Fintech</span>
-                                <span className="px-3 py-1 rounded-full border border-[#333333] bg-[#000000] text-[10px] font-bold text-[#AAAAAA] tracking-wider uppercase">Pre-Seed</span>
+                            <div className="flex gap-2 w-full justify-center mb-4 md:mb-8">
+                                <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-[#FFFFFF] text-[8px] md:text-[10px] font-bold text-[#FFFFFF] tracking-wider uppercase">Fintech</span>
+                                <span className="px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-[#333333] bg-[#000000] text-[8px] md:text-[10px] font-bold text-[#AAAAAA] tracking-wider uppercase">Pre-Seed</span>
                             </div>
 
                             {/* Traction Section */}
