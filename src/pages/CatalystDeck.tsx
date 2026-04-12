@@ -1151,8 +1151,8 @@ export default function CatalystDeck() {
                                 <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                     {/* Left Content (Text) */}
-                                    <div className={`space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-24' : ''}`}>
+                                    <div className={`space-y-6 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-8 md:mt-24' : ''}`}>
                                             <div className="h-[1px] w-12 bg-[#333333]"></div>
                                             <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
                                                 {slide.subtitle}
