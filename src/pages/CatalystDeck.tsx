@@ -264,22 +264,22 @@ export default function CatalystDeck() {
         return (
             <>
                 {/* Dynamic Header Area */}
-                <div className="h-32 mb-8 text-center flex flex-col justify-center transition-all duration-300">
+                <div className="h-20 md:h-32 mb-4 md:mb-8 text-center flex flex-col justify-center transition-all duration-300">
                     {hoveredProblem ? (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
-                            <div className="text-sm md:text-base text-[#AAAAAA] font-mono mb-2 uppercase tracking-widest">
+                            <div className="text-[10px] md:text-base text-[#AAAAAA] font-mono mb-1 md:mb-2 uppercase tracking-widest">
                                 The Problem
                             </div>
-                            <h3 className="text-2xl md:text-4xl font-bold text-[#FFFFFF] max-w-2xl mx-auto leading-tight">
+                            <h3 className="text-base md:text-4xl font-bold text-[#FFFFFF] max-w-2xl mx-auto leading-tight">
                                 {hoveredProblem.desc}
                             </h3>
                         </div>
                     ) : (
                         <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                            <div className="text-sm md:text-base text-[#DD5555] font-mono mb-2 uppercase tracking-widest">
+                            <div className="text-[10px] md:text-base text-[#DD5555] font-mono mb-1 md:mb-2 uppercase tracking-widest">
                                 {slide.subtitle}
                             </div>
-                            <h3 className="text-3xl md:text-5xl font-bold text-[#FFFFFF] mb-6 tracking-tight">
+                            <h3 className="text-lg md:text-5xl font-bold text-[#FFFFFF] mb-3 md:mb-6 tracking-tight">
                                 {slide.title}
                             </h3>
                         </div>
@@ -287,24 +287,24 @@ export default function CatalystDeck() {
                 </div>
 
                 {/* Interaction cue */}
-                <div className={`text-center text-sm text-[#AAAAAA] mb-4 transition-opacity duration-300 ${showCue ? 'opacity-100' : 'opacity-0'}`}>
+                <div className={`text-center text-[10px] md:text-sm text-[#AAAAAA] mb-2 md:mb-4 transition-opacity duration-300 ${showCue ? 'opacity-100' : 'opacity-0'}`}>
                     Hover to reveal
                 </div>
 
                 {/* Interactive Columns */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full px-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 w-full px-2 md:px-4">
                     {slide.items.map((item: any, i: number) => (
                         <div
                             key={i}
-                            className={`p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-2xl text-left transition-all duration-[3000ms] transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
+                            className={`p-4 md:p-8 border border-[#444444] bg-[#0A0A0A] hover:bg-[#111111] rounded-xl md:rounded-2xl text-left transition-all duration-[3000ms] transform hover:-translate-y-1 shadow-[0_0_5px_rgba(255,255,255,0.2)] group hover:border-[#FFFFFF] hover:shadow-[0_0_15px_rgba(255,255,255,0.6)] cursor-help ${!hoveredProblem ? 'animate-[pulse-glow_6s_infinite]' : ''}`}
                             onMouseEnter={() => { setHoveredProblem(item); setShowCue(false); }}
                             onMouseLeave={() => setHoveredProblem(null)}
                         >
-                            <div className="w-12 h-12 bg-[#222222] rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-[3000ms] group-hover:bg-[#FFFFFF]">
-                                <item.icon className="w-6 h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
+                            <div className="w-8 h-8 md:w-12 md:h-12 bg-[#222222] rounded-full flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform duration-[3000ms] group-hover:bg-[#FFFFFF]">
+                                <item.icon className="w-4 h-4 md:w-6 md:h-6 text-[#FFFFFF] group-hover:text-[#000000] transition-colors" />
                             </div>
-                            <h4 className="text-xl font-bold mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
-                            <div className="h-1 w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-[3000ms] ease-out"></div>
+                            <h4 className="text-sm md:text-xl font-bold mb-2 md:mb-3 text-[#FFFFFF] group-hover:text-[#FFFFFF]">{item.title}</h4>
+                            <div className="h-1 w-8 md:w-12 bg-[#333333] group-hover:w-full group-hover:bg-[#FFFFFF] transition-all duration-[3000ms] ease-out"></div>
                         </div>
                     ))}
                 </div>
