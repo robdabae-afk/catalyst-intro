@@ -1147,19 +1147,19 @@ export default function CatalystDeck() {
                             key={slide.id}
                             className="flex-[0_0_100%] min-w-0 relative h-[100dvh] flex flex-col items-center embla-slide slide-page overflow-y-auto no-scrollbar scroll-smooth"
                         >
-                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-4 md:px-24 py-12 md:py-12 min-h-full overflow-hidden`}>
-                                <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
+                            <div className={`flex-grow w-full flex flex-col justify-center items-center px-3 md:px-24 py-6 md:py-12 min-h-full overflow-hidden`}>
+                                <div className={`w-full max-w-7xl grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-24 items-center transition-opacity duration-500 origin-center transform scale-100 ${index === selectedIndex ? 'opacity-100' : 'opacity-20'} ${slide.type === 'cta-final' ? '!grid-cols-1 justify-items-center text-center' : ''} print:opacity-100`}>
 
                                     {/* Left Content (Text) */}
-                                    <div className={`space-y-6 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
-                                        <div className={`flex items-center gap-4 ${slide.type === 'cta-final' ? 'mt-8 md:mt-24' : ''}`}>
-                                            <div className="h-[1px] w-12 bg-[#333333]"></div>
-                                            <h3 className="text-sm md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
+                                    <div className={`space-y-3 md:space-y-8 order-2 md:order-1 ${slide.type === 'cta-final' ? 'text-center items-center flex flex-col max-w-3xl mx-auto' : ''}`}>
+                                        <div className={`flex items-center gap-2 md:gap-4 ${slide.type === 'cta-final' ? 'mt-4 md:mt-24' : ''}`}>
+                                            <div className="h-[1px] w-8 md:w-12 bg-[#333333]"></div>
+                                            <h3 className="text-[10px] md:text-base text-[#AAAAAA] uppercase tracking-[0.2em] font-medium">
                                                 {slide.subtitle}
                                             </h3>
                                         </div>
 
-                                        <h1 className="text-2xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
+                                        <h1 className="text-lg md:text-5xl lg:text-6xl font-bold tracking-tighter leading-[1.1] text-[#FFFFFF] hyphens-none break-keep">
                                             {slide.title.split(/(IGNORED)/).map((part: string, i: number) =>
                                                 part === 'IGNORED' ? (
                                                     <span key={i} id="ignored-text" className="highlight-ignored">
