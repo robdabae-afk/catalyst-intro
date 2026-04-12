@@ -1170,20 +1170,20 @@ export default function CatalystDeck() {
                                         </h1>
 
                                         {slide.subhead && (
-                                            <p className="text-lg md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
+                                            <p className="text-sm md:text-xl text-[#FFFFFF] font-medium leading-relaxed">
                                                 {slide.subhead}
                                             </p>
                                         )}
 
                                         {slide.content && (
-                                            <p className="text-base md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
+                                            <p className="text-xs md:text-lg text-[#AAAAAA] font-light leading-relaxed whitespace-pre-wrap">
                                                 {slide.content}
                                             </p>
                                         )}
 
                                         {slide.narrative && (
-                                            <div className={`pl-6 border-l-2 border-[#FFFFFF] py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
-                                                <p className="text-lg text-[#FFFFFF] italic font-serif">
+                                            <div className={`pl-4 md:pl-6 border-l-2 border-[#FFFFFF] py-1 md:py-2 ${slide.type === 'hero-text' ? 'border-none p-0 text-center mx-auto' : ''}`}>
+                                                <p className="text-sm md:text-lg text-[#FFFFFF] italic font-serif">
                                                     {slide.narrative}
                                                 </p>
                                             </div>
@@ -1191,7 +1191,7 @@ export default function CatalystDeck() {
                                     </div>
 
                                     {/* Right Content (Visuals) */}
-                                    <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
+                                    <div className={`order-1 md:order-2 flex justify-center items-center w-full min-h-[180px] md:min-h-[300px] ${slide.type === 'stats-row-pain' ? 'w-full max-w-5xl' : ''}`}>
                                         {renderVisual(slide, index === selectedIndex)}
                                     </div>
                                 </div>
