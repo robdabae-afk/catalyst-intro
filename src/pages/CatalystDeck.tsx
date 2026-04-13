@@ -455,7 +455,7 @@ export default function CatalystDeck() {
                 );
             case 'pain-combo':
                 return (
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-5xl">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-16 w-full max-w-5xl">
                         {/* 1. NOISE (Left Side) - Stylized Funnel / Chaos */}
                         <div className="flex flex-col items-center justify-center relative opacity-80 group">
                             <div className="relative w-48 h-64 flex flex-col items-center justify-center">
