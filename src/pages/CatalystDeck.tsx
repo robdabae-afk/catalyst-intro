@@ -458,7 +458,7 @@ export default function CatalystDeck() {
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-16 w-full max-w-5xl">
                         {/* 1. NOISE (Left Side) - Stylized Funnel / Chaos */}
                         <div className="flex flex-col items-center justify-center relative opacity-80 group">
-                            <div className="relative w-48 h-64 flex flex-col items-center justify-center">
+                            <div className="relative w-36 h-48 md:w-48 md:h-64 flex flex-col items-center justify-center">
                                 {/* Stack of Papers (Noise) */}
                                 <div className="absolute top-0 w-32 h-40 bg-[#1A1A1A] border border-[#333333] rounded-lg rotate-[-12deg] z-0 animate-pulse"></div>
                                 <div className="absolute top-2 w-32 h-40 bg-[#1A1A1A] border border-[#333333] rounded-lg rotate-[6deg] z-10 opacity-80"></div>
