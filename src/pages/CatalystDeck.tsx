@@ -484,7 +484,7 @@ export default function CatalystDeck() {
                         </div>
 
                         {/* 2. ACCESS (Right Side) - The Missed Allocation Card */}
-                        <div className="relative w-full max-w-md aspect-[4/3] bg-[#0A0A0A] border border-[#333333] rounded-3xl p-6 flex flex-col shadow-2xl overflow-hidden scale-90 md:scale-100 hover:scale-[1.02] transition-transform duration-500">
+                        <div className="relative w-full max-w-md aspect-[4/3] bg-[#0A0A0A] border border-[#333333] rounded-3xl p-4 md:p-6 flex flex-col shadow-2xl overflow-hidden scale-75 md:scale-100 hover:scale-[1.02] transition-transform duration-500 -mt-4 md:mt-0">
                             {/* Status Header */}
                             <div className="flex justify-between items-center mb-8">
                                 <div className="flex gap-2">
