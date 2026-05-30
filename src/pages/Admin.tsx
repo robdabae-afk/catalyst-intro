@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3 } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -30,6 +30,10 @@ import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
 
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 interface UserWithStatus {
   id: string;
   name: string;
@@ -45,7 +49,9 @@ interface UserWithStatus {
   last_profile_update_at: string | null;
   is_hidden: boolean;
   hidden_at: string | null;
-  // TODO: These columns don't exist in the database yet
+  early_access: boolean;
+  is_flagged: boolean;
+  rejection_reason: string | null;
   is_verified?: boolean;
   is_featured?: boolean;
 }
@@ -62,6 +68,8 @@ const Admin = () => {
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
   const [editSuggestionUser, setEditSuggestionUser] = useState<UserWithStatus | null>(null);
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
+  const [denyDialogUser, setDenyDialogUser] = useState<UserWithStatus | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -275,31 +283,65 @@ const Admin = () => {
   const denyUser = async (userId: string) => {
     setActionLoading(userId);
     try {
-      // Clear any pending update flags when denying
+      // Update status and reason
       const { error } = await supabase
         .from('profiles')
         .update({
           has_pending_update: false,
           admin_edit_suggestion: null,
-          admin_edit_message: null
+          admin_edit_message: null,
+          rejection_reason: rejectionReason || "Your profile does not meet our platform criteria at this time."
         })
         .eq('id', userId);
 
       if (error) throw error;
 
-      // Send denial email
-      await sendNotification(userId, 'denied');
+      // Send denial email (will need backend function update to include reason)
+      await sendNotification(userId, 'denied', undefined, rejectionReason);
 
       toast({
         title: "User denied",
-        description: "The user application has been denied."
+        description: "The user application has been denied and they have been notified."
+      });
+
+      setDenyDialogUser(null);
+      setRejectionReason("");
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error denying user",
+        description: error.message
+      });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const toggleFlagProfile = async (userId: string, currentlyFlagged: boolean) => {
+    setActionLoading(userId);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          is_flagged: !currentlyFlagged
+        })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      toast({
+        title: currentlyFlagged ? "Flag removed" : "Profile flagged",
+        description: currentlyFlagged
+          ? "The profile is no longer flagged."
+          : "The profile has been flagged for further review."
       });
 
       loadUsers();
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Error denying user",
+        title: "Error flagging profile",
         description: error.message
       });
     } finally {
@@ -354,9 +396,10 @@ const Admin = () => {
     }
   };
 
-  const getStatus = (roles: { role: string }[]) => {
-    if (roles.some(r => r.role === 'admin')) return 'admin';
-    if (roles.some(r => r.role === 'user')) return 'approved';
+  const getStatus = (user: UserWithStatus) => {
+    if (user.roles.some(r => r.role === 'admin')) return 'admin';
+    if (user.roles.some(r => r.role === 'user')) return 'approved';
+    if (user.rejection_reason) return 'rejected';
     return 'pending';
   };
 
@@ -369,8 +412,8 @@ const Admin = () => {
   }
 
   const filteredUsers = userTypeFilter === 'all' ? users : users.filter(u => u.user_type === userTypeFilter);
-  const pendingUsers = filteredUsers.filter(u => getStatus(u.roles) === 'pending');
-  const approvedUsers = filteredUsers.filter(u => getStatus(u.roles) !== 'pending');
+  const pendingUsers = filteredUsers.filter(u => getStatus(u) === 'pending');
+  const approvedUsers = filteredUsers.filter(u => getStatus(u) === 'approved' || getStatus(u) === 'admin');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
@@ -518,8 +561,14 @@ const Admin = () => {
                         <TableRow key={user.id}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
+                              {user.early_access && (
+                                <Zap className="w-4 h-4 text-amber-500" title="Paid Early Access" />
+                              )}
                               {user.has_pending_update && (
                                 <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" title="User made updates" />
+                              )}
+                              {user.is_flagged && (
+                                <Flag className="w-4 h-4 text-red-500" title="Flagged Profile" />
                               )}
                               {user.name}
                             </div>
@@ -561,7 +610,7 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="destructive"
-                              onClick={() => denyUser(user.id)}
+                              onClick={() => setDenyDialogUser(user)}
                               disabled={actionLoading === user.id}
                             >
                               <XCircle className="w-4 h-4 mr-1" />
@@ -614,11 +663,14 @@ const Admin = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredUsers.map(user => {
-                      const status = getStatus(user.roles);
+                      const status = getStatus(user);
                       return (
-                        <TableRow key={user.id}>
+                        <TableRow key={user.id} className={user.is_flagged ? "bg-red-500/5 hover:bg-red-500/10" : ""}>
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
+                              {user.early_access && (
+                                <Zap className="w-4 h-4 text-amber-500" title="Paid Early Access" />
+                              )}
                               {user.has_pending_update && (
                                 <span
                                   className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse cursor-pointer"
@@ -626,7 +678,7 @@ const Admin = () => {
                                   onClick={() => clearUpdateFlag(user.id)}
                                 />
                               )}
-                              {user.name}
+                              <span className={user.is_flagged ? "text-red-500" : ""}>{user.name}</span>
                             </div>
                           </TableCell>
                           <TableCell>{user.email}</TableCell>
@@ -637,7 +689,7 @@ const Admin = () => {
                           </TableCell>
                           <TableCell>
                             <Badge
-                              variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : 'destructive'}
+                              variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : status === 'rejected' ? 'destructive' : 'outline'}
                               className="capitalize"
                             >
                               {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
@@ -727,20 +779,40 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
+                              className={user.is_flagged ? "text-red-500 border-red-500/50 hover:bg-red-500/10" : ""}
+                            >
+                              <Flag className="w-4 h-4 mr-1" />
+                              {user.is_flagged ? "Unflag" : "Flag"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => setSubscriptionDialogUser(user)}
                             >
                               <Sparkles className="w-4 h-4 mr-1" />
                               Manage
                             </Button>
                             {status === 'pending' && (
-                              <Button
-                                size="sm"
-                                onClick={() => approveUser(user.id)}
-                                disabled={actionLoading === user.id}
-                              >
-                                <UserCheck className="w-4 h-4 mr-1" />
-                                Approve
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => approveUser(user.id)}
+                                  disabled={actionLoading === user.id}
+                                >
+                                  <UserCheck className="w-4 h-4 mr-1" />
+                                  Approve
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => setDenyDialogUser(user)}
+                                  disabled={actionLoading === user.id}
+                                >
+                                  <XCircle className="w-4 h-4 mr-1" />
+                                  Deny
+                                </Button>
+                              </>
                             )}
                             {status === 'approved' && (
                               <>
@@ -832,6 +904,38 @@ const Admin = () => {
           }}
         />
       )}
+      <Dialog open={!!denyDialogUser} onOpenChange={(open) => !open && setDenyDialogUser(null)}>
+        <DialogContent className="sm:max-w-md bg-zinc-950 border-zinc-800">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Deny Profile</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to deny {denyDialogUser?.name}'s application? They will be notified via email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Rejection Reason</Label>
+              <Textarea
+                placeholder="e.g. Please provide your incorporation documents and resubmit."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                className="h-24 bg-zinc-900 border-zinc-800"
+              />
+              <p className="text-xs text-zinc-500">This reason will be included in the email sent to the user.</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDenyDialogUser(null)}>Cancel</Button>
+            <Button 
+              variant="destructive" 
+              onClick={() => denyDialogUser && denyUser(denyDialogUser.id)}
+              disabled={actionLoading === denyDialogUser?.id || !rejectionReason.trim()}
+            >
+              <XCircle className="w-4 h-4 mr-2" /> Deny User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
