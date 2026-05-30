@@ -583,13 +583,17 @@ const Admin = () => {
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
                               {user.early_access && (
-                                <Zap className="w-4 h-4 text-amber-500" title="Paid Early Access" />
+                                <span title="Paid Early Access" className="inline-flex">
+                                  <Zap className="w-4 h-4 text-amber-500" />
+                                </span>
                               )}
                               {user.has_pending_update && (
                                 <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" title="User made updates" />
                               )}
                               {user.is_flagged && (
-                                <Flag className="w-4 h-4 text-red-500" title="Flagged Profile" />
+                                <span title="Flagged Profile" className="inline-flex">
+                                  <Flag className="w-4 h-4 text-red-500" />
+                                </span>
                               )}
                               {user.name}
                             </div>
