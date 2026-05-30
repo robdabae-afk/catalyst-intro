@@ -28,6 +28,7 @@ import CatalystDeck from "./pages/CatalystDeck";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
 import Waitlist from "./pages/Waitlist";
+import EarlyAccess from "./pages/EarlyAccess";
 import FounderProfileInput from "./pages/FounderProfileInput";
 import { AuthGuard } from "./components/AuthGuard";
 
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/early-access" element={<EarlyAccess />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/onboarding/founder" element={<FounderOnboarding />} />
           <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
