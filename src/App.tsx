@@ -27,8 +27,9 @@ import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
-
+import Waitlist from "./pages/Waitlist";
 import FounderProfileInput from "./pages/FounderProfileInput";
+import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -42,28 +43,30 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/onboarding/founder" element={<FounderOnboarding />} />
           <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/matches" element={<Matches />} />
-          <Route path="/coffeechat" element={<CoffeeChat />} />
-          <Route path="/safes" element={<SafesList />} />
-          <Route path="/safe" element={<SafeGenerator />} />
-          <Route path="/safe/:id" element={<SafeDetail />} />
-          <Route path="/captable" element={<CapTable />} />
-          <Route path="/investments" element={<Investments />} />
-          <Route path="/requests" element={<Requests />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="/profile/:id" element={<ProfileView />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/filters" element={<FilterPreferences />} />
-          <Route path="/referrals" element={<ReferralDashboard />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
-          <Route path="/portal" element={<InvestorPortal />} />
-          <Route path="/concierge" element={<Concierge />} />
 
-          <Route path="/founder-input" element={<FounderProfileInput />} />
+          {/* Protected Routes — require login + approved/early_access */}
+          <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
+          <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
+          <Route path="/safes" element={<AuthGuard><SafesList /></AuthGuard>} />
+          <Route path="/safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
+          <Route path="/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
+          <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
+          <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
+          <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
+          <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+          <Route path="/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
+          <Route path="/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
+          <Route path="/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
+          <Route path="/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
+          <Route path="/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

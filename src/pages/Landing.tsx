@@ -25,19 +25,19 @@ const Landing = () => {
           <div className="text-center lg:text-left space-y-8 order-1 lg:order-2">
             <div className="space-y-6">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
-                Swipe. Connect. Fund.
+                Invest in the Next Unicorn.
               </h1>
               <p className="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto lg:mx-0">
-                The simplest way for founders and investors to collaborate. Build your future with the right partners.
+                The retail access layer for pre-IPO investing. Not because you're well-connected — because you had access.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100 shadow-lg">
-                I'm a Founder
+              <Button size="lg" onClick={() => navigate('/early-access')} className="text-lg px-8 py-6 bg-amber-500 text-black hover:bg-amber-400 shadow-lg font-bold">
+                Get Early Access — $29
               </Button>
-              <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
-                I'm an Investor
+              <Button size="lg" onClick={() => navigate('/waitlist')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
+                Join the Waitlist
               </Button>
             </div>
 
@@ -75,17 +75,17 @@ const Landing = () => {
     <section className="py-24 px-6 bg-primary text-primary-foreground">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
-          Ready to Connect?
+          Access Starts Here.
         </h2>
         <p className="text-xl mb-10 opacity-90">
-          Join the platform where meaningful founder-investor relationships begin
+          Early stage. Exclusive access. Built for everyday investors and serious founders.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100">
-            Get Started as Founder
+          <Button size="lg" onClick={() => navigate('/early-access')} className="text-lg px-8 py-6 bg-amber-500 text-black hover:bg-amber-400 font-bold">
+            Get Early Access — $29
           </Button>
-          <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
-            Get Started as Investor
+          <Button size="lg" onClick={() => navigate('/waitlist')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
+            Join Free Waitlist
           </Button>
         </div>
       </div>
