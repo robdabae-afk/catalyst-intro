@@ -283,18 +283,34 @@ const Admin = () => {
   const denyUser = async (userId: string) => {
     setActionLoading(userId);
     try {
-      // Update status and reason
-      const { error } = await supabase
+      // Update status and reason. If the schema isn't migrated, this might fail. We'll try without rejection_reason if it does.
+      let updateError;
+      const { error: primaryError } = await supabase
         .from('profiles')
         .update({
           has_pending_update: false,
           admin_edit_suggestion: null,
           admin_edit_message: null,
           rejection_reason: rejectionReason || "Your profile does not meet our platform criteria at this time."
-        })
+        } as any)
         .eq('id', userId);
 
-      if (error) throw error;
+      updateError = primaryError;
+
+      // Fallback if rejection_reason column doesn't exist yet
+      if (primaryError?.message?.includes("rejection_reason")) {
+        const { error: fallbackError } = await supabase
+          .from('profiles')
+          .update({
+            has_pending_update: false,
+            admin_edit_suggestion: null,
+            admin_edit_message: null
+          })
+          .eq('id', userId);
+        updateError = fallbackError;
+      }
+
+      if (updateError) throw updateError;
 
       // Send denial email (will need backend function update to include reason)
       await sendNotification(userId, 'denied', undefined, rejectionReason);
@@ -325,10 +341,15 @@ const Admin = () => {
         .from('profiles')
         .update({
           is_flagged: !currentlyFlagged
-        })
+        } as any)
         .eq('id', userId);
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes("is_flagged")) {
+          throw new Error("Schema update required. Please apply the Supabase migration for is_flagged.");
+        }
+        throw error;
+      }
 
       toast({
         title: currentlyFlagged ? "Flag removed" : "Profile flagged",
