@@ -694,7 +694,9 @@ const Admin = () => {
                           <TableCell className="font-medium">
                             <div className="flex items-center gap-2">
                               {user.early_access && (
-                                <Zap className="w-4 h-4 text-amber-500" title="Paid Early Access" />
+                                <span title="Paid Early Access" className="inline-flex">
+                                  <Zap className="w-4 h-4 text-amber-500" />
+                                </span>
                               )}
                               {user.has_pending_update && (
                                 <span
