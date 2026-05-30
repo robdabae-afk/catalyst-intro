@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileCompletionGate } from "./ProfileCompletionGate";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -44,5 +45,9 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <ProfileCompletionGate>
+      {children}
+    </ProfileCompletionGate>
+  );
 };

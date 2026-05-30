@@ -8,6 +8,7 @@ import { AdminEditSuggestionBanner } from '@/components/AdminEditSuggestionBanne
 export default function PendingApproval() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<{ early_access: boolean; approved: boolean; name: string } | null>(null);
+  const [missingFields, setMissingFields] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,13 +16,33 @@ export default function PendingApproval() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { navigate('/auth'); return; }
 
-      const { data } = await supabase
+      const { data: profileData } = await supabase
         .from('profiles')
-        .select('early_access, approved, name')
+        .select('early_access, approved, name, user_type, linkedin_url')
         .eq('id', user.id)
         .single();
 
-      setProfile(data as any);
+      if (profileData) {
+        setProfile(profileData as any);
+        
+        const missing = [];
+        if (!profileData.linkedin_url) missing.push('LinkedIn URL');
+
+        if (profileData.user_type === 'founder') {
+          const { data: fData } = await supabase.from('founder_profiles').select('ein_number, incorporation_doc_url, financial_statement_urls, location').eq('profile_id', user.id).maybeSingle();
+          if (!fData?.location) missing.push('Location (HQ)');
+          if (!fData?.ein_number && !fData?.incorporation_doc_url && !fData?.financial_statement_urls) {
+            missing.push('Due Diligence Documents (EIN/Financials)');
+          }
+        } else if (profileData.user_type === 'investor') {
+          const { data: iData } = await supabase.from('investor_profiles').select('investor_type, accreditation_status').eq('profile_id', user.id).maybeSingle();
+          if (!iData?.investor_type) missing.push('Investor Type');
+          if (!iData?.accreditation_status) missing.push('Accreditation Status');
+        }
+
+        setMissingFields(missing);
+      }
+
       setLoading(false);
     };
     load();
@@ -97,6 +118,31 @@ export default function PendingApproval() {
                 className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold h-10"
               >
                 Get Early Access — $29
+              </Button>
+            </div>
+          )}
+
+          {/* Profile Completion Warning */}
+          {missingFields.length > 0 && (
+            <div className="border border-red-500/20 rounded-xl p-4 bg-red-500/5 text-left space-y-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-500" />
+                <span className="text-red-500 text-sm font-bold">Profile Incomplete</span>
+              </div>
+              <p className="text-zinc-400 text-xs">
+                Your profile is missing required information. Admins may delay your approval until these are filled:
+              </p>
+              <ul className="text-xs text-zinc-300 list-disc list-inside">
+                {missingFields.map((field) => (
+                  <li key={field}>{field}</li>
+                ))}
+              </ul>
+              <Button
+                variant="outline"
+                onClick={() => navigate('/settings')}
+                className="w-full h-8 mt-2 text-xs border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-400"
+              >
+                Complete Profile
               </Button>
             </div>
           )}
