@@ -26,7 +26,16 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         .eq("id", user.id)
         .single();
 
-      if (!profile?.approved && !profile?.early_access) {
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      const isAdmin = !!roleData;
+
+      if (!isAdmin && !profile?.approved && !profile?.early_access) {
         navigate("/pending-approval");
         return;
       }
