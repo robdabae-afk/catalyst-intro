@@ -361,22 +361,26 @@ const Auth = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm text-muted-foreground space-y-2">
+            <div className="mt-6 text-center text-sm text-muted-foreground">
               <p>Don't have an account?</p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/waitlist")}
-                className="w-full"
-              >
-                Join the Waitlist
-              </Button>
-              <p className="text-xs">
-                Want immediate access?{" "}
-                <button onClick={() => navigate("/early-access")} className="text-primary underline hover:opacity-80">
-                  Get Early Access — $29
-                </button>
-              </p>
+              <div className="mt-2 flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/onboarding/founder")}
+                  className="w-full"
+                >
+                  Sign up as Founder
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/onboarding/investor")}
+                  className="w-full"
+                >
+                  Sign up as Investor
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -33,11 +33,11 @@ const Landing = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" onClick={() => navigate('/early-access')} className="text-lg px-8 py-6 bg-amber-500 text-black hover:bg-amber-400 shadow-lg font-bold">
-                Get Early Access — $29
+              <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100 shadow-lg">
+                I'm a Founder
               </Button>
-              <Button size="lg" onClick={() => navigate('/waitlist')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
-                Join the Waitlist
+              <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white text-white hover:bg-white/10">
+                I'm an Investor
               </Button>
             </div>
 
@@ -81,11 +81,11 @@ const Landing = () => {
           Join the platform where meaningful founder-investor relationships begin
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" onClick={() => navigate('/early-access')} className="text-lg px-8 py-6 bg-amber-500 text-black hover:bg-amber-400 font-bold">
-            Get Early Access — $29
+          <Button size="lg" onClick={() => navigate('/onboarding/founder')} className="text-lg px-8 py-6 bg-white text-black hover:bg-gray-100">
+            Get Started as Founder
           </Button>
-          <Button size="lg" onClick={() => navigate('/waitlist')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
-            Join Free Waitlist
+          <Button size="lg" onClick={() => navigate('/onboarding/investor')} className="text-lg px-8 py-6 bg-transparent border-2 border-white hover:bg-white/10">
+            Get Started as Investor
           </Button>
         </div>
       </div>
