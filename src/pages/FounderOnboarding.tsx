@@ -33,6 +33,8 @@ const FounderOnboarding = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [incDocFile, setIncDocFile] = useState<File | null>(null);
+  const [financialFiles, setFinancialFiles] = useState<File[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   const [legalAgreed, setLegalAgreed] = useState(false);
@@ -51,7 +53,10 @@ const FounderOnboarding = () => {
     videoUrl: "",
     fundingAmount: "",
     mrr: "",
-    backedBy: ""
+    backedBy: "",
+    einNumber: "",
+    location: "",
+    linkedinUrl: ""
   });
 
   // Validate referral code when it changes
@@ -208,6 +213,25 @@ const FounderOnboarding = () => {
     return publicUrl;
   };
 
+  const uploadDocument = async (userId: string, file: File, folder: string): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${userId}/${folder}/${Date.now()}.${fileExt}`;
+    const { error: uploadError } = await supabase.storage
+      .from('documents')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      console.error(`${folder} upload error:`, uploadError);
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('documents')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -311,6 +335,18 @@ const FounderOnboarding = () => {
       // Use uploaded video URL if available, otherwise use the external URL from form
       const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
 
+      // Upload docs
+      let incDocUrl = null;
+      if (incDocFile) {
+        incDocUrl = await uploadDocument(authData.user.id, incDocFile, 'incorporation');
+      }
+
+      const financialUrls = [];
+      for (const file of financialFiles) {
+        const url = await uploadDocument(authData.user.id, file, 'financials');
+        if (url) financialUrls.push(url);
+      }
+
       // Create profile with legal acceptance
       const { error: profileError } = await supabase
         .from('profiles')
@@ -320,6 +356,7 @@ const FounderOnboarding = () => {
           name: formData.name,
           email: formData.email,
           avatar_url: avatarUrl,
+          linkedin_url: formData.linkedinUrl || null,
           referred_by: referralValid ? (await supabase
             .from('profiles')
             .select('id')
@@ -369,8 +406,13 @@ const FounderOnboarding = () => {
           banner_url: bannerUrl,
           video_url: finalVideoUrl,
           funding_amount: formData.fundingAmount || null,
+          seeking: formData.fundingAmount || null,
           mrr: formData.mrr || null,
-          backed_by: formData.backedBy || null
+          backed_by: formData.backedBy || null,
+          ein_number: formData.einNumber || null,
+          location: formData.location || null,
+          incorporation_doc_url: incDocUrl,
+          financial_statement_urls: financialUrls.length > 0 ? financialUrls : null
         });
 
       if (founderError) throw founderError;
@@ -573,6 +615,28 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="location">Location (HQ) *</Label>
+                <Input
+                  id="location"
+                  required
+                  placeholder="City, State"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="linkedinUrl">LinkedIn Profile URL (Optional)</Label>
+                <Input
+                  id="linkedinUrl"
+                  type="url"
+                  placeholder="https://linkedin.com/in/..."
+                  value={formData.linkedinUrl}
+                  onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="oneLiner">One-Liner *</Label>
                 <Input
                   id="oneLiner"
@@ -671,6 +735,40 @@ const FounderOnboarding = () => {
                   value={formData.backedBy}
                   onChange={(e) => setFormData({ ...formData, backedBy: e.target.value })}
                 />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t">
+                <h3 className="font-medium">Due Diligence (Optional)</h3>
+                <p className="text-sm text-muted-foreground">Adding these fields increases your profile completion score and trust with investors.</p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="einNumber">EIN Number</Label>
+                  <Input
+                    id="einNumber"
+                    placeholder="XX-XXXXXXX"
+                    value={formData.einNumber}
+                    onChange={(e) => setFormData({ ...formData, einNumber: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Incorporation Document</Label>
+                  <Input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => setIncDocFile(e.target.files?.[0] || null)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Financial / Bank Statements (Multiple allowed)</Label>
+                  <Input
+                    type="file"
+                    accept=".pdf,.csv,.png,.jpg"
+                    multiple
+                    onChange={(e) => setFinancialFiles(Array.from(e.target.files || []))}
+                  />
+                </div>
               </div>
 
               <div className="space-y-4">
