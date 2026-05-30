@@ -25,10 +25,10 @@ const Landing = () => {
           <div className="text-center lg:text-left space-y-8 order-1 lg:order-2">
             <div className="space-y-6">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight">
-                Invest in the Next Unicorn.
+                Swipe. Connect. Fund.
               </h1>
               <p className="text-xl md:text-2xl text-gray-200 max-w-2xl mx-auto lg:mx-0">
-                The retail access layer for pre-IPO investing. Not because you're well-connected — because you had access.
+                The simplest way for founders and investors to collaborate. Build your future with the right partners.
               </p>
             </div>
 
@@ -75,10 +75,10 @@ const Landing = () => {
     <section className="py-24 px-6 bg-primary text-primary-foreground">
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl md:text-5xl font-bold mb-6">
-          Access Starts Here.
+          Ready to Connect?
         </h2>
         <p className="text-xl mb-10 opacity-90">
-          Early stage. Exclusive access. Built for everyday investors and serious founders.
+          Join the platform where meaningful founder-investor relationships begin
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" onClick={() => navigate('/early-access')} className="text-lg px-8 py-6 bg-amber-500 text-black hover:bg-amber-400 font-bold">
