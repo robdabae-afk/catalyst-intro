@@ -61,6 +61,7 @@ const EventSignIn = () => {
         .from("event_attendees")
         .insert({
           full_name: values.full_name,
+          email: values.email || null,
           phone: values.phone,
           consent_accepted: true,
         });
