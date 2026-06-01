@@ -1090,62 +1090,7 @@ export type Database = {
       }
     }
     Views: {
-      public_founder_profiles: {
-        Row: {
-          banner_url: string | null
-          company_name: string | null
-          created_at: string | null
-          id: string | null
-          industry: string[] | null
-          one_liner: string | null
-          pitch_deck_url: string | null
-          pitch_deck_visibility: string | null
-          preferred_city: string | null
-          profile_id: string | null
-          stage: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name: string | null
-          traction: string | null
-        }
-        Insert: {
-          banner_url?: string | null
-          company_name?: string | null
-          created_at?: string | null
-          id?: string | null
-          industry?: string[] | null
-          one_liner?: string | null
-          pitch_deck_url?: string | null
-          pitch_deck_visibility?: string | null
-          preferred_city?: string | null
-          profile_id?: string | null
-          stage?: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name?: string | null
-          traction?: string | null
-        }
-        Update: {
-          banner_url?: string | null
-          company_name?: string | null
-          created_at?: string | null
-          id?: string | null
-          industry?: string[] | null
-          one_liner?: string | null
-          pitch_deck_url?: string | null
-          pitch_deck_visibility?: string | null
-          preferred_city?: string | null
-          profile_id?: string | null
-          stage?: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name?: string | null
-          traction?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "founder_profiles_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
