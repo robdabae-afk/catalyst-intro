@@ -52,6 +52,8 @@ const App = () => (
           <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
           <Route path="/profile/:id" element={<ProfileView />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/events" element={<EventSignIn />} />
+          <Route path="/event" element={<EventSignIn />} />
 
           {/* Protected Routes — require login + approved/early_access */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
