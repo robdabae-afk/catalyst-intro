@@ -195,7 +195,7 @@ const EventSignIn = () => {
                           </FormControl>
                           <label className="text-xs text-[#BBBBBB] leading-relaxed cursor-pointer">
                             I agree that Catalyst Intro may securely store my name, email, and phone number
-                            for internal event purposes only. My information{" "}
+                            internally. My information{" "}
                             <span className="text-[#FFFFFF] font-medium">
                               will not be sold, shared, or distributed to third parties.
                             </span>
