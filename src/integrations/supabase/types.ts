@@ -353,6 +353,30 @@ export type Database = {
         }
         Relationships: []
       }
+      event_attendees: {
+        Row: {
+          consent_accepted: boolean
+          created_at: string
+          full_name: string
+          id: string
+          phone: string
+        }
+        Insert: {
+          consent_accepted?: boolean
+          created_at?: string
+          full_name: string
+          id?: string
+          phone: string
+        }
+        Update: {
+          consent_accepted?: boolean
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string
+        }
+        Relationships: []
+      }
       feedback_prompts: {
         Row: {
           admin_requested_at: string | null
