@@ -24,6 +24,12 @@ const schema = z.object({
     .min(2, { message: "Please enter your full name." })
     .max(120, { message: "Name must be less than 120 characters." })
     .regex(/^[\p{L}\p{M}'\-.\s]+$/u, { message: "Name contains invalid characters." }),
+  email: z
+    .union([
+      z.string().email({ message: "Please enter a valid email address." }),
+      z.literal(""),
+    ])
+    .optional(),
   phone: z
     .string()
     .trim()
