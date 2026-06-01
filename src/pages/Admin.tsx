@@ -529,11 +529,20 @@ const Admin = () => {
               <Download className="w-4 h-4" />
               Deck Leads
             </TabsTrigger>
+            <TabsTrigger value="event-attendees" className="flex items-center gap-2">
+              <CalendarDays className="w-4 h-4" />
+              Events
+            </TabsTrigger>
             <TabsTrigger value="test-data" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Test Data
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="event-attendees">
+            <AdminEventAttendeesPanel />
+          </TabsContent>
+
 
           <TabsContent value="analytics">
             <AdminAnalyticsPanel />
