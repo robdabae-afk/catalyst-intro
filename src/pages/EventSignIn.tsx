@@ -97,6 +97,12 @@ const EventSignIn = () => {
               <p className="mt-2 text-sm text-[#AAAAAA]">
                 Welcome. Grab a drink & enjoy the event!
               </p>
+              <Button
+                onClick={() => { window.location.href = "/app"; }}
+                className="mt-6 w-full h-11 bg-[#FFFFFF] text-[#000000] hover:bg-[#DDDDDD] font-semibold"
+              >
+                Join the Catalyst platform
+              </Button>
             </div>
           ) : (
             <>
