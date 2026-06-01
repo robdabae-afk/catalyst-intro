@@ -29,6 +29,7 @@ import { AdminRevenueTracker } from "@/components/AdminRevenueTracker";
 import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
+import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
