@@ -29,6 +29,18 @@ export const ProfileCompletionGate = ({ children }: ProfileCompletionGateProps) 
         return;
       }
 
+      // Admins bypass the profile completion gate entirely
+      const { data: adminRole } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (adminRole) {
+        setChecking(false);
+        return;
+      }
+
       // Load profile and grace period
       const { data: profile } = await supabase
         .from("profiles")
