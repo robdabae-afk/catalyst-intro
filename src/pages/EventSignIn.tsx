@@ -24,6 +24,12 @@ const schema = z.object({
     .min(2, { message: "Please enter your full name." })
     .max(120, { message: "Name must be less than 120 characters." })
     .regex(/^[\p{L}\p{M}'\-.\s]+$/u, { message: "Name contains invalid characters." }),
+  email: z
+    .union([
+      z.string().email({ message: "Please enter a valid email address." }),
+      z.literal(""),
+    ])
+    .optional(),
   phone: z
     .string()
     .trim()
@@ -44,7 +50,7 @@ const EventSignIn = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { full_name: "", phone: "", consent: false as unknown as true },
+    defaultValues: { full_name: "", email: "", phone: "", consent: false as unknown as true },
   });
 
   const onSubmit = async (values: FormValues) => {
@@ -55,6 +61,7 @@ const EventSignIn = () => {
         .from("event_attendees")
         .insert({
           full_name: values.full_name,
+          email: values.email || null,
           phone: values.phone,
           consent_accepted: true,
         });
@@ -127,6 +134,29 @@ const EventSignIn = () => {
 
                   <FormField
                     control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#FFFFFF]">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            inputMode="email"
+                            placeholder="jane@example.com"
+                            autoComplete="email"
+                            maxLength={255}
+                            {...field}
+                            className="bg-[#0A0A0A] border-[#2A2A2A] text-[#FFFFFF] placeholder:text-[#555555] h-11"
+                          />
+                        </FormControl>
+                        <p className="text-[11px] text-[#666666]">Optional but recommended.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
@@ -164,7 +194,7 @@ const EventSignIn = () => {
                             />
                           </FormControl>
                           <label className="text-xs text-[#BBBBBB] leading-relaxed cursor-pointer">
-                            I agree that Catalyst Intro may securely store my name and phone number
+                            I agree that Catalyst Intro may securely store my name, email, and phone number
                             for internal event purposes only. My information{" "}
                             <span className="text-[#FFFFFF] font-medium">
                               will not be sold, shared, or distributed to third parties.
