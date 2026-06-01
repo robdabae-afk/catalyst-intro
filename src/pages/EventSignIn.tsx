@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import PhoneNumberInput from "@/components/PhoneNumberInput";
 
 const schema = z.object({
   full_name: z
