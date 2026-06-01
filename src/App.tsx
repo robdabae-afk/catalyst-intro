@@ -42,36 +42,67 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/waitlist" element={<Waitlist />} />
-          <Route path="/early-access" element={<EarlyAccess />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/onboarding/founder" element={<FounderOnboarding />} />
-          <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
-          <Route path="/profile/:id" element={<ProfileView />} />
-          <Route path="/catalystdeck" element={<CatalystDeck />} />
+          {/* New homepage: event sign-in */}
+          <Route path="/" element={<EventSignIn />} />
           <Route path="/events" element={<EventSignIn />} />
           <Route path="/event" element={<EventSignIn />} />
 
+          {/* Platform marketing/landing now lives at /app */}
+          <Route path="/app" element={<Landing />} />
+
+          {/* Public routes (kept at original paths AND mirrored under /app) */}
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/app/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/app/forgot-password" element={<ForgotPassword />} />
+          <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/app/waitlist" element={<Waitlist />} />
+          <Route path="/early-access" element={<EarlyAccess />} />
+          <Route path="/app/early-access" element={<EarlyAccess />} />
+          <Route path="/pending-approval" element={<PendingApproval />} />
+          <Route path="/app/pending-approval" element={<PendingApproval />} />
+          <Route path="/onboarding/founder" element={<FounderOnboarding />} />
+          <Route path="/app/onboarding/founder" element={<FounderOnboarding />} />
+          <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
+          <Route path="/app/onboarding/investor" element={<InvestorOnboarding />} />
+          <Route path="/profile/:id" element={<ProfileView />} />
+          <Route path="/app/profile/:id" element={<ProfileView />} />
+          <Route path="/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/app/catalystdeck" element={<CatalystDeck />} />
+
           {/* Protected Routes — require login + approved/early_access */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
+          <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
+          <Route path="/app/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
           <Route path="/safes" element={<AuthGuard><SafesList /></AuthGuard>} />
+          <Route path="/app/safes" element={<AuthGuard><SafesList /></AuthGuard>} />
           <Route path="/safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
+          <Route path="/app/safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
           <Route path="/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
+          <Route path="/app/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
           <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
+          <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
+          <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
+          <Route path="/app/requests" element={<AuthGuard><Requests /></AuthGuard>} />
           <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+          <Route path="/app/admin" element={<AuthGuard><Admin /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+          <Route path="/app/settings" element={<AuthGuard><Settings /></AuthGuard>} />
           <Route path="/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
+          <Route path="/app/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
           <Route path="/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
+          <Route path="/app/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
           <Route path="/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
+          <Route path="/app/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
           <Route path="/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
+          <Route path="/app/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
           <Route path="/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
+          <Route path="/app/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
