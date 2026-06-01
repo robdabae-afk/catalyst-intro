@@ -50,7 +50,7 @@ const EventSignIn = () => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { full_name: "", phone: "", consent: false as unknown as true },
+    defaultValues: { full_name: "", email: "", phone: "", consent: false as unknown as true },
   });
 
   const onSubmit = async (values: FormValues) => {
