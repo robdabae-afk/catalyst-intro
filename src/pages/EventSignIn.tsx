@@ -61,7 +61,7 @@ const EventSignIn = () => {
         .from("event_attendees")
         .insert({
           full_name: values.full_name,
-          email: values.email || null,
+          email: values.email,
           phone: values.phone,
           consent_accepted: true,
         });
@@ -149,7 +149,7 @@ const EventSignIn = () => {
                             className="bg-[#0A0A0A] border-[#2A2A2A] text-[#FFFFFF] placeholder:text-[#555555] h-11"
                           />
                         </FormControl>
-                        <p className="text-[11px] text-[#666666]">Optional but recommended.</p>
+                        
                         <FormMessage />
                       </FormItem>
                     )}
