@@ -1,6 +1,41 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
+// Country labels paired with calling codes
+const COUNTRIES: { code: string; label: string }[] = [
+  { code: "1", label: "United States (+1)" },
+  { code: "44", label: "United Kingdom (+44)" },
+  { code: "33", label: "France (+33)" },
+  { code: "49", label: "Germany (+49)" },
+  { code: "61", label: "Australia (+61)" },
+  { code: "91", label: "India (+91)" },
+  { code: "86", label: "China (+86)" },
+  { code: "81", label: "Japan (+81)" },
+  { code: "52", label: "Mexico (+52)" },
+  { code: "55", label: "Brazil (+55)" },
+  { code: "82", label: "South Korea (+82)" },
+  { code: "34", label: "Spain (+34)" },
+  { code: "39", label: "Italy (+39)" },
+  { code: "31", label: "Netherlands (+31)" },
+  { code: "41", label: "Switzerland (+41)" },
+  { code: "46", label: "Sweden (+46)" },
+  { code: "47", label: "Norway (+47)" },
+  { code: "45", label: "Denmark (+45)" },
+  { code: "353", label: "Ireland (+353)" },
+  { code: "971", label: "UAE (+971)" },
+  { code: "972", label: "Israel (+972)" },
+  { code: "27", label: "South Africa (+27)" },
+  { code: "234", label: "Nigeria (+234)" },
+  { code: "254", label: "Kenya (+254)" },
+  { code: "65", label: "Singapore (+65)" },
+  { code: "852", label: "Hong Kong (+852)" },
+  { code: "64", label: "New Zealand (+64)" },
+];
+
+const COUNTRY_CODE_TO_LABEL = Object.fromEntries(
+  COUNTRIES.map((c) => [c.code, c.label])
+);
+
 // National number grouping per country calling code.
 // Total digits must equal the sum. Defaults to [3,3,4] (10 digits) when unknown.
 const FORMATS: Record<string, number[]> = {
@@ -77,7 +112,7 @@ export default function PhoneNumberInput({
   }, [cc, national]);
 
   // Refs: [ccRef, ...groupRefs]
-  const ccRef = useRef<HTMLInputElement>(null);
+  const ccSelectRef = useRef<HTMLSelectElement>(null);
   const groupRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   // Split national digits into groups for display
@@ -105,11 +140,10 @@ export default function PhoneNumberInput({
     }
   };
 
-  const handleCcChange = (raw: string) => {
-    const d = onlyDigits(raw).slice(0, 4);
-    setCc(d);
+  const handleCcChange = (newCc: string) => {
+    setCc(newCc);
     // If new cc shrinks national capacity, trim it
-    const newTotal = (FORMATS[d] || [3, 3, 4]).reduce((a, b) => a + b, 0);
+    const newTotal = (FORMATS[newCc] || [3, 3, 4]).reduce((a, b) => a + b, 0);
     if (national.length > newTotal) setNational(national.slice(0, newTotal));
   };
 
@@ -140,11 +174,11 @@ export default function PhoneNumberInput({
     if (e.key === "Backspace" && selStart === 0 && !el.value) {
       e.preventDefault();
       if (idx > 0) focusGroup(idx - 1, true);
-      else ccRef.current?.focus();
+      else ccSelectRef.current?.focus();
     } else if (e.key === "ArrowLeft" && selStart === 0) {
       e.preventDefault();
       if (idx > 0) focusGroup(idx - 1, true);
-      else ccRef.current?.focus();
+      else ccSelectRef.current?.focus();
     } else if (e.key === "ArrowRight" && selStart === el.value.length) {
       e.preventDefault();
       if (idx < groups.length - 1) focusGroup(idx + 1, false);
@@ -173,54 +207,69 @@ export default function PhoneNumberInput({
   };
 
   const boxBase = cn(
-    "h-11 text-center rounded-md border bg-[#0A0A0A] text-[#FFFFFF] placeholder:text-[#444444]",
+    "h-11 rounded-md border bg-[#0A0A0A] text-[#FFFFFF] placeholder:text-[#444444]",
     "focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40",
     "disabled:opacity-50 disabled:cursor-not-allowed",
     hasError ? "border-red-500/50" : "border-[#2A2A2A]"
   );
 
+  const selectBase = cn(
+    boxBase,
+    "appearance-none pl-2 pr-7 text-sm font-medium cursor-pointer"
+  );
+
   return (
     <div className="flex items-center gap-1.5 flex-wrap" id={id}>
-      {/* Country code */}
+      {/* Country code dropdown */}
       <div className="flex items-center gap-1">
         <span className="text-[#FFFFFF] text-base font-medium select-none">+</span>
-        <input
-          ref={ccRef}
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel-country-code"
-          aria-label="Country code"
-          value={cc}
-          disabled={disabled}
-          maxLength={4}
-          onChange={(e) => handleCcChange(e.target.value)}
-          onPaste={handlePaste}
-          onKeyDown={(e) => {
-            if (
-              e.key === "ArrowRight" &&
-              (e.currentTarget.selectionStart ?? 0) === e.currentTarget.value.length
-            ) {
-              e.preventDefault();
-              focusGroup(0, false);
-            }
-          }}
-          onKeyUp={(e) => {
-            // When user has typed a known full code, jump to first group
-            const knownLens = Object.keys(FORMATS).map((k) => k.length);
-            const maxLen = Math.max(...knownLens);
-            if (cc.length >= maxLen) focusGroup(0, false);
-            else if (cc.length >= 1 && FORMATS[cc] && !/^(1|3|4|5|6|7|8|9)$/.test(e.key)) {
-              // If exact known code typed and next char wouldn't extend it, advance
-              const couldExtend = Object.keys(FORMATS).some(
-                (k) => k.length > cc.length && k.startsWith(cc)
-              );
-              if (!couldExtend) focusGroup(0, false);
-            }
-          }}
-          className={cn(boxBase, "w-16 px-1")}
-          placeholder="1"
-        />
+        <div className="relative">
+          <select
+            ref={ccSelectRef}
+            aria-label="Country code"
+            value={cc}
+            disabled={disabled}
+            onChange={(e) => {
+              handleCcChange(e.target.value);
+              requestAnimationFrame(() => focusGroup(0, false));
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowRight" || e.key === "Tab") {
+                e.preventDefault();
+                focusGroup(0, false);
+              }
+            }}
+            className={selectBase}
+          >
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code}
+              </option>
+            ))}
+          </select>
+          {/* Custom chevron */}
+          <svg
+            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#888888]"
+            width="10"
+            height="6"
+            viewBox="0 0 10 6"
+            fill="none"
+          >
+            <path
+              d="M1 1L5 5L9 1"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       </div>
+
+      {/* Country label beside the dropdown */}
+      <span className="text-[#999999] text-xs select-none mr-1 hidden sm:inline">
+        {COUNTRY_CODE_TO_LABEL[cc] || ""}
+      </span>
 
       {/* National digit groups separated by dashes */}
       {groups.map((len, idx) => (
@@ -237,7 +286,7 @@ export default function PhoneNumberInput({
             onChange={(e) => handleGroupChange(idx, e.target.value)}
             onKeyDown={(e) => handleGroupKeyDown(idx, e)}
             onPaste={handlePaste}
-            className={cn(boxBase, "px-1")}
+            className={cn(boxBase, "text-center px-1")}
             style={{ width: `${Math.max(2.25, len * 0.95)}rem` }}
             placeholder={"•".repeat(len)}
           />
