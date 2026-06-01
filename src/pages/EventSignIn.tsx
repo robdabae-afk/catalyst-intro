@@ -95,7 +95,7 @@ const EventSignIn = () => {
               </div>
               <h2 className="text-xl font-semibold">You're checked in!</h2>
               <p className="mt-2 text-sm text-[#AAAAAA]">
-                Welcome. Enjoy the event — our team will be in touch.
+                Welcome. Grab a drink & enjoy the event!
               </p>
             </div>
           ) : (
