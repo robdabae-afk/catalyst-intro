@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import PhoneNumberInput from "@/components/PhoneNumberInput";
 
 const schema = z.object({
   full_name: z
@@ -158,27 +159,24 @@ const EventSignIn = () => {
                   <FormField
                     control={form.control}
                     name="phone"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className="text-[#FFFFFF]">Phone Number</FormLabel>
                         <FormControl>
-                          <Input
-                            type="tel"
-                            inputMode="tel"
-                            placeholder="+1 555 555 5555"
-                            autoComplete="tel"
-                            maxLength={20}
-                            {...field}
-                            className="bg-[#0A0A0A] border-[#2A2A2A] text-[#FFFFFF] placeholder:text-[#555555] h-11"
+                          <PhoneNumberInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            hasError={!!fieldState.error}
                           />
                         </FormControl>
                         <p className="text-[11px] text-[#666666]">
-                          Include your country code (e.g. +1 for US, +44 for UK).
+                          Enter your country code first (e.g. 1 for US, 44 for UK), then your number.
                         </p>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
 
                   <FormField
                     control={form.control}
