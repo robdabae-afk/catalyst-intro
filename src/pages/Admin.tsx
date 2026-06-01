@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -29,6 +29,7 @@ import { AdminRevenueTracker } from "@/components/AdminRevenueTracker";
 import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
+import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -483,7 +484,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10 max-w-6xl">
+          <TabsList className="grid w-full grid-cols-13 max-w-7xl" style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))" }}>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
@@ -528,11 +529,20 @@ const Admin = () => {
               <Download className="w-4 h-4" />
               Deck Leads
             </TabsTrigger>
+            <TabsTrigger value="event-attendees" className="flex items-center gap-2">
+              <CalendarDays className="w-4 h-4" />
+              Events
+            </TabsTrigger>
             <TabsTrigger value="test-data" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Test Data
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="event-attendees">
+            <AdminEventAttendeesPanel />
+          </TabsContent>
+
 
           <TabsContent value="analytics">
             <AdminAnalyticsPanel />
