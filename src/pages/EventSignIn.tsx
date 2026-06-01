@@ -26,11 +26,10 @@ const schema = z.object({
     .max(120, { message: "Name must be less than 120 characters." })
     .regex(/^[\p{L}\p{M}'\-.\s]+$/u, { message: "Name contains invalid characters." }),
   email: z
-    .union([
-      z.string().email({ message: "Please enter a valid email address." }),
-      z.literal(""),
-    ])
-    .optional(),
+    .string()
+    .trim()
+    .email({ message: "Please enter a valid email address." })
+    .max(255, { message: "Email must be less than 255 characters." }),
   phone: z
     .string()
     .trim()
@@ -62,7 +61,7 @@ const EventSignIn = () => {
         .from("event_attendees")
         .insert({
           full_name: values.full_name,
-          email: values.email || null,
+          email: values.email,
           phone: values.phone,
           consent_accepted: true,
         });
@@ -150,7 +149,7 @@ const EventSignIn = () => {
                             className="bg-[#0A0A0A] border-[#2A2A2A] text-[#FFFFFF] placeholder:text-[#555555] h-11"
                           />
                         </FormControl>
-                        <p className="text-[11px] text-[#666666]">Optional but recommended.</p>
+                        
                         <FormMessage />
                       </FormItem>
                     )}
