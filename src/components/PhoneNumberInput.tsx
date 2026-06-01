@@ -219,82 +219,84 @@ export default function PhoneNumberInput({
   );
 
   return (
-    <div className="flex items-center gap-1.5 flex-wrap" id={id}>
-      {/* Country code dropdown */}
-      <div className="flex items-center gap-1">
-        <span className="text-[#FFFFFF] text-base font-medium select-none">+</span>
-        <div className="relative">
-          <select
-            ref={ccSelectRef}
-            aria-label="Country code"
-            value={cc}
-            disabled={disabled}
-            onChange={(e) => {
-              handleCcChange(e.target.value);
-              requestAnimationFrame(() => focusGroup(0, false));
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowRight" || e.key === "Tab") {
-                e.preventDefault();
-                focusGroup(0, false);
-              }
-            }}
-            className={selectBase}
-          >
-            {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.code}
-              </option>
-            ))}
-          </select>
-          {/* Custom chevron */}
-          <svg
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#888888]"
-            width="10"
-            height="6"
-            viewBox="0 0 10 6"
-            fill="none"
-          >
-            <path
-              d="M1 1L5 5L9 1"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+    <div className="space-y-1.5" id={id}>
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Country code dropdown */}
+        <div className="flex items-center gap-1">
+          <span className="text-[#FFFFFF] text-base font-medium select-none">+</span>
+          <div className="relative">
+            <select
+              ref={ccSelectRef}
+              aria-label="Country code"
+              value={cc}
+              disabled={disabled}
+              onChange={(e) => {
+                handleCcChange(e.target.value);
+                requestAnimationFrame(() => focusGroup(0, false));
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowRight" || e.key === "Tab") {
+                  e.preventDefault();
+                  focusGroup(0, false);
+                }
+              }}
+              className={selectBase}
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code}
+                </option>
+              ))}
+            </select>
+            {/* Custom chevron */}
+            <svg
+              className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#888888]"
+              width="10"
+              height="6"
+              viewBox="0 0 10 6"
+              fill="none"
+            >
+              <path
+                d="M1 1L5 5L9 1"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
         </div>
+
+        {/* National digit groups separated by dashes */}
+        {groups.map((len, idx) => (
+          <div key={idx} className="flex items-center gap-1.5">
+            <input
+              ref={(el) => (groupRefs.current[idx] = el)}
+              type="tel"
+              inputMode="numeric"
+              autoComplete="off"
+              aria-label={`Phone digits group ${idx + 1}`}
+              value={groupValues[idx]}
+              disabled={disabled}
+              maxLength={len}
+              onChange={(e) => handleGroupChange(idx, e.target.value)}
+              onKeyDown={(e) => handleGroupKeyDown(idx, e)}
+              onPaste={handlePaste}
+              className={cn(boxBase, "text-center px-1")}
+              style={{ width: `${Math.max(2.25, len * 0.95)}rem` }}
+              placeholder={"•".repeat(len)}
+            />
+            {idx < groups.length - 1 && (
+              <span className="text-[#666666] select-none">–</span>
+            )}
+          </div>
+        ))}
       </div>
 
-      {/* Country label beside the dropdown */}
-      <span className="text-[#999999] text-xs select-none mr-1 hidden sm:inline">
+      {/* Country label on its own line below the fields */}
+      <div className="text-[#999999] text-xs select-none">
         {COUNTRY_CODE_TO_LABEL[cc] || ""}
-      </span>
-
-      {/* National digit groups separated by dashes */}
-      {groups.map((len, idx) => (
-        <div key={idx} className="flex items-center gap-1.5">
-          <input
-            ref={(el) => (groupRefs.current[idx] = el)}
-            type="tel"
-            inputMode="numeric"
-            autoComplete="off"
-            aria-label={`Phone digits group ${idx + 1}`}
-            value={groupValues[idx]}
-            disabled={disabled}
-            maxLength={len}
-            onChange={(e) => handleGroupChange(idx, e.target.value)}
-            onKeyDown={(e) => handleGroupKeyDown(idx, e)}
-            onPaste={handlePaste}
-            className={cn(boxBase, "text-center px-1")}
-            style={{ width: `${Math.max(2.25, len * 0.95)}rem` }}
-            placeholder={"•".repeat(len)}
-          />
-          {idx < groups.length - 1 && (
-            <span className="text-[#666666] select-none">–</span>
-          )}
-        </div>
-      ))}
+      </div>
     </div>
   );
 }
