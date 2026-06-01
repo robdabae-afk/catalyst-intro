@@ -134,6 +134,29 @@ const EventSignIn = () => {
 
                   <FormField
                     control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#FFFFFF]">Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            inputMode="email"
+                            placeholder="jane@example.com"
+                            autoComplete="email"
+                            maxLength={255}
+                            {...field}
+                            className="bg-[#0A0A0A] border-[#2A2A2A] text-[#FFFFFF] placeholder:text-[#555555] h-11"
+                          />
+                        </FormControl>
+                        <p className="text-[11px] text-[#666666]">Optional but recommended.</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
