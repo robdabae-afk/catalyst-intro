@@ -30,6 +30,7 @@ import Concierge from "./pages/Concierge";
 import Waitlist from "./pages/Waitlist";
 import EarlyAccess from "./pages/EarlyAccess";
 import FounderProfileInput from "./pages/FounderProfileInput";
+import EventSignIn from "./pages/EventSignIn";
 import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
