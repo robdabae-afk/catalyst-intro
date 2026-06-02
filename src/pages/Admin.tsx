@@ -71,6 +71,8 @@ const Admin = () => {
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
   const [denyDialogUser, setDenyDialogUser] = useState<UserWithStatus | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [addingAdmin, setAddingAdmin] = useState(false);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -250,6 +252,56 @@ const Admin = () => {
       });
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const revokeAdmin = async (userId: string) => {
+    if (!confirm("Remove admin privileges from this user?")) return;
+    setActionLoading(userId);
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', 'admin');
+      if (error) throw error;
+      toast({ title: "Admin role revoked" });
+      loadUsers();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error revoking admin", description: error.message });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const addAdminByEmail = async () => {
+    const email = adminEmail.trim().toLowerCase();
+    if (!email) return;
+    setAddingAdmin(true);
+    try {
+      const { data: profile, error: lookupErr } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .ilike('email', email)
+        .maybeSingle();
+      if (lookupErr) throw lookupErr;
+      if (!profile) {
+        toast({ variant: "destructive", title: "User not found", description: `No account with email ${email}. They must sign up first.` });
+        return;
+      }
+      // Ensure they have base 'user' role too (so they're approved)
+      await supabase.from('user_roles').insert({ user_id: profile.id, role: 'user' });
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ user_id: profile.id, role: 'admin' });
+      if (error && !error.message.toLowerCase().includes('duplicate')) throw error;
+      toast({ title: "Admin added", description: `${profile.name || profile.email} is now an admin.` });
+      setAdminEmail("");
+      loadUsers();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error adding admin", description: error.message });
+    } finally {
+      setAddingAdmin(false);
     }
   };
 
@@ -569,6 +621,31 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
+            {/* Add Admin by Email */}
+            <div className="bg-card rounded-lg border border-border shadow-sm p-4">
+              <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
+                <Crown className="w-5 h-5 text-amber-500" />
+                Add Admin
+              </h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                Grant admin privileges to an existing user by email. The user must have signed up first.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="user@example.com"
+                  className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm"
+                  onKeyDown={(e) => { if (e.key === 'Enter') addAdminByEmail(); }}
+                />
+                <Button onClick={addAdminByEmail} disabled={addingAdmin || !adminEmail.trim()}>
+                  <Crown className="w-4 h-4 mr-1" />
+                  {addingAdmin ? "Adding..." : "Make Admin"}
+                </Button>
+              </div>
+            </div>
+
             {/* Pending Approvals */}
             {pendingUsers.length > 0 && (
               <div>
@@ -872,6 +949,18 @@ const Admin = () => {
                                   Revoke
                                 </Button>
                               </>
+                            )}
+                            {status === 'admin' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => revokeAdmin(user.id)}
+                                disabled={actionLoading === user.id}
+                                className="text-red-500 border-red-500/50 hover:bg-red-500/10"
+                              >
+                                <Crown className="w-4 h-4 mr-1" />
+                                Revoke Admin
+                              </Button>
                             )}
                           </TableCell>
                         </TableRow>
