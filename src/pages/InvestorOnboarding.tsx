@@ -196,90 +196,58 @@ const InvestorOnboarding = () => {
     }
 
     try {
-      // Sign up user
+      // Sign up user. Onboarding fields are sent as auth metadata so the
+      // handle_new_user database trigger can create the profile + investor
+      // profile rows server-side (works even without an active session).
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
-            name: formData.name
-          }
-        }
+            name: formData.name,
+            user_type: 'investor',
+            linkedin_url: formData.linkedinUrl || null,
+            legal_accepted_at: new Date().toISOString(),
+            legal_accepted_ip: userIp,
+            referral_code: referralValid ? referralCode.toUpperCase() : null,
+            // investor fields
+            firm_name: formData.firmName || null,
+            position: formData.position || null,
+            investment_thesis: formData.investmentThesis || null,
+            typical_check_size: formData.checkSize || null,
+            preferred_stage: formData.preferredStage || null,
+            sectors_of_interest: selectedSectors,
+            location: formData.location || null,
+            portfolio_link: formData.portfolioLink || null,
+            investor_type: formData.investorType || null,
+            investment_count: formData.investmentCount || null,
+            notable_portfolio: formData.notablePortfolio || null,
+            accreditation_status: formData.accreditationStatus || null,
+          },
+        },
       });
 
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create user");
 
-      // Upload avatar and banner if selected
-      const avatarUrl = await uploadAvatar(authData.user.id);
-      const bannerUrl = await uploadBanner(authData.user.id);
-
-      // Create profile with legal acceptance
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          user_type: 'investor',
-          name: formData.name,
-          email: formData.email,
-          avatar_url: avatarUrl,
-          linkedin_url: formData.linkedinUrl || null,
-          referred_by: referralValid ? (await supabase
-            .from('profiles')
-            .select('id')
-            .eq('referral_code', referralCode.toUpperCase())
-            .single()).data?.id : null,
-          legal_accepted_at: new Date().toISOString(),
-          legal_accepted_ip: userIp
-        } as any);
-
-      if (profileError) throw profileError;
-
-      // If referred by someone, create the referral record
-      if (referralValid && referralCode) {
-        const { data: referrer } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('referral_code', referralCode.toUpperCase())
-          .single();
-
-        if (referrer) {
-          await supabase.from('referrals').insert({
-            referrer_id: referrer.id,
-            referred_user_id: authData.user.id,
-            referral_code: referralCode.toUpperCase(),
-            status: 'pending',
-            referred_user_type: 'investor'
-          } as any);
+      // Best-effort uploads — only succeed if a session exists.
+      try {
+        const avatarUrl = await uploadAvatar(authData.user.id);
+        const bannerUrl = await uploadBanner(authData.user.id);
+        if (avatarUrl) {
+          await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', authData.user.id);
         }
+        if (bannerUrl) {
+          await supabase.from('investor_profiles').update({ banner_url: bannerUrl }).eq('profile_id', authData.user.id);
+        }
+      } catch (uploadErr) {
+        console.warn('Post-signup uploads skipped:', uploadErr);
       }
-
-      // Create investor profile
-      const { error: investorError } = await supabase
-        .from('investor_profiles')
-        .insert({
-          profile_id: authData.user.id,
-          firm_name: formData.firmName || null,
-          position: formData.position || null,
-          investment_thesis: formData.investmentThesis || null,
-          typical_check_size: formData.checkSize || null,
-          preferred_stage: formData.preferredStage || null,
-          sectors_of_interest: selectedSectors,
-          location: formData.location || null,
-          portfolio_link: formData.portfolioLink || null,
-          banner_url: bannerUrl,
-          investor_type: formData.investorType || null,
-          investment_count: formData.investmentCount ? parseInt(formData.investmentCount) : null,
-          notable_portfolio: formData.notablePortfolio || null,
-          accreditation_status: formData.accreditationStatus || null
-        });
-
-      if (investorError) throw investorError;
 
       toast({
         title: "Profile created!",
-        description: "Choose how you'd like to access Catalyst.",
+        description: "Check your email to confirm, then choose how you'd like to access Catalyst.",
       });
 
       setAccessStep(true);
@@ -293,6 +261,7 @@ const InvestorOnboarding = () => {
       setLoading(false);
     }
   };
+
 
   if (accessStep) {
     return (
