@@ -950,6 +950,18 @@ const Admin = () => {
                                 </Button>
                               </>
                             )}
+                            {status === 'admin' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => revokeAdmin(user.id)}
+                                disabled={actionLoading === user.id}
+                                className="text-red-500 border-red-500/50 hover:bg-red-500/10"
+                              >
+                                <Crown className="w-4 h-4 mr-1" />
+                                Revoke Admin
+                              </Button>
+                            )}
                           </TableCell>
                         </TableRow>
                       );
