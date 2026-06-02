@@ -71,6 +71,8 @@ const Admin = () => {
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
   const [denyDialogUser, setDenyDialogUser] = useState<UserWithStatus | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [addingAdmin, setAddingAdmin] = useState(false);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
