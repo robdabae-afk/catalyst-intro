@@ -312,116 +312,83 @@ const FounderOnboarding = () => {
     }
 
     try {
-      // Sign up user
+      // Sign up user. All onboarding fields are passed as auth metadata so a
+      // database trigger (handle_new_user) can create the profile + founder
+      // profile rows server-side — required because email confirmation means
+      // no session exists yet to satisfy RLS on direct inserts.
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/dashboard`,
           data: {
-            name: formData.name
-          }
-        }
+            name: formData.name,
+            user_type: 'founder',
+            linkedin_url: formData.linkedinUrl || null,
+            legal_accepted_at: new Date().toISOString(),
+            legal_accepted_ip: userIp,
+            referral_code: referralValid ? referralCode.toUpperCase() : null,
+            // founder fields
+            startup_name: formData.startupName,
+            one_liner: formData.oneLiner,
+            industry: selectedIndustries,
+            stage: formData.stage || null,
+            traction: formData.traction || null,
+            pitch_deck_url: formData.pitchDeckUrl || null,
+            pitch_deck_visibility: pitchDeckVisibility,
+            preferred_city: formData.preferredCity || null,
+            company_state: formData.companyState || null,
+            company_address: formData.companyAddress || null,
+            funding_amount: formData.fundingAmount || null,
+            mrr: formData.mrr || null,
+            backed_by: formData.backedBy || null,
+            ein_number: formData.einNumber || null,
+          },
+        },
       });
 
       if (authError) throw authError;
       if (!authData.user) throw new Error("Failed to create user");
 
-      // Upload avatar, banner, and video if selected
-      const avatarUrl = await uploadAvatar(authData.user.id);
-      const bannerUrl = await uploadBanner(authData.user.id);
-      const uploadedVideoUrl = await uploadVideo(authData.user.id);
+      // Best-effort uploads (only succeed if a session is present, e.g. when
+      // email auto-confirm is on). Otherwise the user can upload after signing
+      // in for the first time.
+      try {
+        const avatarUrl = await uploadAvatar(authData.user.id);
+        const bannerUrl = await uploadBanner(authData.user.id);
+        const uploadedVideoUrl = await uploadVideo(authData.user.id);
+        const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
 
-      // Use uploaded video URL if available, otherwise use the external URL from form
-      const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
-
-      // Upload docs
-      let incDocUrl = null;
-      if (incDocFile) {
-        incDocUrl = await uploadDocument(authData.user.id, incDocFile, 'incorporation');
-      }
-
-      const financialUrls = [];
-      for (const file of financialFiles) {
-        const url = await uploadDocument(authData.user.id, file, 'financials');
-        if (url) financialUrls.push(url);
-      }
-
-      // Create profile with legal acceptance
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          user_type: 'founder',
-          name: formData.name,
-          email: formData.email,
-          avatar_url: avatarUrl,
-          linkedin_url: formData.linkedinUrl || null,
-          referred_by: referralValid ? (await supabase
-            .from('profiles')
-            .select('id')
-            .eq('referral_code', referralCode.toUpperCase())
-            .single()).data?.id : null,
-          legal_accepted_at: new Date().toISOString(),
-          legal_accepted_ip: userIp
-        } as any);
-
-      if (profileError) throw profileError;
-
-      // If referred by someone, create the referral record
-      if (referralValid && referralCode) {
-        const { data: referrer } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('referral_code', referralCode.toUpperCase())
-          .single();
-
-        if (referrer) {
-          await supabase.from('referrals').insert({
-            referrer_id: referrer.id,
-            referred_user_id: authData.user.id,
-            referral_code: referralCode.toUpperCase(),
-            status: 'pending',
-            referred_user_type: 'founder'
-          } as any);
+        let incDocUrl: string | null = null;
+        if (incDocFile) {
+          incDocUrl = await uploadDocument(authData.user.id, incDocFile, 'incorporation');
         }
+        const financialUrls: string[] = [];
+        for (const file of financialFiles) {
+          const url = await uploadDocument(authData.user.id, file, 'financials');
+          if (url) financialUrls.push(url);
+        }
+
+        if (avatarUrl) {
+          await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', authData.user.id);
+        }
+        const founderPatch: Record<string, unknown> = {};
+        if (bannerUrl) founderPatch.banner_url = bannerUrl;
+        if (finalVideoUrl) founderPatch.video_url = finalVideoUrl;
+        if (incDocUrl) founderPatch.incorporation_doc_url = incDocUrl;
+        if (financialUrls.length > 0) founderPatch.financial_statement_urls = financialUrls;
+        if (Object.keys(founderPatch).length > 0) {
+          await supabase.from('founder_profiles').update(founderPatch).eq('profile_id', authData.user.id);
+        }
+      } catch (uploadErr) {
+        console.warn('Post-signup uploads skipped:', uploadErr);
       }
-
-      // Create founder profile
-      const { error: founderError } = await supabase
-        .from('founder_profiles')
-        .insert({
-          profile_id: authData.user.id,
-          startup_name: formData.startupName,
-          company_name: formData.startupName,
-          one_liner: formData.oneLiner,
-          industry: selectedIndustries,
-          stage: formData.stage || null,
-          traction: formData.traction || null,
-          pitch_deck_url: formData.pitchDeckUrl || null,
-          pitch_deck_visibility: pitchDeckVisibility,
-          preferred_city: formData.preferredCity || null,
-          company_state: formData.companyState || null,
-          company_address: formData.companyAddress || null,
-          banner_url: bannerUrl,
-          video_url: finalVideoUrl,
-          funding_amount: formData.fundingAmount || null,
-          seeking: formData.fundingAmount || null,
-          mrr: formData.mrr || null,
-          backed_by: formData.backedBy || null,
-          ein_number: formData.einNumber || null,
-          location: formData.location || null,
-          incorporation_doc_url: incDocUrl,
-          financial_statement_urls: financialUrls.length > 0 ? financialUrls : null
-        });
-
-      if (founderError) throw founderError;
 
       setCreatedUserId(authData.user.id);
 
       toast({
         title: "Profile created!",
-        description: "Choose how you'd like to access Catalyst.",
+        description: "Check your email to confirm, then choose how you'd like to access Catalyst.",
       });
 
       setAccessStep(true);
@@ -435,6 +402,7 @@ const FounderOnboarding = () => {
       setLoading(false);
     }
   };
+
 
   if (accessStep) {
     return (
