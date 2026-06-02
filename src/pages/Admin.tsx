@@ -255,6 +255,56 @@ const Admin = () => {
     }
   };
 
+  const revokeAdmin = async (userId: string) => {
+    if (!confirm("Remove admin privileges from this user?")) return;
+    setActionLoading(userId);
+    try {
+      const { error } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', 'admin');
+      if (error) throw error;
+      toast({ title: "Admin role revoked" });
+      loadUsers();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error revoking admin", description: error.message });
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const addAdminByEmail = async () => {
+    const email = adminEmail.trim().toLowerCase();
+    if (!email) return;
+    setAddingAdmin(true);
+    try {
+      const { data: profile, error: lookupErr } = await supabase
+        .from('profiles')
+        .select('id, name, email')
+        .ilike('email', email)
+        .maybeSingle();
+      if (lookupErr) throw lookupErr;
+      if (!profile) {
+        toast({ variant: "destructive", title: "User not found", description: `No account with email ${email}. They must sign up first.` });
+        return;
+      }
+      // Ensure they have base 'user' role too (so they're approved)
+      await supabase.from('user_roles').insert({ user_id: profile.id, role: 'user' });
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({ user_id: profile.id, role: 'admin' });
+      if (error && !error.message.toLowerCase().includes('duplicate')) throw error;
+      toast({ title: "Admin added", description: `${profile.name || profile.email} is now an admin.` });
+      setAdminEmail("");
+      loadUsers();
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error adding admin", description: error.message });
+    } finally {
+      setAddingAdmin(false);
+    }
+  };
+
   const revokeAccess = async (userId: string) => {
     setActionLoading(userId);
     try {
