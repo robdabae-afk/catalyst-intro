@@ -621,6 +621,31 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
+            {/* Add Admin by Email */}
+            <div className="bg-card rounded-lg border border-border shadow-sm p-4">
+              <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
+                <Crown className="w-5 h-5 text-amber-500" />
+                Add Admin
+              </h2>
+              <p className="text-sm text-muted-foreground mb-3">
+                Grant admin privileges to an existing user by email. The user must have signed up first.
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="user@example.com"
+                  className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm"
+                  onKeyDown={(e) => { if (e.key === 'Enter') addAdminByEmail(); }}
+                />
+                <Button onClick={addAdminByEmail} disabled={addingAdmin || !adminEmail.trim()}>
+                  <Crown className="w-4 h-4 mr-1" />
+                  {addingAdmin ? "Adding..." : "Make Admin"}
+                </Button>
+              </div>
+            </div>
+
             {/* Pending Approvals */}
             {pendingUsers.length > 0 && (
               <div>
