@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Share2, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
+import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Share2, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone, Download } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
