@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Button } from "@/components/ui/button";
-import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Share2, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone } from "lucide-react";
+import { X, ArrowUpRight, Check, Activity, Shield, Users, Globe, Target, Share2, ArrowLeft, ArrowRight, Building, Lock, Search, TrendingUp, ChevronDown, ChevronRight, DollarSign, Smartphone, Download } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -1129,14 +1129,23 @@ export default function CatalystDeck() {
                 </Link>
             </div>
 
-            <div className="absolute top-8 right-8 z-50 no-print">
+            <div className="absolute top-8 right-8 z-50 no-print flex gap-2">
+                <Button
+                    variant="ghost"
+                    onClick={() => window.print()}
+                    className="text-[#AAAAAA] hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-colors gap-2"
+                    title="Save as PDF via your browser's print dialog"
+                >
+                    <Download className="w-4 h-4" />
+                    <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">Download PDF</span>
+                </Button>
                 <Button
                     variant="ghost"
                     onClick={handleShare}
                     className="text-[#AAAAAA] hover:text-[#FFFFFF] hover:bg-[#1A1A1A] transition-colors gap-2"
                 >
                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Share2 className="w-4 h-4" />}
-                    <span className="text-xs uppercase tracking-widest font-medium">{copied ? 'Link Copied' : 'Share Deck'}</span>
+                    <span className="text-xs uppercase tracking-widest font-medium hidden sm:inline">{copied ? 'Link Copied' : 'Share Deck'}</span>
                 </Button>
             </div>
 
