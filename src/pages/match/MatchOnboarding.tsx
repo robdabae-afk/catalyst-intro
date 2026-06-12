@@ -144,7 +144,7 @@ export default function MatchOnboarding() {
 
       await reload();
       toast.success("Profile saved");
-      navigate("/match/event");
+      navigate(role === "founder" ? "/match/inbox" : "/match/event");
     } catch (err: any) {
       toast.error(err.message || "Save failed");
     } finally {
