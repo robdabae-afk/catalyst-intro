@@ -74,7 +74,12 @@ export default function MatchAdminEvents() {
             </Card>
           ))}
         </div>
+
+        <div className="pt-6 border-t border-white/10">
+          <AdminMatchAnalyticsPanel />
+        </div>
       </div>
     </MatchLayout>
+
   );
 }
