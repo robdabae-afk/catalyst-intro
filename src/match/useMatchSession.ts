@@ -15,31 +15,42 @@ export function useMatchSession() {
   const [activeEventId, setActiveEventId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const load = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { setUserId(null); setProfile(null); setLoading(false); return; }
-    setUserId(session.user.id);
+  const loadFor = async (uid: string | null) => {
+    if (!uid) { setUserId(null); setProfile(null); setActiveEventId(null); setLoading(false); return; }
+    setUserId(uid);
     const { data: prof } = await (supabase as any)
-      .from("match_profiles").select("*").eq("id", session.user.id).maybeSingle();
+      .from("match_profiles").select("*").eq("id", uid).maybeSingle();
     setProfile(prof ?? null);
 
     if (prof) {
       const { data: att } = await (supabase as any)
         .from("match_event_attendees")
         .select("event_id, match_events!inner(id, is_active, starts_at, ends_at)")
-        .eq("profile_id", session.user.id);
+        .eq("profile_id", uid);
       const active = (att ?? []).find((a: any) => {
         const e = a.match_events;
         return e?.is_active && new Date(e.starts_at) <= new Date() && new Date(e.ends_at) >= new Date();
       });
       setActiveEventId(active?.event_id ?? null);
+    } else {
+      setActiveEventId(null);
     }
     setLoading(false);
   };
 
+  const load = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    await loadFor(session?.user.id ?? null);
+  };
+
   useEffect(() => {
+    // Set up listener FIRST, defer supabase calls to avoid deadlock
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const uid = session?.user.id ?? null;
+      setTimeout(() => { loadFor(uid); }, 0);
+    });
+    // Then check existing session
     load();
-    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => sub.subscription.unsubscribe();
   }, []);
 
