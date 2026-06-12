@@ -67,15 +67,6 @@ export default function MatchAdminEvents() {
                 <div className="font-semibold">{ev.name} <span className="font-mono text-white/60 ml-2">{ev.code}</span></div>
                 <div className="text-xs text-white/50">{ev.is_active ? "Active" : "Inactive"}</div>
               </div>
-        </div>
-
-        <div className="space-y-3">
-          {events.map(ev => (
-            <Card key={ev.id} className="bg-white/5 border-white/10 p-4 text-white flex items-center justify-between">
-              <div>
-                <div className="font-semibold">{ev.name} <span className="font-mono text-white/60 ml-2">{ev.code}</span></div>
-                <div className="text-xs text-white/50">{new Date(ev.starts_at).toLocaleString()} → {new Date(ev.ends_at).toLocaleString()}</div>
-              </div>
               <Button size="sm" variant="outline" onClick={() => toggleActive(ev)}>
                 {ev.is_active ? "Deactivate" : "Activate"}
               </Button>
