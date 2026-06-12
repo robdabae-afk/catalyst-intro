@@ -39,6 +39,7 @@ import MatchDiscover from "./pages/match/MatchDiscover";
 import MatchInbox from "./pages/match/MatchInbox";
 import MatchThread from "./pages/match/MatchThread";
 import MatchAdminEvents from "./pages/match/MatchAdminEvents";
+import Unsubscribe from "./pages/Unsubscribe";
 import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
@@ -121,6 +122,8 @@ const App = () => (
           <Route path="/match/inbox" element={<MatchInbox />} />
           <Route path="/match/thread/:id" element={<MatchThread />} />
           <Route path="/match/admin" element={<MatchAdminEvents />} />
+
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
