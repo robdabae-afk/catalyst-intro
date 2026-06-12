@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +20,9 @@ export default function MatchDiscover() {
   const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [target, setTarget] = useState<any | null>(null);
+  const [checkAmount, setCheckAmount] = useState("");
+  const [openerNote, setOpenerNote] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -29,13 +35,11 @@ export default function MatchDiscover() {
 
   const load = async () => {
     if (!activeEventId || !userId) return;
-    // Attendees in this event
     const { data: attendees } = await (supabase as any)
       .from("match_event_attendees").select("profile_id").eq("event_id", activeEventId);
     let ids = (attendees ?? []).map((a: any) => a.profile_id).filter((id: string) => id !== userId);
     if (ids.length === 0) { setFounders([]); return; }
 
-    // Exclude admins from discovery
     const { data: admins } = await (supabase as any)
       .from("user_roles").select("user_id").eq("role", "admin").in("user_id", ids);
     const adminIds = new Set((admins ?? []).map((a: any) => a.user_id));
@@ -55,17 +59,36 @@ export default function MatchDiscover() {
     setInterestedIds(new Set((interests ?? []).map((i: any) => i.founder_id)));
   };
 
-  const expressInterest = async (founderId: string) => {
-    if (!userId || !activeEventId) return;
-    setBusy(founderId);
+  const openInterestDialog = (f: any) => {
+    setTarget(f);
+    setCheckAmount("");
+    setOpenerNote("");
+  };
+
+  const submitInterest = async () => {
+    if (!target || !userId || !activeEventId) return;
+    const dollars = Number(checkAmount.replace(/[, $]/g, ""));
+    if (!Number.isFinite(dollars) || dollars < 1) {
+      toast.error("Enter a valid check size in USD");
+      return;
+    }
+    setBusy(target.id);
     try {
       const { data, error } = await supabase.functions.invoke("match-express-interest", {
-        body: { event_id: activeEventId, founder_id: founderId },
+        body: {
+          event_id: activeEventId,
+          founder_id: target.id,
+          message: openerNote || undefined,
+          check_size_cents: Math.round(dollars * 100),
+        },
       });
       if (error) throw error;
       toast.success("Interest sent — chat unlocked");
-      setInterestedIds(prev => new Set([...prev, founderId]));
+      setInterestedIds(prev => new Set([...prev, target.id]));
+      const tid = target.id;
+      setTarget(null);
       if ((data as any)?.thread_id) navigate(`/match/thread/${(data as any).thread_id}`);
+      else void tid;
     } catch (err: any) {
       toast.error(err.message || "Failed");
     } finally {
@@ -121,7 +144,7 @@ export default function MatchDiscover() {
                 <Button
                   className="w-full mt-4 bg-white text-black hover:bg-white/90"
                   disabled={interestedIds.has(f.id) || busy === f.id}
-                  onClick={() => expressInterest(f.id)}
+                  onClick={() => openInterestDialog(f)}
                 >
                   {interestedIds.has(f.id) ? "Interest sent ✓" : busy === f.id ? "..." : "Express Interest"}
                 </Button>
@@ -130,6 +153,58 @@ export default function MatchDiscover() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <DialogContent className="bg-neutral-950 border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">
+              Connect with {target?.founder?.startup_name || target?.name}
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Specify the check size you'd like to offer. This is shared with the founder in chat and in their notification email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="check-size">Proposed check size (USD)</Label>
+              <div className="relative mt-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50">$</span>
+                <Input
+                  id="check-size"
+                  inputMode="numeric"
+                  value={checkAmount}
+                  onChange={(e) => setCheckAmount(e.target.value.replace(/[^\d.,]/g, ""))}
+                  placeholder="50,000"
+                  className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                />
+              </div>
+              <p className="text-xs text-white/50 mt-1">Indicative — final terms are discussed off-platform.</p>
+            </div>
+            <div>
+              <Label htmlFor="opener">Short intro note (optional)</Label>
+              <Textarea
+                id="opener"
+                value={openerNote}
+                onChange={(e) => setOpenerNote(e.target.value)}
+                placeholder="What caught your eye, what you'd like to discuss…"
+                rows={3}
+                maxLength={500}
+                className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTarget(null)} disabled={!!busy}>Cancel</Button>
+            <Button
+              onClick={submitInterest}
+              disabled={!!busy || !checkAmount}
+              className="bg-white text-black hover:bg-white/90"
+            >
+              {busy ? "Sending…" : "Send Interest"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MatchLayout>
   );
 }

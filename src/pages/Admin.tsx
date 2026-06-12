@@ -30,6 +30,7 @@ import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
 import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
+import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -585,6 +586,10 @@ const Admin = () => {
               <CalendarDays className="w-4 h-4" />
               Events
             </TabsTrigger>
+            <TabsTrigger value="match-analytics" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Match Data
+            </TabsTrigger>
             <TabsTrigger value="test-data" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Test Data
@@ -594,6 +599,11 @@ const Admin = () => {
           <TabsContent value="event-attendees">
             <AdminEventAttendeesPanel />
           </TabsContent>
+
+          <TabsContent value="match-analytics">
+            <AdminMatchAnalyticsPanel />
+          </TabsContent>
+
 
 
           <TabsContent value="analytics">

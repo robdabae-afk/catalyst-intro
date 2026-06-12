@@ -824,6 +824,7 @@ export type Database = {
       }
       match_interests: {
         Row: {
+          check_size_cents: number | null
           created_at: string
           event_id: string
           founder_id: string
@@ -832,6 +833,7 @@ export type Database = {
           message: string | null
         }
         Insert: {
+          check_size_cents?: number | null
           created_at?: string
           event_id: string
           founder_id: string
@@ -840,6 +842,7 @@ export type Database = {
           message?: string | null
         }
         Update: {
+          check_size_cents?: number | null
           created_at?: string
           event_id?: string
           founder_id?: string
