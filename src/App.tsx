@@ -111,6 +111,17 @@ const App = () => (
           <Route path="/app/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
           <Route path="/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
           <Route path="/app/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
+          {/* /match — Live event matching platform (separate accounts) */}
+          <Route path="/match" element={<MatchLanding />} />
+          <Route path="/match/auth" element={<MatchAuth />} />
+          <Route path="/match/onboarding" element={<MatchOnboarding />} />
+          <Route path="/match/profile" element={<MatchOnboarding />} />
+          <Route path="/match/event" element={<MatchEvent />} />
+          <Route path="/match/discover" element={<MatchDiscover />} />
+          <Route path="/match/inbox" element={<MatchInbox />} />
+          <Route path="/match/thread/:id" element={<MatchThread />} />
+          <Route path="/match/admin" element={<MatchAdminEvents />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
