@@ -6,6 +6,8 @@ import { useMatchSession } from "@/match/useMatchSession";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import { toast } from "sonner";
 
 export default function MatchDiscover() {
@@ -14,6 +16,7 @@ export default function MatchDiscover() {
   const [founders, setFounders] = useState<any[]>([]);
   const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -63,15 +66,35 @@ export default function MatchDiscover() {
     }
   };
 
+  const q = query.trim().toLowerCase();
+  const visible = q
+    ? founders.filter((f) => {
+        const name = (f.name || "").toLowerCase();
+        const startup = (f.founder?.startup_name || "").toLowerCase();
+        return name.includes(q) || startup.includes(q);
+      })
+    : founders;
+
   return (
     <MatchLayout>
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className="font-serif text-3xl mb-6">Founders at this event</h1>
-        {founders.length === 0 ? (
-          <p className="text-white/60">No founders have joined yet.</p>
+        <h1 className="font-serif text-3xl mb-4">Founders at this event</h1>
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by founder name or company…"
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+          />
+        </div>
+        {visible.length === 0 ? (
+          <p className="text-white/60">
+            {founders.length === 0 ? "No founders have joined yet." : "No matches for your search."}
+          </p>
         ) : (
           <div className="grid sm:grid-cols-2 gap-4">
-            {founders.map(f => (
+            {visible.map(f => (
               <Card key={f.id} className="bg-white/5 border-white/10 p-5 text-white">
                 <div className="flex items-start gap-4">
                   {f.avatar_url ? (
