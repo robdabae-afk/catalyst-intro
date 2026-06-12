@@ -19,7 +19,9 @@ export default function MatchEvent() {
     if (loading) return;
     if (!userId) { navigate("/match/auth"); return; }
     if (!profile) { navigate("/match/onboarding"); return; }
-  }, [userId, profile, loading, navigate]);
+    if (profile.role === "founder" && activeEventId) { navigate("/match/inbox", { replace: true }); return; }
+  }, [userId, profile, activeEventId, loading, navigate]);
+
 
   useEffect(() => {
     if (activeEventId) {
