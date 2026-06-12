@@ -1633,6 +1633,10 @@ export type Database = {
         Returns: boolean
       }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
+      match_is_co_attendee: {
+        Args: { _event_id: string; _user: string }
+        Returns: boolean
+      }
       match_is_thread_participant: {
         Args: { _thread: string; _user: string }
         Returns: boolean
