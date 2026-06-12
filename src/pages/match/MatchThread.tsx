@@ -112,34 +112,58 @@ export default function MatchThread() {
       <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col" style={{ height: "calc(100vh - 60px)" }}>
         <div className="flex items-center gap-3 pb-4 border-b border-white/10">
           {other?.avatar_url ? <img src={other.avatar_url} className="w-10 h-10 rounded-full object-cover" /> : <div className="w-10 h-10 rounded-full bg-white/10" />}
-          <div>
+          <div className="flex-1">
             <div className="font-semibold">{other?.name}</div>
             <div className="text-xs text-white/50 capitalize">{other?.role}</div>
           </div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="relative bg-white/5 border-white/10" title="Documents">
+                <FileText className="w-4 h-4" />
+                {docRequests.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-white text-black text-[10px] rounded-full w-4 h-4 flex items-center justify-center">{docRequests.length}</span>
+                )}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader><DialogTitle>Documents</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                {!isFounder && (
+                  <div className="flex items-center gap-2">
+                    <Select value={docType} onValueChange={setDocType}>
+                      <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.v} value={d.v}>{d.l}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Button size="sm" onClick={requestDoc}>Request</Button>
+                  </div>
+                )}
+                {docRequests.length === 0 ? (
+                  <div className="text-sm text-muted-foreground py-4 text-center">No document requests yet.</div>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {docRequests.map(req => (
+                      <Card key={req.id} className="p-3 flex items-center gap-3">
+                        <div className="flex-1 text-sm">
+                          <div className="font-medium">{DOC_TYPES.find(d => d.v === req.doc_type)?.l}</div>
+                          <Badge variant="outline" className="mt-1 capitalize">{req.status}</Badge>
+                        </div>
+                        {req.status === "pending" && isFounder && (
+                          <label className="cursor-pointer">
+                            <span className="px-3 py-1.5 bg-primary text-primary-foreground rounded text-sm">Upload</span>
+                            <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && uploadDoc(req, e.target.files[0])} />
+                          </label>
+                        )}
+                        {req.status === "fulfilled" && req.file_path && (
+                          <Button size="sm" variant="outline" onClick={() => downloadDoc(req)}>Download</Button>
+                        )}
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
-
-        {docRequests.length > 0 && (
-          <div className="py-3 border-b border-white/10 space-y-2">
-            <div className="text-xs uppercase tracking-wider text-white/50">Document Requests</div>
-            {docRequests.map(req => (
-              <Card key={req.id} className="bg-white/5 border-white/10 p-3 flex items-center gap-3 text-white">
-                <div className="flex-1 text-sm">
-                  <div className="font-medium">{DOC_TYPES.find(d => d.v === req.doc_type)?.l}</div>
-                  <Badge variant="outline" className="mt-1 capitalize">{req.status}</Badge>
-                </div>
-                {req.status === "pending" && isFounder && (
-                  <label className="cursor-pointer">
-                    <span className="px-3 py-1.5 bg-white text-black rounded text-sm">Upload</span>
-                    <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && uploadDoc(req, e.target.files[0])} />
-                  </label>
-                )}
-                {req.status === "fulfilled" && req.file_path && (
-                  <Button size="sm" variant="outline" onClick={() => downloadDoc(req)}>Download</Button>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto py-4 space-y-2">
           {messages.map(m => (
@@ -151,20 +175,11 @@ export default function MatchThread() {
           ))}
         </div>
 
-        {!isFounder && (
-          <div className="flex items-center gap-2 pb-2">
-            <Select value={docType} onValueChange={setDocType}>
-              <SelectTrigger className="w-48 bg-white/5 border-white/10"><SelectValue /></SelectTrigger>
-              <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.v} value={d.v}>{d.l}</SelectItem>)}</SelectContent>
-            </Select>
-            <Button variant="outline" size="sm" onClick={requestDoc}>Request Document</Button>
-          </div>
-        )}
-
         <form onSubmit={(e) => { e.preventDefault(); send(); }} className="flex gap-2">
           <Input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message…" className="bg-white/5 border-white/10" />
           <Button type="submit" className="bg-white text-black hover:bg-white/90">Send</Button>
         </form>
+
       </div>
     </MatchLayout>
   );
