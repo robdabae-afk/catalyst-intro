@@ -32,7 +32,14 @@ export default function MatchDiscover() {
     // Attendees in this event
     const { data: attendees } = await (supabase as any)
       .from("match_event_attendees").select("profile_id").eq("event_id", activeEventId);
-    const ids = (attendees ?? []).map((a: any) => a.profile_id).filter((id: string) => id !== userId);
+    let ids = (attendees ?? []).map((a: any) => a.profile_id).filter((id: string) => id !== userId);
+    if (ids.length === 0) { setFounders([]); return; }
+
+    // Exclude admins from discovery
+    const { data: admins } = await (supabase as any)
+      .from("user_roles").select("user_id").eq("role", "admin").in("user_id", ids);
+    const adminIds = new Set((admins ?? []).map((a: any) => a.user_id));
+    ids = ids.filter((id: string) => !adminIds.has(id));
     if (ids.length === 0) { setFounders([]); return; }
 
     const { data: profs } = await (supabase as any)
