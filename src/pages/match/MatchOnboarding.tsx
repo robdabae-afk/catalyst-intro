@@ -46,8 +46,14 @@ export default function MatchOnboarding() {
       // Determine role: existing profile > auth metadata > default founder
       const { data: { user } } = await supabase.auth.getUser();
       const metaRole = (user?.user_metadata?.match_role as "founder" | "investor") || undefined;
-      const effectiveRole = (profile?.role as any) || metaRole || "founder";
+      let pendingRole: "founder" | "investor" | undefined;
+      try {
+        const p = localStorage.getItem("match_pending_role");
+        if (p === "founder" || p === "investor") pendingRole = p;
+      } catch {}
+      const effectiveRole = (profile?.role as any) || metaRole || pendingRole || "founder";
       setRole(effectiveRole);
+      try { localStorage.removeItem("match_pending_role"); } catch {}
 
       if (profile) {
         setName(profile.name || user?.user_metadata?.match_name || "");
