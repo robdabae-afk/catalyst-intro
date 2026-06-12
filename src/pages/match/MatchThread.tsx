@@ -89,14 +89,29 @@ export default function MatchThread() {
 
   const uploadDoc = async (req: any, file: File) => {
     if (!threadId) return;
-    const path = `${threadId}/${req.id}-${file.name}`;
+    const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+    const path = `${threadId}/${req.id}-${safeName}`;
     const { error } = await supabase.storage.from("match-documents").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); return; }
-    await (supabase as any).from("match_document_requests")
+    const { error: updErr } = await (supabase as any).from("match_document_requests")
       .update({ status: "fulfilled", file_path: path, fulfilled_at: new Date().toISOString() })
       .eq("id", req.id);
+    if (updErr) { toast.error(updErr.message); return; }
     toast.success("Document shared");
+    loadDocRequests();
   };
+
+  const sendDocProactive = async (file: File) => {
+    if (!userId || !threadId || !thread) return;
+    const { data: req, error: insErr } = await (supabase as any)
+      .from("match_document_requests")
+      .insert({ thread_id: threadId, requester_id: userId, founder_id: thread.founder_id, doc_type: docType })
+      .select()
+      .single();
+    if (insErr || !req) { toast.error(insErr?.message ?? "Failed to create record"); return; }
+    await uploadDoc(req, file);
+  };
+
 
   const downloadDoc = async (req: any) => {
     if (!req.file_path) return;
