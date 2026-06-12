@@ -1,12 +1,19 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
+import { Search, Inbox, CalendarDays, UserCircle2, LogOut } from "lucide-react";
 
 interface MatchLayoutProps {
   children: ReactNode;
   showNav?: boolean;
 }
+
+const navItems = [
+  { to: "/match/discover", icon: Search, label: "Discover" },
+  { to: "/match/inbox", icon: Inbox, label: "Inbox" },
+  { to: "/match/event", icon: CalendarDays, label: "Event" },
+  { to: "/match/profile", icon: UserCircle2, label: "Profile" },
+];
 
 export const MatchLayout = ({ children, showNav = true }: MatchLayoutProps) => {
   const location = useLocation();
@@ -19,12 +26,30 @@ export const MatchLayout = ({ children, showNav = true }: MatchLayoutProps) => {
           Catalyst <span className="text-white/60">/ Match</span>
         </Link>
         {showNav && (
-          <nav className="flex items-center gap-2 text-sm">
-            <Link to="/match/discover" className={`px-3 py-1.5 rounded ${isActive("/match/discover") ? "bg-white/10" : "hover:bg-white/5"}`}>Discover</Link>
-            <Link to="/match/inbox" className={`px-3 py-1.5 rounded ${isActive("/match/inbox") ? "bg-white/10" : "hover:bg-white/5"}`}>Inbox</Link>
-            <Link to="/match/event" className={`px-3 py-1.5 rounded ${isActive("/match/event") ? "bg-white/10" : "hover:bg-white/5"}`}>Event</Link>
-            <Link to="/match/profile" className={`px-3 py-1.5 rounded ${isActive("/match/profile") ? "bg-white/10" : "hover:bg-white/5"}`}>Profile</Link>
-            <Button variant="ghost" size="sm" onClick={async () => { await supabase.auth.signOut(); window.location.href = "/match"; }}>Sign out</Button>
+          <nav className="flex items-center gap-1">
+            {navItems.map(({ to, icon: Icon, label }) => (
+              <Link
+                key={to}
+                to={to}
+                aria-label={label}
+                title={label}
+                className={`p-2 rounded-full transition ${
+                  isActive(to)
+                    ? "bg-white text-black"
+                    : "text-white/70 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+              </Link>
+            ))}
+            <button
+              aria-label="Sign out"
+              title="Sign out"
+              onClick={async () => { await supabase.auth.signOut(); window.location.href = "/match"; }}
+              className="p-2 rounded-full text-white/70 hover:bg-white/10 hover:text-white transition"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
           </nav>
         )}
       </header>
