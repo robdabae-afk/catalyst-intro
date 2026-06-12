@@ -20,6 +20,9 @@ export default function MatchDiscover() {
   const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [target, setTarget] = useState<any | null>(null);
+  const [checkAmount, setCheckAmount] = useState("");
+  const [openerNote, setOpenerNote] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -32,13 +35,11 @@ export default function MatchDiscover() {
 
   const load = async () => {
     if (!activeEventId || !userId) return;
-    // Attendees in this event
     const { data: attendees } = await (supabase as any)
       .from("match_event_attendees").select("profile_id").eq("event_id", activeEventId);
     let ids = (attendees ?? []).map((a: any) => a.profile_id).filter((id: string) => id !== userId);
     if (ids.length === 0) { setFounders([]); return; }
 
-    // Exclude admins from discovery
     const { data: admins } = await (supabase as any)
       .from("user_roles").select("user_id").eq("role", "admin").in("user_id", ids);
     const adminIds = new Set((admins ?? []).map((a: any) => a.user_id));
@@ -58,17 +59,36 @@ export default function MatchDiscover() {
     setInterestedIds(new Set((interests ?? []).map((i: any) => i.founder_id)));
   };
 
-  const expressInterest = async (founderId: string) => {
-    if (!userId || !activeEventId) return;
-    setBusy(founderId);
+  const openInterestDialog = (f: any) => {
+    setTarget(f);
+    setCheckAmount("");
+    setOpenerNote("");
+  };
+
+  const submitInterest = async () => {
+    if (!target || !userId || !activeEventId) return;
+    const dollars = Number(checkAmount.replace(/[, $]/g, ""));
+    if (!Number.isFinite(dollars) || dollars < 1) {
+      toast.error("Enter a valid check size in USD");
+      return;
+    }
+    setBusy(target.id);
     try {
       const { data, error } = await supabase.functions.invoke("match-express-interest", {
-        body: { event_id: activeEventId, founder_id: founderId },
+        body: {
+          event_id: activeEventId,
+          founder_id: target.id,
+          message: openerNote || undefined,
+          check_size_cents: Math.round(dollars * 100),
+        },
       });
       if (error) throw error;
       toast.success("Interest sent — chat unlocked");
-      setInterestedIds(prev => new Set([...prev, founderId]));
+      setInterestedIds(prev => new Set([...prev, target.id]));
+      const tid = target.id;
+      setTarget(null);
       if ((data as any)?.thread_id) navigate(`/match/thread/${(data as any).thread_id}`);
+      else void tid;
     } catch (err: any) {
       toast.error(err.message || "Failed");
     } finally {
