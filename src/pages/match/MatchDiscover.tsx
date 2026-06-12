@@ -144,7 +144,7 @@ export default function MatchDiscover() {
                 <Button
                   className="w-full mt-4 bg-white text-black hover:bg-white/90"
                   disabled={interestedIds.has(f.id) || busy === f.id}
-                  onClick={() => expressInterest(f.id)}
+                  onClick={() => openInterestDialog(f)}
                 >
                   {interestedIds.has(f.id) ? "Interest sent ✓" : busy === f.id ? "..." : "Express Interest"}
                 </Button>
@@ -153,6 +153,58 @@ export default function MatchDiscover() {
           </div>
         )}
       </div>
+
+      <Dialog open={!!target} onOpenChange={(o) => !o && setTarget(null)}>
+        <DialogContent className="bg-neutral-950 border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">
+              Connect with {target?.founder?.startup_name || target?.name}
+            </DialogTitle>
+            <DialogDescription className="text-white/60">
+              Specify the check size you'd like to offer. This is shared with the founder in chat and in their notification email.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label htmlFor="check-size">Proposed check size (USD)</Label>
+              <div className="relative mt-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/50">$</span>
+                <Input
+                  id="check-size"
+                  inputMode="numeric"
+                  value={checkAmount}
+                  onChange={(e) => setCheckAmount(e.target.value.replace(/[^\d.,]/g, ""))}
+                  placeholder="50,000"
+                  className="pl-7 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+                />
+              </div>
+              <p className="text-xs text-white/50 mt-1">Indicative — final terms are discussed off-platform.</p>
+            </div>
+            <div>
+              <Label htmlFor="opener">Short intro note (optional)</Label>
+              <Textarea
+                id="opener"
+                value={openerNote}
+                onChange={(e) => setOpenerNote(e.target.value)}
+                placeholder="What caught your eye, what you'd like to discuss…"
+                rows={3}
+                maxLength={500}
+                className="mt-1 bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTarget(null)} disabled={!!busy}>Cancel</Button>
+            <Button
+              onClick={submitInterest}
+              disabled={!!busy || !checkAmount}
+              className="bg-white text-black hover:bg-white/90"
+            >
+              {busy ? "Sending…" : "Send Interest"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MatchLayout>
   );
 }
