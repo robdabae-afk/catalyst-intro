@@ -58,7 +58,7 @@ export default function MatchEvent() {
         {event ? (
           <div className="space-y-4">
             <h1 className="font-serif text-3xl">You're in: {event.name}</h1>
-            <p className="text-white/60">Event runs until {new Date(event.ends_at).toLocaleString()}.</p>
+            <p className="text-white/60">This event is currently active.</p>
             <div className="flex gap-2">
               {profile?.role === "investor" && (
                 <Button onClick={() => navigate("/match/discover")} className="bg-white text-black hover:bg-white/90">Browse Founders</Button>
