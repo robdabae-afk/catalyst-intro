@@ -1,43 +1,33 @@
 project_id = "cpwykexuejexnpygfhlt"
 
-[functions.generate-safe-pdf]
-verify_jwt = true
-
-[functions.stripe-connect]
-verify_jwt = false
-
-[functions.manage-subscription]
-verify_jwt = true
-
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.send-admin-notification]
-verify_jwt = true
-
-[functions.create-concierge-payment]
-verify_jwt = true
-
-[functions.verify-concierge-payment]
-verify_jwt = true
-
-[functions.admin-fulfill-concierge-match]
-verify_jwt = true
-
-[functions.admin-backfill-concierge-chats]
-verify_jwt = true
-
-[functions.manage-tokens]
-verify_jwt = true
-
-[functions.send-transactional-email]
-verify_jwt = true
-
-[functions.preview-transactional-email]
-verify_jwt = false
-
-[functions.handle-email-unsubscribe]
-verify_jwt = false
-
-[functions.handle-email-suppression]
-verify_jwt = false
+[functions]
+  [functions.admin-backfill-concierge-chats]
+    verify_jwt = true
+  [functions.admin-fulfill-concierge-match]
+    verify_jwt = true
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.create-concierge-payment]
+    verify_jwt = true
+  [functions.generate-safe-pdf]
+    verify_jwt = true
+  [functions.handle-email-suppression]
+    verify_jwt = false
+  [functions.handle-email-unsubscribe]
+    verify_jwt = false
+  [functions.manage-subscription]
+    verify_jwt = true
+  [functions.manage-tokens]
+    verify_jwt = true
+  [functions.preview-transactional-email]
+    verify_jwt = false
+  [functions.send-admin-notification]
+    verify_jwt = true
+  [functions.send-transactional-email]
+    verify_jwt = true
+  [functions.stripe-connect]
+    verify_jwt = false
+  [functions.stripe-webhook]
+    verify_jwt = false
+  [functions.verify-concierge-payment]
+    verify_jwt = true
