@@ -64,14 +64,38 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (d: Props) =>
-    `${d?.investorName ?? 'An investor'} is interested in your startup`,
+    `${d?.investorName ?? 'An investor'} is interested${d?.checkSize ? ` — ${d.checkSize} proposed` : ''}`,
   displayName: 'Match — Investor Interest',
   previewData: {
     investorName: 'Jane Doe',
     eventName: 'Catalyst Demo Night',
+    checkSize: '$50,000',
     threadUrl: 'https://catalystintro.com/match/inbox',
   },
 } satisfies TemplateEntry
+
+const checkBox: React.CSSProperties = {
+  backgroundColor: '#171717',
+  border: '1px solid #262626',
+  borderRadius: '10px',
+  padding: '16px 20px',
+  margin: '20px 0',
+}
+const checkLabel: React.CSSProperties = {
+  fontSize: '12px',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  color: '#999999',
+  margin: '0 0 4px',
+}
+const checkValue: React.CSSProperties = {
+  fontSize: '22px',
+  fontWeight: 600,
+  color: '#ffffff',
+  margin: 0,
+  fontFamily: 'Georgia, "Times New Roman", serif',
+}
+
 
 const main: React.CSSProperties = {
   backgroundColor: '#ffffff',
