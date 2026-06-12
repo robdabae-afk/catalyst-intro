@@ -15,8 +15,6 @@ export default function MatchAdminEvents() {
   const [events, setEvents] = useState<any[]>([]);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
 
   useEffect(() => {
     if (loading) return;
@@ -25,7 +23,7 @@ export default function MatchAdminEvents() {
   }, [isAdmin, loading]);
 
   const load = async () => {
-    const { data } = await (supabase as any).from("match_events").select("*").order("starts_at", { ascending: false });
+    const { data } = await (supabase as any).from("match_events").select("*").order("created_at", { ascending: false });
     setEvents(data ?? []);
   };
 
@@ -33,12 +31,12 @@ export default function MatchAdminEvents() {
     e.preventDefault();
     const { data: { user } } = await supabase.auth.getUser();
     const { error } = await (supabase as any).from("match_events").insert({
-      name, code: code.toUpperCase(), starts_at: startsAt, ends_at: endsAt, created_by: user?.id, is_active: true,
+      name, code: code.toUpperCase(), created_by: user?.id, is_active: true,
     });
     if (error) toast.error(error.message);
     else {
       toast.success("Event created");
-      setName(""); setCode(""); setStartsAt(""); setEndsAt("");
+      setName(""); setCode("");
       load();
     }
   };
