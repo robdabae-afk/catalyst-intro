@@ -735,33 +735,33 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
-          ends_at: string
+          ends_at: string | null
           id: string
           is_active: boolean
           name: string
-          starts_at: string
+          starts_at: string | null
           updated_at: string
         }
         Insert: {
           code: string
           created_at?: string
           created_by?: string | null
-          ends_at: string
+          ends_at?: string | null
           id?: string
           is_active?: boolean
           name: string
-          starts_at: string
+          starts_at?: string | null
           updated_at?: string
         }
         Update: {
           code?: string
           created_at?: string
           created_by?: string | null
-          ends_at?: string
+          ends_at?: string | null
           id?: string
           is_active?: boolean
           name?: string
-          starts_at?: string
+          starts_at?: string | null
           updated_at?: string
         }
         Relationships: []
