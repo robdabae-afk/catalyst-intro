@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { MatchLayout } from "@/match/MatchLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,24 @@ export default function MatchAuth() {
       }
     } catch (err: any) {
       toast.error(err.message || "Auth failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    try {
+      // Persist chosen role so MatchOnboarding can pick it up after the OAuth round-trip
+      try { localStorage.setItem("match_pending_role", role); } catch {}
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/match/onboarding`,
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      navigate("/match/onboarding");
+    } catch (err: any) {
+      toast.error(err.message || "Google sign-in failed");
     } finally {
       setLoading(false);
     }
