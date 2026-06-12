@@ -31,6 +31,14 @@ import Waitlist from "./pages/Waitlist";
 import EarlyAccess from "./pages/EarlyAccess";
 import FounderProfileInput from "./pages/FounderProfileInput";
 import EventSignIn from "./pages/EventSignIn";
+import MatchLanding from "./pages/match/MatchLanding";
+import MatchAuth from "./pages/match/MatchAuth";
+import MatchOnboarding from "./pages/match/MatchOnboarding";
+import MatchEvent from "./pages/match/MatchEvent";
+import MatchDiscover from "./pages/match/MatchDiscover";
+import MatchInbox from "./pages/match/MatchInbox";
+import MatchThread from "./pages/match/MatchThread";
+import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
