@@ -89,14 +89,29 @@ export default function MatchThread() {
 
   const uploadDoc = async (req: any, file: File) => {
     if (!threadId) return;
-    const path = `${threadId}/${req.id}-${file.name}`;
+    const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+    const path = `${threadId}/${req.id}-${safeName}`;
     const { error } = await supabase.storage.from("match-documents").upload(path, file, { upsert: true });
     if (error) { toast.error(error.message); return; }
-    await (supabase as any).from("match_document_requests")
+    const { error: updErr } = await (supabase as any).from("match_document_requests")
       .update({ status: "fulfilled", file_path: path, fulfilled_at: new Date().toISOString() })
       .eq("id", req.id);
+    if (updErr) { toast.error(updErr.message); return; }
     toast.success("Document shared");
+    loadDocRequests();
   };
+
+  const sendDocProactive = async (file: File) => {
+    if (!userId || !threadId || !thread) return;
+    const { data: req, error: insErr } = await (supabase as any)
+      .from("match_document_requests")
+      .insert({ thread_id: threadId, requester_id: userId, founder_id: thread.founder_id, doc_type: docType })
+      .select()
+      .single();
+    if (insErr || !req) { toast.error(insErr?.message ?? "Failed to create record"); return; }
+    await uploadDoc(req, file);
+  };
+
 
   const downloadDoc = async (req: any) => {
     if (!req.file_path) return;
@@ -128,17 +143,22 @@ export default function MatchThread() {
             <DialogContent className="max-w-lg">
               <DialogHeader><DialogTitle>Documents</DialogTitle></DialogHeader>
               <div className="space-y-3">
-                {!isFounder && (
-                  <div className="flex items-center gap-2">
-                    <Select value={docType} onValueChange={setDocType}>
-                      <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
-                      <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.v} value={d.v}>{d.l}</SelectItem>)}</SelectContent>
-                    </Select>
+                <div className="flex items-center gap-2">
+                  <Select value={docType} onValueChange={setDocType}>
+                    <SelectTrigger className="flex-1"><SelectValue /></SelectTrigger>
+                    <SelectContent>{DOC_TYPES.map(d => <SelectItem key={d.v} value={d.v}>{d.l}</SelectItem>)}</SelectContent>
+                  </Select>
+                  {isFounder ? (
+                    <label className="cursor-pointer">
+                      <span className="px-3 py-1.5 bg-primary text-primary-foreground rounded text-sm whitespace-nowrap">Send</span>
+                      <input type="file" className="hidden" onChange={(e) => e.target.files?.[0] && sendDocProactive(e.target.files[0])} />
+                    </label>
+                  ) : (
                     <Button size="sm" onClick={requestDoc}>Request</Button>
-                  </div>
-                )}
+                  )}
+                </div>
                 {docRequests.length === 0 ? (
-                  <div className="text-sm text-muted-foreground py-4 text-center">No document requests yet.</div>
+                  <div className="text-sm text-muted-foreground py-4 text-center">No documents yet.</div>
                 ) : (
                   <div className="space-y-2 max-h-80 overflow-y-auto">
                     {docRequests.map(req => (
@@ -158,6 +178,7 @@ export default function MatchThread() {
                         )}
                       </Card>
                     ))}
+
                   </div>
                 )}
               </div>
