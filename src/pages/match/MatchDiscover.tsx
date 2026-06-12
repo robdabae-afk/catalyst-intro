@@ -16,6 +16,7 @@ export default function MatchDiscover() {
   const [founders, setFounders] = useState<any[]>([]);
   const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (loading) return;
