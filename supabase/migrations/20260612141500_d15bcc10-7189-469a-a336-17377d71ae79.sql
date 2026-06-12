@@ -1,0 +1,1 @@
+ALTER TABLE public.match_interests ADD COLUMN IF NOT EXISTS check_size_cents bigint;
