@@ -37,9 +37,6 @@ export default function MatchEvent() {
         .from("match_events").select("*").eq("code", code.trim().toUpperCase()).maybeSingle();
       if (error || !ev) throw new Error("Invalid event code");
       if (!ev.is_active) throw new Error("Event is not active");
-      const now = new Date();
-      if (new Date(ev.starts_at) > now) throw new Error("Event hasn't started yet");
-      if (new Date(ev.ends_at) < now) throw new Error("Event has ended");
 
       const { error: aErr } = await (supabase as any).from("match_event_attendees")
         .insert({ event_id: ev.id, profile_id: userId });
@@ -61,7 +58,7 @@ export default function MatchEvent() {
         {event ? (
           <div className="space-y-4">
             <h1 className="font-serif text-3xl">You're in: {event.name}</h1>
-            <p className="text-white/60">Event runs until {new Date(event.ends_at).toLocaleString()}.</p>
+            <p className="text-white/60">This event is currently active.</p>
             <div className="flex gap-2">
               {profile?.role === "investor" && (
                 <Button onClick={() => navigate("/match/discover")} className="bg-white text-black hover:bg-white/90">Browse Founders</Button>
