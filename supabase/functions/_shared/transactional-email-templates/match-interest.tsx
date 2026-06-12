@@ -17,17 +17,19 @@ import type { TemplateEntry } from './registry.ts'
 interface Props {
   investorName?: string
   eventName?: string
+  checkSize?: string
   threadUrl?: string
 }
 
 const Email = ({
   investorName = 'An investor',
   eventName = 'the event',
+  checkSize,
   threadUrl = 'https://catalystintro.com/match/inbox',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>{investorName} is interested in your startup</Preview>
+    <Preview>{investorName} is interested in your startup{checkSize ? ` — ${checkSize} proposed` : ''}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>You have a new match</Heading>
@@ -36,6 +38,12 @@ const Email = ({
           <strong>{eventName}</strong>. A private chat has been opened so you
           can connect.
         </Text>
+        {checkSize && (
+          <Section style={checkBox}>
+            <Text style={checkLabel}>Proposed check size</Text>
+            <Text style={checkValue}>{checkSize}</Text>
+          </Section>
+        )}
         <Section style={{ textAlign: 'center', margin: '32px 0' }}>
           <Button href={threadUrl} style={button}>
             Open Chat

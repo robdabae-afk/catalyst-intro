@@ -5,6 +5,11 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const formatCheck = (cents: number) => {
+  const dollars = Math.round(cents / 100);
+  return `$${dollars.toLocaleString()}`;
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -20,14 +25,17 @@ Deno.serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
-    const { event_id, founder_id, message } = await req.json();
+    const { event_id, founder_id, message, check_size_cents } = await req.json();
     if (!event_id || !founder_id) {
       return new Response(JSON.stringify({ error: "event_id and founder_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const checkCents = Number(check_size_cents);
+    if (!Number.isFinite(checkCents) || checkCents < 100) {
+      return new Response(JSON.stringify({ error: "A valid check size (at least $1) is required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
-    // Verify both are attendees of same active event
     const { data: ev } = await admin.from("match_events").select("*").eq("id", event_id).maybeSingle();
     if (!ev || !ev.is_active) return new Response(JSON.stringify({ error: "Event not active" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -36,32 +44,42 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Both parties must be in the event" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Upsert interest
+    const checkLabel = formatCheck(checkCents);
+
     const { data: interest, error: iErr } = await admin.from("match_interests")
-      .upsert({ event_id, investor_id: user.id, founder_id, message }, { onConflict: "event_id,investor_id,founder_id" })
+      .upsert({ event_id, investor_id: user.id, founder_id, message, check_size_cents: checkCents }, { onConflict: "event_id,investor_id,founder_id" })
       .select().single();
     if (iErr) throw iErr;
 
-    // Upsert thread
     const { data: existingThread } = await admin.from("match_threads")
       .select("*").eq("event_id", event_id).eq("investor_id", user.id).eq("founder_id", founder_id).maybeSingle();
     let thread = existingThread;
+    let threadIsNew = false;
     if (!thread) {
       const { data: newThread, error: tErr } = await admin.from("match_threads")
         .insert({ event_id, investor_id: user.id, founder_id }).select().single();
       if (tErr) throw tErr;
       thread = newThread;
+      threadIsNew = true;
     }
 
-    // Notification for founder
+    // Post the offered check size as the first system-style message in chat (only on new thread)
+    if (threadIsNew) {
+      const opener = `👋 I'd like to connect — proposed check size: ${checkLabel}.${message ? `\n\n${message}` : ""}`;
+      await admin.from("match_messages").insert({
+        thread_id: thread.id,
+        sender_id: user.id,
+        content: opener,
+      });
+    }
+
     const { data: investorProfile } = await admin.from("match_profiles").select("name").eq("id", user.id).maybeSingle();
     await admin.from("match_notifications").insert({
       user_id: founder_id,
       type: "interest",
-      payload: { thread_id: thread.id, event_id, investor_id: user.id, investor_name: investorProfile?.name, event_name: ev.name },
+      payload: { thread_id: thread.id, event_id, investor_id: user.id, investor_name: investorProfile?.name, event_name: ev.name, check_size: checkLabel },
     });
 
-    // Email notification (best effort)
     try {
       const { data: founderAuth } = await admin.auth.admin.getUserById(founder_id);
       if (founderAuth?.user?.email) {
@@ -73,6 +91,7 @@ Deno.serve(async (req) => {
             templateData: {
               investorName: investorProfile?.name ?? "An investor",
               eventName: ev.name,
+              checkSize: checkLabel,
               threadUrl: `${new URL(req.url).origin.replace("supabase.co", "lovable.app")}/match/thread/${thread.id}`,
             },
           },
