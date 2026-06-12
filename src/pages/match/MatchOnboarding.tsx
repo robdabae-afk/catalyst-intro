@@ -8,15 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { Camera } from "lucide-react";
 
 export default function MatchOnboarding() {
   const navigate = useNavigate();
-  const { userId, profile, loading } = useMatchSession();
+  const { userId, profile, loading, reload } = useMatchSession();
   const [saving, setSaving] = useState(false);
+  const [hydrating, setHydrating] = useState(true);
+  const [role, setRole] = useState<"founder" | "investor">("founder");
 
   // shared
   const [name, setName] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   // founder
   const [startupName, setStartupName] = useState("");
@@ -38,51 +42,101 @@ export default function MatchOnboarding() {
   useEffect(() => {
     if (loading) return;
     if (!userId) { navigate("/match/auth"); return; }
-    if (profile) setName(profile.name);
+    (async () => {
+      // Determine role: existing profile > auth metadata > default founder
+      const { data: { user } } = await supabase.auth.getUser();
+      const metaRole = (user?.user_metadata?.match_role as "founder" | "investor") || undefined;
+      const effectiveRole = (profile?.role as any) || metaRole || "founder";
+      setRole(effectiveRole);
+
+      if (profile) {
+        setName(profile.name || user?.user_metadata?.match_name || "");
+        setAvatarPreview(profile.avatar_url ?? null);
+      } else {
+        setName(user?.user_metadata?.match_name || "");
+      }
+
+      // Hydrate role-specific data
+      if (effectiveRole === "founder") {
+        const { data: f } = await (supabase as any)
+          .from("match_founder_profiles").select("*").eq("profile_id", userId).maybeSingle();
+        if (f) {
+          setStartupName(f.startup_name ?? "");
+          setOneLiner(f.one_liner ?? "");
+          setIndustry(Array.isArray(f.industry) ? f.industry.join(", ") : "");
+          setStage(f.stage ?? "");
+          setTraction(f.traction ?? "");
+          setFundingAmount(f.funding_amount ?? "");
+          setLocation(f.location ?? "");
+          setWebsite(f.website_url ?? "");
+        }
+      } else {
+        const { data: i } = await (supabase as any)
+          .from("match_investor_profiles").select("*").eq("profile_id", userId).maybeSingle();
+        if (i) {
+          setFirmName(i.firm_name ?? "");
+          setAccreditation((i.accreditation ?? "none") as any);
+          setAvgCheck(i.avg_check_size ?? "");
+          setPhilosophy(i.philosophy ?? "");
+        }
+      }
+      setHydrating(false);
+    })();
   }, [userId, profile, loading, navigate]);
 
-  if (loading || !userId) return <MatchLayout showNav={false}><div className="p-10 text-center text-white/60">Loading…</div></MatchLayout>;
+  if (loading || !userId || hydrating)
+    return <MatchLayout showNav={false}><div className="p-10 text-center text-white/60">Loading…</div></MatchLayout>;
 
-  // Ensure base profile exists; if none, we need role from somewhere. Default founder unless flagged.
-  const role = profile?.role || "founder";
+  const onAvatarChange = (f: File | null) => {
+    setAvatarFile(f);
+    if (f) setAvatarPreview(URL.createObjectURL(f));
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) return;
     setSaving(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
       let avatarUrl = profile?.avatar_url ?? null;
       if (avatarFile) {
-        const path = `${userId}/avatar-${Date.now()}-${avatarFile.name}`;
-        const { error } = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true });
-        if (!error) avatarUrl = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
+        const ext = avatarFile.name.split(".").pop() || "jpg";
+        const path = `${userId}/match-avatar-${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true });
+        if (upErr) throw new Error(`Avatar upload failed: ${upErr.message}`);
+        avatarUrl = supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
       }
 
-      await (supabase as any).from("match_profiles").upsert({
-        id: userId, role, name, email: (await supabase.auth.getUser()).data.user?.email, avatar_url: avatarUrl,
+      const { error: pErr } = await (supabase as any).from("match_profiles").upsert({
+        id: userId, role, name, email: user?.email, avatar_url: avatarUrl,
       });
+      if (pErr) throw new Error(`Profile save failed: ${pErr.message}`);
 
       if (role === "founder") {
         let deckUrl: string | null = null;
         if (deckFile) {
-          const path = `${userId}/deck-${Date.now()}-${deckFile.name}`;
-          const { error } = await supabase.storage.from("documents").upload(path, deckFile, { upsert: true });
-          if (!error) deckUrl = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
+          const path = `${userId}/match-deck-${Date.now()}-${deckFile.name}`;
+          const { error: dErr } = await supabase.storage.from("documents").upload(path, deckFile, { upsert: true });
+          if (dErr) throw new Error(`Deck upload failed: ${dErr.message}`);
+          deckUrl = supabase.storage.from("documents").getPublicUrl(path).data.publicUrl;
         }
-        await (supabase as any).from("match_founder_profiles").upsert({
+        const { error: fErr } = await (supabase as any).from("match_founder_profiles").upsert({
           profile_id: userId,
           startup_name: startupName,
           one_liner: oneLiner,
-          industry: industry ? industry.split(",").map(s => s.trim()) : null,
+          industry: industry ? industry.split(",").map((s) => s.trim()).filter(Boolean) : null,
           stage, traction, funding_amount: fundingAmount, location, website_url: website,
-          pitch_deck_url: deckUrl,
+          ...(deckUrl ? { pitch_deck_url: deckUrl } : {}),
         }, { onConflict: "profile_id" });
+        if (fErr) throw new Error(`Founder details save failed: ${fErr.message}`);
       } else {
-        await (supabase as any).from("match_investor_profiles").upsert({
+        const { error: iErr } = await (supabase as any).from("match_investor_profiles").upsert({
           profile_id: userId, firm_name: firmName, accreditation, avg_check_size: avgCheck, philosophy,
         }, { onConflict: "profile_id" });
+        if (iErr) throw new Error(`Investor details save failed: ${iErr.message}`);
       }
 
+      await reload();
       toast.success("Profile saved");
       navigate("/match/event");
     } catch (err: any) {
@@ -92,19 +146,44 @@ export default function MatchOnboarding() {
     }
   };
 
+  const initials = (name || "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+
   return (
     <MatchLayout showNav={false}>
       <div className="max-w-2xl mx-auto px-6 py-10">
-        <h1 className="font-serif text-3xl mb-2">Complete your {role} profile</h1>
-        <p className="text-white/60 mb-6">This is what others will see during live events.</p>
-        <form onSubmit={submit} className="space-y-5">
+        <h1 className="font-serif text-3xl mb-2">
+          {profile ? "Edit" : "Complete"} your {role} profile
+        </h1>
+        <p className="text-white/60 mb-8">This is what others will see during live events.</p>
+
+        <form onSubmit={submit} className="space-y-6">
+          {/* Profile photo — top, circular */}
+          <div className="flex flex-col items-center gap-3">
+            <label htmlFor="avatar-input" className="relative cursor-pointer group">
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-white/5 border border-white/15 flex items-center justify-center">
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Profile" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-3xl font-serif text-white/60">{initials}</span>
+                )}
+              </div>
+              <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                <Camera className="w-6 h-6 text-white" />
+              </div>
+            </label>
+            <input
+              id="avatar-input"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => onAvatarChange(e.target.files?.[0] ?? null)}
+            />
+            <span className="text-xs text-white/50">Tap photo to change</span>
+          </div>
+
           <div>
             <Label>Full Name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} required />
-          </div>
-          <div>
-            <Label>Profile Photo</Label>
-            <Input type="file" accept="image/*" onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)} />
           </div>
 
           {role === "founder" ? (
@@ -125,7 +204,7 @@ export default function MatchOnboarding() {
               <div>
                 <Label>Status</Label>
                 <div className="flex gap-2 mt-1">
-                  {(["none","accredited","institutional"] as const).map(v => (
+                  {(["none", "accredited", "institutional"] as const).map((v) => (
                     <Button type="button" key={v} variant={accreditation === v ? "default" : "outline"} onClick={() => setAccreditation(v)} className="capitalize flex-1">{v}</Button>
                   ))}
                 </div>
