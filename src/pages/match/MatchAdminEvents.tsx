@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
+import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel";
 
 export default function MatchAdminEvents() {
   const navigate = useNavigate();
@@ -73,7 +74,12 @@ export default function MatchAdminEvents() {
             </Card>
           ))}
         </div>
+
+        <div className="pt-6 border-t border-white/10">
+          <AdminMatchAnalyticsPanel />
+        </div>
       </div>
     </MatchLayout>
+
   );
 }
