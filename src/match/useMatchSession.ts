@@ -25,12 +25,9 @@ export function useMatchSession() {
     if (prof) {
       const { data: att } = await (supabase as any)
         .from("match_event_attendees")
-        .select("event_id, match_events!inner(id, is_active, starts_at, ends_at)")
+        .select("event_id, match_events!inner(id, is_active)")
         .eq("profile_id", uid);
-      const active = (att ?? []).find((a: any) => {
-        const e = a.match_events;
-        return e?.is_active && new Date(e.starts_at) <= new Date() && new Date(e.ends_at) >= new Date();
-      });
+      const active = (att ?? []).find((a: any) => a.match_events?.is_active);
       setActiveEventId(active?.event_id ?? null);
     } else {
       setActiveEventId(null);
