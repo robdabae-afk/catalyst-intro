@@ -31,6 +31,14 @@ import Waitlist from "./pages/Waitlist";
 import EarlyAccess from "./pages/EarlyAccess";
 import FounderProfileInput from "./pages/FounderProfileInput";
 import EventSignIn from "./pages/EventSignIn";
+import MatchLanding from "./pages/match/MatchLanding";
+import MatchAuth from "./pages/match/MatchAuth";
+import MatchOnboarding from "./pages/match/MatchOnboarding";
+import MatchEvent from "./pages/match/MatchEvent";
+import MatchDiscover from "./pages/match/MatchDiscover";
+import MatchInbox from "./pages/match/MatchInbox";
+import MatchThread from "./pages/match/MatchThread";
+import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import { AuthGuard } from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
@@ -103,6 +111,17 @@ const App = () => (
           <Route path="/app/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
           <Route path="/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
           <Route path="/app/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
+          {/* /match — Live event matching platform (separate accounts) */}
+          <Route path="/match" element={<MatchLanding />} />
+          <Route path="/match/auth" element={<MatchAuth />} />
+          <Route path="/match/onboarding" element={<MatchOnboarding />} />
+          <Route path="/match/profile" element={<MatchOnboarding />} />
+          <Route path="/match/event" element={<MatchEvent />} />
+          <Route path="/match/discover" element={<MatchDiscover />} />
+          <Route path="/match/inbox" element={<MatchInbox />} />
+          <Route path="/match/thread/:id" element={<MatchThread />} />
+          <Route path="/match/admin" element={<MatchAdminEvents />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
