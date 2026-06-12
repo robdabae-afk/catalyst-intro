@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export default function MatchAdminEvents() {
   const navigate = useNavigate();
-  const { isAdmin, loading } = useIsAdmin();
+  const { isAdmin, isLoading: loading } = useIsAdmin();
   const [events, setEvents] = useState<any[]>([]);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
