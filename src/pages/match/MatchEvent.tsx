@@ -37,9 +37,6 @@ export default function MatchEvent() {
         .from("match_events").select("*").eq("code", code.trim().toUpperCase()).maybeSingle();
       if (error || !ev) throw new Error("Invalid event code");
       if (!ev.is_active) throw new Error("Event is not active");
-      const now = new Date();
-      if (new Date(ev.starts_at) > now) throw new Error("Event hasn't started yet");
-      if (new Date(ev.ends_at) < now) throw new Error("Event has ended");
 
       const { error: aErr } = await (supabase as any).from("match_event_attendees")
         .insert({ event_id: ev.id, profile_id: userId });
