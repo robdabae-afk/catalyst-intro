@@ -56,10 +56,17 @@ export default function MatchAdminEvents() {
           <form onSubmit={create} className="grid sm:grid-cols-2 gap-3 bg-white/5 border border-white/10 p-4 rounded">
             <div><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
             <div><Label>Code</Label><Input value={code} onChange={(e) => setCode(e.target.value.toUpperCase())} required /></div>
-            <div><Label>Starts At</Label><Input type="datetime-local" value={startsAt} onChange={(e) => setStartsAt(e.target.value)} required /></div>
-            <div><Label>Ends At</Label><Input type="datetime-local" value={endsAt} onChange={(e) => setEndsAt(e.target.value)} required /></div>
             <Button type="submit" className="sm:col-span-2 bg-white text-black hover:bg-white/90">Create Event</Button>
           </form>
+        </div>
+
+        <div className="space-y-3">
+          {events.map(ev => (
+            <Card key={ev.id} className="bg-white/5 border-white/10 p-4 text-white flex items-center justify-between">
+              <div>
+                <div className="font-semibold">{ev.name} <span className="font-mono text-white/60 ml-2">{ev.code}</span></div>
+                <div className="text-xs text-white/50">{ev.is_active ? "Active" : "Inactive"}</div>
+              </div>
         </div>
 
         <div className="space-y-3">
