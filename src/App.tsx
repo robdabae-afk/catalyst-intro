@@ -59,7 +59,9 @@ const App = () => (
           <Route path="/event" element={<EventSignIn />} />
 
           {/* Platform marketing/landing now lives at /app */}
-          <Route path="/app" element={<Landing />} />
+          <Route path="/app" element={<AppLanding />} />
+          <Route path="/app/signup" element={<AppSignup />} />
+          <Route path="/app/legacy" element={<Landing />} />
 
           {/* Public routes (kept at original paths AND mirrored under /app) */}
           <Route path="/auth" element={<Auth />} />
