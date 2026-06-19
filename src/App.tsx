@@ -3,14 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./pages/Landing";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
-import FounderOnboarding from "./pages/FounderOnboarding";
-import InvestorOnboarding from "./pages/InvestorOnboarding";
 import Matches from "./pages/Matches";
 import CoffeeChat from "./pages/CoffeeChat";
 import Requests from "./pages/Requests";
@@ -29,7 +26,6 @@ import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
-import FounderProfileInput from "./pages/FounderProfileInput";
 import EventSignIn from "./pages/EventSignIn";
 import MatchLanding from "./pages/match/MatchLanding";
 import MatchAuth from "./pages/match/MatchAuth";
@@ -53,34 +49,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* New homepage: event sign-in */}
+          {/* Event check-in homepage */}
           <Route path="/" element={<EventSignIn />} />
           <Route path="/events" element={<EventSignIn />} />
           <Route path="/event" element={<EventSignIn />} />
 
-          {/* Platform marketing/landing now lives at /app */}
+          {/* Platform marketing/landing */}
           <Route path="/app" element={<AppLanding />} />
           <Route path="/app/signup" element={<AppSignup />} />
-          <Route path="/app/legacy" element={<Landing />} />
 
-          {/* Public routes (kept at original paths AND mirrored under /app) */}
+          {/* Public routes */}
           <Route path="/auth" element={<Auth />} />
           <Route path="/app/auth" element={<Auth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/app/forgot-password" element={<ForgotPassword />} />
+          {/* Legacy aliases — route to new signup */}
           <Route path="/onboarding/founder" element={<AppSignup />} />
           <Route path="/app/onboarding/founder" element={<AppSignup />} />
           <Route path="/onboarding/investor" element={<AppSignup />} />
           <Route path="/app/onboarding/investor" element={<AppSignup />} />
-          {/* Legacy onboarding kept for fallback */}
-          <Route path="/onboarding/founder-legacy" element={<FounderOnboarding />} />
-          <Route path="/onboarding/investor-legacy" element={<InvestorOnboarding />} />
           <Route path="/profile/:id" element={<ProfileView />} />
           <Route path="/app/profile/:id" element={<ProfileView />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
           <Route path="/app/catalystdeck" element={<CatalystDeck />} />
 
-          {/* Protected Routes — require login + approved/early_access */}
+          {/* Protected Routes */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
@@ -111,8 +104,7 @@ const App = () => (
           <Route path="/app/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
           <Route path="/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
           <Route path="/app/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
-          <Route path="/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
-          <Route path="/app/founder-input" element={<AuthGuard><FounderProfileInput /></AuthGuard>} />
+
           {/* /match — Live event matching platform (separate accounts) */}
           <Route path="/match" element={<MatchLanding />} />
           <Route path="/match/auth" element={<MatchAuth />} />
@@ -127,7 +119,6 @@ const App = () => (
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
-
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
