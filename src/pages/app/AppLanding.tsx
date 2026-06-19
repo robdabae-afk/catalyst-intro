@@ -45,6 +45,25 @@ export default function AppLanding() {
     return () => cancelAnimationFrame(id);
   }, [logoLoaded]);
 
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    const prevOverscroll = body.style.overscrollBehavior;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.background = "#000";
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+      body.style.overscrollBehavior = prevOverscroll;
+      body.style.background = "";
+    };
+  }, []);
+
+
   return (
     <div className="relative h-screen overflow-hidden bg-black text-white flex flex-col items-center px-5 py-6">
       <style>{`
