@@ -36,9 +36,7 @@ export default function AppLanding() {
             draggable={false}
           />
           <div className="text-sm text-[#666] -mt-2 leading-snug">
-            Vetted founders meet investors.
-            <br />
-            Match. Chat. Close your round.
+            Vetted early-stage startup opportunities, built for everyday investors.
           </div>
         </div>
 
