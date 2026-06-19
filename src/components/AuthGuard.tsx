@@ -22,7 +22,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("approved, early_access, onboarding_dismissed_at")
+        .select("onboarding_dismissed_at")
         .eq("id", user.id)
         .single();
 
@@ -34,11 +34,6 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         .maybeSingle();
 
       const isAdmin = !!roleData;
-
-      if (!isAdmin && !profile?.approved && !profile?.early_access) {
-        navigate("/pending-approval");
-        return;
-      }
 
       // First-login gamified onboarding gate
       if (!isAdmin && profile && !profile.onboarding_dismissed_at) {
