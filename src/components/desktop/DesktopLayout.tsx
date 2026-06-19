@@ -53,9 +53,9 @@ type ViewMode = 'swipe' | 'chat';
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro }) => {
   const navigate = useNavigate();
   
-  // Approval check for pending users
-  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
-  const [showPendingBanner, setShowPendingBanner] = useState(true);
+  const isApproved = true;
+  const approvalLoading = false;
+  const [showPendingBanner, setShowPendingBanner] = useState(false);
   
   // View mode state - binary swipe/chat
   const [viewMode, setViewMode] = useState<ViewMode>('swipe');
