@@ -36,14 +36,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
-
-  // Redirect unapproved users to pending-approval page
-  useEffect(() => {
-    if (!approvalLoading && !authLoading && currentUser && isApproved === false) {
-      navigate('/pending-approval', { replace: true });
-    }
-  }, [approvalLoading, authLoading, currentUser, isApproved, navigate]);
 
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
