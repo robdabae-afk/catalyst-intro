@@ -429,11 +429,8 @@ export default function AppSignup() {
     }
   };
 
-  const Shell = ({ children }: { children: React.ReactNode }) => (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex justify-center">
-      <div className="w-full max-w-[400px] min-h-screen flex flex-col">{children}</div>
-    </div>
-  );
+  const shellOpen = `<div class="min-h-screen bg-[#0A0A0A] text-white flex justify-center"><div class="w-full max-w-[400px] min-h-screen flex flex-col">`;
+
 
   if (done) {
     return (
