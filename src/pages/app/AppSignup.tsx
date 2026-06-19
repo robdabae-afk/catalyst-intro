@@ -278,7 +278,7 @@ export default function AppSignup() {
       case 1:
         return !!role;
       case 2:
-        return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length >= 8;
+        return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length > 0;
       case 3:
         if (role === "founder")
           return startupName.trim() !== "" && hqLocation.trim() !== "" && oneLiner.trim() !== "";
