@@ -7,16 +7,14 @@ import {
   ArrowLeft,
   Rocket,
   Coins,
-  Image as ImageIcon,
   UserCircle2,
   Check,
   Loader2,
 } from "lucide-react";
 
 type Role = "founder" | "investor";
-const TOTAL_STEPS = 7;
+const TOTAL_STEPS = 5;
 
-const MRR_OPTIONS = ["Pre-revenue", "$0–$1k", "$1k–$10k", "$10k–$50k", "$50k+"];
 const STAGE_OPTIONS = ["Pre-seed", "Seed", "Series A", "Series B"];
 const INVESTOR_TYPES = [
   "Retail Investor",
@@ -63,24 +61,24 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 function Title({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[24px] font-semibold text-white leading-[1.15] tracking-tight mb-1.5">
+    <div className="text-[22px] font-semibold text-white leading-[1.15] tracking-tight mb-1.5">
       {children}
     </div>
   );
 }
 function BigTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[28px] font-bold text-white leading-[1.1] tracking-tight mb-2">
+    <div className="text-[26px] font-bold text-white leading-[1.1] tracking-tight mb-2">
       {children}
     </div>
   );
 }
 function Sub({ children }: { children: React.ReactNode }) {
-  return <div className="text-sm text-[#666] leading-relaxed mb-7">{children}</div>;
+  return <div className="text-[13px] text-[#666] leading-relaxed mb-5">{children}</div>;
 }
 function LabelRow({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
-    <div className="text-[11px] font-semibold text-[#666] tracking-[0.05em] uppercase mb-[7px]">
+    <div className="text-[11px] font-semibold text-[#666] tracking-[0.05em] uppercase mb-[6px]">
       {children}{" "}
       {required ? (
         <span className="text-white">*</span>
@@ -90,31 +88,23 @@ function LabelRow({ children, required }: { children: React.ReactNode; required?
     </div>
   );
 }
-function Hint({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] text-[#444] mb-[7px] leading-relaxed">{children}</div>;
-}
 
 const inputCls =
-  "w-full px-4 py-[13px] rounded-[14px] bg-[#1a1a1a] border border-[#2a2a2a] text-[15px] text-white outline-none focus:border-[#444] transition-colors placeholder:text-[#444]";
+  "w-full px-4 py-[12px] rounded-[14px] bg-[#1a1a1a] border border-[#2a2a2a] text-[15px] text-white outline-none focus:border-[#444] transition-colors placeholder:text-[#444]";
 const selectCls = inputCls + " appearance-none cursor-pointer pr-9";
-const textareaCls =
-  "w-full px-4 py-[13px] rounded-[14px] bg-[#1a1a1a] border border-[#2a2a2a] text-[14px] text-white outline-none focus:border-[#444] transition-colors placeholder:text-[#444] resize-none leading-relaxed";
 
 function Field({
   label,
   required,
-  hint,
   children,
 }: {
   label: string;
   required?: boolean;
-  hint?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <LabelRow required={required}>{label}</LabelRow>
-      {hint && <Hint>{hint}</Hint>}
       {children}
     </div>
   );
@@ -133,8 +123,8 @@ function Chip({
 }) {
   const base =
     size === "sm"
-      ? "px-[14px] py-2 rounded-full text-xs"
-      : "px-[18px] py-[10px] rounded-[14px] text-[13px]";
+      ? "px-[13px] py-[7px] rounded-full text-xs"
+      : "px-[16px] py-[9px] rounded-[14px] text-[13px]";
   return (
     <button
       type="button"
@@ -144,7 +134,7 @@ function Chip({
         "font-medium border transition-all select-none",
         selected
           ? "bg-white text-[#0A0A0A] border-white"
-          : "bg-[#111] text-[#666] border-[#2a2a2a] hover:border-[#555] hover:text-[#aaa]",
+          : "bg-[#111] text-[#888] border-[#2a2a2a] active:border-[#555]",
       ].join(" ")}
     >
       {children}
@@ -152,60 +142,60 @@ function Chip({
   );
 }
 
-function UploadZone({
-  label,
-  sub,
-  icon,
+function AvatarPicker({
   preview,
   onFile,
-  accept = "image/*",
 }: {
-  label: string;
-  sub: string;
-  icon: React.ReactNode;
   preview: string | null;
   onFile: (f: File) => void;
-  accept?: string;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLInputElement>(null);
   return (
-    <>
-      <div
-        onClick={() => inputRef.current?.click()}
-        className="border border-dashed border-[#2a2a2a] hover:border-[#444] rounded-[14px] p-[22px] text-center cursor-pointer transition-colors overflow-hidden"
+    <div className="flex items-center gap-4 mb-4">
+      <button
+        type="button"
+        onClick={() => ref.current?.click()}
+        className="w-[68px] h-[68px] rounded-full border border-dashed border-[#2a2a2a] bg-[#111] flex items-center justify-center overflow-hidden shrink-0"
       >
         {preview ? (
-          <img src={preview} alt="preview" className="w-full max-h-[140px] object-cover rounded-md" />
+          <img src={preview} alt="avatar" className="w-full h-full object-cover" />
         ) : (
-          <>
-            <div className="text-[22px] text-[#444] mb-2 flex justify-center">{icon}</div>
-            <div className="text-[13px] font-medium text-[#888] mb-1">{label}</div>
-            <div className="text-[11px] text-[#444]">{sub}</div>
-          </>
+          <UserCircle2 className="w-7 h-7 text-[#444]" />
         )}
+      </button>
+      <div className="flex-1">
+        <div className="text-[13px] text-[#bbb] font-semibold">Profile photo</div>
+        <div className="text-[11px] text-[#555] mb-2">Optional — you can add later.</div>
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          className="text-[12px] text-[#888] underline underline-offset-2 active:text-white"
+        >
+          {preview ? "Change photo" : "Upload"}
+        </button>
       </div>
       <input
-        ref={inputRef}
+        ref={ref}
         type="file"
-        accept={accept}
+        accept="image/*"
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
           if (f) onFile(f);
         }}
       />
-    </>
+    </div>
   );
 }
 
 const Shell = ({ children }: { children: React.ReactNode }) => (
-  <div className="min-h-screen bg-[#0A0A0A] text-white flex justify-center">
-    <div className="w-full max-w-[400px] min-h-screen flex flex-col">{children}</div>
+  <div className="h-[100dvh] overflow-hidden bg-[#0A0A0A] text-white flex justify-center"
+       style={{ overscrollBehavior: "none", touchAction: "pan-x" }}>
+    <div className="w-full max-w-[420px] h-full flex flex-col">{children}</div>
   </div>
 );
 
 export default function AppSignup() {
-
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
@@ -220,7 +210,6 @@ export default function AppSignup() {
   const [role, setRole] = useState<Role>(initialRole || "founder");
   const [step, setStep] = useState<number>(initialRole ? 2 : 1);
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -229,36 +218,40 @@ export default function AppSignup() {
 
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [bannerFile, setBannerFile] = useState<File | null>(null);
-  const [bannerPreview, setBannerPreview] = useState<string | null>(null);
 
+  // Founder minimal
   const [startupName, setStartupName] = useState("");
   const [hqLocation, setHqLocation] = useState("");
-  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [oneLiner, setOneLiner] = useState("");
   const [stage, setStage] = useState<string>("Pre-seed");
-  const [mrr, setMrr] = useState<string>("");
-  const [fundingAmount, setFundingAmount] = useState("");
-  const [traction, setTraction] = useState("");
-  const [backedBy, setBackedBy] = useState("");
 
+  // Investor minimal
   const [firmName, setFirmName] = useState("");
   const [invLocation, setInvLocation] = useState("");
-  const [thesis, setThesis] = useState("");
-  const [portfolioLink, setPortfolioLink] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [investorType, setInvestorType] = useState("");
   const [accreditation, setAccreditation] = useState("");
-  const [checkSize, setCheckSize] = useState("");
-  const [investmentCount, setInvestmentCount] = useState("");
-  const [notablePortfolio, setNotablePortfolio] = useState("");
 
   const [industries, setIndustries] = useState<string[]>([]);
   const [agreed, setAgreed] = useState(false);
 
+  // Mobile no-scroll lock
   useEffect(() => {
-    document.body.style.background = "#0A0A0A";
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    const prevOver = body.style.overscrollBehavior;
+    const prevBg = body.style.background;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.background = "#0A0A0A";
     return () => {
-      document.body.style.background = "";
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+      body.style.overscrollBehavior = prevOver;
+      body.style.background = prevBg;
     };
   }, []);
 
@@ -279,14 +272,6 @@ export default function AppSignup() {
     setAvatarFile(f);
     setAvatarPreview(URL.createObjectURL(f));
   };
-  const handleBanner = (f: File) => {
-    if (f.size > 5 * 1024 * 1024) {
-      toast({ variant: "destructive", title: "File too large", description: "Image must be under 5MB" });
-      return;
-    }
-    setBannerFile(f);
-    setBannerPreview(URL.createObjectURL(f));
-  };
 
   const canContinue = (): boolean => {
     switch (step) {
@@ -295,17 +280,13 @@ export default function AppSignup() {
       case 2:
         return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length >= 8;
       case 3:
-        if (!avatarFile) return false;
         if (role === "founder")
           return startupName.trim() !== "" && hqLocation.trim() !== "" && oneLiner.trim() !== "";
-        return true;
+        return invLocation.trim() !== "";
       case 4:
-        if (role === "founder")
-          return !!stage && !!mrr && fundingAmount.trim() !== "" && traction.trim() !== "";
-        return !!investorType && !!accreditation;
+        if (role === "founder") return !!stage && industries.length > 0;
+        return !!investorType && !!accreditation && industries.length > 0;
       case 5:
-        return industries.length > 0;
-      case 6:
         return agreed;
       default:
         return true;
@@ -321,7 +302,7 @@ export default function AppSignup() {
       });
       return;
     }
-    if (step === 6) return submit();
+    if (step === TOTAL_STEPS) return submit();
     setStep((s) => s + 1);
   };
 
@@ -330,14 +311,6 @@ export default function AppSignup() {
     const ext = avatarFile.name.split(".").pop();
     const path = `${userId}/avatar.${ext}`;
     const { error } = await supabase.storage.from("avatars").upload(path, avatarFile, { upsert: true });
-    if (error) return null;
-    return supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
-  };
-  const uploadBanner = async (userId: string) => {
-    if (!bannerFile) return null;
-    const ext = bannerFile.name.split(".").pop();
-    const path = `${userId}/banner.${ext}`;
-    const { error } = await supabase.storage.from("avatars").upload(path, bannerFile, { upsert: true });
     if (error) return null;
     return supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
   };
@@ -365,7 +338,6 @@ export default function AppSignup() {
       const metadata: Record<string, unknown> = {
         name,
         user_type: role,
-        linkedin_url: linkedinUrl || null,
         legal_accepted_at: new Date().toISOString(),
         legal_accepted_ip: userIp,
         referral_code: referralValid ? referralCode.toUpperCase() : null,
@@ -377,23 +349,15 @@ export default function AppSignup() {
           one_liner: oneLiner,
           industry: industries,
           stage: stageToValue[stage] || null,
-          traction: traction || null,
-          funding_amount: fundingAmount || null,
-          mrr: mrr || null,
-          backed_by: backedBy || null,
           preferred_city: hqLocation || null,
         });
       } else {
         Object.assign(metadata, {
           firm_name: firmName || null,
-          investment_thesis: thesis || null,
-          typical_check_size: checkSize || null,
           sectors_of_interest: industries,
           location: invLocation || null,
-          portfolio_link: portfolioLink || null,
+          linkedin_url: linkedinUrl || null,
           investor_type: investorType || null,
-          investment_count: investmentCount || null,
-          notable_portfolio: notablePortfolio || null,
           accreditation_status: accreditation || null,
         });
       }
@@ -402,7 +366,7 @@ export default function AppSignup() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/onboarding`,
           data: metadata,
         },
       });
@@ -412,19 +376,14 @@ export default function AppSignup() {
 
       try {
         const avatarUrl = await uploadAvatar(authData.user.id);
-        const bannerUrl = await uploadBanner(authData.user.id);
         if (avatarUrl) {
           await supabase.from("profiles").update({ avatar_url: avatarUrl }).eq("id", authData.user.id);
         }
-        if (bannerUrl) {
-          const table = role === "founder" ? "founder_profiles" : "investor_profiles";
-          await supabase.from(table).update({ banner_url: bannerUrl }).eq("profile_id", authData.user.id);
-        }
       } catch (err) {
-        console.warn("Post-signup uploads skipped:", err);
+        console.warn("Avatar upload skipped:", err);
       }
 
-      setDone(true);
+      navigate("/onboarding");
     } catch (err: any) {
       toast({
         variant: "destructive",
@@ -435,73 +394,6 @@ export default function AppSignup() {
       setSubmitting(false);
     }
   };
-
-
-
-
-
-
-  if (done) {
-    return (
-      <Shell>
-        <div className="flex-1 overflow-y-auto px-5 pt-10 pb-4">
-          <div className="w-16 h-16 rounded-full bg-[#1a1a1a] flex items-center justify-center mx-auto mb-6">
-            <Check className="w-7 h-7 text-white" />
-          </div>
-          <div className="text-[28px] font-bold text-white text-center mb-2 tracking-tight">
-            You're in.
-          </div>
-          <div className="text-sm text-[#666] text-center leading-relaxed mb-8">
-            Profile submitted. We're verifying your identity — usually same day.
-          </div>
-          <div className="border border-[#1a1a1a] rounded-2xl overflow-hidden">
-            {[
-              { n: 1, t: "Identity check", d: "Usually completed same day" },
-              {
-                n: 2,
-                t: "Card goes live",
-                d: `Shown to ${
-                  role === "founder" ? "matched investors in your sectors" : "founders matching your thesis"
-                }`,
-              },
-              {
-                n: 3,
-                t: "Mutual match → chat opens",
-                d: "Both swipe right to unlock the conversation",
-              },
-            ].map((s) => (
-              <div
-                key={s.n}
-                className="flex gap-3 items-start p-4 border-b border-[#1a1a1a] last:border-b-0"
-              >
-                <div className="w-6 h-6 rounded-full border border-[#333] flex items-center justify-center text-[11px] font-semibold text-[#666] shrink-0">
-                  {s.n}
-                </div>
-                <div className="text-xs text-[#666] leading-relaxed">
-                  <strong className="block text-[13px] text-[#bbb] mb-0.5">{s.t}</strong>
-                  {s.d}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="p-5 pb-6 shrink-0 space-y-3">
-          <button
-            onClick={() => navigate("/early-access")}
-            className="w-full py-[15px] rounded-2xl bg-white text-[#0A0A0A] font-semibold text-[15px] active:opacity-85"
-          >
-            Get early access — $29
-          </button>
-          <button
-            onClick={() => navigate("/pending-approval")}
-            className="w-full py-[13px] rounded-2xl border border-[#222] bg-[#111] text-white font-medium text-[14px] active:opacity-85"
-          >
-            Join the waitlist (free)
-          </button>
-        </div>
-      </Shell>
-    );
-  }
 
   const eyebrow = `${role === "founder" ? "Founder" : "Investor"} · ${step} of ${TOTAL_STEPS}`;
 
@@ -521,7 +413,7 @@ export default function AppSignup() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 [&::-webkit-scrollbar]:hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto px-5 [&::-webkit-scrollbar]:hidden">
         {step === 1 && (
           <>
             <Eyebrow>Step 1 of {TOTAL_STEPS}</Eyebrow>
@@ -539,7 +431,7 @@ export default function AppSignup() {
                       "rounded-[18px] p-5 text-left transition-all bg-[#111]",
                       sel
                         ? "border-2 border-white bg-[#1a1a1a]"
-                        : "border border-[#222] hover:border-[#444]",
+                        : "border border-[#222] active:border-[#444]",
                     ].join(" ")}
                   >
                     <div className={["mb-3", sel ? "text-white" : "text-[#888]"].join(" ")}>
@@ -594,7 +486,7 @@ export default function AppSignup() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </Field>
-            <Field label="Referral code" hint="Earn bonus swipes when your referrer is approved.">
+            <Field label="Referral code">
               <input
                 className={inputCls}
                 placeholder="e.g. ALEX2024"
@@ -605,253 +497,155 @@ export default function AppSignup() {
           </>
         )}
 
-        {step === 3 && (
+        {step === 3 && role === "founder" && (
           <>
             <Eyebrow>{eyebrow}</Eyebrow>
-            <Title>{role === "founder" ? "Your startup" : "Your profile"}</Title>
-            <Sub>
-              {role === "founder"
-                ? "This is your first impression on the swipe card."
-                : "This is what founders see before deciding to swipe."}
-            </Sub>
-
-            <Field label="Banner photo">
-              <UploadZone
-                label="Upload banner"
-                sub="1200×400 · JPG, PNG"
-                icon={<ImageIcon className="w-5 h-5" />}
-                preview={bannerPreview}
-                onFile={handleBanner}
+            <Title>Your startup</Title>
+            <Sub>The basics — you can polish your profile right after.</Sub>
+            <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
+            <Field label="Startup name" required>
+              <input
+                className={inputCls}
+                placeholder="Aperture AI"
+                value={startupName}
+                onChange={(e) => setStartupName(e.target.value)}
               />
             </Field>
-            <Field label="Profile photo" required>
-              <UploadZone
-                label="Upload photo"
-                sub="Square · min 400×400"
-                icon={<UserCircle2 className="w-5 h-5" />}
-                preview={avatarPreview}
-                onFile={handleAvatar}
+            <Field label="HQ location" required>
+              <input
+                className={inputCls}
+                placeholder="San Francisco, CA"
+                value={hqLocation}
+                onChange={(e) => setHqLocation(e.target.value)}
               />
             </Field>
-
-            {role === "founder" ? (
-              <>
-                <Field label="Startup name" required>
-                  <input
-                    className={inputCls}
-                    placeholder="Aperture AI"
-                    value={startupName}
-                    onChange={(e) => setStartupName(e.target.value)}
-                  />
-                </Field>
-                <Field label="HQ location" required>
-                  <input
-                    className={inputCls}
-                    placeholder="San Francisco, CA"
-                    value={hqLocation}
-                    onChange={(e) => setHqLocation(e.target.value)}
-                  />
-                </Field>
-                <Field label="LinkedIn">
-                  <input
-                    type="url"
-                    className={inputCls}
-                    placeholder="linkedin.com/in/..."
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                  />
-                </Field>
-                <Field label="One-liner" required hint="One sentence — what you do and for whom.">
-                  <input
-                    className={inputCls}
-                    placeholder="AI that writes QA tests while your engineers ship."
-                    value={oneLiner}
-                    onChange={(e) => setOneLiner(e.target.value)}
-                  />
-                </Field>
-              </>
-            ) : (
-              <>
-                <Field label="Firm name">
-                  <input
-                    className={inputCls}
-                    placeholder="Northwind Ventures"
-                    value={firmName}
-                    onChange={(e) => setFirmName(e.target.value)}
-                  />
-                </Field>
-                <Field label="Location">
-                  <input
-                    className={inputCls}
-                    placeholder="New York, NY"
-                    value={invLocation}
-                    onChange={(e) => setInvLocation(e.target.value)}
-                  />
-                </Field>
-                <Field label="LinkedIn">
-                  <input
-                    type="url"
-                    className={inputCls}
-                    placeholder="linkedin.com/in/..."
-                    value={linkedinUrl}
-                    onChange={(e) => setLinkedinUrl(e.target.value)}
-                  />
-                </Field>
-                <Field label="Investment thesis" hint="Briefly describe what you look for.">
-                  <input
-                    className={inputCls}
-                    placeholder="$50k–$250k into technical pre-seed founders."
-                    value={thesis}
-                    onChange={(e) => setThesis(e.target.value)}
-                  />
-                </Field>
-                <Field label="Portfolio link">
-                  <input
-                    type="url"
-                    className={inputCls}
-                    placeholder="northwindvc.com/portfolio"
-                    value={portfolioLink}
-                    onChange={(e) => setPortfolioLink(e.target.value)}
-                  />
-                </Field>
-              </>
-            )}
+            <Field label="One-liner" required>
+              <input
+                className={inputCls}
+                placeholder="AI that writes QA tests while your engineers ship."
+                value={oneLiner}
+                onChange={(e) => setOneLiner(e.target.value)}
+              />
+            </Field>
           </>
         )}
 
-        {step === 4 && (
+        {step === 3 && role === "investor" && (
           <>
             <Eyebrow>{eyebrow}</Eyebrow>
-            <Title>{role === "founder" ? "Stage & traction" : "Investor type"}</Title>
-            <Sub>
-              {role === "founder"
-                ? "Investors filter by these — be accurate."
-                : "Required by law. Determines which deals you can access."}
-            </Sub>
+            <Title>Your profile</Title>
+            <Sub>The basics — you can finish your profile right after.</Sub>
+            <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
+            <Field label="Firm name">
+              <input
+                className={inputCls}
+                placeholder="Northwind Ventures"
+                value={firmName}
+                onChange={(e) => setFirmName(e.target.value)}
+              />
+            </Field>
+            <Field label="Location" required>
+              <input
+                className={inputCls}
+                placeholder="New York, NY"
+                value={invLocation}
+                onChange={(e) => setInvLocation(e.target.value)}
+              />
+            </Field>
+            <Field label="LinkedIn">
+              <input
+                type="url"
+                className={inputCls}
+                placeholder="linkedin.com/in/..."
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+              />
+            </Field>
+          </>
+        )}
 
-            {role === "founder" ? (
-              <>
-                <Field label="Stage" required>
-                  <div className="flex flex-wrap gap-2">
-                    {STAGE_OPTIONS.map((s) => (
-                      <Chip key={s} selected={stage === s} onClick={() => setStage(s)}>
-                        {s}
-                      </Chip>
-                    ))}
-                  </div>
-                </Field>
-                <Field label="MRR / Revenue" required>
-                  <select className={selectCls} value={mrr} onChange={(e) => setMrr(e.target.value)}>
-                    <option value="">Select MRR</option>
-                    {MRR_OPTIONS.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Funding sought" required hint="Shown on your card.">
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. $1.5M"
-                    value={fundingAmount}
-                    onChange={(e) => setFundingAmount(e.target.value)}
-                  />
-                </Field>
-                <Field label="Traction" required hint={`${traction.length} / 250 · Users, revenue, pilots.`}>
-                  <textarea
-                    className={textareaCls}
-                    maxLength={250}
-                    rows={3}
-                    placeholder="340 beta users, $12k MRR, 3 enterprise pilots."
-                    value={traction}
-                    onChange={(e) => setTraction(e.target.value)}
-                  />
-                </Field>
-                <Field label="Backed by">
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. Y Combinator"
-                    value={backedBy}
-                    onChange={(e) => setBackedBy(e.target.value)}
-                  />
-                </Field>
-              </>
-            ) : (
-              <>
-                <Field label="Investor type" required>
-                  <select
-                    className={selectCls}
-                    value={investorType}
-                    onChange={(e) => setInvestorType(e.target.value)}
+        {step === 4 && role === "founder" && (
+          <>
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <Title>Stage & industries</Title>
+            <Sub>Investors filter by these.</Sub>
+            <Field label="Company stage" required>
+              <div className="flex flex-wrap gap-2">
+                {STAGE_OPTIONS.map((s) => (
+                  <Chip key={s} selected={stage === s} onClick={() => setStage(s)}>
+                    {s}
+                  </Chip>
+                ))}
+              </div>
+            </Field>
+            <Field label="Industries" required>
+              <div className="flex flex-wrap gap-2">
+                {INDUSTRIES.map((i) => (
+                  <Chip
+                    key={i}
+                    size="sm"
+                    selected={industries.includes(i)}
+                    onClick={() => toggleIndustry(i)}
                   >
-                    <option value="">Select type</option>
-                    {INVESTOR_TYPES.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Accreditation status" required>
-                  <select
-                    className={selectCls}
-                    value={accreditation}
-                    onChange={(e) => setAccreditation(e.target.value)}
+                    {i}
+                  </Chip>
+                ))}
+              </div>
+            </Field>
+          </>
+        )}
+
+        {step === 4 && role === "investor" && (
+          <>
+            <Eyebrow>{eyebrow}</Eyebrow>
+            <Title>Investor type & sectors</Title>
+            <Sub>Required by law. Determines which deals you can access.</Sub>
+            <Field label="Investor type" required>
+              <select
+                className={selectCls}
+                value={investorType}
+                onChange={(e) => setInvestorType(e.target.value)}
+              >
+                <option value="">Select type</option>
+                {INVESTOR_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Accreditation status" required>
+              <select
+                className={selectCls}
+                value={accreditation}
+                onChange={(e) => setAccreditation(e.target.value)}
+              >
+                <option value="">Select status</option>
+                {ACCREDITATION.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Sectors of interest" required>
+              <div className="flex flex-wrap gap-2">
+                {INDUSTRIES.map((i) => (
+                  <Chip
+                    key={i}
+                    size="sm"
+                    selected={industries.includes(i)}
+                    onClick={() => toggleIndustry(i)}
                   >
-                    <option value="">Select status</option>
-                    {ACCREDITATION.map((a) => (
-                      <option key={a} value={a}>
-                        {a}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <Field label="Typical check size">
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. $50k – $250k"
-                    value={checkSize}
-                    onChange={(e) => setCheckSize(e.target.value)}
-                  />
-                </Field>
-                <Field label="Total investments">
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. 32 deals"
-                    value={investmentCount}
-                    onChange={(e) => setInvestmentCount(e.target.value)}
-                  />
-                </Field>
-                <Field label="Notable portfolio">
-                  <input
-                    className={inputCls}
-                    placeholder="e.g. Stripe, Figma, Notion"
-                    value={notablePortfolio}
-                    onChange={(e) => setNotablePortfolio(e.target.value)}
-                  />
-                </Field>
-              </>
-            )}
+                    {i}
+                  </Chip>
+                ))}
+              </div>
+            </Field>
           </>
         )}
 
         {step === 5 && (
-          <>
-            <Eyebrow>{eyebrow}</Eyebrow>
-            <Title>Industries</Title>
-            <Sub>Pick at least one. This drives your match feed.</Sub>
-            <div className="flex flex-wrap gap-2">
-              {INDUSTRIES.map((i) => (
-                <Chip key={i} size="sm" selected={industries.includes(i)} onClick={() => toggleIndustry(i)}>
-                  {i}
-                </Chip>
-              ))}
-            </div>
-          </>
-        )}
-
-        {step === 6 && (
           <>
             <Eyebrow>{eyebrow}</Eyebrow>
             <Title>Almost done</Title>
@@ -868,7 +662,7 @@ export default function AppSignup() {
               onClick={() => setAgreed((a) => !a)}
               className={[
                 "w-full flex items-start gap-3 p-4 rounded-[14px] border transition-colors text-left",
-                agreed ? "border-white bg-[#141414]" : "border-[#222] hover:border-[#444]",
+                agreed ? "border-white bg-[#141414]" : "border-[#222] active:border-[#444]",
               ].join(" ")}
             >
               <div
@@ -887,31 +681,23 @@ export default function AppSignup() {
         )}
       </div>
 
-      <div className="px-5 pt-4 pb-5 shrink-0">
+      <div className="px-5 pt-3 pb-5 shrink-0">
         <button
           onClick={advance}
           disabled={!canContinue() || submitting}
-          className="w-full py-[15px] rounded-2xl bg-white text-[#0A0A0A] font-semibold text-[15px] tracking-tight active:opacity-85 transition-opacity disabled:bg-[#2a2a2a] disabled:text-[#555] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-[14px] rounded-2xl bg-white text-[#0A0A0A] font-semibold text-[15px] tracking-tight active:opacity-85 transition-opacity disabled:bg-[#2a2a2a] disabled:text-[#555] disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitting ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              Creating profile...
+              Creating account...
             </>
-          ) : step === 6 ? (
-            "Create my profile"
+          ) : step === TOTAL_STEPS ? (
+            "Create my account"
           ) : (
             "Continue"
           )}
         </button>
-        {step === 6 && (
-          <button
-            onClick={() => navigate("/app")}
-            className="w-full py-3 mt-2 text-[13px] text-[#666] active:text-[#999]"
-          >
-            Cancel
-          </button>
-        )}
       </div>
     </Shell>
   );
