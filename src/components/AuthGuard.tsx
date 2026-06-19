@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileCompletionGate } from "./ProfileCompletionGate";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -20,11 +19,20 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_dismissed_at")
-        .eq("id", user.id)
-        .single();
+      // Poll for profile (handle_new_user trigger race on fresh signups)
+      let profile: { onboarding_dismissed_at: string | null } | null = null;
+      for (let i = 0; i < 5; i++) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("onboarding_dismissed_at")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (data) {
+          profile = data;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, 400));
+      }
 
       const { data: roleData } = await supabase
         .from("user_roles")
@@ -47,7 +55,6 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     check();
   }, [navigate]);
 
-
   if (checking) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
@@ -56,9 +63,5 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
     );
   }
 
-  return (
-    <ProfileCompletionGate>
-      {children}
-    </ProfileCompletionGate>
-  );
+  return <>{children}</>;
 };
