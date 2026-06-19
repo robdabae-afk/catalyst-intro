@@ -55,7 +55,13 @@ export default function AppLanding() {
             filter: blur(12px);
             top: 50vh;
           }
-          25% { opacity: 1; filter: blur(0px); }
+          18% { opacity: 1; filter: blur(0px); }
+          30% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            filter: blur(0px);
+            top: 50vh;
+          }
           55% {
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
@@ -92,8 +98,8 @@ export default function AppLanding() {
         }
         .catalyst-logo-fly--play {
           animation:
-            catalyst-logo-intro 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-            catalyst-logo-float 4s ease-in-out 1.6s infinite;
+            catalyst-logo-intro 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+            catalyst-logo-float 4s ease-in-out 3.35s infinite;
         }
         .catalyst-logo-placeholder {
           visibility: hidden;
@@ -105,9 +111,10 @@ export default function AppLanding() {
         .catalyst-reveal.catalyst-reveal--play {
           animation: catalyst-content-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .catalyst-reveal-1 { animation-delay: 1.15s; }
-        .catalyst-reveal-2 { animation-delay: 1.25s; }
-        .catalyst-reveal-3 { animation-delay: 1.35s; }
+        .catalyst-reveal-1 { animation-delay: 2.75s; }
+        .catalyst-reveal-2 { animation-delay: 2.9s; }
+        .catalyst-reveal-3 { animation-delay: 3.05s; }
+
         @media (prefers-reduced-motion: reduce) {
           .catalyst-logo-fly {
             animation: none !important;
