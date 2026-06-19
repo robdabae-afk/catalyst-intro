@@ -68,12 +68,6 @@ const App = () => (
           <Route path="/app/auth" element={<Auth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/app/forgot-password" element={<ForgotPassword />} />
-          <Route path="/waitlist" element={<Waitlist />} />
-          <Route path="/app/waitlist" element={<Waitlist />} />
-          <Route path="/early-access" element={<EarlyAccess />} />
-          <Route path="/app/early-access" element={<EarlyAccess />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/app/pending-approval" element={<PendingApproval />} />
           <Route path="/onboarding/founder" element={<AppSignup />} />
           <Route path="/app/onboarding/founder" element={<AppSignup />} />
           <Route path="/onboarding/investor" element={<AppSignup />} />
