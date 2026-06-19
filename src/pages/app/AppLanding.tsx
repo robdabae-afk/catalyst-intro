@@ -115,8 +115,9 @@ export default function AppLanding() {
       <img
         src={catalystLogo.url}
         alt="Catalyst"
-        className="catalyst-logo-fly select-none"
+        className={`catalyst-logo-fly select-none ${play ? "catalyst-logo-fly--play" : ""}`}
         draggable={false}
+        onLoad={() => setLogoLoaded(true)}
         style={{ ["--logo-rest-top" as never]: "40px" }}
       />
 
