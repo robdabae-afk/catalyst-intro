@@ -20,7 +20,7 @@ import SafeGenerator from "./pages/SafeGenerator";
 import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
 import Admin from "./pages/Admin";
-import PendingApproval from "./pages/PendingApproval";
+
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
 import FilterPreferences from "./pages/FilterPreferences";
@@ -29,8 +29,6 @@ import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
-import Waitlist from "./pages/Waitlist";
-import EarlyAccess from "./pages/EarlyAccess";
 import FounderProfileInput from "./pages/FounderProfileInput";
 import EventSignIn from "./pages/EventSignIn";
 import MatchLanding from "./pages/match/MatchLanding";
@@ -70,12 +68,6 @@ const App = () => (
           <Route path="/app/auth" element={<Auth />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/app/forgot-password" element={<ForgotPassword />} />
-          <Route path="/waitlist" element={<Waitlist />} />
-          <Route path="/app/waitlist" element={<Waitlist />} />
-          <Route path="/early-access" element={<EarlyAccess />} />
-          <Route path="/app/early-access" element={<EarlyAccess />} />
-          <Route path="/pending-approval" element={<PendingApproval />} />
-          <Route path="/app/pending-approval" element={<PendingApproval />} />
           <Route path="/onboarding/founder" element={<AppSignup />} />
           <Route path="/app/onboarding/founder" element={<AppSignup />} />
           <Route path="/onboarding/investor" element={<AppSignup />} />

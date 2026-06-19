@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useApprovalCheck } from '@/hooks/useApprovalCheck';
+
 import { DesktopLayout } from '@/components/desktop/DesktopLayout';
 import { useSwipeQueue, AdProfile, OrganicProfile } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
@@ -36,14 +36,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
-
-  // Redirect unapproved users to pending-approval page
-  useEffect(() => {
-    if (!approvalLoading && !authLoading && currentUser && isApproved === false) {
-      navigate('/pending-approval', { replace: true });
-    }
-  }, [approvalLoading, authLoading, currentUser, isApproved, navigate]);
 
 
   // Mock profiles if needed, or assume useSwipeQueue fetches them
@@ -563,7 +555,7 @@ const Dashboard = () => {
   const currentProfile = currentItem as OrganicProfile | AdProfile | null;
 
   // Show loading while checking approval status
-  if (approvalLoading || authLoading) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-background-dark">
         <div className="text-center">
