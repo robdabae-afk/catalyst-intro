@@ -26,22 +26,22 @@ const TrustRow = ({
 export default function AppLanding() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-5 py-6">
-      <div className="w-full max-w-[400px] flex-1 flex flex-col">
-        <div className="text-center mt-8 mb-10">
+    <div className="h-screen overflow-hidden bg-black text-white flex flex-col items-center px-5 py-6">
+      <div className="w-full max-w-[400px] flex-1 flex flex-col min-h-0">
+        <div className="text-center mt-4 mb-6">
           <img
             src={catalystLogo.url}
             alt="Catalyst"
-            className="w-[220px] mx-auto block select-none"
+            className="w-[140px] mx-auto block select-none"
             draggable={false}
           />
-          <div className="text-sm text-[#666] mt-4 leading-snug">
+          <div className="text-sm text-[#666] -mt-2 leading-snug">
             Vetted founders meet investors.
             <br />
             Match. Chat. Close your round.
           </div>
-
         </div>
+
 
         <div className="border border-[#1a1a1a] rounded-2xl overflow-hidden mb-auto">
           <TrustRow
