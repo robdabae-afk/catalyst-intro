@@ -74,13 +74,19 @@ export default function Onboarding() {
     }
     setUserId(user.id);
 
-    const { data: p } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+    // Poll for profile row (race with handle_new_user trigger on fresh signups)
+    let p: any = null;
+    for (let i = 0; i < 5; i++) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (data) { p = data; break; }
+      await new Promise((r) => setTimeout(r, 400));
+    }
     setProfile(p);
-    const type = (p?.user_type as UserType) || "founder";
+    const type = ((p?.user_type as UserType) || "founder");
     setUserType(type);
 
     if (type === "founder") {
