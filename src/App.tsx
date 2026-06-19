@@ -70,10 +70,13 @@ const App = () => (
           <Route path="/app/early-access" element={<EarlyAccess />} />
           <Route path="/pending-approval" element={<PendingApproval />} />
           <Route path="/app/pending-approval" element={<PendingApproval />} />
-          <Route path="/onboarding/founder" element={<FounderOnboarding />} />
-          <Route path="/app/onboarding/founder" element={<FounderOnboarding />} />
-          <Route path="/onboarding/investor" element={<InvestorOnboarding />} />
-          <Route path="/app/onboarding/investor" element={<InvestorOnboarding />} />
+          <Route path="/onboarding/founder" element={<AppSignup />} />
+          <Route path="/app/onboarding/founder" element={<AppSignup />} />
+          <Route path="/onboarding/investor" element={<AppSignup />} />
+          <Route path="/app/onboarding/investor" element={<AppSignup />} />
+          {/* Legacy onboarding kept for fallback */}
+          <Route path="/onboarding/founder-legacy" element={<FounderOnboarding />} />
+          <Route path="/onboarding/investor-legacy" element={<InvestorOnboarding />} />
           <Route path="/profile/:id" element={<ProfileView />} />
           <Route path="/app/profile/:id" element={<ProfileView />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
