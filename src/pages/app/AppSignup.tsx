@@ -481,7 +481,7 @@ export default function AppSignup() {
               <input
                 type="password"
                 className={inputCls}
-                placeholder="8+ characters"
+                placeholder="Enter a password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
