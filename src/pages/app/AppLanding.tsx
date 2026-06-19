@@ -25,6 +25,26 @@ const TrustRow = ({
 
 export default function AppLanding() {
   const navigate = useNavigate();
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [play, setPlay] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = catalystLogo.url;
+    if (img.complete) {
+      setLogoLoaded(true);
+    } else {
+      img.onload = () => setLogoLoaded(true);
+      img.onerror = () => setLogoLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!logoLoaded) return;
+    const id = requestAnimationFrame(() => setPlay(true));
+    return () => cancelAnimationFrame(id);
+  }, [logoLoaded]);
+
   return (
     <div className="relative h-screen overflow-hidden bg-black text-white flex flex-col items-center px-5 py-6">
       <style>{`
