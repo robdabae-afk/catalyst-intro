@@ -1,16 +1,20 @@
+## Intro animation for /app landing
 
-## Replace top branding on /app landing with uploaded Catalyst logo
+Apply the "Center-to-header kinetic" direction to `src/pages/app/AppLanding.tsx`, using the existing `catalyst-logo.png` asset (no logo redraw).
 
-### Changes
-1. **Upload the logo as a Lovable Asset** from `/mnt/user-uploads/CATALYSTnew.png` → `src/assets/catalyst-logo.png.asset.json` (CDN-hosted, no binary in repo).
-2. **Edit `src/pages/app/AppLanding.tsx`**:
-   - Remove the `<Zap />` icon block and the "Catalyst" text wordmark at the top of the page.
-   - Replace with a single `<img>` rendering the uploaded logo, imported from the asset pointer JSON.
-   - Size it to roughly ~200px wide, centered, with the logo's native black background blending seamlessly into the page's `#0A0A0A` canvas (no card, no border, no rounded surface behind it — just the bare image).
-   - Keep the tagline text ("Vetted founders meet investors. Match. Chat. Close your round.") directly under the logo.
-3. **Color match**: Since the uploaded PNG has a near-pure black background (#000) and the page is `#0A0A0A`, update the AppLanding page background to pure black (`#000`) just for this page so the logo's background is indistinguishable from the page. The rest of the app's theme stays untouched.
-4. Drop the now-unused `Zap` import.
+### Choreography
+1. **0.0s – 0.7s:** Logo enters at viewport center, scale 8 → 1, opacity 0 → 1, blur fades out. Background pure black, rest of page hidden.
+2. **0.7s – 1.4s:** Logo travels from center to its final header slot (top of page) with `cubic-bezier(0.16, 1, 0.3, 1)` easing.
+3. **1.1s – 1.9s:** Tagline, trust-row card, and CTA buttons fade + slide up (`translateY(20px) → 0`), staggered ~80ms each.
+4. **Idle (after intro):** Logo gets a subtle 4s ease-in-out vertical float (±3px) so the page stays alive without distraction.
+
+### Implementation
+- Pure CSS keyframes added inline in the component (no new deps, no Motion library).
+- Logo rendered once; animation uses `position: absolute` during travel, then settles into normal flow via `forwards` fill.
+- Layout, copy, trust rows, colors, and `h-screen overflow-hidden` no-scroll lock all preserved.
+- Intro plays on every fresh mount of `/app` (matches the prototype). No sessionStorage gate unless requested later.
+- Respect `prefers-reduced-motion`: skip the intro and show final state immediately.
 
 ### Out of scope
-- No changes to signup steps, auth screen, routing, or any other page.
-- No changes to global tokens in `index.css` — color match is scoped to the AppLanding container only.
+- No changes to signup flow, auth, routing, copy, or the logo image itself.
+- No shimmer text effect (the prototype's shimmer was on a text wordmark; our logo is an image — float + intro travel only).
