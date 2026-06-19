@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, FileSignature, Lock } from "lucide-react";
 import catalystLogo from "@/assets/catalyst-logo.png.asset.json";
@@ -24,6 +25,26 @@ const TrustRow = ({
 
 export default function AppLanding() {
   const navigate = useNavigate();
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [play, setPlay] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = catalystLogo.url;
+    if (img.complete) {
+      setLogoLoaded(true);
+    } else {
+      img.onload = () => setLogoLoaded(true);
+      img.onerror = () => setLogoLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!logoLoaded) return;
+    const id = requestAnimationFrame(() => setPlay(true));
+    return () => cancelAnimationFrame(id);
+  }, [logoLoaded]);
+
   return (
     <div className="relative h-screen overflow-hidden bg-black text-white flex flex-col items-center px-5 py-6">
       <style>{`
@@ -62,18 +83,26 @@ export default function AppLanding() {
         .catalyst-logo-fly {
           position: absolute;
           left: 50%;
+          top: 50vh;
           width: 140px;
           z-index: 50;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(8);
+          will-change: transform, top, opacity;
+        }
+        .catalyst-logo-fly--play {
           animation:
             catalyst-logo-intro 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
             catalyst-logo-float 4s ease-in-out 1.6s infinite;
-          will-change: transform, top, opacity;
         }
         .catalyst-logo-placeholder {
           visibility: hidden;
         }
         .catalyst-reveal {
           opacity: 0;
+        }
+        .catalyst-logo-fly--play ~ * .catalyst-reveal,
+        .catalyst-reveal.catalyst-reveal--play {
           animation: catalyst-content-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .catalyst-reveal-1 { animation-delay: 1.15s; }
@@ -81,12 +110,13 @@ export default function AppLanding() {
         .catalyst-reveal-3 { animation-delay: 1.35s; }
         @media (prefers-reduced-motion: reduce) {
           .catalyst-logo-fly {
-            animation: none;
+            animation: none !important;
             position: static;
             transform: none;
+            opacity: 1;
           }
           .catalyst-logo-placeholder { display: none; }
-          .catalyst-reveal { opacity: 1; animation: none; }
+          .catalyst-reveal { opacity: 1; animation: none !important; }
         }
       `}</style>
 
@@ -94,8 +124,9 @@ export default function AppLanding() {
       <img
         src={catalystLogo.url}
         alt="Catalyst"
-        className="catalyst-logo-fly select-none"
+        className={`catalyst-logo-fly select-none ${play ? "catalyst-logo-fly--play" : ""}`}
         draggable={false}
+        onLoad={() => setLogoLoaded(true)}
         style={{ ["--logo-rest-top" as never]: "40px" }}
       />
 
