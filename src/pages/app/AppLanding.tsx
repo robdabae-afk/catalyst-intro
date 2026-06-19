@@ -83,18 +83,26 @@ export default function AppLanding() {
         .catalyst-logo-fly {
           position: absolute;
           left: 50%;
+          top: 50vh;
           width: 140px;
           z-index: 50;
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(8);
+          will-change: transform, top, opacity;
+        }
+        .catalyst-logo-fly--play {
           animation:
             catalyst-logo-intro 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards,
             catalyst-logo-float 4s ease-in-out 1.6s infinite;
-          will-change: transform, top, opacity;
         }
         .catalyst-logo-placeholder {
           visibility: hidden;
         }
         .catalyst-reveal {
           opacity: 0;
+        }
+        .catalyst-logo-fly--play ~ * .catalyst-reveal,
+        .catalyst-reveal.catalyst-reveal--play {
           animation: catalyst-content-reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         .catalyst-reveal-1 { animation-delay: 1.15s; }
@@ -102,12 +110,13 @@ export default function AppLanding() {
         .catalyst-reveal-3 { animation-delay: 1.35s; }
         @media (prefers-reduced-motion: reduce) {
           .catalyst-logo-fly {
-            animation: none;
+            animation: none !important;
             position: static;
             transform: none;
+            opacity: 1;
           }
           .catalyst-logo-placeholder { display: none; }
-          .catalyst-reveal { opacity: 1; animation: none; }
+          .catalyst-reveal { opacity: 1; animation: none !important; }
         }
       `}</style>
 
