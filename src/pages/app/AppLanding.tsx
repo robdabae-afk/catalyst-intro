@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, FileSignature, Lock, Zap } from "lucide-react";
+import { ShieldCheck, FileSignature, Lock } from "lucide-react";
+import catalystLogo from "@/assets/catalyst-logo.png.asset.json";
+
 
 const TrustRow = ({
   icon,
@@ -24,18 +26,21 @@ const TrustRow = ({
 export default function AppLanding() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col items-center px-5 py-6">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center px-5 py-6">
       <div className="w-full max-w-[400px] flex-1 flex flex-col">
         <div className="text-center mt-8 mb-10">
-          <div className="w-14 h-14 rounded-2xl bg-[#1a1a1a] flex items-center justify-center mx-auto mb-5">
-            <Zap className="w-6 h-6 text-white" />
-          </div>
-          <div className="text-[28px] font-bold tracking-tight">Catalyst</div>
-          <div className="text-sm text-[#666] mt-2 leading-snug">
+          <img
+            src={catalystLogo.url}
+            alt="Catalyst"
+            className="w-[220px] mx-auto block select-none"
+            draggable={false}
+          />
+          <div className="text-sm text-[#666] mt-4 leading-snug">
             Vetted founders meet investors.
             <br />
             Match. Chat. Close your round.
           </div>
+
         </div>
 
         <div className="border border-[#1a1a1a] rounded-2xl overflow-hidden mb-auto">
