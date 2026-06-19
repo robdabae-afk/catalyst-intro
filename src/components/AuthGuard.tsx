@@ -22,7 +22,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("approved, early_access")
+        .select("approved, early_access, onboarding_dismissed_at")
         .eq("id", user.id)
         .single();
 
@@ -40,11 +40,18 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
         return;
       }
 
+      // First-login gamified onboarding gate
+      if (!isAdmin && profile && !profile.onboarding_dismissed_at) {
+        navigate("/onboarding");
+        return;
+      }
+
       setChecking(false);
     };
 
     check();
   }, [navigate]);
+
 
   if (checking) {
     return (
