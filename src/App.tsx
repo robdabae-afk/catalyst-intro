@@ -20,7 +20,7 @@ import SafeGenerator from "./pages/SafeGenerator";
 import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
 import Admin from "./pages/Admin";
-import PendingApproval from "./pages/PendingApproval";
+
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
 import FilterPreferences from "./pages/FilterPreferences";
