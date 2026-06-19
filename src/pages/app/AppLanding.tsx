@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { ShieldCheck, FileSignature, Lock, Zap } from "lucide-react";
+import { ShieldCheck, FileSignature, Lock } from "lucide-react";
+import catalystLogo from "@/assets/catalyst-logo.png.asset.json";
+
 
 const TrustRow = ({
   icon,
