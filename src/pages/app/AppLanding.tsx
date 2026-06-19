@@ -44,18 +44,18 @@ export default function AppLanding() {
         <div className="border border-[#1a1a1a] rounded-2xl overflow-hidden mb-auto">
           <TrustRow
             icon={<ShieldCheck className="w-4 h-4" />}
-            title="Identity verified"
-            desc="Every profile reviewed before going live"
+            title="Vetted opportunities"
+            desc="Early-stage startups reviewed for everyday and professional investors"
           />
           <TrustRow
             icon={<FileSignature className="w-4 h-4" />}
-            title="Attorney-drafted SAFEs"
-            desc="Sign and close in-app"
+            title="Clear deal information"
+            desc="Founder profiles, company details, and key materials in one place"
           />
           <TrustRow
             icon={<Lock className="w-4 h-4" />}
-            title="Your data is never sold"
-            desc="Private until you share it"
+            title="Private-market access"
+            desc="Built to make startup investing easier to discover, understand, and evaluate"
           />
         </div>
 
