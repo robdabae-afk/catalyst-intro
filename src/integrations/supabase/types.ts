@@ -1160,6 +1160,7 @@ export type Database = {
           linkedin_url: string | null
           match_banner_dismissed: boolean | null
           name: string
+          onboarding_dismissed_at: string | null
           profile_grace_until: string | null
           referral_code: string
           referred_by: string | null
@@ -1210,6 +1211,7 @@ export type Database = {
           linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name: string
+          onboarding_dismissed_at?: string | null
           profile_grace_until?: string | null
           referral_code: string
           referred_by?: string | null
@@ -1260,6 +1262,7 @@ export type Database = {
           linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name?: string
+          onboarding_dismissed_at?: string | null
           profile_grace_until?: string | null
           referral_code?: string
           referred_by?: string | null
