@@ -555,7 +555,7 @@ const Dashboard = () => {
   const currentProfile = currentItem as OrganicProfile | AdProfile | null;
 
   // Show loading while checking approval status
-  if (approvalLoading || authLoading) {
+  if (authLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-background-dark">
         <div className="text-center">
