@@ -1,92 +1,59 @@
 
-## Diagnosis: why the gamified checklist doesn't appear
+## Root cause
 
-After login, this is what actually happens today:
+The test founder login **succeeds in auth**, but **no `public.profiles` row exists** for that user — verified directly in the DB:
 
-```text
-Auth.tsx → navigate("/dashboard")
-  → <AuthGuard>
-       checks onboarding_dismissed_at  → navigate("/onboarding")   ✓ correct
-       then renders <ProfileCompletionGate>  ← legacy gate
-  → /onboarding renders Onboarding.tsx  ✓ should appear
+```
+test.founder@catalyst.test  → auth.users ✓   profiles ✗   founder_profiles ✗
+test.investor@catalyst.test → auth.users ✓   profiles ✗   investor_profiles ✗
 ```
 
-The blocker is **`ProfileCompletionGate`** (`src/components/AuthGuard.tsx` wraps every authed page in it). It:
+The `on_auth_user_created` trigger does exist, but `handle_new_user()` silently swallows errors (`EXCEPTION WHEN OTHERS THEN RAISE LOG …`), so the test seed created the auth user and the trigger failed for those two rows — leaving them with no profile.
 
-- Reads `linkedin_url`, `location`/`investor_type`, `accreditation_status`
-- If `profile_grace_until` is null it treats grace as **already expired**
-- Renders a full-screen red "Profile Incomplete — Update Profile Now" lock that redirects to `/settings`
+When the user signs in:
 
-For both freshly-signed-up users and the test accounts (no LinkedIn, no location, no grace period), the gate fires the moment they hit `/dashboard`. Even if the AuthGuard tries to redirect to `/onboarding` first, any later return to `/dashboard` is locked — so the user perceives "the checklist never shows / I land on the wrong screen". This gate is a leftover from the deleted approval/waitlist system and must be removed.
+1. `useAuth` → `profiles` query returns `null` → `currentUser = null`.
+2. `AuthGuard` polls profiles 5× and finds nothing → falls through and renders `<Dashboard>`.
+3. `Dashboard.fetchProfiles` early-returns on `!currentUser` **without** setting `loading = false`.
+4. The page is stuck on "Curating Profiles…" forever.
 
-A second contributor: `Auth.tsx` "back" button goes to `/` (now the EventSignIn page) instead of `/app`, which is why some sign-in attempts feel like they "land on /events".
+This will affect **any** user whose profile row is missing for any reason (trigger race, trigger error, seed function failure), so we must fix it in three places.
 
 ## Plan
 
-### 1. Fix the onboarding gate (root cause)
+### 1. Backfill the test accounts (DB migration)
 
-- **`src/components/AuthGuard.tsx`** — stop wrapping children in `ProfileCompletionGate`. Keep only the auth + `onboarding_dismissed_at` redirect.
-- Make the redirect resilient: if `profile` row hasn't been created yet (race with `handle_new_user` trigger), wait/poll once instead of falling through.
-- **`src/pages/Onboarding.tsx`** — if `userId` exists but `profile` is missing, retry once before rendering empty state.
+Insert the missing `profiles` + `founder_profiles` / `investor_profiles` rows for the two test users directly, idempotently:
 
-### 2. Delete dead legacy pages & components (per "Keep /match, delete other legacy")
+- `profiles` row with `user_type`, `name`, `email`, `legal_accepted_at = now()`, `avatar_url = null`, `onboarding_dismissed_at = null` (so the gamified checklist shows).
+- For the founder: `founder_profiles` with `startup_name="Acme Labs"`, `one_liner`, `preferred_city`, `stage='seed'`, `industry=['AI','Fintech']`.
+- For the investor: `investor_profiles` with `firm_name="Catalyst Capital"`, `position="Partner"`, `location`, `preferred_stage='seed'`, `sectors_of_interest=['AI','Fintech']`.
 
-Files to remove entirely:
+### 2. Fix the silent failure mode in Dashboard
 
-- `src/pages/Landing.tsx` (old marketing — replaced by `src/pages/app/AppLanding.tsx`)
-- `src/pages/FounderOnboarding.tsx` and `src/pages/InvestorOnboarding.tsx` (replaced by `AppSignup.tsx`)
-- `src/pages/EarlyAccess.tsx`, `src/pages/Waitlist.tsx`, `src/pages/PendingApproval.tsx`
-- `src/pages/FounderProfileInput.tsx` (replaced by the gamified onboarding + Settings)
-- `src/components/ProfileCompletionGate.tsx`
-- `src/components/desktop/PendingApprovalOverlay.tsx`
-- `src/hooks/useApprovalCheck.ts`
+In `src/pages/Dashboard.tsx`:
 
-Routes to remove from **`src/App.tsx`**:
+- When `authLoading` resolves and `currentUser` is still `null`, redirect to `/onboarding` (the gate will recreate / route correctly) rather than spinning forever.
+- Move `setLoading(false)` so it always fires when `currentUser` is null instead of leaving the spinner up.
 
-- `/app/legacy`, `/onboarding/founder-legacy`, `/onboarding/investor-legacy`
-- `/founder-input` and `/app/founder-input`
+### 3. Make AuthGuard recover instead of falling through
 
-Keep intact:
+In `src/components/AuthGuard.tsx`: if the profile row is still missing after polling, redirect the user to `/onboarding` instead of rendering the protected page. `/onboarding` is the right "we need your profile created" surface and it already polls itself.
 
-- All `/match/*` routes and `src/pages/match/*`, `src/match/*`
-- `/` and `/events` → `EventSignIn` (event check-in homepage stays)
-- Everything under `/app/*`, `/dashboard`, `/onboarding`, etc.
+### 4. Re-test
 
-### 3. Rewire stray buttons & defaults
-
-| File | Current | Fix |
-|---|---|---|
-| `src/pages/Auth.tsx` line 292 | back → `/` | back → `/app` |
-| `src/pages/Auth.tsx` lines 370, 378 | "Sign up as founder/investor" → `/onboarding/founder` and `/onboarding/investor` | → `/app/signup?role=founder` and `?role=investor` (matches AppSignup's `initialRole`) |
-| `src/components/BottomNavigation.tsx` line 22 | Profile → `/founder-input` | Profile → `/profile/:userId` (own profile) |
-| `src/components/desktop/DesktopLayout.tsx` | imports `useApprovalCheck` + renders `PendingApprovalOverlay` | strip both imports and the overlay JSX |
-| `src/components/CaughtUpState.tsx` line 152 | → `/matches` | keep (route exists), but verify it loads under the new flow |
-
-Also keep the existing aliases `/onboarding/founder` → `AppSignup` and `/onboarding/investor` → `AppSignup` so any external links keep working.
-
-### 4. Walk through both end-to-end flows and verify
-
-Founder:
-`/app` → `/app/signup?role=founder` → 5 signup steps → email confirm → `/onboarding` (checklist shows) → "Continue" → `/dashboard` → Discover, Inbox, Fundraising → Cap Table, Settings, Concierge, Referrals, Profile share.
-
-Investor:
-`/app` → `/app/signup?role=investor` → 5 signup steps → `/onboarding` (investor variant) → `/dashboard` → Discover, Inbox, Investments, Settings, Concierge.
-
-For each step I will: (a) confirm `navigate()` targets the right route, (b) confirm the destination route exists in `App.tsx`, (c) confirm AuthGuard does not bounce the user back to onboarding once dismissed.
-
-### 5. Test-account verification
-
-Sign in with `test.founder@catalyst.test / test1234` and `test.investor@catalyst.test / test1234`, confirm both land on `/onboarding` with an empty 0/5 checklist, then can dismiss to `/dashboard` without being locked out.
+Sign in as `test.founder@catalyst.test` / `test1234`:
+- Expect: `/dashboard` loads — either the checklist appears (if `onboarding_dismissed_at` is null) or the swipe feed renders.
+- Same for `test.investor@catalyst.test`.
 
 ## Technical details
 
-- **No DB migrations required.** `onboarding_dismissed_at` already exists; `ProfileCompletionGate`'s `profile_grace_until` column can stay in the schema unused.
-- **No edge function changes required.** `seed-test-accounts` already produces the desired empty-checklist state.
-- After deleting `useApprovalCheck.ts` and the legacy pages, run a `rg` pass to ensure zero remaining imports before considering the audit complete.
-- The `is_approved()` SQL function and `user_roles` 'user' insert from `seed-test-accounts` are unused after this change but harmless; leave for now.
+- No table schema changes — only data inserts.
+- Migration uses `INSERT … ON CONFLICT DO NOTHING` so it's safe to re-run.
+- Not deleting any additional pages this round — the remaining sprawl (Dashboard, Matches, Settings, etc.) is the actual product. Aggressive purge offered by the user isn't needed to fix this bug.
+- Not editing `handle_new_user()` itself — the trigger is fine for the live signup flow; the seed function is the outlier and the next plan will rework it if you want.
 
 ## Out of scope
 
-- `/match/*` live event platform — untouched.
-- `/` `EventSignIn` homepage — untouched (separate product per earlier decisions).
-- Visual redesign of the onboarding page — only fixing display + gate logic.
+- Rewriting the seed function (works on fresh accounts going forward; only the two existing rows are affected).
+- `/match/*` — untouched.

@@ -72,7 +72,11 @@ const Dashboard = () => {
   // Initial Profile Fetch
   useEffect(() => {
     const fetchProfiles = async () => {
-      if (!currentUser) return;
+      if (!currentUser) {
+        if (!authLoading) setLoading(false);
+        return;
+      }
+
 
       try {
         setLoading(true);
@@ -146,7 +150,15 @@ const Dashboard = () => {
     if (!historyLoading) {
       fetchProfiles();
     }
-  }, [currentUser, historyLoading, filterProfiles]);
+  }, [currentUser, authLoading, historyLoading, filterProfiles]);
+
+  // Safety net: if auth resolved with no user/profile, bounce to onboarding instead of spinning forever
+  useEffect(() => {
+    if (!authLoading && !currentUser) {
+      navigate('/onboarding');
+    }
+  }, [authLoading, currentUser, navigate]);
+
 
   const {
     currentItem,
