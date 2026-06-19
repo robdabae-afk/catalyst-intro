@@ -277,7 +277,7 @@ const InvestorOnboarding = () => {
 
           <div className="space-y-4">
             <button
-              onClick={() => navigate('/early-access')}
+              onClick={() => navigate('/dashboard')}
               className="w-full p-6 rounded-2xl border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 transition-all text-left space-y-2"
             >
               <div className="flex items-center justify-between">
@@ -288,7 +288,7 @@ const InvestorOnboarding = () => {
             </button>
 
             <button
-              onClick={() => navigate('/pending-approval')}
+              onClick={() => navigate('/dashboard')}
               className="w-full p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 transition-all text-left space-y-2"
             >
               <div className="flex items-center justify-between">
