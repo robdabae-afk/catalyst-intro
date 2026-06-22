@@ -20,6 +20,7 @@ import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
+import { AdminProfileEditor } from "@/components/AdminProfileEditor";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 import { AdminReferralPanel } from "@/components/AdminReferralPanel";
 import { AdminConciergePanel } from "@/components/AdminConciergePanel";
@@ -69,6 +70,7 @@ const Admin = () => {
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
   const [editSuggestionUser, setEditSuggestionUser] = useState<UserWithStatus | null>(null);
+  const [editProfileUser, setEditProfileUser] = useState<UserWithStatus | null>(null);
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
   const [denyDialogUser, setDenyDialogUser] = useState<UserWithStatus | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -716,10 +718,17 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setEditSuggestionUser(user)}
+                              onClick={() => setEditProfileUser(user)}
                             >
                               <Edit className="w-4 h-4 mr-1" />
-                              Suggest Edit
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setEditSuggestionUser(user)}
+                            >
+                              Suggest
                             </Button>
                             <Button
                               size="sm"
@@ -903,6 +912,14 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="outline"
+                              onClick={() => setEditProfileUser(user)}
+                            >
+                              <Edit className="w-4 h-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
                               className={user.is_flagged ? "text-red-500 border-red-500/50 hover:bg-red-500/10" : ""}
                             >
@@ -1038,6 +1055,17 @@ const Admin = () => {
             loadUsers();
             setEditSuggestionUser(null);
           }}
+        />
+      )}
+
+      {/* Direct Profile Editor */}
+      {editProfileUser && (
+        <AdminProfileEditor
+          userId={editProfileUser.id}
+          userType={editProfileUser.user_type}
+          open={!!editProfileUser}
+          onOpenChange={(open) => !open && setEditProfileUser(null)}
+          onSaved={() => loadUsers()}
         />
       )}
       <Dialog open={!!denyDialogUser} onOpenChange={(open) => !open && setDenyDialogUser(null)}>
