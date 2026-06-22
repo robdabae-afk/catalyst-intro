@@ -49,14 +49,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Event check-in homepage */}
-          <Route path="/" element={<EventSignIn />} />
-          <Route path="/events" element={<EventSignIn />} />
-          <Route path="/event" element={<EventSignIn />} />
-
-          {/* Platform marketing/landing */}
+          {/* Platform marketing/landing — homepage */}
+          <Route path="/" element={<AppLanding />} />
           <Route path="/app" element={<AppLanding />} />
           <Route path="/app/signup" element={<AppSignup />} />
+          <Route path="/signup" element={<AppSignup />} />
+
+          {/* Event check-in */}
+          <Route path="/events" element={<EventSignIn />} />
+          <Route path="/event" element={<EventSignIn />} />
 
           {/* Public routes */}
           <Route path="/auth" element={<Auth />} />
