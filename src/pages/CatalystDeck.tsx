@@ -7,7 +7,7 @@ const CatalystDeck = () => {
 
   return (
     <iframe
-      src="/catalystdeck.html"
+      src={`/catalystdeck.html?v=${Date.now()}`}
       title="Catalyst Pre-Seed Deck"
       style={{
         position: "fixed",
