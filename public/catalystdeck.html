@@ -150,7 +150,7 @@
     position: relative; z-index: 2;
     width: 100%; max-width: 1100px; margin: 0 auto;
     display: flex; flex-direction: column; justify-content: space-between;
-    flex: 1; gap: 32px;
+    flex: 1; gap: 20px;
   }
   #problem .glow-a {
     position: absolute; top: 0; right: 0; width: 50%; height: 50%;
@@ -166,7 +166,13 @@
     display: inline-block; padding: 5px 14px;
     border: 1px solid rgba(181,148,16,0.35); border-radius: 999px;
     color: var(--gold); font-size: 10px; letter-spacing: 0.4em;
-    text-transform: uppercase; font-weight: 500; margin-bottom: 18px;
+    text-transform: uppercase; font-weight: 500; margin-bottom: 14px;
+  }
+  #problem .problem-hook {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(15px, 1.6vw, 20px); line-height: 1.4;
+    color: rgba(255,255,255,0.78); font-weight: 300;
+    max-width: 880px; margin-bottom: 18px;
   }
   #problem .problem-title {
     font-family: 'Cormorant Garamond', serif;
@@ -199,8 +205,8 @@
   }
   #problem .problem-footer {
     border-top: 1px solid rgba(255,255,255,0.08);
-    padding-top: 22px;
-    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px;
+    padding-top: 14px; margin-top: 4px;
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px;
     align-items: start;
   }
   @media (max-width: 880px) { #problem .problem-footer { grid-template-columns: 1fr; gap: 20px; } }
@@ -462,6 +468,7 @@
   <div class="glow-b"></div>
   <div class="problem-inner">
     <div class="reveal">
+      <p class="problem-hook">We've all heard someone say, <span class="gold">"I wish I'd invested in Tesla when it was just getting started."</span></p>
       <div class="thesis-chip">The Core Thesis</div>
       <h2 class="problem-title">Today, <span class="gold">two problems</span> exist:</h2>
     </div>
