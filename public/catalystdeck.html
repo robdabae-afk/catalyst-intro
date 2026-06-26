@@ -72,12 +72,11 @@
   }
   .cover-divider {
     width: 60px; height: 1px; background: var(--gold);
-    margin: 14px auto 14px; opacity: 0;
+    margin: 36px auto 24px; opacity: 0;
     animation: fadeIn 1s ease 3s forwards; position: relative; z-index: 2;
   }
   .cover-tagline {
     font-size: 12px; letter-spacing: 0.4em; color: var(--grey); text-transform: uppercase;
-    text-align: center; margin: 0 auto;
     opacity: 0; animation: fadeIn 1s ease 3.3s forwards; position: relative; z-index: 2;
   }
   .cover-footer {
@@ -146,79 +145,19 @@
   .traction-caption strong { color: var(--white); font-weight: 400; }
 
   /* ===== PROBLEM ===== */
-  #problem { padding: 6vh 6vw; justify-content: space-between; }
-  #problem .problem-inner {
-    position: relative; z-index: 2;
-    width: 100%; max-width: 1100px; margin: 0 auto;
-    display: flex; flex-direction: column; justify-content: space-between;
-    flex: 1; gap: 20px;
-  }
-  #problem .glow-a {
-    position: absolute; top: 0; right: 0; width: 50%; height: 50%;
-    background: rgba(181,148,16,0.05); filter: blur(140px); border-radius: 50%;
-    pointer-events: none; z-index: 0;
-  }
-  #problem .glow-b {
-    position: absolute; bottom: 0; left: 0; width: 33%; height: 33%;
-    background: rgba(255,255,255,0.03); filter: blur(120px); border-radius: 50%;
-    pointer-events: none; z-index: 0;
-  }
-  #problem .thesis-chip {
-    display: inline-block; padding: 5px 14px;
-    border: 1px solid rgba(181,148,16,0.35); border-radius: 999px;
-    color: var(--gold); font-size: 10px; letter-spacing: 0.4em;
-    text-transform: uppercase; font-weight: 500; margin-bottom: 14px;
-  }
-  #problem .problem-hook {
+  .problem-hero {
     font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(30px, 4.2vw, 48px); line-height: 1.15;
-    font-weight: 300; color: var(--white); max-width: 1000px;
+    font-size: clamp(40px, 6vw, 84px); line-height: 1.1;
+    font-weight: 300; max-width: 1100px; text-align: center;
   }
-  #problem .problem-title {
-    font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: clamp(16px, 1.7vw, 22px); line-height: 1.4;
-    font-weight: 300; color: rgba(255,255,255,0.75);
-    max-width: 700px;
+  .problem-stats { display: flex; gap: 80px; margin-top: 80px; flex-wrap: wrap; justify-content: center; }
+  .stat-block { text-align: center; min-width: 200px; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(56px, 8vw, 120px); font-weight: 300; line-height: 1; color: var(--white);
   }
-  #problem .problem-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
-  }
-  @media (max-width: 880px) { #problem .problem-grid { grid-template-columns: 1fr; gap: 32px; } }
-  #problem .problem-card-label {
-    display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
-  }
-  #problem .problem-card-label::before {
-    content: ''; width: 24px; height: 1px; background: var(--gold);
-  }
-  #problem .problem-card-label span {
-    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
-    color: #ddd; font-weight: 500;
-  }
-  #problem .problem-statement {
-    font-size: clamp(15px, 1.4vw, 18px); line-height: 1.45;
-    font-weight: 300; color: var(--white); margin-bottom: 12px;
-    padding-left: 38px;
-  }
-  #problem .problem-support {
-    font-size: 12.5px; line-height: 1.6; color: #888; font-weight: 300;
-    margin-left: 38px; padding-left: 16px;
-    border-left: 1px solid rgba(255,255,255,0.08);
-  }
-  #problem .problem-footer {
-    border-top: 1px solid rgba(255,255,255,0.08);
-    padding-top: 14px; margin-top: 4px;
-    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px;
-    align-items: start;
-  }
-  @media (max-width: 880px) { #problem .problem-footer { grid-template-columns: 1fr; gap: 20px; } }
-  #problem .problem-result {
-    font-family: 'Cormorant Garamond', serif; font-style: italic;
-    font-size: clamp(15px, 1.5vw, 19px); line-height: 1.45;
-    color: rgba(255,255,255,0.85); font-weight: 300;
-  }
-  #problem .problem-closing {
-    font-size: 12.5px; line-height: 1.65; color: #888; font-weight: 300;
-  }
+  .stat-num.gold { color: var(--gold); }
+  .stat-label { margin-top: 12px; font-size: 12px; letter-spacing: 0.25em; color: var(--grey); text-transform: uppercase; }
 
   /* ===== SOLUTION ===== */
   .solution-wrap { text-align: center; }
@@ -242,15 +181,6 @@
   .compare-then { color: var(--grey); text-align: right; font-size: 15px; }
   .compare-now { color: var(--white); font-size: 15px; }
   .compare-arrow { color: var(--gold); font-size: 18px; }
-
-  .why-logos {
-    display: flex; align-items: center; justify-content: flex-end;
-    gap: 18px; margin-bottom: 22px;
-  }
-  .why-logos img {
-    height: 56px; width: auto; object-fit: contain;
-    opacity: 0.95; border-radius: 6px;
-  }
 
   /* ===== PILLARS ===== */
   .pillars {
@@ -314,16 +244,14 @@
   /* ===== TEAM ===== */
   .team-grid {
     display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 48px; max-width: 900px; width: 100%; margin-top: 24px;
+    gap: 60px; max-width: 1100px; width: 100%; margin-top: 40px;
   }
   @media (max-width: 880px) { .team-grid { grid-template-columns: 1fr; } }
   .team-card { display: flex; flex-direction: column; }
   .team-photo {
     aspect-ratio: 1 / 1;
-    max-height: 240px;
-    width: 240px;
     background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-    border: 1px solid #222; margin-bottom: 18px;
+    border: 1px solid #222; margin-bottom: 28px;
     position: relative; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
   }
@@ -334,13 +262,12 @@
     z-index: 1;
   }
   .team-initials {
-    font-family: 'Cormorant Garamond', serif; font-size: 72px;
+    font-family: 'Cormorant Garamond', serif; font-size: 96px;
     color: var(--gold-dim); font-weight: 300; z-index: 1;
   }
-  .team-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 4px; }
-  .team-role { font-size: 11px; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
-  .team-bio { font-size: 13px; line-height: 1.55; color: #bbb; }
-
+  .team-name { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 400; margin-bottom: 6px; }
+  .team-role { font-size: 12px; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; margin-bottom: 18px; }
+  .team-bio { font-size: 15px; line-height: 1.6; color: #bbb; }
 
   /* ===== ASK ===== */
   .ask-wrap { text-align: center; max-width: 1100px; }
@@ -433,6 +360,10 @@
   <div class="lunar"></div>
   <div class="scene-num">01</div>
   <div class="scene-label">Pitch · Pre-Seed · 2026</div>
+  <svg class="cover-arrow" viewBox="0 0 600 100" fill="none" xmlns="[w3.org](http://www.w3.org/2000/svg)">
+    <path d="M 20 70 Q 150 100, 300 60 T 560 20" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <path class="head" d="M 540 10 L 565 18 L 552 35" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>
   <div class="cover-title">CATALYST</div>
   <div class="cover-divider"></div>
   <div class="cover-tagline">The next-gen catalyst for capital</div>
@@ -470,36 +401,14 @@
 <section class="scene" id="problem">
   <div class="scene-num">03</div>
   <div class="scene-label">The Problem</div>
-  <div class="glow-a"></div>
-  <div class="glow-b"></div>
-  <div class="problem-inner">
-    <div class="reveal">
-      <div class="thesis-chip">The Core Thesis</div>
-      <p class="problem-hook">We've all heard someone say, <span class="gold">"I wish I'd invested in Tesla when it was just getting started."</span></p>
-    </div>
-
-    <div class="reveal reveal-d1">
-      <h2 class="problem-title">Today, <span class="gold">two problems</span> exist:</h2>
-    </div>
-
-    <div class="problem-grid">
-      <div class="reveal reveal-d2">
-        <div class="problem-card-label"><span>Barriers to access</span></div>
-        <p class="problem-statement">Retail investors cannot discover <em style="font-style:normal;color:var(--gold)">at scale</em> promising early-stage startups before they become widely known.</p>
-        <p class="problem-support">If you don't know an opportunity exists, you can't evaluate or invest in it.</p>
-      </div>
-      <div class="reveal reveal-d3">
-        <div class="problem-card-label"><span>Friction in funding</span></div>
-        <p class="problem-statement">First-time founders often raise capital through an <em style="font-style:normal;color:var(--gold)">inefficient, relationship-driven</em> process.</p>
-        <p class="problem-support">Warm introductions and existing networks can matter as much as the quality of the business itself.</p>
-      </div>
-    </div>
-
-    <div class="problem-footer reveal reveal-d4">
-      <p class="problem-result">The result is a capital market that isn't as efficient as it could be — exceptional founders struggle to find funding, while motivated investors miss opportunities simply because they lack access to the right networks.</p>
-      <p class="problem-closing">When capital doesn't flow efficiently to promising companies, innovation slows. The next generation of transformative businesses shouldn't be determined primarily by who founders know — they should compete on the strength of their ideas, execution, and potential.</p>
-    </div>
+  <div class="problem-hero reveal">
+    We've all heard someone say, <span class="gold">"I wish I'd invested in Tesla when it was just getting started."</span>
   </div>
+  <div class="section-body reveal reveal-d1" style="margin-top:32px;">
+    <p>Retail investors cannot discover (at scale) promising early-stage startups before they become widely known. If you don't know an opportunity exists, you can't evaluate or invest in it.</p>
+    <p>First-time founders often raise capital through an inefficient, relationship-driven process where warm introductions and existing networks can matter as much as the quality of the business itself.</p>
+  </div>
+
 </section>
 
 <!-- ===== 04 SOLUTION ===== -->
@@ -530,11 +439,6 @@
       </div>
     </div>
     <div class="compare reveal reveal-d2">
-      <div class="why-logos" aria-hidden="true">
-        <img src="/deck/robinhood.png" alt="Robinhood" />
-        <img src="/deck/polymarket.webp" alt="Polymarket" />
-        <img src="/deck/kalshi.jpg" alt="Kalshi" />
-      </div>
       <div class="compare-row">
         <div class="compare-then">Public stocks</div>
         <div class="compare-arrow">→</div>
@@ -628,9 +532,8 @@
     </div>
     <div class="reveal reveal-d2">
       <div class="section-eyebrow">The compounding loop</div>
-      <h2 class="section-title" style="font-size:clamp(18px,2vw,26px);line-height:1.35;">More founders attract more investors. More investors generate more data. More data attracts institutions. Institutional capital attracts more founders.</h2>
-      <ul class="flywheel-list" style="margin-top:20px;">
-
+      <h2 class="section-title" style="font-size:clamp(28px,3.5vw,44px);">More founders attract more investors. More investors generate more data. More data attracts institutions. Institutional capital attracts more founders.</h2>
+      <ul class="flywheel-list" style="margin-top:30px;">
         <li class="flywheel-item">
           <div class="flywheel-step">01</div>
           <div class="flywheel-text"><strong>Founders list</strong> on Catalyst because the community is already here.</div>
