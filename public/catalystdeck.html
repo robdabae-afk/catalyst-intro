@@ -145,19 +145,73 @@
   .traction-caption strong { color: var(--white); font-weight: 400; }
 
   /* ===== PROBLEM ===== */
-  .problem-hero {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(40px, 6vw, 84px); line-height: 1.1;
-    font-weight: 300; max-width: 1100px; text-align: center;
+  #problem { padding: 6vh 6vw; justify-content: space-between; }
+  #problem .problem-inner {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 1100px; margin: 0 auto;
+    display: flex; flex-direction: column; justify-content: space-between;
+    flex: 1; gap: 32px;
   }
-  .problem-stats { display: flex; gap: 80px; margin-top: 80px; flex-wrap: wrap; justify-content: center; }
-  .stat-block { text-align: center; min-width: 200px; }
-  .stat-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(56px, 8vw, 120px); font-weight: 300; line-height: 1; color: var(--white);
+  #problem .glow-a {
+    position: absolute; top: 0; right: 0; width: 50%; height: 50%;
+    background: rgba(181,148,16,0.05); filter: blur(140px); border-radius: 50%;
+    pointer-events: none; z-index: 0;
   }
-  .stat-num.gold { color: var(--gold); }
-  .stat-label { margin-top: 12px; font-size: 12px; letter-spacing: 0.25em; color: var(--grey); text-transform: uppercase; }
+  #problem .glow-b {
+    position: absolute; bottom: 0; left: 0; width: 33%; height: 33%;
+    background: rgba(255,255,255,0.03); filter: blur(120px); border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+  #problem .thesis-chip {
+    display: inline-block; padding: 5px 14px;
+    border: 1px solid rgba(181,148,16,0.35); border-radius: 999px;
+    color: var(--gold); font-size: 10px; letter-spacing: 0.4em;
+    text-transform: uppercase; font-weight: 500; margin-bottom: 18px;
+  }
+  #problem .problem-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 4.2vw, 48px); line-height: 1.1;
+    font-weight: 300; max-width: 900px;
+  }
+  #problem .problem-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+  }
+  @media (max-width: 880px) { #problem .problem-grid { grid-template-columns: 1fr; gap: 32px; } }
+  #problem .problem-card-label {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+  }
+  #problem .problem-card-label::before {
+    content: ''; width: 24px; height: 1px; background: var(--gold);
+  }
+  #problem .problem-card-label span {
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: #ddd; font-weight: 500;
+  }
+  #problem .problem-statement {
+    font-size: clamp(15px, 1.4vw, 18px); line-height: 1.45;
+    font-weight: 300; color: var(--white); margin-bottom: 12px;
+    padding-left: 38px;
+  }
+  #problem .problem-support {
+    font-size: 12.5px; line-height: 1.6; color: #888; font-weight: 300;
+    margin-left: 38px; padding-left: 16px;
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  #problem .problem-footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 22px;
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 880px) { #problem .problem-footer { grid-template-columns: 1fr; gap: 20px; } }
+  #problem .problem-result {
+    font-family: 'Cormorant Garamond', serif; font-style: italic;
+    font-size: clamp(15px, 1.5vw, 19px); line-height: 1.45;
+    color: rgba(255,255,255,0.85); font-weight: 300;
+  }
+  #problem .problem-closing {
+    font-size: 12.5px; line-height: 1.65; color: #888; font-weight: 300;
+  }
 
   /* ===== SOLUTION ===== */
   .solution-wrap { text-align: center; }
