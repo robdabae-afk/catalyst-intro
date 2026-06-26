@@ -242,6 +242,18 @@
   .compare-now { color: var(--white); font-size: 15px; }
   .compare-arrow { color: var(--gold); font-size: 18px; }
 
+  .why-logos {
+    display: flex; align-items: center; gap: 18px; margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .why-logos img {
+    height: 36px; width: auto; object-fit: contain;
+    opacity: 0.82; border-radius: 4px;
+    filter: grayscale(15%);
+    transition: opacity 0.3s ease;
+  }
+  .why-logos img:hover { opacity: 1; }
+
   /* ===== PILLARS ===== */
   .pillars {
     display: grid; grid-template-columns: repeat(3, 1fr);
