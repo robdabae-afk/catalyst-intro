@@ -244,14 +244,16 @@
   /* ===== TEAM ===== */
   .team-grid {
     display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 60px; max-width: 1100px; width: 100%; margin-top: 40px;
+    gap: 48px; max-width: 900px; width: 100%; margin-top: 24px;
   }
   @media (max-width: 880px) { .team-grid { grid-template-columns: 1fr; } }
   .team-card { display: flex; flex-direction: column; }
   .team-photo {
     aspect-ratio: 1 / 1;
+    max-height: 240px;
+    width: 240px;
     background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-    border: 1px solid #222; margin-bottom: 28px;
+    border: 1px solid #222; margin-bottom: 18px;
     position: relative; overflow: hidden;
     display: flex; align-items: center; justify-content: center;
   }
@@ -262,12 +264,13 @@
     z-index: 1;
   }
   .team-initials {
-    font-family: 'Cormorant Garamond', serif; font-size: 96px;
+    font-family: 'Cormorant Garamond', serif; font-size: 72px;
     color: var(--gold-dim); font-weight: 300; z-index: 1;
   }
-  .team-name { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 400; margin-bottom: 6px; }
-  .team-role { font-size: 12px; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; margin-bottom: 18px; }
-  .team-bio { font-size: 15px; line-height: 1.6; color: #bbb; }
+  .team-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 400; margin-bottom: 4px; }
+  .team-role { font-size: 11px; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+  .team-bio { font-size: 13px; line-height: 1.55; color: #bbb; }
+
 
   /* ===== ASK ===== */
   .ask-wrap { text-align: center; max-width: 1100px; }
