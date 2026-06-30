@@ -8,6 +8,7 @@ import AppSignup from "./pages/app/AppSignup";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
 import Matches from "./pages/Matches";
 import CoffeeChat from "./pages/CoffeeChat";
 import Requests from "./pages/Requests";
@@ -77,6 +78,8 @@ const App = () => (
           {/* Protected Routes */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/home" element={<AuthGuard><Home /></AuthGuard>} />
+          <Route path="/app/home" element={<AuthGuard><Home /></AuthGuard>} />
           <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
