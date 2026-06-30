@@ -1,90 +1,82 @@
-# Dashboard Redesign: Grid-Based Discovery
 
-Replace the Tinder-style swipe Discover surface with a structured browse-grid dashboard inspired by Kalshi, Robinhood, and Polymarket. Matches, inbox, chat, and existing match logic stay untouched. Swipe-based code paths remain only as the underlying data layer (Express Interest writes the same `swipes` row with `action='like'`, mutual interest still creates a `matches` row).
+## Goal
 
-## What the user sees
+Make the Discover dashboard fit entirely within the viewport (no vertical or horizontal scrolling) on both mobile and desktop, and gate the daily profile feed to 6 profiles for Basic users with an upgrade path to a $40/mo Pro tier for unlimited daily profiles.
 
-```text
-┌──────────┬────────────────────────────────────────────┐
-│ FILTER   │  All  Trending  New  Featured  Saved  ⚙   │
-├──────────┴────────────────────────────────────────────┤
-│  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐                  │
-│  │card │  │card │  │card │  │card │   <- responsive  │
-│  └─────┘  └─────┘  └─────┘  └─────┘      grid        │
-│  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐                  │
-│  │card │  │card │  │card │  │card │                  │
-│  └─────┘  └─────┘  └─────┘  └─────┘                  │
-└───────────────────────────────────────────────────────┘
-```
+## 1. Daily profile limit (6/day, Pro unlimited)
 
-- **Filter panel (left, collapsible drawer on mobile):** all current discovery filters — for investors browsing founders: industry, stage, MRR/revenue band, traction keywords, location, verified, featured; for founders browsing investors: sectors, check-size band, preferred stage, location, investor type. Persists via existing `filter_preferences` pattern.
-- **Top menu bar:** unified nav that absorbs today's bottom nav + top-nav settings buttons: Discover • Matches • Inbox • Requests • My Investments/Portfolio (role-based) • Concierge • Boosts/Tokens • Profile • Settings • Admin (if admin). Notification badges (unread messages, new matches, pending requests) move here. Mobile collapses it into a hamburger that opens a full-height sheet.
-- **Card grid:** 4 cols desktop / 3 tablet / 2 mobile. Each tile is compact, info-dense, Polymarket-style.
+- Add constants in `src/lib/membership-constants.ts`:
+  - `BASIC_DAILY_DISCOVER_PROFILES = 6`
+  - `PRO_DAILY_DISCOVER_PROFILES = Infinity` (or a high cap)
+- Create `src/hooks/useDailyDiscoverFeed.ts` (or extend `useDiscoverFeed`) that:
+  - Picks a deterministic daily slice of 6 profiles (seeded by `user_id + YYYY-MM-DD`) from the filtered candidate pool so the same set persists across reloads for that day.
+  - For Basic users, hard-caps the returned `profiles` array at 6 and exposes `dailyLimitReached`, `remainingToday`, `isPro`.
+  - For Pro users, returns the full filtered feed with pagination (current behavior).
+  - Resets at local midnight.
+- Filters still apply first; the 6/day cap is applied to the filtered result so the daily set respects the user's filters.
+- When filters change mid-day for Basic, the cap still applies to the new filtered set but does not grant additional profiles beyond 6 total interactions for the day. Track "profiles surfaced today" in a new `daily_discover_views` table (or reuse `swipes` count) keyed by user + date.
 
-### Founder card (when an investor browses)
-- Logo/avatar (small, top-left), company name, verified/featured chips
-- One-liner (2 lines max, truncated)
-- Inline metrics row: Stage • Industry tag(s) • MRR • Traction snippet
-- Signal chips: Trending / New / Featured when applicable
-- Primary CTA: **Express Interest** (heart + label). Secondary: **Save** (bookmark, watchlist), **View** (opens existing profile page)
-- After interest sent: button becomes disabled "Interest Sent"; on mutual interest, existing match modal fires
+## 2. Pro membership at $40/mo
 
-### Investor card (when a founder browses)
-- Same layout: avatar, firm name, verified chip, position
-- Metrics row: Check size • Preferred stage • Sectors
-- Same CTA pattern; Basic-founder messaging gate remains downstream in Matches
+- Add a new Stripe price for the $40/mo Pro Discover tier. Reuse the existing Stripe edge functions (`create-checkout`, `check-subscription`, `customer-portal`).
+- Add `PRO_DISCOVER_PRICE_ID` in `src/lib/stripe-constants.ts`.
+- Reuse existing `GetProButton` / `UpgradePrompt` components; point them at the new price when triggered from Discover.
+- `useAuth().isPro` already drives gating — confirm the check-subscription function recognizes the new product as Pro (add product id to the Pro mapping).
 
-## Interaction model
+## 3. Single-screen dashboard layout (no scroll)
 
-- Click card body → existing `/profile/:id` view (unchanged)
-- Express Interest → writes `swipes` row (`action='like'`) using existing logic; mutual = match via current trigger/flow
-- Save → new lightweight `watchlist` table (private; no notification to other side)
-- Filters + search bar at top of grid; results paginated/infinite-scroll
-- No swipe gestures, no per-day swipe limit UX in the grid (Pro/Basic limits still enforced server-side on the like action, surfaced as a toast/upsell when hit)
-- Ad insertion: every Nth tile shows a sponsored card (reuse `ad_profiles`), Pro bypasses
+Target: everything visible within `100dvh` minus the menu bar, on 390x690 mobile and standard desktop.
 
-## Routes & files
+Layout changes in `src/pages/Dashboard.tsx`:
+- Wrap the page in `h-[100dvh] overflow-hidden flex flex-col`.
+- `DiscoverMenuBar` stays as a compact top bar (single row).
+- Main area becomes `flex-1 min-h-0 overflow-hidden` with the grid sized to fill remaining height.
+- Grid uses fixed rows so 6 cards always fit:
+  - Mobile (<640px): `grid-cols-2 grid-rows-3` → 6 tiles, no scroll.
+  - Tablet (sm–lg): `grid-cols-3 grid-rows-2` → 6 tiles.
+  - Desktop (lg+): `grid-cols-3 grid-rows-2` with filter sidebar to the left (sidebar also `overflow-hidden`, internal scroll only if user opens a long filter group — default collapsed).
+- Remove the "Load more" button for Basic (no more than 6). For Pro, replace with horizontal pagination dots or a "Next 6" button that swaps the visible page in-place (still no page scroll).
+- Count line ("X founders") and mobile Filters button merge into the menu bar to save vertical space.
 
-- **New:** `src/pages/Discover.tsx` (grid dashboard, replaces the swipe view)
-- **New:** `src/components/discover/DiscoverGrid.tsx`, `DiscoverCard.tsx`, `DiscoverFilters.tsx`, `DiscoverMenuBar.tsx`
-- **New hook:** `src/hooks/useDiscoverFeed.ts` — paginated query against `profiles` + `founder_profiles`/`investor_profiles`, applies filters + swipe-history exclusions (reuse `useSwipeHistory` filtering)
-- **New hook:** `src/hooks/useExpressInterest.ts` — wraps the existing like → match logic in one call (returns `{ matched: boolean }`)
-- **Reuse:** `useSwipeHistory`, `useMatchMessaging`, `useDailySwipes` (limits), `MatchModal`, `FilterPreferences`
-- **Route swap in `src/App.tsx`:** `/discover` (and `/dashboard` if it currently points to swipe) → `Discover.tsx`. Old `SwipeCard` / `SwipePanel` / `CaughtUpState` files stay on disk (per "no deletes") but are unrouted.
-- **Nav cleanup:** `BottomNavigation.tsx` removed from layout in favor of new top `DiscoverMenuBar`; on mobile collapses to hamburger.
+Layout changes in `DiscoverMenuBar.tsx`:
+- Collapse to a single row on mobile: logo + search (icon-expand) + view tabs (icon-only) + overflow menu (settings/notifications/profile).
+- Remove any secondary row; use a popover for filters/view tabs on small screens.
 
-## Data layer
+Layout/density changes in `DiscoverCard.tsx`:
+- Reduce padding (`p-4` → `p-2.5`), avatar `h-11` → `h-9`, tighter gaps.
+- Title `text-sm` → `text-[13px]`; subtitle clamped to 1 line (was 2) with `min-h` removed.
+- Collapse tag row: show stage + 1 industry chip + `+N`.
+- Merge metric line into the tag row (small muted tabular-nums on the right).
+- Action row becomes a single full-width Express Interest button with a bookmark icon button overlaid top-right of the card (absolute), removing the dedicated footer row.
+- Card uses `h-full` and internal `flex-col justify-between` so it fills its grid cell exactly.
 
-- **Watchlist table** (new migration):
-  ```sql
-  CREATE TABLE public.watchlist (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    target_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    created_at timestamptz NOT NULL DEFAULT now(),
-    UNIQUE(user_id, target_id)
-  );
-  GRANT SELECT, INSERT, DELETE ON public.watchlist TO authenticated;
-  GRANT ALL ON public.watchlist TO service_role;
-  ALTER TABLE public.watchlist ENABLE ROW LEVEL SECURITY;
-  CREATE POLICY "own watchlist" ON public.watchlist
-    FOR ALL TO authenticated
-    USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
-  ```
-- No changes to `swipes`, `matches`, `messages`, `profiles`.
+## 4. Upgrade prompt when limit hit
 
-## Visual direction
+- When Basic user has consumed all 6, replace any further would-be tiles with a single full-bleed "Daily limit reached" panel inside the grid area (no scroll), showing:
+  - "You've seen today's 6 matches"
+  - "Upgrade to Pro ($40/mo) for unlimited daily profiles"
+  - CTA → existing checkout flow with the new price id
+  - Secondary: "Come back tomorrow"
+- Same panel shown if filters return zero profiles today after the daily set is locked.
 
-Silver & Sleek theme stays (Playfair Display headers, Inter body, metallic silver/dark gray/off-white). Cards: subtle border, `rounded-xl`, hover lift + faint silver glow. Signal chips use small caps Inter. Grid feels like Polymarket's market list — dense, scannable, monetary, with the typographic refinement of Robinhood's lists.
+## 5. Files touched
 
-## Out of scope (no changes)
+- `src/pages/Dashboard.tsx` — full-height layout, grid rows, remove load-more for Basic, limit panel.
+- `src/components/discover/DiscoverCard.tsx` — density pass, fill cell, bookmark repositioned.
+- `src/components/discover/DiscoverMenuBar.tsx` — single-row compact layout, popover for filters on mobile.
+- `src/components/discover/DiscoverFilters.tsx` — keep, but ensure sidebar fits within viewport (its own internal scroll only).
+- `src/hooks/useDiscoverFeed.ts` — add deterministic daily slice + Basic 6-cap; gate `loadMore`/`hasMore` by tier.
+- `src/lib/membership-constants.ts` — add discover daily constants.
+- `src/lib/stripe-constants.ts` — add `$40/mo` Pro price id.
+- `check-subscription` edge function — map new product id to Pro.
+- New migration: `daily_discover_views` table (user_id, date, profile_ids[]) with RLS + GRANTs, to persist the day's locked-in set per user.
 
-- Matches page, Inbox, MatchThread, chat gating rules
-- Onboarding, auth, profile editing
-- Concierge, SAFEs, Investments, Admin panels
-- All swipe-era files remain on disk per the no-delete rule
+## 6. Out of scope
 
-## Open follow-ups after build
+- Inbox, Matches, Profile, Settings, Concierge pages.
+- Existing swipe-history logic remains untouched; daily discover limit is independent of express-interest swipe limits.
+- No deletions of existing files.
 
-1. Decide whether to delete the unrouted swipe files in a later cleanup pass (requires explicit permission).
-2. Whether the grid should default to "Trending" or "All" on first load.
+## Open question
+
+For Pro users, should the 6-per-page pagination behavior be "Next 6" tiles in-place (no scroll, keeps the no-scroll rule app-wide) or should Pro users get a scrollable feed? Default in this plan: in-place pagination so the no-scroll rule holds everywhere.
