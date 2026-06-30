@@ -186,12 +186,12 @@ export function DiscoverMenuBar({
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2 sm:gap-4 h-14">
+    <nav className="shrink-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-1.5 sm:gap-3 h-11 sm:h-12">
           <h1
             onClick={() => navigate("/dashboard")}
-            className="text-base sm:text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer shrink-0"
+            className="text-sm sm:text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer shrink-0"
           >
             CATALYST
           </h1>
@@ -202,18 +202,18 @@ export function DiscoverMenuBar({
           )}
 
           {/* Search */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <div className="relative flex-1 min-w-0 max-w-md">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder="Search by name…"
-              className="pl-8 h-9 text-sm"
+              placeholder="Search…"
+              className="pl-7 h-8 text-xs"
             />
           </div>
 
-          {/* View tabs (desktop) */}
-          <div className="hidden md:flex items-center gap-0.5 border border-border rounded-md p-0.5 bg-muted/30">
+          {/* View tabs (desktop only) */}
+          <div className="hidden lg:flex items-center gap-0.5 border border-border rounded-md p-0.5 bg-muted/30">
             {VIEWS.map((v) => {
               const active = view === v.id;
               const Icon = v.icon;
@@ -221,131 +221,108 @@ export function DiscoverMenuBar({
                 <button
                   key={v.id}
                   onClick={() => onViewChange(v.id)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                  className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
                     active
                       ? "bg-background text-foreground shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3 h-3" />
                   {v.label}
                 </button>
               );
             })}
           </div>
 
-          {/* Avatar dropdown (desktop) */}
-          <div className="hidden md:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={avatarUrl || ""} alt={userName || ""} />
-                    <AvatarFallback>{userName?.charAt(0) || "U"}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => navigate("/matches")}>
-                  <MessageSquare className="w-4 h-4 mr-2" /> Matches
-                  {newMatches > 0 && <Badge className="ml-auto h-5">{newMatches}</Badge>}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/requests")}>
-                  <Inbox className="w-4 h-4 mr-2" /> Inbox
-                  {pendingRequests + unreadMessages > 0 && (
-                    <Badge className="ml-auto h-5">{pendingRequests + unreadMessages}</Badge>
-                  )}
-                </DropdownMenuItem>
-                {userType === "investor" && (
-                  <DropdownMenuItem onClick={() => navigate("/investments")}>
-                    <DollarSign className="w-4 h-4 mr-2" /> My Investments
-                  </DropdownMenuItem>
-                )}
-                {userType === "founder" && (
-                  <DropdownMenuItem onClick={() => navigate("/captable")}>
-                    <FileText className="w-4 h-4 mr-2" /> Cap Table
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => navigate("/concierge")}>
-                  <Users className="w-4 h-4 mr-2" /> Concierge
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/filters")}>
-                  <SettingsIcon className="w-4 h-4 mr-2" /> Discovery Filters
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/referrals")}>
-                  <Share2 className="w-4 h-4 mr-2" /> Referrals
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleShare}>
-                  <Share2 className="w-4 h-4 mr-2" /> Share my profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate("/settings")}>
-                  <SettingsIcon className="w-4 h-4 mr-2" /> Settings
-                </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <Shield className="w-4 h-4 mr-2" /> Admin
-                  </DropdownMenuItem>
-                )}
-                {!isPro && userType && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <GetProButton userType={userType} variant="menu" />
-                    </DropdownMenuItem>
-                  </>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                  <LogOut className="w-4 h-4 mr-2" /> Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          {/* Mobile hamburger */}
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="w-5 h-5" />
+          {/* View dropdown (mobile/tablet) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="lg:hidden h-8 px-2 text-xs shrink-0">
+                {(() => {
+                  const cur = VIEWS.find((v) => v.id === view) ?? VIEWS[0];
+                  const Icon = cur.icon;
+                  return <Icon className="w-3.5 h-3.5" />;
+                })()}
               </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72 p-4">
-              <div className="flex items-center gap-3 pb-4 border-b border-border">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={avatarUrl || ""} alt={userName || ""} />
-                  <AvatarFallback>{userName?.charAt(0) || "U"}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <div className="text-sm font-semibold truncate">{userName}</div>
-                  <div className="text-xs text-muted-foreground capitalize">{userType}</div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-0.5 mt-3">{NavItems}</div>
-            </SheetContent>
-          </Sheet>
-        </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              {VIEWS.map((v) => {
+                const Icon = v.icon;
+                return (
+                  <DropdownMenuItem key={v.id} onClick={() => onViewChange(v.id)}>
+                    <Icon className="w-4 h-4 mr-2" /> {v.label}
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-        {/* View tabs (mobile, below row) */}
-        <div className="md:hidden flex items-center gap-1 overflow-x-auto pb-2 -mx-1 px-1">
-          {VIEWS.map((v) => {
-            const active = view === v.id;
-            const Icon = v.icon;
-            return (
-              <button
-                key={v.id}
-                onClick={() => onViewChange(v.id)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-md border text-xs font-medium shrink-0 transition-colors ${
-                  active
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "border-border text-muted-foreground"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {v.label}
-              </button>
-            );
-          })}
+          {/* Avatar dropdown (always visible) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full h-8 w-8 shrink-0">
+                <Avatar className="h-7 w-7">
+                  <AvatarImage src={avatarUrl || ""} alt={userName || ""} />
+                  <AvatarFallback className="text-xs">{userName?.charAt(0) || "U"}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => navigate("/matches")}>
+                <MessageSquare className="w-4 h-4 mr-2" /> Matches
+                {newMatches > 0 && <Badge className="ml-auto h-5">{newMatches}</Badge>}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/requests")}>
+                <Inbox className="w-4 h-4 mr-2" /> Inbox
+                {pendingRequests + unreadMessages > 0 && (
+                  <Badge className="ml-auto h-5">{pendingRequests + unreadMessages}</Badge>
+                )}
+              </DropdownMenuItem>
+              {userType === "investor" && (
+                <DropdownMenuItem onClick={() => navigate("/investments")}>
+                  <DollarSign className="w-4 h-4 mr-2" /> My Investments
+                </DropdownMenuItem>
+              )}
+              {userType === "founder" && (
+                <DropdownMenuItem onClick={() => navigate("/captable")}>
+                  <FileText className="w-4 h-4 mr-2" /> Cap Table
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={() => navigate("/concierge")}>
+                <Users className="w-4 h-4 mr-2" /> Concierge
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/filters")}>
+                <SettingsIcon className="w-4 h-4 mr-2" /> Discovery Filters
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/referrals")}>
+                <Share2 className="w-4 h-4 mr-2" /> Referrals
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleShare}>
+                <Share2 className="w-4 h-4 mr-2" /> Share my profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <SettingsIcon className="w-4 h-4 mr-2" /> Settings
+              </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onClick={() => navigate("/admin")}>
+                  <Shield className="w-4 h-4 mr-2" /> Admin
+                </DropdownMenuItem>
+              )}
+              {!isPro && userType && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <GetProButton userType={userType} variant="menu" />
+                  </DropdownMenuItem>
+                </>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                <LogOut className="w-4 h-4 mr-2" /> Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </nav>
