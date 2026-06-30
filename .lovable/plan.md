@@ -1,48 +1,90 @@
-Tested deck at the user's 1063×690 viewport and measured every slide. Six slides overflow:
+# Dashboard Redesign: Grid-Based Discovery
 
-| # | Slide | Overflow |
-|---|---|---|
-| 01 | Cover | +451px |
-| 05 | Why Now | +102px |
-| 06 | How It Works | +27px |
-| 07 | Flywheel | +192px |
-| 09 | Business Model | +97px |
-| 10 | Team | +3px (negligible) |
+Replace the Tinder-style swipe Discover surface with a structured browse-grid dashboard inspired by Kalshi, Robinhood, and Polymarket. Matches, inbox, chat, and existing match logic stay untouched. Swipe-based code paths remain only as the underlying data layer (Express Interest writes the same `swipes` row with `action='like'`, mutual interest still creates a `matches` row).
 
-All other slides fit. Strategy: per the user, only trim whitespace and shrink fonts — never delete content. Edits target each slide's class block in `public/catalystdeck.html` so other slides are unaffected.
+## What the user sees
 
-### 01 Cover
-- `.cover-title` clamp `60px / 11vw / 160px` → `48px / 9vw / 120px`
-- `.cover-divider` margin `36px auto 24px` → `22px auto 16px`
-- `.cover-arrow` margin-bottom `20px` → `12px`, max width `540px` → `420px`
+```text
+┌──────────┬────────────────────────────────────────────┐
+│ FILTER   │  All  Trending  New  Featured  Saved  ⚙   │
+├──────────┴────────────────────────────────────────────┤
+│  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐                  │
+│  │card │  │card │  │card │  │card │   <- responsive  │
+│  └─────┘  └─────┘  └─────┘  └─────┘      grid        │
+│  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐                  │
+│  │card │  │card │  │card │  │card │                  │
+│  └─────┘  └─────┘  └─────┘  └─────┘                  │
+└───────────────────────────────────────────────────────┘
+```
 
-### 05 Why Now
-- `.compare-row` padding `24px 0` → `14px 0` (6 rows × 10px = 60px saved)
-- `.section-title` (local override on slide 05 only via inline style) → `font-size:clamp(28px,4vw,52px);margin-bottom:20px;`
-- `.section-body` slide-05 inline `font-size:15px;line-height:1.55;`
+- **Filter panel (left, collapsible drawer on mobile):** all current discovery filters — for investors browsing founders: industry, stage, MRR/revenue band, traction keywords, location, verified, featured; for founders browsing investors: sectors, check-size band, preferred stage, location, investor type. Persists via existing `filter_preferences` pattern.
+- **Top menu bar:** unified nav that absorbs today's bottom nav + top-nav settings buttons: Discover • Matches • Inbox • Requests • My Investments/Portfolio (role-based) • Concierge • Boosts/Tokens • Profile • Settings • Admin (if admin). Notification badges (unread messages, new matches, pending requests) move here. Mobile collapses it into a hamburger that opens a full-height sheet.
+- **Card grid:** 4 cols desktop / 3 tablet / 2 mobile. Each tile is compact, info-dense, Polymarket-style.
 
-### 06 How It Works
-- `.pillars` `margin-top: 60px` → `28px`, `gap: 32px` → `24px`
-- `.pillar` `min-height: 360px` → `280px`, padding `40px 32px` → `28px 26px`
-- `.pillar-num` `margin-bottom: 36px` → `20px`
-- `.pillar-arrow` `margin-top: 32px` → `18px`
+### Founder card (when an investor browses)
+- Logo/avatar (small, top-left), company name, verified/featured chips
+- One-liner (2 lines max, truncated)
+- Inline metrics row: Stage • Industry tag(s) • MRR • Traction snippet
+- Signal chips: Trending / New / Featured when applicable
+- Primary CTA: **Express Interest** (heart + label). Secondary: **Save** (bookmark, watchlist), **View** (opens existing profile page)
+- After interest sent: button becomes disabled "Interest Sent"; on mutual interest, existing match modal fires
 
-### 07 Flywheel
-- `.flywheel-wrap` gap `80px` → `48px`
-- `.flywheel-svg` max-width `520px` → `360px`
-- `.flywheel-item` padding `24px 0` → `12px 0`
-- Slide-07 headline override → `font-size:clamp(22px,2.8vw,34px);` (currently `clamp(28px,3.5vw,44px)`)
-- `.flywheel-list` `margin-top:30px` → `16px` (inline override on slide 07)
-- `.flywheel-text` font-size `15px` → `13.5px`
+### Investor card (when a founder browses)
+- Same layout: avatar, firm name, verified chip, position
+- Metrics row: Check size • Preferred stage • Sectors
+- Same CTA pattern; Basic-founder messaging gate remains downstream in Matches
 
-### 09 Business Model
-- `.model-stack` `margin-top: 40px` → `18px`
-- `.model-layer` padding `28px 0` → `16px 0`
-- `.model-name` font-size `24px` → `20px`
-- `.model-desc` font-size `14px` → `13px`
-- Section-title bottom margin on slide 09 reduced to `20px` via inline override
+## Interaction model
 
-### Verification
-After edits, re-run the Playwright measurement script at 1063×690 and confirm `scrollH ≤ winH` (≤690) for every slide; iterate any remaining overflow.
+- Click card body → existing `/profile/:id` view (unchanged)
+- Express Interest → writes `swipes` row (`action='like'`) using existing logic; mutual = match via current trigger/flow
+- Save → new lightweight `watchlist` table (private; no notification to other side)
+- Filters + search bar at top of grid; results paginated/infinite-scroll
+- No swipe gestures, no per-day swipe limit UX in the grid (Pro/Basic limits still enforced server-side on the like action, surfaced as a toast/upsell when hit)
+- Ad insertion: every Nth tile shows a sponsored card (reuse `ad_profiles`), Pro bypasses
 
-No content removed. No other slides touched.
+## Routes & files
+
+- **New:** `src/pages/Discover.tsx` (grid dashboard, replaces the swipe view)
+- **New:** `src/components/discover/DiscoverGrid.tsx`, `DiscoverCard.tsx`, `DiscoverFilters.tsx`, `DiscoverMenuBar.tsx`
+- **New hook:** `src/hooks/useDiscoverFeed.ts` — paginated query against `profiles` + `founder_profiles`/`investor_profiles`, applies filters + swipe-history exclusions (reuse `useSwipeHistory` filtering)
+- **New hook:** `src/hooks/useExpressInterest.ts` — wraps the existing like → match logic in one call (returns `{ matched: boolean }`)
+- **Reuse:** `useSwipeHistory`, `useMatchMessaging`, `useDailySwipes` (limits), `MatchModal`, `FilterPreferences`
+- **Route swap in `src/App.tsx`:** `/discover` (and `/dashboard` if it currently points to swipe) → `Discover.tsx`. Old `SwipeCard` / `SwipePanel` / `CaughtUpState` files stay on disk (per "no deletes") but are unrouted.
+- **Nav cleanup:** `BottomNavigation.tsx` removed from layout in favor of new top `DiscoverMenuBar`; on mobile collapses to hamburger.
+
+## Data layer
+
+- **Watchlist table** (new migration):
+  ```sql
+  CREATE TABLE public.watchlist (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    target_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    UNIQUE(user_id, target_id)
+  );
+  GRANT SELECT, INSERT, DELETE ON public.watchlist TO authenticated;
+  GRANT ALL ON public.watchlist TO service_role;
+  ALTER TABLE public.watchlist ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "own watchlist" ON public.watchlist
+    FOR ALL TO authenticated
+    USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+  ```
+- No changes to `swipes`, `matches`, `messages`, `profiles`.
+
+## Visual direction
+
+Silver & Sleek theme stays (Playfair Display headers, Inter body, metallic silver/dark gray/off-white). Cards: subtle border, `rounded-xl`, hover lift + faint silver glow. Signal chips use small caps Inter. Grid feels like Polymarket's market list — dense, scannable, monetary, with the typographic refinement of Robinhood's lists.
+
+## Out of scope (no changes)
+
+- Matches page, Inbox, MatchThread, chat gating rules
+- Onboarding, auth, profile editing
+- Concierge, SAFEs, Investments, Admin panels
+- All swipe-era files remain on disk per the no-delete rule
+
+## Open follow-ups after build
+
+1. Decide whether to delete the unrouted swipe files in a later cleanup pass (requires explicit permission).
+2. Whether the grid should default to "Trending" or "All" on first load.
