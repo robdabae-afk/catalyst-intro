@@ -11,6 +11,7 @@ const corsHeaders = {
 const STRIPE_PRICES = {
   PRO_FOUNDER: 'price_1SfuSgInI9cm3k8RNN0RE9YI',
   PRO_INVESTOR: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK',
+  PRO_DISCOVER: 'price_1ToAoJInI9cm3k8RbRNoZAYR', // $40/mo unlimited Discover
 };
 
 const logStep = (step: string, details?: any) => {
