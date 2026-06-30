@@ -11,6 +11,7 @@ const corsHeaders = {
 const STRIPE_PRICES = {
   PRO_FOUNDER: 'price_1SfuSgInI9cm3k8RNN0RE9YI',
   PRO_INVESTOR: 'price_1SCRGhInI9cm3k8Rg5Cy2JRK',
+  PRO_DISCOVER: 'price_1ToAoJInI9cm3k8RbRNoZAYR', // $40/mo unlimited Discover
 };
 
 const logStep = (step: string, details?: any) => {
@@ -78,19 +79,26 @@ serve(async (req) => {
 
     switch (action) {
       case 'create_checkout': {
-        // Determine the correct price based on user type
-        const priceId = profile.user_type === 'founder' 
-          ? STRIPE_PRICES.PRO_FOUNDER 
-          : STRIPE_PRICES.PRO_INVESTOR;
-        
-        const expectedPlan = profile.user_type === 'founder' ? 'startup_pro' : 'investor_pro';
-        
-        if (plan && plan !== expectedPlan) {
-          logStep('Plan mismatch', { expected: expectedPlan, received: plan });
-          return new Response(
-            JSON.stringify({ error: `Invalid plan for ${profile.user_type}s` }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+        // Determine the correct price based on plan or user type
+        let priceId: string;
+        let expectedPlan: string;
+
+        if (plan === 'discover_pro') {
+          priceId = STRIPE_PRICES.PRO_DISCOVER;
+          expectedPlan = 'discover_pro';
+        } else {
+          priceId = profile.user_type === 'founder'
+            ? STRIPE_PRICES.PRO_FOUNDER
+            : STRIPE_PRICES.PRO_INVESTOR;
+          expectedPlan = profile.user_type === 'founder' ? 'startup_pro' : 'investor_pro';
+
+          if (plan && plan !== expectedPlan) {
+            logStep('Plan mismatch', { expected: expectedPlan, received: plan });
+            return new Response(
+              JSON.stringify({ error: `Invalid plan for ${profile.user_type}s` }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
         }
 
         // Get or create Stripe customer
