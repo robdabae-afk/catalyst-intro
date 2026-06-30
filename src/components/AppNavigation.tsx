@@ -28,7 +28,8 @@ import {
   LogOut,
   ChevronDown,
   Crown,
-  Share2
+  Share2,
+  Home as HomeIcon
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -58,7 +59,7 @@ export const AppNavigation = ({
   const { count: supportReplies } = useUnreadSupportReplies();
   
   // Hub pages show full navigation (Dashboard/Discover)
-  const isHubPage = location.pathname === '/dashboard' || location.pathname === '/discover';
+  const isHubPage = location.pathname === '/dashboard' || location.pathname === '/discover' || location.pathname === '/home' || location.pathname === '/app/home';
   
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -182,6 +183,10 @@ export const AppNavigation = ({
               />
             )}
             
+            <NavLink to="/home">
+              <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Home</span>
+            </NavLink>
             <NavLink to="/dashboard">
               <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Discover</span>

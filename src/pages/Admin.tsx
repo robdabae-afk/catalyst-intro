@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -32,6 +32,7 @@ import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
 import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
 import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel";
+import { AdminFeedPanel } from "@/components/AdminFeedPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -539,7 +540,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-13 max-w-7xl" style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))" }}>
+          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(14, minmax(0, 1fr))" }}>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
@@ -596,6 +597,10 @@ const Admin = () => {
               <Sparkles className="w-4 h-4" />
               Test Data
             </TabsTrigger>
+            <TabsTrigger value="feed" className="flex items-center gap-2">
+              <Newspaper className="w-4 h-4" />
+              Feed
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="event-attendees">
@@ -604,6 +609,10 @@ const Admin = () => {
 
           <TabsContent value="match-analytics">
             <AdminMatchAnalyticsPanel />
+          </TabsContent>
+
+          <TabsContent value="feed">
+            <AdminFeedPanel />
           </TabsContent>
 
 
