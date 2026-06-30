@@ -14,11 +14,11 @@ import {
 } from "@/hooks/useDiscoverFeed";
 import { useExpressInterest } from "@/hooks/useExpressInterest";
 import { useSwipeHistory } from "@/hooks/useSwipeHistory";
-import { useDailySwipes } from "@/hooks/useDailySwipes";
 import { MatchModal } from "@/components/MatchModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { SlidersHorizontal, Loader2 } from "lucide-react";
+import { SlidersHorizontal, Loader2, Crown, Lock } from "lucide-react";
+import { BASIC_DAILY_DISCOVER_PROFILES } from "@/lib/membership-constants";
 
 const Dashboard = () => {
   const { user, isPro, loading: authLoading } = useAuth();
@@ -29,13 +29,9 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [interestSentIds, setInterestSentIds] = useState<Set<string>>(new Set());
+  const [upgrading, setUpgrading] = useState(false);
 
   const { excludedIds, loading: historyLoading } = useSwipeHistory(user?.id);
-  const { canSwipe, incrementSwipe } = useDailySwipes(
-    user?.id ?? null,
-    isPro,
-    (user?.user_type as "founder" | "investor" | null) ?? null
-  );
 
   // Debounce search into filters
   useEffect(() => {
@@ -47,7 +43,7 @@ const Dashboard = () => {
     if (!authLoading && !user) navigate("/onboarding");
   }, [authLoading, user, navigate]);
 
-  const { profiles, loading, hasMore, loadMore, savedIds, refetchSaved, targetType } =
+  const { profiles, loading, savedIds, refetchSaved, targetType } =
     useDiscoverFeed(
       user?.id,
       (user?.user_type as "founder" | "investor" | null) ?? null,
@@ -57,7 +53,15 @@ const Dashboard = () => {
 
   const { expressInterest, toggleWatchlist } = useExpressInterest(user?.id);
 
-  // Load existing "interest sent" set so cards reflect prior actions
+  // Cap to 6/day for Basic users
+  const visibleProfiles = useMemo(() => {
+    if (isPro) return profiles.slice(0, 12); // Pro: show up to 12 in grid
+    return profiles.slice(0, BASIC_DAILY_DISCOVER_PROFILES);
+  }, [profiles, isPro]);
+
+  const limitReached = !isPro && profiles.length > BASIC_DAILY_DISCOVER_PROFILES;
+
+  // Load existing "interest sent" set
   useEffect(() => {
     if (!user?.id) return;
     supabase
@@ -72,14 +76,6 @@ const Dashboard = () => {
 
   const onExpressInterest = async (p: DiscoverProfile) => {
     if (!user) return;
-    if (!canSwipe) {
-      toast({
-        variant: "destructive",
-        title: "Daily limit reached",
-        description: "Upgrade to Pro for more daily interactions.",
-      });
-      return;
-    }
     setInterestSentIds((prev) => new Set(prev).add(p.id));
     const res = await expressInterest(p.id);
     if (!res.ok) {
@@ -91,7 +87,6 @@ const Dashboard = () => {
       toast({ variant: "destructive", title: "Could not send interest", description: res.error });
       return;
     }
-    incrementSwipe();
     if (res.matched) {
       setMatchedProfile(p);
     } else {
@@ -103,9 +98,20 @@ const Dashboard = () => {
     const wasSaved = savedIds.has(p.id);
     await toggleWatchlist(p.id, wasSaved);
     refetchSaved();
-    toast({
-      title: wasSaved ? "Removed from watchlist" : "Saved to watchlist",
-    });
+  };
+
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-subscription", {
+        body: { action: "create_checkout", plan: "discover_pro" },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Checkout failed", description: e.message });
+      setUpgrading(false);
+    }
   };
 
   const viewerType = (user?.user_type as "founder" | "investor" | null) ?? null;
@@ -115,7 +121,7 @@ const Dashboard = () => {
   const isLoading = authLoading || historyLoading;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-[100dvh] overflow-hidden flex flex-col bg-background">
       <DiscoverMenuBar
         userId={user?.id}
         userType={viewerType}
@@ -128,72 +134,97 @@ const Dashboard = () => {
         onViewChange={(v) => setFilters((f) => ({ ...f, view: v }))}
       />
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Filters: sidebar on desktop, sheet on mobile */}
-          <div className="hidden lg:block">
+      <main className="flex-1 min-h-0 max-w-7xl w-full mx-auto px-2 sm:px-6 lg:px-8 py-2 sm:py-3 flex flex-col">
+        <div className="flex items-center justify-between mb-2 shrink-0">
+          <div className="text-[11px] text-muted-foreground">
+            {loading
+              ? "Loading…"
+              : isPro
+              ? `${visibleProfiles.length} ${effectiveTarget}s`
+              : `${visibleProfiles.length}/${BASIC_DAILY_DISCOVER_PROFILES} today`}
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-[11px] lg:hidden">
+                <SlidersHorizontal className="w-3 h-3 mr-1" /> Filters
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80 overflow-y-auto p-4">
+              <DiscoverFilters
+                filters={filters}
+                onChange={setFilters}
+                targetType={effectiveTarget}
+              />
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        <div className="flex-1 min-h-0 flex gap-4">
+          {/* Filters sidebar (desktop) */}
+          <aside className="hidden lg:block w-60 shrink-0 overflow-y-auto pr-1">
             <DiscoverFilters
               filters={filters}
               onChange={setFilters}
               targetType={effectiveTarget}
             />
-          </div>
+          </aside>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs text-muted-foreground">
-                {loading ? "Loading…" : `${profiles.length} ${effectiveTarget}s`}
-              </div>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="lg:hidden">
-                    <SlidersHorizontal className="w-4 h-4 mr-1.5" /> Filters
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-80 overflow-y-auto p-4">
-                  <DiscoverFilters
-                    filters={filters}
-                    onChange={setFilters}
-                    targetType={effectiveTarget}
-                  />
-                </SheetContent>
-              </Sheet>
-            </div>
-
+          {/* Grid area */}
+          <div className="flex-1 min-w-0 min-h-0">
             {isLoading ? (
-              <div className="flex justify-center py-20">
-                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              <div className="h-full flex items-center justify-center">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
               </div>
-            ) : profiles.length === 0 ? (
-              <div className="text-center py-20 text-muted-foreground text-sm">
-                No {effectiveTarget}s match your filters yet. Try clearing some filters.
+            ) : visibleProfiles.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-center text-muted-foreground text-xs px-6">
+                No {effectiveTarget}s match your filters yet. Try clearing some.
               </div>
             ) : (
-              <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-                  {profiles.map((p) => (
-                    <DiscoverCard
-                      key={p.id}
-                      profile={p}
-                      targetType={effectiveTarget}
-                      isSaved={savedIds.has(p.id)}
-                      interestSent={interestSentIds.has(p.id)}
-                      onExpressInterest={onExpressInterest}
-                      onToggleSave={onToggleSave}
-                    />
-                  ))}
-                </div>
-                {hasMore && (
-                  <div className="flex justify-center mt-6">
-                    <Button variant="outline" onClick={loadMore} disabled={loading}>
-                      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Load more"}
-                    </Button>
-                  </div>
-                )}
-              </>
+              <div className="h-full grid grid-cols-2 sm:grid-cols-3 grid-rows-3 sm:grid-rows-2 gap-2 sm:gap-3">
+                {visibleProfiles.map((p) => (
+                  <DiscoverCard
+                    key={p.id}
+                    profile={p}
+                    targetType={effectiveTarget}
+                    isSaved={savedIds.has(p.id)}
+                    interestSent={interestSentIds.has(p.id)}
+                    onExpressInterest={onExpressInterest}
+                    onToggleSave={onToggleSave}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>
+
+        {/* Upgrade banner for Basic users when more profiles exist */}
+        {!isPro && limitReached && !isLoading && (
+          <div className="shrink-0 mt-2 rounded-lg border border-primary/30 bg-gradient-to-r from-primary/5 via-amber-500/5 to-primary/5 px-3 py-2 flex items-center gap-2">
+            <Lock className="w-4 h-4 text-primary shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="text-[12px] font-semibold leading-tight">
+                You've seen today's {BASIC_DAILY_DISCOVER_PROFILES} profiles
+              </div>
+              <div className="text-[10px] text-muted-foreground leading-tight">
+                Upgrade to Pro for unlimited daily discovery — $40/mo
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleUpgrade}
+              disabled={upgrading}
+              className="h-7 px-3 text-[11px] bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0"
+            >
+              {upgrading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <>
+                  <Crown className="w-3 h-3 mr-1" /> Go Pro
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </main>
 
       <MatchModal
