@@ -496,6 +496,113 @@ export type Database = {
           },
         ]
       }
+      home_hot_picks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          position: number
+          profile_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          position?: number
+          profile_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          position?: number
+          profile_id?: string
+          role?: Database["public"]["Enums"]["user_type"]
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_hot_picks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_news: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string | null
+          link: string | null
+          news_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          news_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          news_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_newsletter_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          link: string | null
+          note: string | null
+          status: string
+          submitter_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          note?: string | null
+          status?: string
+          submitter_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          note?: string | null
+          status?: string
+          submitter_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       investor_profiles: {
         Row: {
           accreditation_status: string | null
