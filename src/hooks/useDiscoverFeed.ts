@@ -67,7 +67,7 @@ export function useDiscoverFeed(
       const from = nextPage * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase
+      let query: any = supabase
         .from("profiles")
         .select(`*, founder_profiles(*), investor_profiles(*)`, { count: "exact" })
         .neq("id", currentUserId)
