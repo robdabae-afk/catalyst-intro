@@ -239,22 +239,20 @@ export default function ProfileView() {
         </Card>
 
         {/* Profile Details */}
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Main Info Card */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h2 className="text-lg font-semibold mb-4">
-                {isFounder ? 'Startup Details' : 'Investment Focus'}
-              </h2>
-
-              {isFounder && profile.founder_profile && (
-                <>
+        {!isFounder ? (
+          <InvestorProfileSections profile={profile} />
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Main Info Card */}
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <h2 className="text-lg font-semibold mb-4">Startup Details</h2>
+                {profile.founder_profile && (
                   <div className="space-y-3">
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <p className="text-sm text-muted-foreground mb-1">One-liner</p>
                       <p className="font-medium">{profile.founder_profile.one_liner}</p>
                     </div>
-
                     {profile.founder_profile.industry && profile.founder_profile.industry.length > 0 && (
                       <div className="flex items-center gap-3">
                         <TrendingUp className="w-5 h-5 text-primary" />
@@ -264,14 +262,12 @@ export default function ProfileView() {
                         </div>
                       </div>
                     )}
-
                     {profile.founder_profile.traction && (
                       <div className="p-4 bg-muted/50 rounded-lg">
                         <p className="text-sm text-muted-foreground mb-1">Traction</p>
                         <p className="font-medium">{profile.founder_profile.traction}</p>
                       </div>
                     )}
-
                     {profile.founder_profile.preferred_city && (
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-muted-foreground" />
@@ -282,163 +278,148 @@ export default function ProfileView() {
                       </div>
                     )}
                   </div>
-                </>
-              )}
+                )}
+              </CardContent>
+            </Card>
 
-              {!isFounder && profile.investor_profile && (
-                <>
+            {/* Company Card */}
+            <Card>
+              <CardContent className="pt-6 space-y-4">
+                <h2 className="text-lg font-semibold mb-4">Company Information</h2>
+                {profile.founder_profile && (
                   <div className="space-y-3">
-                    {profile.investor_profile.investment_thesis && (
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-1">Investment Thesis</p>
-                        <p className="font-medium">{profile.investor_profile.investment_thesis}</p>
-                      </div>
-                    )}
-
-                    {profile.investor_profile.typical_check_size && (
+                    {profile.founder_profile.company_name && (
                       <div className="flex items-center gap-3">
-                        <DollarSign className="w-5 h-5 text-primary" />
+                        <Building2 className="w-5 h-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-muted-foreground">Check Size</p>
-                          <p className="font-medium">{profile.investor_profile.typical_check_size}</p>
+                          <p className="text-sm text-muted-foreground">Company Name</p>
+                          <p className="font-medium">{profile.founder_profile.company_name}</p>
                         </div>
                       </div>
                     )}
-
-                    {profile.investor_profile.preferred_stage && (
-                      <div className="flex items-center gap-3">
-                        <Briefcase className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Preferred Stage</p>
-                          <p className="font-medium capitalize">{profile.investor_profile.preferred_stage}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {profile.investor_profile.sectors_of_interest && profile.investor_profile.sectors_of_interest.length > 0 && (
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-2">Sectors of Interest</p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.investor_profile.sectors_of_interest.map((sector) => (
-                            <Badge key={sector} variant="outline">
-                              {sector}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {profile.investor_profile.location && (
+                    {profile.founder_profile.company_state && (
                       <div className="flex items-center gap-3">
                         <MapPin className="w-5 h-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-muted-foreground">Location</p>
-                          <p className="font-medium">{profile.investor_profile.location}</p>
+                          <p className="text-sm text-muted-foreground">State of Incorporation</p>
+                          <p className="font-medium">{profile.founder_profile.company_state}</p>
                         </div>
                       </div>
                     )}
-
-                    {profile.investor_profile.portfolio_link && (
+                    {profile.founder_profile.pitch_deck_url && (
                       <div className="flex items-center gap-3">
                         <Globe className="w-5 h-5 text-muted-foreground" />
                         <div>
-                          <p className="text-sm text-muted-foreground">Portfolio</p>
-                          <a 
-                            href={profile.investor_profile.portfolio_link}
+                          <p className="text-sm text-muted-foreground">Pitch Deck</p>
+                          <a
+                            href={profile.founder_profile.pitch_deck_url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="font-medium text-primary hover:underline"
                           >
-                            View Portfolio
+                            View Pitch Deck
                           </a>
                         </div>
                       </div>
                     )}
                   </div>
-                </>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* -------------------- INVESTOR PROFILE SECTIONS -------------------- */
+function InvestorProfileSections({ profile }: { profile: ProfileData }) {
+  const inv = profile.investor_profile;
+  if (!inv) return null;
+  const sectors = inv.sectors_of_interest ?? [];
+  const hasFocus = inv.typical_check_size || inv.preferred_stage || sectors.length > 0 || inv.location;
+
+  return (
+    <div className="space-y-4">
+      {/* Thesis */}
+      {inv.investment_thesis && (
+        <Card>
+          <CardContent className="pt-6">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Investment Thesis</h2>
+            <p className="text-base leading-relaxed italic text-foreground/90">"{inv.investment_thesis}"</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Focus chips */}
+      {hasFocus && (
+        <Card>
+          <CardContent className="pt-6 space-y-4">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Investment Focus</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {inv.typical_check_size && (
+                <FocusChip icon={<DollarSign className="w-4 h-4" />} label="Check size" value={inv.typical_check_size} />
               )}
-            </CardContent>
-          </Card>
-
-          {/* Company/Contact Card */}
-          <Card>
-            <CardContent className="pt-6 space-y-4">
-              <h2 className="text-lg font-semibold mb-4">
-                {isFounder ? 'Company Information' : 'Contact'}
-              </h2>
-
-              {isFounder && profile.founder_profile && (
-                <div className="space-y-3">
-                  {profile.founder_profile.company_name && (
-                    <div className="flex items-center gap-3">
-                      <Building2 className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Company Name</p>
-                        <p className="font-medium">{profile.founder_profile.company_name}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {profile.founder_profile.company_state && (
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">State of Incorporation</p>
-                        <p className="font-medium">{profile.founder_profile.company_state}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {profile.founder_profile.company_address && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Company Address</p>
-                      <p className="font-medium">{profile.founder_profile.company_address}</p>
-                    </div>
-                  )}
-
-                  {profile.founder_profile.pitch_deck_url && (
-                    <div className="flex items-center gap-3">
-                      <Globe className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Pitch Deck</p>
-                        <a 
-                          href={profile.founder_profile.pitch_deck_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-medium text-primary hover:underline"
-                        >
-                          View Pitch Deck
-                        </a>
-                      </div>
-                    </div>
-                  )}
+              {inv.preferred_stage && (
+                <FocusChip icon={<Briefcase className="w-4 h-4" />} label="Preferred stage" value={String(inv.preferred_stage)} />
+              )}
+              {inv.location && (
+                <FocusChip icon={<MapPin className="w-4 h-4" />} label="Geography" value={inv.location} />
+              )}
+            </div>
+            {sectors.length > 0 && (
+              <div>
+                <p className="text-xs text-muted-foreground mb-2">Sectors of interest</p>
+                <div className="flex flex-wrap gap-2">
+                  {sectors.map((s) => (
+                    <Badge key={s} variant="outline">{s}</Badge>
+                  ))}
                 </div>
-              )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
-              {!isFounder && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Name</p>
-                      <p className="font-medium">{profile.name}</p>
-                    </div>
-                  </div>
-
-                  {profile.investor_profile?.firm_name && (
-                    <div className="flex items-center gap-3">
-                      <Building2 className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Firm</p>
-                        <p className="font-medium">{profile.investor_profile.firm_name}</p>
-                      </div>
-                    </div>
-                  )}
+      {/* Track record */}
+      {(inv.portfolio_link || inv.firm_name) && (
+        <Card>
+          <CardContent className="pt-6 space-y-3">
+            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Track Record</h2>
+            {inv.firm_name && (
+              <div className="flex items-center gap-3">
+                <Building2 className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Firm</p>
+                  <p className="font-medium">{inv.firm_name}</p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              </div>
+            )}
+            {inv.portfolio_link && (
+              <a
+                href={inv.portfolio_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+              >
+                <Globe className="w-4 h-4" /> View portfolio
+              </a>
+            )}
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function FocusChip({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
+      <div className="text-primary">{icon}</div>
+      <div className="min-w-0">
+        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="text-sm font-medium truncate">{value}</p>
       </div>
     </div>
   );

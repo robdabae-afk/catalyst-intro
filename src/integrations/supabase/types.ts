@@ -603,6 +603,66 @@ export type Database = {
         }
         Relationships: []
       }
+      intro_requests: {
+        Row: {
+          ask_amount: string | null
+          ask_stage: string | null
+          created_at: string
+          founder_id: string
+          id: string
+          include_deck: boolean
+          investor_id: string
+          pitch_summary: string | null
+          responded_at: string | null
+          status: string
+          updated_at: string
+          why_you: string | null
+        }
+        Insert: {
+          ask_amount?: string | null
+          ask_stage?: string | null
+          created_at?: string
+          founder_id: string
+          id?: string
+          include_deck?: boolean
+          investor_id: string
+          pitch_summary?: string | null
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          why_you?: string | null
+        }
+        Update: {
+          ask_amount?: string | null
+          ask_stage?: string | null
+          created_at?: string
+          founder_id?: string
+          id?: string
+          include_deck?: boolean
+          investor_id?: string
+          pitch_summary?: string | null
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          why_you?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_requests_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intro_requests_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_profiles: {
         Row: {
           accreditation_status: string | null

@@ -15,6 +15,7 @@ import {
 import { useExpressInterest } from "@/hooks/useExpressInterest";
 import { useSwipeHistory } from "@/hooks/useSwipeHistory";
 import { MatchModal } from "@/components/MatchModal";
+import { RequestIntroModal } from "@/components/discover/RequestIntroModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SlidersHorizontal, Loader2, Crown, Lock } from "lucide-react";
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [interestSentIds, setInterestSentIds] = useState<Set<string>>(new Set());
   const [upgrading, setUpgrading] = useState(false);
+  const [introTarget, setIntroTarget] = useState<DiscoverProfile | null>(null);
 
   const { excludedIds, loading: historyLoading } = useSwipeHistory(user?.id);
 
@@ -80,6 +82,11 @@ const Dashboard = () => {
 
   const onExpressInterest = async (p: DiscoverProfile) => {
     if (!user) return;
+    // Investors get the structured Request Intro modal; founders keep one-tap.
+    if (targetType === "investor") {
+      setIntroTarget(p);
+      return;
+    }
     setInterestSentIds((prev) => new Set(prev).add(p.id));
     const res = await expressInterest(p.id);
     if (!res.ok) {
@@ -96,6 +103,13 @@ const Dashboard = () => {
     } else {
       toast({ title: "Interest sent", description: `${p.name} will be notified.` });
     }
+  };
+
+  const onIntroSubmitted = async (p: DiscoverProfile) => {
+    setInterestSentIds((prev) => new Set(prev).add(p.id));
+    // Fire the underlying like so mutual-interest matching still works if the investor also likes back.
+    const res = await expressInterest(p.id);
+    if (res.matched) setMatchedProfile(p);
   };
 
   const onToggleSave = async (p: DiscoverProfile) => {
@@ -236,6 +250,14 @@ const Dashboard = () => {
         onClose={() => setMatchedProfile(null)}
         matchedProfile={matchedProfile}
         userType={(viewerType ?? "founder") as "founder" | "investor"}
+      />
+
+      <RequestIntroModal
+        open={!!introTarget}
+        onOpenChange={(open) => !open && setIntroTarget(null)}
+        investor={introTarget}
+        founderId={user?.id}
+        onSubmitted={onIntroSubmitted}
       />
     </div>
   );
