@@ -281,14 +281,64 @@ export default function ProfileView() {
                       <MapPin className="w-5 h-5 text-muted-foreground" />
                       <div>
                         <p className="text-sm text-muted-foreground">Preferred City</p>
-                        <p className="font-medium">{profile.founder_profile.preferred_city}</p>
-1. **Founder Profiles**: If a founder profile has no `founder_profile` row, we show an empty state instead of rendering empty cards. This is what the user chose (Option 1). The founder profile section now renders a centered card with an icon and message when `founder_profile` is missing.
+                         <p className="font-medium">{profile.founder_profile.preferred_city}</p>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               </CardContent>
+             </Card>
 
-2. **Investor Profiles**: Similarly, if an investor profile has no `investor_profile` row, `InvestorProfileSections` renders a centered empty state card with a message instead of returning `null`. This prevents a blank page and clearly communicates to the viewer that the user hasn't completed their profile yet.
-      </div>
-    </div>
-  );
-}
+             {/* Company Card */}
+             <Card>
+               <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
+                 <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Company Information</h2>
+                 {profile.founder_profile && (
+                   <div className="space-y-3">
+                     {profile.founder_profile.company_name && (
+                       <div className="flex items-center gap-3">
+                         <Building2 className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">Company Name</p>
+                           <p className="font-medium">{profile.founder_profile.company_name}</p>
+                         </div>
+                       </div>
+                     )}
+                     {profile.founder_profile.company_state && (
+                       <div className="flex items-center gap-3">
+                         <MapPin className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">State of Incorporation</p>
+                           <p className="font-medium">{profile.founder_profile.company_state}</p>
+                         </div>
+                       </div>
+                     )}
+                     {profile.founder_profile.pitch_deck_url && (
+                       <div className="flex items-center gap-3">
+                         <Globe className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">Pitch Deck</p>
+                           <a
+                             href={profile.founder_profile.pitch_deck_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="font-medium text-primary hover:underline"
+                           >
+                             View Pitch Deck
+                           </a>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 )}
+               </CardContent>
+             </Card>
+           </div>
+         )}
+       </div>
+     </div>
+   );
+ }
 
 /* -------------------- INVESTOR PROFILE SECTIONS -------------------- */
 function InvestorProfileSections({ profile }: { profile: ProfileData }) {
