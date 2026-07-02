@@ -242,102 +242,118 @@ export default function ProfileView() {
         {/* Profile Details */}
         {!isFounder ? (
           <InvestorProfileSections profile={profile} />
+        ) : !profile.founder_profile ? (
+          <Card>
+            <CardContent className="pt-6 text-center py-10">
+              <User className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+              <h2 className="text-lg font-semibold mb-1">Profile not yet completed</h2>
+              <p className="text-sm text-muted-foreground">This founder hasn't filled out their startup details yet.</p>
+            </CardContent>
+          </Card>
         ) : (
           <div className="grid md:grid-cols-2 gap-3 md:gap-6">
             {/* Main Info Card */}
             <Card>
               <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
                 <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Startup Details</h2>
-                {profile.founder_profile && (
-                  <div className="space-y-3">
-                    <div className="p-3 md:p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">One-liner</p>
-                      <p className="font-medium">{profile.founder_profile.one_liner}</p>
+                <div className="space-y-3">
+                  <div className="p-3 md:p-4 bg-muted/50 rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">One-liner</p>
+                    <p className="font-medium">{profile.founder_profile.one_liner}</p>
+                  </div>
+                  {profile.founder_profile.industry && profile.founder_profile.industry.length > 0 && (
+                    <div className="flex items-center gap-3">
+                      <TrendingUp className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Industry</p>
+                        <p className="font-medium">{profile.founder_profile.industry.join(", ")}</p>
+                      </div>
                     </div>
-                    {profile.founder_profile.industry && profile.founder_profile.industry.length > 0 && (
-                      <div className="flex items-center gap-3">
-                        <TrendingUp className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Industry</p>
-                          <p className="font-medium">{profile.founder_profile.industry.join(", ")}</p>
-                        </div>
-                      </div>
-                    )}
-                    {profile.founder_profile.traction && (
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <p className="text-sm text-muted-foreground mb-1">Traction</p>
-                        <p className="font-medium">{profile.founder_profile.traction}</p>
-                      </div>
-                    )}
-                    {profile.founder_profile.preferred_city && (
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Preferred City</p>
-                          <p className="font-medium">{profile.founder_profile.preferred_city}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                  {profile.founder_profile.traction && (
+                    <div className="p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Traction</p>
+                      <p className="font-medium">{profile.founder_profile.traction}</p>
+                    </div>
+                  )}
+                  {profile.founder_profile.preferred_city && (
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">Preferred City</p>
+                         <p className="font-medium">{profile.founder_profile.preferred_city}</p>
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               </CardContent>
+             </Card>
 
-            {/* Company Card */}
-            <Card>
-              <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
-                <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Company Information</h2>
-                {profile.founder_profile && (
-                  <div className="space-y-3">
-                    {profile.founder_profile.company_name && (
-                      <div className="flex items-center gap-3">
-                        <Building2 className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Company Name</p>
-                          <p className="font-medium">{profile.founder_profile.company_name}</p>
-                        </div>
-                      </div>
-                    )}
-                    {profile.founder_profile.company_state && (
-                      <div className="flex items-center gap-3">
-                        <MapPin className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">State of Incorporation</p>
-                          <p className="font-medium">{profile.founder_profile.company_state}</p>
-                        </div>
-                      </div>
-                    )}
-                    {profile.founder_profile.pitch_deck_url && (
-                      <div className="flex items-center gap-3">
-                        <Globe className="w-5 h-5 text-muted-foreground" />
-                        <div>
-                          <p className="text-sm text-muted-foreground">Pitch Deck</p>
-                          <a
-                            href={profile.founder_profile.pitch_deck_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-medium text-primary hover:underline"
-                          >
-                            View Pitch Deck
-                          </a>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+             {/* Company Card */}
+             <Card>
+               <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
+                 <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Company Information</h2>
+                 {profile.founder_profile && (
+                   <div className="space-y-3">
+                     {profile.founder_profile.company_name && (
+                       <div className="flex items-center gap-3">
+                         <Building2 className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">Company Name</p>
+                           <p className="font-medium">{profile.founder_profile.company_name}</p>
+                         </div>
+                       </div>
+                     )}
+                     {profile.founder_profile.company_state && (
+                       <div className="flex items-center gap-3">
+                         <MapPin className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">State of Incorporation</p>
+                           <p className="font-medium">{profile.founder_profile.company_state}</p>
+                         </div>
+                       </div>
+                     )}
+                     {profile.founder_profile.pitch_deck_url && (
+                       <div className="flex items-center gap-3">
+                         <Globe className="w-5 h-5 text-muted-foreground" />
+                         <div>
+                           <p className="text-sm text-muted-foreground">Pitch Deck</p>
+                           <a
+                             href={profile.founder_profile.pitch_deck_url}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="font-medium text-primary hover:underline"
+                           >
+                             View Pitch Deck
+                           </a>
+                         </div>
+                       </div>
+                     )}
+                   </div>
+                 )}
+               </CardContent>
+             </Card>
+           </div>
+         )}
+       </div>
+     </div>
+   );
+ }
 
 /* -------------------- INVESTOR PROFILE SECTIONS -------------------- */
 function InvestorProfileSections({ profile }: { profile: ProfileData }) {
   const inv = profile.investor_profile;
-  if (!inv) return null;
+  if (!inv) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center py-10">
+          <User className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <h2 className="text-lg font-semibold mb-1">Profile not yet completed</h2>
+          <p className="text-sm text-muted-foreground">This investor hasn't filled out their profile details yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
   const sectors = inv.sectors_of_interest ?? [];
   const hasFocus = inv.typical_check_size || inv.preferred_stage || sectors.length > 0 || inv.location;
 
