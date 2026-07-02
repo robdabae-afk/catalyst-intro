@@ -15,6 +15,7 @@ import {
 import { useExpressInterest } from "@/hooks/useExpressInterest";
 import { useSwipeHistory } from "@/hooks/useSwipeHistory";
 import { MatchModal } from "@/components/MatchModal";
+import { RequestIntroModal } from "@/components/discover/RequestIntroModal";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { SlidersHorizontal, Loader2, Crown, Lock } from "lucide-react";
