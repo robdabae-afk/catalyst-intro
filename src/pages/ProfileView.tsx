@@ -175,7 +175,7 @@ export default function ProfileView() {
       </Helmet>
 
       {/* Banner */}
-      <div className="relative h-48 md:h-64 bg-gradient-to-br from-primary/20 to-accent/20">
+      <div className={`relative ${bannerUrl ? 'h-24 md:h-64' : 'h-20 md:h-44'} bg-gradient-to-br from-primary/20 to-accent/20`}>
         {bannerUrl ? (
           <img 
             src={bannerUrl} 
@@ -187,7 +187,7 @@ export default function ProfileView() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
+        <div className="absolute top-3 left-4 right-4 md:top-4 flex justify-between items-start">
           <Button
             variant="ghost"
             size="sm"
@@ -210,26 +210,26 @@ export default function ProfileView() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 mt-6 relative z-10 pb-12">
+      <div className="max-w-4xl mx-auto px-4 mt-3 md:mt-6 relative z-10 pb-6 md:pb-12">
         {/* Profile Header */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
-              <Avatar className="w-24 h-24 border-4 border-background shadow-xl">
+        <Card className="mb-3 md:mb-6">
+          <CardContent className="p-4 md:pt-6">
+            <div className="flex flex-row gap-3 md:gap-4 items-center md:items-end">
+              <Avatar className="w-20 h-20 md:w-24 md:h-24 shrink-0 border-4 border-background shadow-xl">
                 <AvatarImage src={profile.avatar_url || undefined} alt={profile.name} />
-                <AvatarFallback className="bg-primary/20 text-primary text-3xl">
+                <AvatarFallback className="bg-primary/20 text-primary text-2xl md:text-3xl">
                   {profile.name?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
 
               
-              <div className="flex-1 pt-4 md:pt-0 md:pb-4">
-                <h1 className="text-2xl font-bold">{profile.name}</h1>
+              <div className="min-w-0 flex-1 md:pb-4">
+                <h1 className="text-xl md:text-2xl font-bold leading-tight truncate">{profile.name}</h1>
                 {isFounder && profile.founder_profile && (
-                  <p className="text-xl text-muted-foreground">{profile.founder_profile.startup_name}</p>
+                  <p className="text-sm md:text-xl text-muted-foreground truncate">{profile.founder_profile.startup_name}</p>
                 )}
                 {!isFounder && profile.investor_profile?.firm_name && (
-                  <p className="text-xl text-muted-foreground">{profile.investor_profile.firm_name}</p>
+                  <p className="text-sm md:text-xl text-muted-foreground truncate">{profile.investor_profile.firm_name}</p>
                 )}
                 <Badge className="mt-2" variant="secondary">
                   {isFounder ? 'Founder' : 'Investor'}
@@ -243,14 +243,14 @@ export default function ProfileView() {
         {!isFounder ? (
           <InvestorProfileSections profile={profile} />
         ) : (
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid md:grid-cols-2 gap-3 md:gap-6">
             {/* Main Info Card */}
             <Card>
-              <CardContent className="pt-6 space-y-4">
-                <h2 className="text-lg font-semibold mb-4">Startup Details</h2>
+              <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
+                <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Startup Details</h2>
                 {profile.founder_profile && (
                   <div className="space-y-3">
-                    <div className="p-4 bg-muted/50 rounded-lg">
+                    <div className="p-3 md:p-4 bg-muted/50 rounded-lg">
                       <p className="text-sm text-muted-foreground mb-1">One-liner</p>
                       <p className="font-medium">{profile.founder_profile.one_liner}</p>
                     </div>
@@ -285,8 +285,8 @@ export default function ProfileView() {
 
             {/* Company Card */}
             <Card>
-              <CardContent className="pt-6 space-y-4">
-                <h2 className="text-lg font-semibold mb-4">Company Information</h2>
+              <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
+                <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Company Information</h2>
                 {profile.founder_profile && (
                   <div className="space-y-3">
                     {profile.founder_profile.company_name && (
