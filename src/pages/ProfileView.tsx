@@ -212,7 +212,7 @@ export default function ProfileView() {
 
       <div className="max-w-4xl mx-auto px-4 -mt-20 relative z-10 pb-12">
         {/* Profile Header */}
-        <Card className="mb-6 overflow-hidden">
+        <Card className="mb-6">
           <CardContent className="pt-0">
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-end -mt-16 md:-mt-12">
               <Avatar className="w-32 h-32 border-4 border-background shadow-xl">
