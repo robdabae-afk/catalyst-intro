@@ -251,6 +251,14 @@ const Dashboard = () => {
         matchedProfile={matchedProfile}
         userType={(viewerType ?? "founder") as "founder" | "investor"}
       />
+
+      <RequestIntroModal
+        open={!!introTarget}
+        onOpenChange={(open) => !open && setIntroTarget(null)}
+        investor={introTarget}
+        founderId={user?.id}
+        onSubmitted={onIntroSubmitted}
+      />
     </div>
   );
 };
