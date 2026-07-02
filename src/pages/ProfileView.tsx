@@ -337,7 +337,17 @@ export default function ProfileView() {
 /* -------------------- INVESTOR PROFILE SECTIONS -------------------- */
 function InvestorProfileSections({ profile }: { profile: ProfileData }) {
   const inv = profile.investor_profile;
-  if (!inv) return null;
+  if (!inv) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-center py-10">
+          <User className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+          <h2 className="text-lg font-semibold mb-1">Profile not yet completed</h2>
+          <p className="text-sm text-muted-foreground">This investor hasn't filled out their profile details yet.</p>
+        </CardContent>
+      </Card>
+    );
+  }
   const sectors = inv.sectors_of_interest ?? [];
   const hasFocus = inv.typical_check_size || inv.preferred_stage || sectors.length > 0 || inv.location;
 
