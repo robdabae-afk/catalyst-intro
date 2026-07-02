@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [matchedProfile, setMatchedProfile] = useState<DiscoverProfile | null>(null);
   const [interestSentIds, setInterestSentIds] = useState<Set<string>>(new Set());
   const [upgrading, setUpgrading] = useState(false);
+  const [introTarget, setIntroTarget] = useState<DiscoverProfile | null>(null);
 
   const { excludedIds, loading: historyLoading } = useSwipeHistory(user?.id);
 
