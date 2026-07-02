@@ -106,10 +106,15 @@ function InvestorCard({
         {/* Check size + stage */}
         <div className="flex items-center gap-1.5 flex-wrap mt-auto">
           {checkSize && (
-            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-foreground/80 tabular-nums">
-              <DollarSign className="w-2.5 h-2.5" />{checkSize}
+            <span className="inline-flex items-center text-[10px] font-medium text-foreground/80 tabular-nums">
+              {(() => {
+                const raw = String(checkSize).trim();
+                const cleaned = raw.replace(/^\$\s*/, "");
+                return cleaned.startsWith("$") ? cleaned : `$${cleaned}`;
+              })()}
             </span>
           )}
+
           {stage && (
             <Badge variant="secondary" className="text-[9px] h-4 px-1 uppercase tracking-wide">
               {stage}
