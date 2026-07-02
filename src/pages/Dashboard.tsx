@@ -82,6 +82,11 @@ const Dashboard = () => {
 
   const onExpressInterest = async (p: DiscoverProfile) => {
     if (!user) return;
+    // Investors get the structured Request Intro modal; founders keep one-tap.
+    if (targetType === "investor") {
+      setIntroTarget(p);
+      return;
+    }
     setInterestSentIds((prev) => new Set(prev).add(p.id));
     const res = await expressInterest(p.id);
     if (!res.ok) {
@@ -98,6 +103,13 @@ const Dashboard = () => {
     } else {
       toast({ title: "Interest sent", description: `${p.name} will be notified.` });
     }
+  };
+
+  const onIntroSubmitted = async (p: DiscoverProfile) => {
+    setInterestSentIds((prev) => new Set(prev).add(p.id));
+    // Fire the underlying like so mutual-interest matching still works if the investor also likes back.
+    const res = await expressInterest(p.id);
+    if (res.matched) setMatchedProfile(p);
   };
 
   const onToggleSave = async (p: DiscoverProfile) => {
