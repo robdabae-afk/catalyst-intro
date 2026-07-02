@@ -210,17 +210,18 @@ export default function ProfileView() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 -mt-12 relative z-10 pb-12">
+      <div className="max-w-4xl mx-auto px-4 mt-6 relative z-10 pb-12">
         {/* Profile Header */}
         <Card className="mb-6">
-          <CardContent className="pt-0">
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end -mt-8 md:-mt-6">
-              <Avatar className="w-28 h-28 border-4 border-background shadow-xl">
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end">
+              <Avatar className="w-24 h-24 border-4 border-background shadow-xl">
                 <AvatarImage src={profile.avatar_url || undefined} alt={profile.name} />
                 <AvatarFallback className="bg-primary/20 text-primary text-3xl">
                   {profile.name?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
+
               
               <div className="flex-1 pt-4 md:pt-0 md:pb-4">
                 <h1 className="text-2xl font-bold">{profile.name}</h1>
