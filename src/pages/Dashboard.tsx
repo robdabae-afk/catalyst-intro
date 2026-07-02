@@ -40,8 +40,12 @@ const Dashboard = () => {
   }, [search]);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/onboarding");
-  }, [authLoading, user, navigate]);
+    let cancelled = false;
+    supabase.auth.getUser().then(({ data: { user: authUser } }) => {
+      if (!cancelled && !authUser) navigate("/auth");
+    });
+    return () => { cancelled = true; };
+  }, [navigate]);
 
   const { profiles, loading, savedIds, refetchSaved, targetType } =
     useDiscoverFeed(
