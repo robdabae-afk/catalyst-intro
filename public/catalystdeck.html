@@ -341,38 +341,42 @@
   }
 
   /* ===== PRINT =====
-     Each .scene is pinned to a fixed 16:9 slide page (1280x720 at 96dpi)
-     so the browser's Print → PDF produces one slide per page with nothing
-     clipped. Typography is re-scoped in fixed units so it no longer depends
-     on the viewport. */
+     Print at the native 1920x1080 slide canvas so 1 scene = 1 PDF page
+     and every position/size is preserved exactly. */
   @media print {
     * {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
-    @page { size: 13.333in 7.5in; margin: 0; }
+    @page { size: 1920px 1080px; margin: 0; }
     html, body {
       background: #000 !important; color: #fff !important;
       scroll-snap-type: none; overflow: visible;
-      width: 13.333in;
+      width: 1920px;
     }
-    .scene {
-      width: 13.333in; height: 7.5in; min-height: 0;
-      padding: 0.55in 0.7in;
+    .scene-frame {
+      width: 1920px; height: 1080px;
+      overflow: visible;
       page-break-after: always;
-      page-break-inside: avoid;
       break-after: page;
+    }
+    .scene-frame:last-child { page-break-after: auto; break-after: auto; }
+    .scene {
+      width: 1920px !important; height: 1080px !important; min-height: 0 !important;
+      padding: 90px 115px !important;
+      transform: none !important;
+      page-break-inside: avoid;
       break-inside: avoid;
       overflow: visible;
       background: #000 !important;
       justify-content: center;
       position: relative;
     }
-    .scene:last-child { page-break-after: auto; break-after: auto; }
     /* Cap inserted images so they never overflow the printed slide */
     [data-inserted="1"] { max-width: 100% !important; max-height: 100% !important; }
     img[data-inserted="1"] { object-fit: contain; }
+
 
     .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
     .cover-arrow path { stroke-dashoffset: 0 !important; animation: none !important; }
