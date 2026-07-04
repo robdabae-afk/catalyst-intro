@@ -75,6 +75,9 @@ const App = () => (
           <Route path="/app/profile/:id" element={<ProfileView />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
           <Route path="/app/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
+          <Route path="/app/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
+
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
