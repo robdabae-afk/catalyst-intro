@@ -25,6 +25,7 @@ import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
+import CatalystDeckEditor from "./pages/CatalystDeckEditor";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
 import EventSignIn from "./pages/EventSignIn";
