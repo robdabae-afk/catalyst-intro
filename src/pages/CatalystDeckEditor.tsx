@@ -496,13 +496,29 @@ function normalizeColor(v: string | undefined): string {
   return "#" + h(m[1]) + h(m[2]) + h(m[3]);
 }
 
-function Row({ label, current, children }: { label: string; current?: string; children: React.ReactNode }) {
+function Row({
+  label,
+  current,
+  overridden,
+  children,
+}: {
+  label: string;
+  current?: string;
+  overridden?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1 rounded border border-neutral-800 bg-neutral-950/50 p-2">
       <div className="flex items-baseline justify-between gap-2">
-        <div className="text-[10px] uppercase tracking-wider text-neutral-400">{label}</div>
+        <div className="text-[10px] uppercase tracking-wider text-neutral-400">
+          {label}
+          {overridden && <span className="ml-1 text-amber-400">•</span>}
+        </div>
         {current && (
-          <div className="truncate font-mono text-[9px] text-neutral-500" title={current}>
+          <div
+            className="truncate font-mono text-[10px] text-neutral-300"
+            title={current}
+          >
             {current}
           </div>
         )}
@@ -528,7 +544,7 @@ function DropdownWithCustom({
     <div className="flex gap-1">
       <Select value={isKnown ? value : ""} onValueChange={onChange}>
         <SelectTrigger className="h-8 flex-1 bg-neutral-800 text-xs text-white">
-          <SelectValue placeholder={placeholder || "Choose…"} />
+          <SelectValue placeholder={value || placeholder || "Choose…"} />
         </SelectTrigger>
         <SelectContent className="max-h-64">
           {options.map((o) => (
@@ -579,34 +595,36 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (v: string)
 function StyleInspector({ selection, onChange }: StyleInspectorProps) {
   const styleV = (k: string) => selection.override?.style?.[k] || "";
   const computedV = (k: string) => selection.computed?.[k] || "";
-  const effective = (k: string) => styleV(k) || computedV(k);
+  // Effective = user override if present, otherwise what the browser is actually rendering.
+  const eff = (k: string) => styleV(k) || computedV(k);
+  const isOverridden = (k: string) => !!styleV(k);
 
-  const opacityNum = parseFloat(effective("opacity") || "1");
-  const fontSizePx = parsePx(effective("fontSize"));
+  const opacityNum = parseFloat(eff("opacity") || "1");
+  const effFontSizePx = parsePx(eff("fontSize"));
 
   return (
     <div className="space-y-2">
       <Label className="text-xs">Style</Label>
+      <div className="text-[10px] text-neutral-500">
+        Values shown are the element's current rendered style. Amber dot = overridden.
+      </div>
 
       {selection.kind === "text" && (
-        <Row label="Text color" current={computedV("color")}>
-          <ColorPicker value={styleV("color")} onChange={(v) => onChange("color", v)} />
+        <Row label="Text color" current={eff("color")} overridden={isOverridden("color")}>
+          <ColorPicker value={eff("color")} onChange={(v) => onChange("color", v)} />
         </Row>
       )}
 
-      <Row label="Background" current={computedV("backgroundColor")}>
-        <ColorPicker value={styleV("backgroundColor")} onChange={(v) => onChange("backgroundColor", v)} />
+      <Row label="Background" current={eff("backgroundColor")} overridden={isOverridden("backgroundColor")}>
+        <ColorPicker value={eff("backgroundColor")} onChange={(v) => onChange("backgroundColor", v)} />
       </Row>
 
       {selection.kind === "text" && (
         <>
-          <Row label="Font family" current={computedV("fontFamily")}>
-            <Select
-              value={styleV("fontFamily")}
-              onValueChange={(v) => onChange("fontFamily", v)}
-            >
+          <Row label="Font family" current={eff("fontFamily")} overridden={isOverridden("fontFamily")}>
+            <Select value={eff("fontFamily")} onValueChange={(v) => onChange("fontFamily", v)}>
               <SelectTrigger className="h-8 bg-neutral-800 text-xs text-white">
-                <SelectValue placeholder="Inherit" />
+                <SelectValue placeholder={eff("fontFamily") || "Inherit"} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_FAMILIES.map((f) => (
@@ -614,63 +632,72 @@ function StyleInspector({ selection, onChange }: StyleInspectorProps) {
                     {f.label}
                   </SelectItem>
                 ))}
+                {eff("fontFamily") && !FONT_FAMILIES.some((f) => f.value === eff("fontFamily")) && (
+                  <SelectItem value={eff("fontFamily")} className="text-xs">
+                    {eff("fontFamily")}
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </Row>
 
-          <Row label={`Font size${fontSizePx ? ` — ${fontSizePx}px` : ""}`} current={computedV("fontSize")}>
-            {fontSizePx !== null ? (
+          <Row
+            label={`Font size${effFontSizePx ? ` — ${effFontSizePx}px` : ""}`}
+            current={eff("fontSize")}
+            overridden={isOverridden("fontSize")}
+          >
+            {effFontSizePx !== null ? (
               <div className="flex items-center gap-2">
                 <Slider
                   min={8}
                   max={160}
                   step={1}
-                  value={[parsePx(styleV("fontSize")) ?? fontSizePx]}
+                  value={[effFontSizePx]}
                   onValueChange={(v) => onChange("fontSize", `${v[0]}px`)}
                   className="flex-1"
                 />
                 <Input
                   className="h-8 w-20 bg-neutral-800 text-xs text-white"
-                  defaultValue={styleV("fontSize")}
-                  key={styleV("fontSize")}
+                  defaultValue={eff("fontSize")}
+                  key={eff("fontSize")}
                   onBlur={(e) => {
                     const v = e.target.value.trim();
-                    if (v !== styleV("fontSize")) onChange("fontSize", v);
+                    if (v !== eff("fontSize")) onChange("fontSize", v);
                   }}
                 />
               </div>
             ) : (
-              <DropdownWithCustom value={styleV("fontSize")} options={FONT_SIZES} onChange={(v) => onChange("fontSize", v)} />
+              <DropdownWithCustom value={eff("fontSize")} options={FONT_SIZES} onChange={(v) => onChange("fontSize", v)} />
             )}
           </Row>
 
-          <Row label="Font weight" current={computedV("fontWeight")}>
-            <DropdownWithCustom value={styleV("fontWeight")} options={FONT_WEIGHTS} onChange={(v) => onChange("fontWeight", v)} />
+          <Row label="Font weight" current={eff("fontWeight")} overridden={isOverridden("fontWeight")}>
+            <DropdownWithCustom value={eff("fontWeight")} options={FONT_WEIGHTS} onChange={(v) => onChange("fontWeight", v)} />
           </Row>
 
-          <Row label="Font style" current={computedV("fontStyle")}>
-            <DropdownWithCustom value={styleV("fontStyle")} options={FONT_STYLES} onChange={(v) => onChange("fontStyle", v)} />
+          <Row label="Font style" current={eff("fontStyle")} overridden={isOverridden("fontStyle")}>
+            <DropdownWithCustom value={eff("fontStyle")} options={FONT_STYLES} onChange={(v) => onChange("fontStyle", v)} />
           </Row>
 
-          <Row label="Text align" current={computedV("textAlign")}>
-            <DropdownWithCustom value={styleV("textAlign")} options={TEXT_ALIGNS} onChange={(v) => onChange("textAlign", v)} />
+          <Row label="Text align" current={eff("textAlign")} overridden={isOverridden("textAlign")}>
+            <DropdownWithCustom value={eff("textAlign")} options={TEXT_ALIGNS} onChange={(v) => onChange("textAlign", v)} />
           </Row>
 
-          <Row label="Text transform" current={computedV("textTransform")}>
-            <DropdownWithCustom value={styleV("textTransform")} options={TEXT_TRANSFORMS} onChange={(v) => onChange("textTransform", v)} />
+          <Row label="Text transform" current={eff("textTransform")} overridden={isOverridden("textTransform")}>
+            <DropdownWithCustom value={eff("textTransform")} options={TEXT_TRANSFORMS} onChange={(v) => onChange("textTransform", v)} />
           </Row>
 
-          <Row label="Letter spacing" current={computedV("letterSpacing")}>
-            <DropdownWithCustom value={styleV("letterSpacing")} options={LETTER_SPACINGS} onChange={(v) => onChange("letterSpacing", v)} />
+          <Row label="Letter spacing" current={eff("letterSpacing")} overridden={isOverridden("letterSpacing")}>
+            <DropdownWithCustom value={eff("letterSpacing")} options={LETTER_SPACINGS} onChange={(v) => onChange("letterSpacing", v)} />
           </Row>
 
-          <Row label="Line height" current={computedV("lineHeight")}>
-            <DropdownWithCustom value={styleV("lineHeight")} options={LINE_HEIGHTS} onChange={(v) => onChange("lineHeight", v)} />
+          <Row label="Line height" current={eff("lineHeight")} overridden={isOverridden("lineHeight")}>
+            <DropdownWithCustom value={eff("lineHeight")} options={LINE_HEIGHTS} onChange={(v) => onChange("lineHeight", v)} />
           </Row>
         </>
       )}
 
-      <Row label={`Opacity — ${opacityNum.toFixed(2)}`} current={computedV("opacity")}>
+      <Row label={`Opacity — ${opacityNum.toFixed(2)}`} current={eff("opacity")} overridden={isOverridden("opacity")}>
         <Slider
           min={0}
           max={1}
@@ -680,60 +707,60 @@ function StyleInspector({ selection, onChange }: StyleInspectorProps) {
         />
       </Row>
 
-      <Row label="Width" current={computedV("width")}>
+      <Row label="Width" current={eff("width")} overridden={isOverridden("width")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("width")}
+          defaultValue={eff("width")}
           key={selection.editId + "-w"}
           placeholder="e.g. 300px, 50%"
           onBlur={(e) => onChange("width", e.target.value.trim())}
         />
       </Row>
 
-      <Row label="Height" current={computedV("height")}>
+      <Row label="Height" current={eff("height")} overridden={isOverridden("height")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("height")}
+          defaultValue={eff("height")}
           key={selection.editId + "-h"}
           placeholder="e.g. 200px, auto"
           onBlur={(e) => onChange("height", e.target.value.trim())}
         />
       </Row>
 
-      <Row label="Padding" current={computedV("padding")}>
+      <Row label="Padding" current={eff("padding")} overridden={isOverridden("padding")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("padding")}
+          defaultValue={eff("padding")}
           key={selection.editId + "-p"}
           placeholder="e.g. 12px 24px"
           onBlur={(e) => onChange("padding", e.target.value.trim())}
         />
       </Row>
 
-      <Row label="Border radius" current={computedV("borderRadius")}>
+      <Row label="Border radius" current={eff("borderRadius")} overridden={isOverridden("borderRadius")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("borderRadius")}
+          defaultValue={eff("borderRadius")}
           key={selection.editId + "-br"}
           placeholder="e.g. 8px"
           onBlur={(e) => onChange("borderRadius", e.target.value.trim())}
         />
       </Row>
 
-      <Row label="Transform" current={computedV("transform")}>
+      <Row label="Transform" current={eff("transform")} overridden={isOverridden("transform")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("transform")}
+          defaultValue={eff("transform")}
           key={selection.editId + "-tf"}
           placeholder="translate(0,0) rotate(0deg)"
           onBlur={(e) => onChange("transform", e.target.value.trim())}
         />
       </Row>
 
-      <Row label="z-index" current={computedV("zIndex")}>
+      <Row label="z-index" current={eff("zIndex")} overridden={isOverridden("zIndex")}>
         <Input
           className="h-8 bg-neutral-800 text-xs text-white"
-          defaultValue={styleV("zIndex")}
+          defaultValue={eff("zIndex")}
           key={selection.editId + "-z"}
           placeholder="10"
           onBlur={(e) => onChange("zIndex", e.target.value.trim())}
@@ -742,3 +769,4 @@ function StyleInspector({ selection, onChange }: StyleInspectorProps) {
     </div>
   );
 }
+
