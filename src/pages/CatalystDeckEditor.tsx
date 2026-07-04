@@ -93,6 +93,7 @@ export default function CatalystDeckEditor() {
             text: msg.text,
             src: msg.src,
             override: msg.override,
+            computed: msg.computed || {},
           });
         }
       } else if (msg.type === "text-edited") {
