@@ -112,6 +112,7 @@
     if (!node) {
       if (o.element_type === "image") {
         node = document.createElement("img");
+        node.alt = "";
       } else {
         node = document.createElement("div");
       }
@@ -119,7 +120,14 @@
       node.dataset.editKind = o.element_type || "text";
       node.dataset.inserted = "1";
       node.style.position = "absolute";
-      node.style.zIndex = String(o.z_index || 10);
+      // Default z-index 10 (in front). Only override if a nonzero z_index provided.
+      node.style.zIndex = String(o.z_index && o.z_index !== 0 ? o.z_index : 10);
+      // Visible fallback so a broken/missing image is still findable and clickable.
+      if (o.element_type === "image") {
+        node.style.minWidth = "40px";
+        node.style.minHeight = "40px";
+        node.style.outline = "1px dashed rgba(181,148,16,0.35)";
+      }
       parent.appendChild(node);
     }
     if (o.hidden) {
@@ -128,11 +136,19 @@
     } else {
       node.style.display = "";
     }
-    if (o.element_type === "image" && o.image_url) node.src = o.image_url;
+    if (o.element_type === "image" && o.image_url) {
+      node.src = o.image_url;
+      node.onload = () => { node.style.outline = ""; };
+      node.onerror = () => {
+        node.style.outline = "2px dashed #ff4d4d";
+        console.warn("[deck-overlay] image failed to load:", o.image_url);
+      };
+    }
     if (o.element_type === "text" && o.text_content != null)
       node.textContent = o.text_content;
     applyStyle(node, o.style || {});
   }
+
 
   const ALLOWED_STYLE_PROPS = [
     "color",
