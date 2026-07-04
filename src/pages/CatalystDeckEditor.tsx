@@ -27,34 +27,37 @@ type Override = {
   z_index: number;
 };
 
+type ComputedStyle = Record<string, string>;
+
 type Selection = {
   editId: string;
   kind: "text" | "image";
   text: string;
   src: string | null;
   override: Override | null;
+  computed: ComputedStyle;
 } | null;
 
 type Scene = { id: string; label: string };
 
-const STYLE_FIELDS: { key: string; label: string; type?: string; placeholder?: string }[] = [
-  { key: "color", label: "Text color", type: "color-or-text", placeholder: "#b59410" },
-  { key: "backgroundColor", label: "Background", type: "color-or-text", placeholder: "transparent" },
-  { key: "fontSize", label: "Font size", placeholder: "e.g. 32px or 2.5vw" },
-  { key: "fontWeight", label: "Font weight", placeholder: "400, 700…" },
-  { key: "fontStyle", label: "Font style", placeholder: "italic" },
-  { key: "textAlign", label: "Text align", placeholder: "left / center / right" },
-  { key: "textTransform", label: "Text transform", placeholder: "uppercase" },
-  { key: "letterSpacing", label: "Letter spacing", placeholder: "0.05em" },
-  { key: "lineHeight", label: "Line height", placeholder: "1.4" },
-  { key: "opacity", label: "Opacity", placeholder: "0.8" },
-  { key: "transform", label: "Transform", placeholder: "translate(0,0) rotate(0deg)" },
-  { key: "width", label: "Width", placeholder: "e.g. 300px" },
-  { key: "height", label: "Height", placeholder: "e.g. 200px" },
-  { key: "padding", label: "Padding", placeholder: "e.g. 12px 24px" },
-  { key: "borderRadius", label: "Border radius", placeholder: "8px" },
-  { key: "zIndex", label: "z-index", placeholder: "10" },
+const FONT_FAMILIES = [
+  { label: "Cormorant Garamond (serif)", value: "'Cormorant Garamond', serif" },
+  { label: "Playfair Display (serif)", value: "'Playfair Display', serif" },
+  { label: "Inter (sans)", value: "'Inter', sans-serif" },
+  { label: "System sans", value: "system-ui, sans-serif" },
+  { label: "Georgia (serif)", value: "Georgia, serif" },
+  { label: "Times (serif)", value: "'Times New Roman', Times, serif" },
+  { label: "Helvetica (sans)", value: "Helvetica, Arial, sans-serif" },
+  { label: "Courier (mono)", value: "'Courier New', monospace" },
 ];
+
+const FONT_SIZES = ["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "40px", "48px", "56px", "64px", "72px", "96px", "1.5vw", "2vw", "2.5vw", "3vw", "4vw", "5vw"];
+const FONT_WEIGHTS = ["300", "400", "500", "600", "700", "800", "900"];
+const FONT_STYLES = ["normal", "italic"];
+const TEXT_ALIGNS = ["left", "center", "right", "justify"];
+const TEXT_TRANSFORMS = ["none", "uppercase", "lowercase", "capitalize"];
+const LETTER_SPACINGS = ["normal", "0", "0.02em", "0.05em", "0.1em", "0.15em", "0.2em"];
+const LINE_HEIGHTS = ["1", "1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.8", "2"];
 
 export default function CatalystDeckEditor() {
   const navigate = useNavigate();
