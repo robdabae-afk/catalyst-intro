@@ -299,6 +299,54 @@ export type Database = {
         }
         Relationships: []
       }
+      deck_overrides: {
+        Row: {
+          deck_slug: string
+          edit_id: string
+          element_type: string | null
+          hidden: boolean
+          id: string
+          image_url: string | null
+          kind: string
+          parent_selector: string | null
+          slide_key: string | null
+          style: Json
+          text_content: string | null
+          updated_at: string
+          z_index: number
+        }
+        Insert: {
+          deck_slug?: string
+          edit_id: string
+          element_type?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          parent_selector?: string | null
+          slide_key?: string | null
+          style?: Json
+          text_content?: string | null
+          updated_at?: string
+          z_index?: number
+        }
+        Update: {
+          deck_slug?: string
+          edit_id?: string
+          element_type?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          parent_selector?: string | null
+          slide_key?: string | null
+          style?: Json
+          text_content?: string | null
+          updated_at?: string
+          z_index?: number
+        }
+        Relationships: []
+      }
       discover_resets: {
         Row: {
           reset_at: string
