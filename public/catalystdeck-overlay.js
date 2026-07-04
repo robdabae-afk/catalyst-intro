@@ -225,8 +225,14 @@
   }
 
   function boot() {
+    // Ensure each slide creates its own stacking context so inserted images
+    // with negative z-index render behind other slide content but not the page.
+    const iso = document.createElement("style");
+    iso.textContent = ".scene { isolation: isolate; }";
+    document.head.appendChild(iso);
     tagElements();
     applyAll();
+
     // Expose helpers for the editor script
     window.__deck = {
       tagElements,
