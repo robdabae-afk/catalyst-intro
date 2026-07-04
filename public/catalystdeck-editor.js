@@ -348,6 +348,19 @@
         el.scrollIntoView({ behavior: "smooth", block: "center" });
         selectElement(el);
       }
+    } else if (msg.type === "remove-element") {
+      const el = document.querySelector(
+        `[data-edit-id="${msg.editId.replace(/(["\\])/g, "\\$1")}"]`,
+      );
+      if (el) {
+        if (selectedEl === el) selectElement(null);
+        // Only remove inserted nodes; for original elements, just restore display.
+        if (el.dataset.inserted === "1") el.remove();
+        else el.style.removeProperty("display");
+      }
+      window.__deckOverrides = (window.__deckOverrides || []).filter(
+        (o) => o.edit_id !== msg.editId,
+      );
     }
   });
 
