@@ -56,6 +56,9 @@
       try { h.setPointerCapture(ev.pointerId); } catch (e) {}
       const el = selectedEl;
       const r = el.getBoundingClientRect();
+      const scale = (window.__deckCanvas && window.__deckCanvas.getScale && window.__deckCanvas.getScale()) || 1;
+      const startW = r.width / scale;
+      const startH = r.height / scale;
       resizeState = {
         el,
         handle: h,
@@ -63,13 +66,14 @@
         dir: d,
         startX: ev.clientX,
         startY: ev.clientY,
-        startW: r.width,
-        startH: r.height,
-        ratio: r.height > 0 ? r.width / r.height : 1,
+        startW,
+        startH,
+        ratio: startH > 0 ? startW / startH : 1,
         aspect: !ev.altKey, // hold Alt to free-resize
       };
       el.style.setProperty("will-change", "width, height");
     });
+
     resizeHandles[d] = h;
   });
 
