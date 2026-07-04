@@ -204,8 +204,11 @@ export default function CatalystDeckEditor() {
   const uploadImage = async (file: File) => {
     setUploading(true);
     try {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr || !userData?.user) throw new Error("Not signed in");
       const ext = file.name.split(".").pop() || "png";
-      const path = `deck/${DECK_SLUG}/${crypto.randomUUID()}.${ext}`;
+      // First path segment MUST equal auth.uid() to satisfy the avatars bucket RLS.
+      const path = `${userData.user.id}/deck/${DECK_SLUG}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
         .from("avatars")
         .upload(path, file, { upsert: false, contentType: file.type });
@@ -216,6 +219,7 @@ export default function CatalystDeckEditor() {
       setUploading(false);
     }
   };
+
 
   const handleImageUpload = async (file: File) => {
     if (!selection) return;
