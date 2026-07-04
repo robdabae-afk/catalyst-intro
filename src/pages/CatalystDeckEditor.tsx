@@ -69,6 +69,7 @@ export default function CatalystDeckEditor() {
   const [selection, setSelection] = useState<Selection>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [hiddenOverrides, setHiddenOverrides] = useState<Override[]>([]);
 
   useEffect(() => {
     document.title = "Catalyst Deck — Editor";
@@ -123,6 +124,20 @@ export default function CatalystDeckEditor() {
     );
   };
 
+  const loadHidden = async () => {
+    const { data } = await supabase
+      .from("deck_overrides")
+      .select("*")
+      .eq("deck_slug", DECK_SLUG)
+      .eq("hidden", true);
+    setHiddenOverrides((data as unknown as Override[]) || []);
+  };
+
+  useEffect(() => {
+    loadHidden();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const saveOverride = async (
     editId: string,
     patch: Partial<Override>,
@@ -162,6 +177,7 @@ export default function CatalystDeckEditor() {
       if (selectionRef.current?.editId === editId) {
         setSelection((s) => (s ? { ...s, override: data as unknown as Override } : s));
       }
+      loadHidden();
       if (!opts?.silent) toast.success("Saved");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -182,10 +198,32 @@ export default function CatalystDeckEditor() {
       if (error) throw error;
       post({ type: "reload-overrides" });
       setSelection((s) => (s ? { ...s, override: null } : s));
+      loadHidden();
       toast.success("Reset to original");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error("Reset failed: " + msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteOverride = async (editId: string, kind?: "override" | "insert") => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("deck_overrides")
+        .delete()
+        .eq("deck_slug", DECK_SLUG)
+        .eq("edit_id", editId);
+      if (error) throw error;
+      post({ type: "remove-element", editId });
+      if (selectionRef.current?.editId === editId) setSelection(null);
+      loadHidden();
+      toast.success(kind === "insert" ? "Deleted" : "Restored to original");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("Delete failed: " + msg);
     } finally {
       setSaving(false);
     }
@@ -399,6 +437,66 @@ export default function CatalystDeckEditor() {
               <span className="truncate">{s.label}</span>
             </button>
           ))}
+
+          {hiddenOverrides.length > 0 && (
+            <div className="mt-4 border-t border-neutral-800 pt-3">
+              <div className="mb-2 flex items-center justify-between px-2">
+                <span className="text-[10px] uppercase tracking-widest text-neutral-500">
+                  Hidden ({hiddenOverrides.length})
+                </span>
+              </div>
+              <div className="space-y-1">
+                {hiddenOverrides.map((o) => {
+                  const isImg = o.element_type === "image" || o.edit_id.includes("img") || !!o.image_url;
+                  const label = o.kind === "insert"
+                    ? `${isImg ? "Image" : "Text"} · ${o.slide_key || "?"}`
+                    : o.edit_id.split("::").slice(-2, -1)[0] || o.edit_id;
+                  return (
+                    <div
+                      key={o.edit_id}
+                      className="rounded bg-neutral-800/60 p-2 text-[11px]"
+                    >
+                      <div className="mb-1 flex items-center gap-2">
+                        {o.image_url ? (
+                          <img
+                            src={o.image_url}
+                            alt=""
+                            className="h-8 w-8 shrink-0 rounded object-cover opacity-60"
+                          />
+                        ) : null}
+                        <div className="min-w-0 flex-1 truncate text-neutral-300">
+                          {label}
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => {
+                            saveOverride(o.edit_id, { hidden: false }, { silent: true });
+                            setTimeout(
+                              () => post({ type: "focus-edit-id", editId: o.edit_id }),
+                              200,
+                            );
+                          }}
+                          className="flex-1 rounded bg-neutral-700 px-2 py-1 text-[10px] hover:bg-neutral-600"
+                        >
+                          Show
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (confirm("Permanently delete this element?"))
+                              deleteOverride(o.edit_id, o.kind);
+                          }}
+                          className="flex-1 rounded bg-red-900/70 px-2 py-1 text-[10px] hover:bg-red-800"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Iframe */}
@@ -518,10 +616,22 @@ export default function CatalystDeckEditor() {
                   size="sm"
                   variant="ghost"
                   onClick={() => resetOverride(selection.editId)}
-                  disabled={!selection.override}
+                  disabled={!selection.override || selection.override?.kind === "insert"}
                 >
                   <RotateCcw className="mr-1 h-4 w-4" /> Reset
                 </Button>
+                {selection.override?.kind === "insert" && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => {
+                      if (confirm("Permanently delete this element?"))
+                        deleteOverride(selection.editId, "insert");
+                    }}
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" /> Delete
+                  </Button>
+                )}
               </div>
 
             </div>
