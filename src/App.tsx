@@ -25,6 +25,7 @@ import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
 import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
+import CatalystDeckEditor from "./pages/CatalystDeckEditor";
 import InvestorPortal from "./pages/InvestorPortal";
 import Concierge from "./pages/Concierge";
 import EventSignIn from "./pages/EventSignIn";
@@ -74,6 +75,9 @@ const App = () => (
           <Route path="/app/profile/:id" element={<ProfileView />} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
           <Route path="/app/catalystdeck" element={<CatalystDeck />} />
+          <Route path="/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
+          <Route path="/app/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
+
 
           {/* Protected Routes */}
           <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
