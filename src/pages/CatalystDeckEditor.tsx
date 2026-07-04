@@ -616,10 +616,22 @@ export default function CatalystDeckEditor() {
                   size="sm"
                   variant="ghost"
                   onClick={() => resetOverride(selection.editId)}
-                  disabled={!selection.override}
+                  disabled={!selection.override || selection.override?.kind === "insert"}
                 >
                   <RotateCcw className="mr-1 h-4 w-4" /> Reset
                 </Button>
+                {selection.override?.kind === "insert" && (
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => {
+                      if (confirm("Permanently delete this element?"))
+                        deleteOverride(selection.editId, "insert");
+                    }}
+                  >
+                    <Trash2 className="mr-1 h-4 w-4" /> Delete
+                  </Button>
+                )}
               </div>
 
             </div>
