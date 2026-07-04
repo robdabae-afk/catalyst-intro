@@ -178,14 +178,39 @@
 
   const IMPORTANT_PROPS = new Set(["width", "height", "left", "top", "right", "bottom", "transform", "zIndex"]);
 
+  // Normalize legacy coordinate systems into the fixed 1920x1080 canvas.
+  // - translate(Xvw, Yvh)  -> translate(X*19.2 px, Y*10.8 px)
+  // - width/height / left/top as vw/vh -> % (canvas-relative == viewport-%)
+  function normalizeStyleValue(prop, val) {
+    if (val == null) return val;
+    const s = String(val);
+    if (prop === "transform") {
+      return s.replace(
+        /translate\(\s*(-?[\d.]+)vw\s*,\s*(-?[\d.]+)vh\s*\)/,
+        (_, x, y) =>
+          `translate(${(parseFloat(x) * 19.2).toFixed(2)}px, ${(parseFloat(y) * 10.8).toFixed(2)}px)`
+      );
+    }
+    if (
+      prop === "width" || prop === "height" ||
+      prop === "left" || prop === "top" ||
+      prop === "right" || prop === "bottom"
+    ) {
+      const m = s.match(/^(-?[\d.]+)(vw|vh)$/);
+      if (m) return m[1] + "%";
+    }
+    return val;
+  }
+
   function applyStyle(el, style) {
     ALLOWED_STYLE_PROPS.forEach((p) => {
       if (style[p] != null && style[p] !== "") {
         const cssName = cssPropName(p);
+        const val = normalizeStyleValue(p, style[p]);
         if (IMPORTANT_PROPS.has(p)) {
-          el.style.setProperty(cssName, String(style[p]), "important");
+          el.style.setProperty(cssName, String(val), "important");
         } else {
-          el.style[p] = style[p];
+          el.style[p] = val;
         }
       } else if (el.dataset.hasStyle && el.dataset.hasStyle.includes(p)) {
         el.style.removeProperty(cssPropName(p));
@@ -196,6 +221,7 @@
     );
     el.dataset.hasStyle = keys.join(",");
   }
+
 
   function cssPropName(camel) {
     return camel.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase());
