@@ -204,16 +204,34 @@ export default function CatalystDeckEditor() {
   const uploadImage = async (file: File) => {
     setUploading(true);
     try {
-      const ext = (file.name.split(".").pop() || "png").toLowerCase();
+      let uploadFile = file;
+      let ext = (file.name.split(".").pop() || "png").toLowerCase();
       const isHeic =
         ext === "heic" ||
         ext === "heif" ||
+        ext === "img" ||
         file.type === "image/heic" ||
         file.type === "image/heif";
       if (isHeic) {
-        throw new Error(
-          "HEIC/HEIF images aren't supported by browsers. Please convert to JPG or PNG and try again.",
-        );
+        try {
+          const { default: heic2any } = await import("heic2any");
+          const converted = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.9,
+          });
+          const blob = Array.isArray(converted) ? converted[0] : converted;
+          uploadFile = new File(
+            [blob],
+            file.name.replace(/\.(heic|heif|img)$/i, ".jpg"),
+            { type: "image/jpeg" },
+          );
+          ext = "jpg";
+        } catch (convErr) {
+          throw new Error(
+            "Couldn't convert this HEIC image. Try exporting it as JPG or PNG.",
+          );
+        }
       }
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       if (userErr || !userData?.user) throw new Error("Not signed in");
@@ -221,7 +239,7 @@ export default function CatalystDeckEditor() {
       const path = `${userData.user.id}/deck/${DECK_SLUG}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
         .from("avatars")
-        .upload(path, file, { upsert: false, contentType: file.type });
+        .upload(path, uploadFile, { upsert: false, contentType: uploadFile.type });
       if (error) throw error;
       const { data } = supabase.storage.from("avatars").getPublicUrl(path);
       return data.publicUrl;
@@ -339,7 +357,7 @@ export default function CatalystDeckEditor() {
         <label>
           <input
             type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+            accept="image/*,.heic,.heif,.img"
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
@@ -453,7 +471,7 @@ export default function CatalystDeckEditor() {
                   <label className="mt-2 block">
                     <input
                       type="file"
-                      accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                      accept="image/*,.heic,.heif,.img"
                       className="hidden"
                       onChange={(e) => {
                         const f = e.target.files?.[0];
