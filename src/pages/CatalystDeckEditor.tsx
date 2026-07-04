@@ -467,6 +467,12 @@ export default function CatalystDeckEditor() {
 
 
               <div className="flex flex-wrap gap-2 pt-2">
+                <Button size="sm" variant="secondary" onClick={bringToFront} title="z-index: 50">
+                  Bring to front
+                </Button>
+                <Button size="sm" variant="secondary" onClick={sendToBack} title="z-index: -1 (behind text)">
+                  Send to back
+                </Button>
                 {selection.override?.hidden ? (
                   <Button size="sm" variant="secondary" onClick={showElement}>
                     <Eye className="mr-1 h-4 w-4" /> Show
@@ -485,6 +491,7 @@ export default function CatalystDeckEditor() {
                   <RotateCcw className="mr-1 h-4 w-4" /> Reset
                 </Button>
               </div>
+
             </div>
           )}
         </div>
