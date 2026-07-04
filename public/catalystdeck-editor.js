@@ -156,6 +156,11 @@
   document.addEventListener(
     "click",
     (e) => {
+      if (e.target.classList && e.target.classList.contains("__resize-handle")) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       if (dragState && dragState.moved) {
         e.preventDefault();
         e.stopPropagation();
