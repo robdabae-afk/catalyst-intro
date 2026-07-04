@@ -303,20 +303,58 @@
     if (!resizeRaf) resizeRaf = requestAnimationFrame(applyResizeFrame);
   });
 
+  // Convert absolute px width/height to percentage of the containing .scene
+  // so it renders identically at any viewport width (public deck, editor iframe, print).
+  const toRelSize = (el) => {
+    const scene = el.closest(".scene") || document.documentElement;
+    const sw = scene.clientWidth || window.innerWidth;
+    const sh = scene.clientHeight || window.innerHeight;
+    const w = parseFloat(el.style.width);
+    const h = parseFloat(el.style.height);
+    const out = {};
+    if (!isNaN(w) && el.style.width.endsWith("px") && sw > 0) {
+      const pct = (w / sw) * 100;
+      out.width = pct.toFixed(3) + "%";
+      el.style.setProperty("width", out.width, "important");
+    } else {
+      out.width = el.style.width;
+    }
+    if (!isNaN(h) && el.style.height.endsWith("px") && sh > 0) {
+      const pct = (h / sh) * 100;
+      out.height = pct.toFixed(3) + "%";
+      el.style.setProperty("height", out.height, "important");
+    } else {
+      out.height = el.style.height;
+    }
+    return out;
+  };
+
+  // Convert transform: translate(px, px) to translate(vw, vh)
+  const toRelTransform = (el) => {
+    const m = el.style.transform;
+    if (!m) return "";
+    const match = m.match(/translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/);
+    if (!match) return m;
+    const vw = window.innerWidth || 1;
+    const vh = window.innerHeight || 1;
+    const tx = (parseFloat(match[1]) / vw) * 100;
+    const ty = (parseFloat(match[2]) / vh) * 100;
+    const next = `translate(${tx.toFixed(3)}vw, ${ty.toFixed(3)}vh)`;
+    el.style.transform = next;
+    return next;
+  };
+
   const endResize = () => {
     if (!resizeState) return;
     const el = resizeState.el;
     try { resizeState.handle.releasePointerCapture(resizeState.pointerId); } catch (e) {}
     if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = 0; }
-    applyResizeFrame && lastResizeEv && (function(){ /* flush any pending */ })();
     el.style.removeProperty("will-change");
+    const rel = toRelSize(el);
     send({
       type: "style-changed",
       editId: el.dataset.editId,
-      style: {
-        width: el.style.width,
-        height: el.style.height,
-      },
+      style: rel,
     });
     resizeState = null;
     lastResizeEv = null;
@@ -327,14 +365,16 @@
   document.addEventListener("mouseup", () => {
     if (!dragState) return;
     if (dragState.moved) {
+      const transform = toRelTransform(dragState.el);
       send({
         type: "style-changed",
         editId: dragState.el.dataset.editId,
-        style: { transform: dragState.el.style.transform },
+        style: { transform },
       });
     }
     dragState = null;
   });
+
 
   // Update selection outline position on scroll/resize
   const reposition = () => {
