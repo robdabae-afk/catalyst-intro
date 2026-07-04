@@ -151,6 +151,16 @@
     font-size: clamp(40px, 6vw, 84px); line-height: 1.1;
     font-weight: 300; max-width: 1100px; text-align: center;
   }
+  .problem-body {
+    font-size: clamp(17px, 2.2vw, 22px);
+    line-height: 1.55;
+    color: #ccc;
+    max-width: 900px;
+    text-align: center;
+    font-weight: 300;
+    margin-top: 40px;
+  }
+  .problem-body p + p { margin-top: 32px; }
   .problem-stats { display: flex; gap: 80px; margin-top: 80px; flex-wrap: wrap; justify-content: center; }
   .stat-block { text-align: center; min-width: 200px; }
   .stat-num {
@@ -409,7 +419,7 @@
   <div class="problem-hero reveal">
     We've all heard someone say, <span class="gold">"I wish I'd invested in Tesla when it was just getting started."</span>
   </div>
-  <div class="section-body reveal reveal-d1" style="margin-top:32px;">
+  <div class="problem-body reveal reveal-d1">
     <p>Retail investors cannot discover (at scale) promising early-stage startups before they become widely known. If you don't know an opportunity exists, you can't evaluate or invest in it.</p>
     <p>First-time founders often raise capital through an inefficient, relationship-driven process where warm introductions and existing networks can matter as much as the quality of the business itself.</p>
   </div>
