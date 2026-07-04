@@ -56,6 +56,9 @@
       try { h.setPointerCapture(ev.pointerId); } catch (e) {}
       const el = selectedEl;
       const r = el.getBoundingClientRect();
+      const scale = (window.__deckCanvas && window.__deckCanvas.getScale && window.__deckCanvas.getScale()) || 1;
+      const startW = r.width / scale;
+      const startH = r.height / scale;
       resizeState = {
         el,
         handle: h,
@@ -63,13 +66,14 @@
         dir: d,
         startX: ev.clientX,
         startY: ev.clientY,
-        startW: r.width,
-        startH: r.height,
-        ratio: r.height > 0 ? r.width / r.height : 1,
+        startW,
+        startH,
+        ratio: startH > 0 ? startW / startH : 1,
         aspect: !ev.altKey, // hold Alt to free-resize
       };
       el.style.setProperty("will-change", "width, height");
     });
+
     resizeHandles[d] = h;
   });
 
@@ -255,10 +259,16 @@
     true,
   );
 
+  const getScale = () => {
+    const g = window.__deckCanvas;
+    return g && typeof g.getScale === 'function' ? Math.max(g.getScale(), 0.0001) : 1;
+  };
+
   document.addEventListener("mousemove", (e) => {
     if (!dragState) return;
-    const dx = e.clientX - dragState.startX;
-    const dy = e.clientY - dragState.startY;
+    const scale = getScale();
+    const dx = (e.clientX - dragState.startX) / scale;
+    const dy = (e.clientY - dragState.startY) / scale;
     if (Math.abs(dx) + Math.abs(dy) > 3) dragState.moved = true;
     if (!dragState.moved) return;
     const tx = dragState.origTx + dx;
@@ -277,8 +287,9 @@
     if (!resizeState || !lastResizeEv) return;
     const e = lastResizeEv;
     const el = resizeState.el;
-    const dx = e.clientX - resizeState.startX;
-    const dy = e.clientY - resizeState.startY;
+    const scale = getScale();
+    const dx = (e.clientX - resizeState.startX) / scale;
+    const dy = (e.clientY - resizeState.startY) / scale;
     const dir = resizeState.dir;
     const signX = dir.includes("e") ? 1 : dir.includes("w") ? -1 : 0;
     const signY = dir.includes("s") ? 1 : dir.includes("n") ? -1 : 0;
@@ -303,24 +314,27 @@
     if (!resizeRaf) resizeRaf = requestAnimationFrame(applyResizeFrame);
   });
 
-  // Convert absolute px width/height to percentage of the containing .scene
-  // so it renders identically at any viewport width (public deck, editor iframe, print).
+  // Sizes for the resizeState.startW/H were captured in on-screen (scaled) pixels;
+  // divide by scale so subsequent math is in canvas pixels.
+  const _origPointerDown = null; // (kept for future use)
+
+  // Convert absolute px width/height to percentage of the fixed 1920x1080 canvas
+  // so it renders identically at any viewport size.
   const toRelSize = (el) => {
-    const scene = el.closest(".scene") || document.documentElement;
-    const sw = scene.clientWidth || window.innerWidth;
-    const sh = scene.clientHeight || window.innerHeight;
+    const cw = (window.__deckCanvas && window.__deckCanvas.w) || 1920;
+    const ch = (window.__deckCanvas && window.__deckCanvas.h) || 1080;
     const w = parseFloat(el.style.width);
     const h = parseFloat(el.style.height);
     const out = {};
-    if (!isNaN(w) && el.style.width.endsWith("px") && sw > 0) {
-      const pct = (w / sw) * 100;
+    if (!isNaN(w) && el.style.width.endsWith("px") && cw > 0) {
+      const pct = (w / cw) * 100;
       out.width = pct.toFixed(3) + "%";
       el.style.setProperty("width", out.width, "important");
     } else {
       out.width = el.style.width;
     }
-    if (!isNaN(h) && el.style.height.endsWith("px") && sh > 0) {
-      const pct = (h / sh) * 100;
+    if (!isNaN(h) && el.style.height.endsWith("px") && ch > 0) {
+      const pct = (h / ch) * 100;
       out.height = pct.toFixed(3) + "%";
       el.style.setProperty("height", out.height, "important");
     } else {
@@ -329,20 +343,17 @@
     return out;
   };
 
-  // Convert transform: translate(px, px) to translate(vw, vh)
+  // Store transform as translate in canvas pixels (invariant across viewports).
   const toRelTransform = (el) => {
     const m = el.style.transform;
     if (!m) return "";
     const match = m.match(/translate\(\s*(-?[\d.]+)px\s*,\s*(-?[\d.]+)px\s*\)/);
     if (!match) return m;
-    const vw = window.innerWidth || 1;
-    const vh = window.innerHeight || 1;
-    const tx = (parseFloat(match[1]) / vw) * 100;
-    const ty = (parseFloat(match[2]) / vh) * 100;
-    const next = `translate(${tx.toFixed(3)}vw, ${ty.toFixed(3)}vh)`;
+    const next = `translate(${parseFloat(match[1]).toFixed(2)}px, ${parseFloat(match[2]).toFixed(2)}px)`;
     el.style.transform = next;
     return next;
   };
+
 
   const endResize = () => {
     if (!resizeState) return;

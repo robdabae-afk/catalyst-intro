@@ -1,60 +1,35 @@
 ## Problem
 
-**1. Edits look different on `/catalystdeck` vs the editor.**
-The editor stores drag/resize output in absolute pixels:
-- Drag saves `transform: translate(240px, 130px)` (see `catalystdeck-editor.js` `endResize`/`mouseup`).
-- Resize saves `width: 640px; height: 420px` (in px, marked `!important`).
+Edits made in the editor (image positions/sizes, text positions) don't match the public deck at `/catalyst` and `/app/catalystdeck`. Photos scatter and stack; text moves.
 
-`.scene` sizes itself to the viewport (`min-height: 100vh`, `width: 100%`). The editor iframe sits in a flex layout next to a sidebar (narrower than the full window), while `/catalystdeck` and `/app/catalystdeck` render the iframe at 100vw. Same px offsets/sizes therefore land in different visual spots — the edit position/size the admin set does not match what the public sees.
-
-**2. PDF export doesn't hold 1 slide = 1 page.**
-Print CSS already pins each `.scene` to 13.333in × 7.5in with `page-break-after: always`, but:
-- Inserted/resized elements are stored in px (from #1), so they overflow or get clipped by `overflow: hidden` on the print-mode scene.
-- There is no explicit "Export PDF" affordance — users hit browser print manually.
-- No print-time normalization for inserted images sized in px.
+**Root cause:** the deck has no fixed slide coordinate system. Scenes size to the viewport (`100%` width, `100vh` min-height, typography in `vw`/`vh`), so identical stored coordinates render at different pixel positions in the editor iframe (~600×650, near-square) vs the public iframe (~1063×690, wide). Absolutely-positioned images and text overrides therefore land in different spots.
 
 ## Fix
 
-### Store edits in viewport-relative units (root cause of #1 and #2)
+Introduce a fixed **1920×1080 slide canvas** that scales uniformly to fit any viewport. All stored positions become percentages of this canvas, so editor and public views are pixel-identical (letterboxed if aspect differs).
 
-In `public/catalystdeck-editor.js`:
+### 1. `public/catalystdeck.html`
+- Wrap each `.scene` in a `.scene-frame` (fills viewport, centers content, `overflow: hidden`).
+- `.scene` becomes fixed `1920px × 1080px`, `position: relative`, `transform-origin: top left`.
+- A small script sets `transform: scale(min(vw/1920, vh/1080))` per scene on load + `ResizeObserver`.
+- Convert existing `vw`/`vh` typography and spacing inside scenes to `px` (relative to 1920×1080).
+- Print CSS: `@page { size: 1920px 1080px; margin: 0 }`, disable the scale transform when printing so 1 scene = 1 PDF page at full resolution.
 
-- **Drag end** — before posting `style-changed`, convert `translate(px, px)` to `translate(Xvw, Yvh)` using `window.innerWidth / innerHeight` inside the iframe. Write the vw/vh string back to `el.style.transform` and send that to the parent. Result: the same visual offset regardless of viewport width.
-- **Resize end (`endResize`)** — convert final `width`/`height` from px to a percentage of the parent `.scene`'s width/height (fallback to `vw`/`vh` if no scene ancestor). Write the % back with `!important` and send that as the persisted style. Aspect-locked resizes keep the ratio because both dims are converted.
-- Keep live drag/resize in px for smoothness; only convert on pointerup before save.
+### 2. `public/catalystdeck-editor.js`
+- Drag/resize math converts pointer px → **% of the 1920×1080 canvas** (divide by canvas rect, which already accounts for the current scale).
+- Persist positions/sizes as `%` against the canvas, not the viewport.
+- Handles render inside the scaled canvas so they track the element under any scale.
 
-Inserted elements already default to `%` for `left/top/width` (see `addImageElement`), so this only changes the persisted output of manual drag/resize.
+### 3. `public/catalystdeck-overlay.js`
+- On load, normalize any legacy overrides stored in `vw`/`vh` or viewport-% into canvas-% (one-time conversion using the stored viewport dimensions if present, else best-effort mapping).
+- Apply overrides against the fixed canvas.
 
-### Add explicit "Export PDF" in the editor
-
-In `src/pages/CatalystDeckEditor.tsx` toolbar, add an "Export PDF" button next to Preview that:
-- Opens `/catalystdeck.html` in a new window (no `?edit=1`).
-- After the overlay's `deck-overrides-applied` event fires (listen via `postMessage` or a small `?print=1` hook), calls `window.print()`.
-
-Add a `?print=1` handler at the bottom of `public/catalystdeck-overlay.js`: after `applyAll()` resolves, if the query flag is present, wait one frame and call `window.print()`. This guarantees overrides are visible before the print dialog opens.
-
-### Tighten print CSS in `public/catalystdeck.html`
-
-- On `@media print`, change `.scene { overflow: hidden }` to `overflow: visible` so inserted elements sitting near the edges aren't clipped, while `page-break-after: always` + fixed `height: 7.5in` still enforces one scene per page.
-- Add `img[data-inserted="1"], [data-edit-id][data-inserted="1"] { max-width: 100%; }` in print so an image stored with a % width never overflows the printed page.
-- Ensure `.scene` keeps `position: relative` in print (it does) so `%`-based `left/top` on inserts anchor to the slide box, not the document.
-
-### Data migration for existing pixel edits (optional, one-shot)
-
-Existing rows in `deck_overrides` may already carry px `transform`/`width`/`height`. Two options — recommend (a):
-  a. Leave as-is; admin can re-drag any element that looks off. Fewer moving parts.
-  b. Run a one-shot script that converts stored px values to vw/vh using an assumed base viewport (1440×900). Less reliable because we don't know which viewport the admin used.
-
-Ship (a) by default; only do (b) if the user asks.
-
-## Files to change
-
-- `public/catalystdeck-editor.js` — px→vw/vh on drag end, px→% on resize end.
-- `public/catalystdeck-overlay.js` — `?print=1` auto-print hook after overrides apply.
-- `public/catalystdeck.html` — print CSS: `overflow: visible` on `.scene`, safety cap for inserted images.
-- `src/pages/CatalystDeckEditor.tsx` — "Export PDF" toolbar button opening `/catalystdeck.html?print=1`.
+### 4. `src/pages/CatalystDeckEditor.tsx`
+- No logic change; ensure the iframe simply hosts `catalystdeck.html` — scaling is handled inside the deck.
 
 ## Out of scope
+- No DB schema changes. Existing `deck_overrides` rows are migrated in-memory at load.
+- No redesign of slide content; only the coordinate system changes.
 
-- Rewriting the deck to a fixed 1920×1080 scaled coordinate system (larger refactor).
-- Server-side PDF generation. Browser Print → Save as PDF stays the delivery path.
+## Trade-off
+Very tall/narrow or very wide/short viewports will show letterbox bars — standard slide-deck behavior — in exchange for exact 1:1 fidelity between editor, public page, and exported PDF.
