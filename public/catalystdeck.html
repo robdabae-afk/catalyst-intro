@@ -27,26 +27,47 @@
   }
   body { scroll-snap-type: y mandatory; }
 
+  /* ===== FIXED 1920x1080 SLIDE CANVAS =====
+     Every .scene is rendered at fixed 1920x1080 physical pixels and then
+     uniformly scaled to fit the current viewport. This makes editor and
+     public views pixel-identical (letterboxed if the aspect differs).
+     Wrapping in .scene-frame is done in JS at boot. */
+  .scene-frame {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+    background: var(--black);
+  }
   .scene {
-    min-height: 100vh;
-    width: 100%;
+    width: 1920px;
+    height: 1080px;
+    min-height: 0;
+    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 8vh 6vw;
+    padding: 90px 115px;
     position: relative;
     overflow: hidden;
-    scroll-snap-align: start;
+    transform-origin: center center;
+    /* --scene-scale is set by JS */
+    transform: scale(var(--scene-scale, 1));
   }
   .scene-num {
-    position: absolute; top: 4vh; left: 4vw;
+    position: absolute; top: 44px; left: 76px;
     font-size: 11px; letter-spacing: 0.3em; color: var(--grey-dim); font-weight: 400;
   }
   .scene-label {
-    position: absolute; top: 4vh; right: 4vw;
+    position: absolute; top: 44px; right: 76px;
     font-size: 11px; letter-spacing: 0.3em; color: var(--grey-dim); text-transform: uppercase;
   }
+
 
   /* Reveal */
   .reveal { opacity: 0; transform: translateY(30px); transition: opacity 1.2s ease, transform 1.2s ease; }
