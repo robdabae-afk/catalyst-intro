@@ -340,13 +340,19 @@
       width: 13.333in; height: 7.5in; min-height: 0;
       padding: 0.55in 0.7in;
       page-break-after: always;
-      page-break-inside: auto;
+      page-break-inside: avoid;
       break-after: page;
-      overflow: hidden;
+      break-inside: avoid;
+      overflow: visible;
       background: #000 !important;
       justify-content: center;
+      position: relative;
     }
     .scene:last-child { page-break-after: auto; break-after: auto; }
+    /* Cap inserted images so they never overflow the printed slide */
+    [data-inserted="1"] { max-width: 100% !important; max-height: 100% !important; }
+    img[data-inserted="1"] { object-fit: contain; }
+
     .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
     .cover-arrow path { stroke-dashoffset: 0 !important; animation: none !important; }
     .cover-arrow .head { opacity: 1 !important; animation: none !important; }
