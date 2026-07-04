@@ -150,6 +150,7 @@
       handleLabel.style.display = "none";
       send({ type: "selected", editId: null });
     }
+    positionResizeHandles();
   }
 
   document.addEventListener(
