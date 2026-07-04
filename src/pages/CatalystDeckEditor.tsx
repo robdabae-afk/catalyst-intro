@@ -178,7 +178,7 @@ export default function CatalystDeckEditor() {
         setSelection((s) => (s ? { ...s, override: data as unknown as Override } : s));
       }
       loadHidden();
-      if (!opts?.silent) toast.success("Saved");
+      // success toast removed
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error("Save failed: " + msg);
@@ -199,7 +199,7 @@ export default function CatalystDeckEditor() {
       post({ type: "reload-overrides" });
       setSelection((s) => (s ? { ...s, override: null } : s));
       loadHidden();
-      toast.success("Reset to original");
+      // success toast removed
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error("Reset failed: " + msg);
@@ -220,7 +220,7 @@ export default function CatalystDeckEditor() {
       post({ type: "remove-element", editId });
       if (selectionRef.current?.editId === editId) setSelection(null);
       loadHidden();
-      toast.success(kind === "insert" ? "Deleted" : "Restored to original");
+      // success toast removed
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error("Delete failed: " + msg);
@@ -339,7 +339,7 @@ export default function CatalystDeckEditor() {
         z_index: 10,
         style: { left: "30%", top: "30%", width: "40%", height: "auto" },
       });
-      toast.success("Image added — drag it into place");
+      // success toast removed
       setTimeout(() => post({ type: "focus-edit-id", editId }), 400);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
