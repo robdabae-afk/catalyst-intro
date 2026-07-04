@@ -256,10 +256,45 @@
     const rect = dragState.el.getBoundingClientRect();
     handleLabel.style.left = rect.left + "px";
     handleLabel.style.top = Math.max(0, rect.top - 20) + "px";
+    positionResizeHandles();
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!resizeState || !selectedEl) return;
+    const dx = e.clientX - resizeState.startX;
+    const dy = e.clientY - resizeState.startY;
+    const dir = resizeState.dir;
+    const signX = dir.includes("e") ? 1 : dir.includes("w") ? -1 : 0;
+    const signY = dir.includes("s") ? 1 : dir.includes("n") ? -1 : 0;
+    let newW = Math.max(20, resizeState.startW + dx * signX);
+    let newH = Math.max(20, resizeState.startH + dy * signY);
+    const isCorner = signX !== 0 && signY !== 0;
+    if (resizeState.aspect && (isCorner || signX !== 0)) {
+      newH = newW / resizeState.ratio;
+    } else if (resizeState.aspect && signY !== 0) {
+      newW = newH * resizeState.ratio;
+    }
+    if (signX !== 0) selectedEl.style.width = Math.round(newW) + "px";
+    if (signY !== 0 || (resizeState.aspect && signX !== 0))
+      selectedEl.style.height = Math.round(newH) + "px";
+    positionResizeHandles();
   });
 
   document.addEventListener("mouseup", () => {
-    if (!dragState) return;
+    if (!dragState) {
+      if (resizeState && selectedEl) {
+        send({
+          type: "style-changed",
+          editId: selectedEl.dataset.editId,
+          style: {
+            width: selectedEl.style.width,
+            height: selectedEl.style.height,
+          },
+        });
+        resizeState = null;
+      }
+      return;
+    }
     if (dragState.moved) {
       send({
         type: "style-changed",
@@ -276,6 +311,7 @@
     const rect = selectedEl.getBoundingClientRect();
     handleLabel.style.left = rect.left + "px";
     handleLabel.style.top = Math.max(0, rect.top - 20) + "px";
+    positionResizeHandles();
   };
   window.addEventListener("scroll", reposition, true);
   window.addEventListener("resize", reposition);
