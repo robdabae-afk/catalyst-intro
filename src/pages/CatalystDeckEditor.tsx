@@ -357,7 +357,7 @@ export default function CatalystDeckEditor() {
         <label>
           <input
             type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+            accept="image/*,.heic,.heif,.img"
             className="hidden"
             onChange={(e) => {
               const f = e.target.files?.[0];
@@ -471,7 +471,7 @@ export default function CatalystDeckEditor() {
                   <label className="mt-2 block">
                     <input
                       type="file"
-                      accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                      accept="image/*,.heic,.heif,.img"
                       className="hidden"
                       onChange={(e) => {
                         const f = e.target.files?.[0];
