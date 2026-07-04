@@ -416,6 +416,13 @@ export default function CatalystDeckEditor() {
         >
           <Eye className="mr-1 h-4 w-4" /> Preview
         </a>
+        <button
+          onClick={() => window.open("/catalystdeck.html?print=1", "_blank")}
+          className="inline-flex items-center rounded-md px-3 py-2 text-sm hover:bg-neutral-800"
+        >
+          <Upload className="mr-1 h-4 w-4 rotate-180" /> Export PDF
+        </button>
+
         <div className="ml-auto text-xs text-neutral-400">
           {saving ? "Saving…" : "Saved"}
         </div>
