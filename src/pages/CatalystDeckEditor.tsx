@@ -204,9 +204,19 @@ export default function CatalystDeckEditor() {
   const uploadImage = async (file: File) => {
     setUploading(true);
     try {
+      const ext = (file.name.split(".").pop() || "png").toLowerCase();
+      const isHeic =
+        ext === "heic" ||
+        ext === "heif" ||
+        file.type === "image/heic" ||
+        file.type === "image/heif";
+      if (isHeic) {
+        throw new Error(
+          "HEIC/HEIF images aren't supported by browsers. Please convert to JPG or PNG and try again.",
+        );
+      }
       const { data: userData, error: userErr } = await supabase.auth.getUser();
       if (userErr || !userData?.user) throw new Error("Not signed in");
-      const ext = file.name.split(".").pop() || "png";
       // First path segment MUST equal auth.uid() to satisfy the avatars bucket RLS.
       const path = `${userData.user.id}/deck/${DECK_SLUG}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage
