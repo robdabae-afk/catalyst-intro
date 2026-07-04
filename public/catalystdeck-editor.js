@@ -270,8 +270,13 @@
     positionResizeHandles();
   });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!resizeState || !selectedEl) return;
+  let resizeRaf = 0;
+  let lastResizeEv = null;
+  function applyResizeFrame() {
+    resizeRaf = 0;
+    if (!resizeState || !lastResizeEv) return;
+    const e = lastResizeEv;
+    const el = resizeState.el;
     const dx = e.clientX - resizeState.startX;
     const dy = e.clientY - resizeState.startY;
     const dir = resizeState.dir;
@@ -285,27 +290,42 @@
     } else if (resizeState.aspect && signY !== 0) {
       newW = newH * resizeState.ratio;
     }
-    if (signX !== 0) selectedEl.style.width = Math.round(newW) + "px";
+    if (signX !== 0 || (resizeState.aspect && signY !== 0))
+      el.style.setProperty("width", Math.round(newW) + "px", "important");
     if (signY !== 0 || (resizeState.aspect && signX !== 0))
-      selectedEl.style.height = Math.round(newH) + "px";
+      el.style.setProperty("height", Math.round(newH) + "px", "important");
     positionResizeHandles();
+  }
+
+  document.addEventListener("pointermove", (e) => {
+    if (!resizeState) return;
+    lastResizeEv = e;
+    if (!resizeRaf) resizeRaf = requestAnimationFrame(applyResizeFrame);
   });
 
+  const endResize = () => {
+    if (!resizeState) return;
+    const el = resizeState.el;
+    try { resizeState.handle.releasePointerCapture(resizeState.pointerId); } catch (e) {}
+    if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = 0; }
+    applyResizeFrame && lastResizeEv && (function(){ /* flush any pending */ })();
+    el.style.removeProperty("will-change");
+    send({
+      type: "style-changed",
+      editId: el.dataset.editId,
+      style: {
+        width: el.style.width,
+        height: el.style.height,
+      },
+    });
+    resizeState = null;
+    lastResizeEv = null;
+  };
+  document.addEventListener("pointerup", endResize);
+  document.addEventListener("pointercancel", endResize);
+
   document.addEventListener("mouseup", () => {
-    if (!dragState) {
-      if (resizeState && selectedEl) {
-        send({
-          type: "style-changed",
-          editId: selectedEl.dataset.editId,
-          style: {
-            width: selectedEl.style.width,
-            height: selectedEl.style.height,
-          },
-        });
-        resizeState = null;
-      }
-      return;
-    }
+    if (!dragState) return;
     if (dragState.moved) {
       send({
         type: "style-changed",
