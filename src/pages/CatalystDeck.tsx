@@ -1,13 +1,19 @@
 import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const CatalystDeck = () => {
+  const [params] = useSearchParams();
+  const edit = params.get("edit") === "1";
+
   useEffect(() => {
-    document.title = "Catalyst — Pre-Seed Deck";
-  }, []);
+    document.title = edit ? "Catalyst Deck — Editing" : "Catalyst — Pre-Seed Deck";
+  }, [edit]);
+
+  const src = edit ? "/catalystdeck.html?edit=1" : "/catalystdeck.html";
 
   return (
     <iframe
-      src="/catalystdeck.html"
+      src={src}
       title="Catalyst Pre-Seed Deck"
       style={{
         position: "fixed",
