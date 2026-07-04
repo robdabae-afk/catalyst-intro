@@ -198,10 +198,32 @@ export default function CatalystDeckEditor() {
       if (error) throw error;
       post({ type: "reload-overrides" });
       setSelection((s) => (s ? { ...s, override: null } : s));
+      loadHidden();
       toast.success("Reset to original");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       toast.error("Reset failed: " + msg);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteOverride = async (editId: string, kind?: "override" | "insert") => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("deck_overrides")
+        .delete()
+        .eq("deck_slug", DECK_SLUG)
+        .eq("edit_id", editId);
+      if (error) throw error;
+      post({ type: "remove-element", editId });
+      if (selectionRef.current?.editId === editId) setSelection(null);
+      loadHidden();
+      toast.success(kind === "insert" ? "Deleted" : "Restored to original");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("Delete failed: " + msg);
     } finally {
       setSaving(false);
     }
