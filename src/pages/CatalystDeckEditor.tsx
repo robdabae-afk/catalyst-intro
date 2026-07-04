@@ -177,6 +177,7 @@ export default function CatalystDeckEditor() {
       if (selectionRef.current?.editId === editId) {
         setSelection((s) => (s ? { ...s, override: data as unknown as Override } : s));
       }
+      loadHidden();
       if (!opts?.silent) toast.success("Saved");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
