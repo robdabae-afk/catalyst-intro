@@ -46,15 +46,20 @@
     h.className = "__resize-handle";
     h.dataset.dir = d;
     h.style.cssText =
-      "position:fixed;width:12px;height:12px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;";
+      "position:fixed;width:14px;height:14px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;touch-action:none;";
     h.style.cursor = resizeCursors[d];
     document.body.appendChild(h);
-    h.addEventListener("mousedown", (ev) => {
+    h.addEventListener("pointerdown", (ev) => {
       if (!selectedEl) return;
       ev.preventDefault();
       ev.stopPropagation();
-      const r = selectedEl.getBoundingClientRect();
+      try { h.setPointerCapture(ev.pointerId); } catch (e) {}
+      const el = selectedEl;
+      const r = el.getBoundingClientRect();
       resizeState = {
+        el,
+        handle: h,
+        pointerId: ev.pointerId,
         dir: d,
         startX: ev.clientX,
         startY: ev.clientY,
@@ -63,6 +68,7 @@
         ratio: r.height > 0 ? r.width / r.height : 1,
         aspect: !ev.altKey, // hold Alt to free-resize
       };
+      el.style.setProperty("will-change", "width, height");
     });
     resizeHandles[d] = h;
   });
@@ -85,8 +91,8 @@
     RESIZE_DIRS.forEach((d) => {
       const [x, y] = pos[d];
       const h = resizeHandles[d];
-      h.style.left = x - 6 + "px";
-      h.style.top = y - 6 + "px";
+      h.style.left = x - 7 + "px";
+      h.style.top = y - 7 + "px";
       h.style.display = "block";
     });
   }
@@ -264,8 +270,13 @@
     positionResizeHandles();
   });
 
-  document.addEventListener("mousemove", (e) => {
-    if (!resizeState || !selectedEl) return;
+  let resizeRaf = 0;
+  let lastResizeEv = null;
+  function applyResizeFrame() {
+    resizeRaf = 0;
+    if (!resizeState || !lastResizeEv) return;
+    const e = lastResizeEv;
+    const el = resizeState.el;
     const dx = e.clientX - resizeState.startX;
     const dy = e.clientY - resizeState.startY;
     const dir = resizeState.dir;
@@ -279,27 +290,42 @@
     } else if (resizeState.aspect && signY !== 0) {
       newW = newH * resizeState.ratio;
     }
-    if (signX !== 0) selectedEl.style.width = Math.round(newW) + "px";
+    if (signX !== 0 || (resizeState.aspect && signY !== 0))
+      el.style.setProperty("width", Math.round(newW) + "px", "important");
     if (signY !== 0 || (resizeState.aspect && signX !== 0))
-      selectedEl.style.height = Math.round(newH) + "px";
+      el.style.setProperty("height", Math.round(newH) + "px", "important");
     positionResizeHandles();
+  }
+
+  document.addEventListener("pointermove", (e) => {
+    if (!resizeState) return;
+    lastResizeEv = e;
+    if (!resizeRaf) resizeRaf = requestAnimationFrame(applyResizeFrame);
   });
 
+  const endResize = () => {
+    if (!resizeState) return;
+    const el = resizeState.el;
+    try { resizeState.handle.releasePointerCapture(resizeState.pointerId); } catch (e) {}
+    if (resizeRaf) { cancelAnimationFrame(resizeRaf); resizeRaf = 0; }
+    applyResizeFrame && lastResizeEv && (function(){ /* flush any pending */ })();
+    el.style.removeProperty("will-change");
+    send({
+      type: "style-changed",
+      editId: el.dataset.editId,
+      style: {
+        width: el.style.width,
+        height: el.style.height,
+      },
+    });
+    resizeState = null;
+    lastResizeEv = null;
+  };
+  document.addEventListener("pointerup", endResize);
+  document.addEventListener("pointercancel", endResize);
+
   document.addEventListener("mouseup", () => {
-    if (!dragState) {
-      if (resizeState && selectedEl) {
-        send({
-          type: "style-changed",
-          editId: selectedEl.dataset.editId,
-          style: {
-            width: selectedEl.style.width,
-            height: selectedEl.style.height,
-          },
-        });
-        resizeState = null;
-      }
-      return;
-    }
+    if (!dragState) return;
     if (dragState.moved) {
       send({
         type: "style-changed",

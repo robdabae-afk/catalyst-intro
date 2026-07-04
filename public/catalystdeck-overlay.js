@@ -176,10 +176,17 @@
     "textTransform",
   ];
 
+  const IMPORTANT_PROPS = new Set(["width", "height", "left", "top", "right", "bottom", "transform", "zIndex"]);
+
   function applyStyle(el, style) {
     ALLOWED_STYLE_PROPS.forEach((p) => {
       if (style[p] != null && style[p] !== "") {
-        el.style[p] = style[p];
+        const cssName = cssPropName(p);
+        if (IMPORTANT_PROPS.has(p)) {
+          el.style.setProperty(cssName, String(style[p]), "important");
+        } else {
+          el.style[p] = style[p];
+        }
       } else if (el.dataset.hasStyle && el.dataset.hasStyle.includes(p)) {
         el.style.removeProperty(cssPropName(p));
       }
