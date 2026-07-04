@@ -238,7 +238,16 @@
     iso.textContent = ".scene { isolation: isolate; }";
     document.head.appendChild(iso);
     tagElements();
-    applyAll();
+    applyAll().then(() => {
+      // Auto-print when opened with ?print=1
+      if (window.location.search.includes("print=1")) {
+        // Give images a chance to load before printing
+        setTimeout(() => {
+          try { window.print(); } catch (e) {}
+        }, 800);
+      }
+    });
+
 
     // Expose helpers for the editor script
     window.__deck = {
