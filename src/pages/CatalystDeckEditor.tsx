@@ -362,13 +362,23 @@ export default function CatalystDeckEditor() {
   const getActiveScene = (): string | null => {
     try {
       const doc = iframeRef.current?.contentDocument;
-      if (!doc) return null;
+      const win = iframeRef.current?.contentWindow;
+      if (!doc || !win) return null;
       const scenes = Array.from(doc.querySelectorAll<HTMLElement>(".scene"));
-      const scrollY = iframeRef.current!.contentWindow!.scrollY;
-      const vh = iframeRef.current!.contentWindow!.innerHeight;
+      const vh = win.innerHeight;
       let best = scenes[0]?.id || null;
+      let bestDist = Infinity;
       scenes.forEach((s) => {
-        if (scrollY >= s.offsetTop - vh / 2) best = s.id;
+        // Use the wrapping .scene-frame for viewport position since .scene is
+        // absolutely-scaled inside its frame.
+        const target = (s.closest(".scene-frame") as HTMLElement) || s;
+        const rect = target.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const dist = Math.abs(center - vh / 2);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = s.id;
+        }
       });
       return best;
     } catch {
