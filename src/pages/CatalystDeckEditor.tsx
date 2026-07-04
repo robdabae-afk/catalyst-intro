@@ -69,6 +69,7 @@ export default function CatalystDeckEditor() {
   const [selection, setSelection] = useState<Selection>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [hiddenOverrides, setHiddenOverrides] = useState<Override[]>([]);
 
   useEffect(() => {
     document.title = "Catalyst Deck — Editor";
