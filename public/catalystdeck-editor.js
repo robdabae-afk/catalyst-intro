@@ -49,6 +49,34 @@
       const override = (window.__deckOverrides || []).find(
         (o) => o.edit_id === el.dataset.editId,
       );
+      const cs = getComputedStyle(el);
+      const rgbToHex = (rgb) => {
+        const m = rgb && rgb.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (!m) return rgb || "";
+        const a = m[4] !== undefined ? parseFloat(m[4]) : 1;
+        if (a === 0) return "transparent";
+        const h = (n) => Number(n).toString(16).padStart(2, "0");
+        return "#" + h(m[1]) + h(m[2]) + h(m[3]);
+      };
+      const computed = {
+        color: rgbToHex(cs.color),
+        backgroundColor: rgbToHex(cs.backgroundColor),
+        fontSize: cs.fontSize,
+        fontFamily: cs.fontFamily,
+        fontWeight: cs.fontWeight,
+        fontStyle: cs.fontStyle,
+        textAlign: cs.textAlign,
+        textTransform: cs.textTransform,
+        letterSpacing: cs.letterSpacing,
+        lineHeight: cs.lineHeight,
+        opacity: cs.opacity,
+        transform: cs.transform,
+        width: cs.width,
+        height: cs.height,
+        padding: cs.padding,
+        borderRadius: cs.borderRadius,
+        zIndex: cs.zIndex,
+      };
       send({
         type: "selected",
         editId: el.dataset.editId,
@@ -56,6 +84,7 @@
         text: el.textContent.trim(),
         src: el.tagName === "IMG" ? el.src : null,
         override: override || null,
+        computed,
       });
     } else {
       handleLabel.style.display = "none";
