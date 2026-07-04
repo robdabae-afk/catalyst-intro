@@ -758,6 +758,29 @@
 <div class="nav-hint">↑ ↓ or scroll · Press P to print</div>
 
 <script>
+  // ===== Wrap each .scene in a .scene-frame and uniformly scale to fit =====
+  const CANVAS_W = 1920, CANVAS_H = 1080;
+  (function wrapScenes() {
+    document.querySelectorAll('.scene').forEach((scene) => {
+      if (scene.parentElement && scene.parentElement.classList.contains('scene-frame')) return;
+      const frame = document.createElement('div');
+      frame.className = 'scene-frame';
+      scene.parentNode.insertBefore(frame, scene);
+      frame.appendChild(scene);
+    });
+  })();
+  function updateSceneScale() {
+    const s = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
+    document.documentElement.style.setProperty('--scene-scale', String(s));
+  }
+  updateSceneScale();
+  window.addEventListener('resize', updateSceneScale);
+  // Expose canvas metrics for editor script
+  window.__deckCanvas = { w: CANVAS_W, h: CANVAS_H, getScale: () => {
+    return Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
+  }};
+
+
   // Reveal on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
