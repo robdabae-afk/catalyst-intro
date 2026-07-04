@@ -473,3 +473,272 @@ export default function CatalystDeckEditor() {
     </div>
   );
 }
+
+// ---------------- Style Inspector ----------------
+
+type StyleInspectorProps = {
+  selection: NonNullable<Selection>;
+  onChange: (key: string, value: string) => void;
+};
+
+function parsePx(v: string | undefined): number | null {
+  if (!v) return null;
+  const m = v.match(/^(-?\d*\.?\d+)px$/);
+  return m ? parseFloat(m[1]) : null;
+}
+
+function normalizeColor(v: string | undefined): string {
+  if (!v) return "";
+  if (v.startsWith("#")) return v;
+  const m = v.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+  if (!m) return "";
+  const h = (n: string) => Number(n).toString(16).padStart(2, "0");
+  return "#" + h(m[1]) + h(m[2]) + h(m[3]);
+}
+
+function Row({ label, current, children }: { label: string; current?: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1 rounded border border-neutral-800 bg-neutral-950/50 p-2">
+      <div className="flex items-baseline justify-between gap-2">
+        <div className="text-[10px] uppercase tracking-wider text-neutral-400">{label}</div>
+        {current && (
+          <div className="truncate font-mono text-[9px] text-neutral-500" title={current}>
+            {current}
+          </div>
+        )}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function DropdownWithCustom({
+  value,
+  options,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const isKnown = options.includes(value);
+  return (
+    <div className="flex gap-1">
+      <Select value={isKnown ? value : ""} onValueChange={onChange}>
+        <SelectTrigger className="h-8 flex-1 bg-neutral-800 text-xs text-white">
+          <SelectValue placeholder={placeholder || "Choose…"} />
+        </SelectTrigger>
+        <SelectContent className="max-h-64">
+          {options.map((o) => (
+            <SelectItem key={o} value={o} className="text-xs">
+              {o}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Input
+        className="h-8 w-24 bg-neutral-800 text-xs text-white"
+        placeholder="custom"
+        defaultValue={isKnown ? "" : value}
+        key={value}
+        onBlur={(e) => {
+          const v = e.target.value.trim();
+          if (v && v !== value) onChange(v);
+        }}
+      />
+    </div>
+  );
+}
+
+function ColorPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const hex = normalizeColor(value) || "#000000";
+  return (
+    <div className="flex gap-1">
+      <input
+        type="color"
+        value={hex}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-8 w-10 shrink-0 cursor-pointer rounded border border-neutral-700 bg-neutral-800"
+      />
+      <Input
+        className="h-8 flex-1 bg-neutral-800 text-xs text-white"
+        defaultValue={value}
+        key={value}
+        placeholder="#hex, rgba(), transparent"
+        onBlur={(e) => {
+          const v = e.target.value.trim();
+          if (v !== value) onChange(v);
+        }}
+      />
+    </div>
+  );
+}
+
+function StyleInspector({ selection, onChange }: StyleInspectorProps) {
+  const styleV = (k: string) => selection.override?.style?.[k] || "";
+  const computedV = (k: string) => selection.computed?.[k] || "";
+  const effective = (k: string) => styleV(k) || computedV(k);
+
+  const opacityNum = parseFloat(effective("opacity") || "1");
+  const fontSizePx = parsePx(effective("fontSize"));
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-xs">Style</Label>
+
+      {selection.kind === "text" && (
+        <Row label="Text color" current={computedV("color")}>
+          <ColorPicker value={styleV("color")} onChange={(v) => onChange("color", v)} />
+        </Row>
+      )}
+
+      <Row label="Background" current={computedV("backgroundColor")}>
+        <ColorPicker value={styleV("backgroundColor")} onChange={(v) => onChange("backgroundColor", v)} />
+      </Row>
+
+      {selection.kind === "text" && (
+        <>
+          <Row label="Font family" current={computedV("fontFamily")}>
+            <Select
+              value={styleV("fontFamily")}
+              onValueChange={(v) => onChange("fontFamily", v)}
+            >
+              <SelectTrigger className="h-8 bg-neutral-800 text-xs text-white">
+                <SelectValue placeholder="Inherit" />
+              </SelectTrigger>
+              <SelectContent>
+                {FONT_FAMILIES.map((f) => (
+                  <SelectItem key={f.value} value={f.value} className="text-xs" style={{ fontFamily: f.value }}>
+                    {f.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </Row>
+
+          <Row label={`Font size${fontSizePx ? ` — ${fontSizePx}px` : ""}`} current={computedV("fontSize")}>
+            {fontSizePx !== null ? (
+              <div className="flex items-center gap-2">
+                <Slider
+                  min={8}
+                  max={160}
+                  step={1}
+                  value={[parsePx(styleV("fontSize")) ?? fontSizePx]}
+                  onValueChange={(v) => onChange("fontSize", `${v[0]}px`)}
+                  className="flex-1"
+                />
+                <Input
+                  className="h-8 w-20 bg-neutral-800 text-xs text-white"
+                  defaultValue={styleV("fontSize")}
+                  key={styleV("fontSize")}
+                  onBlur={(e) => {
+                    const v = e.target.value.trim();
+                    if (v !== styleV("fontSize")) onChange("fontSize", v);
+                  }}
+                />
+              </div>
+            ) : (
+              <DropdownWithCustom value={styleV("fontSize")} options={FONT_SIZES} onChange={(v) => onChange("fontSize", v)} />
+            )}
+          </Row>
+
+          <Row label="Font weight" current={computedV("fontWeight")}>
+            <DropdownWithCustom value={styleV("fontWeight")} options={FONT_WEIGHTS} onChange={(v) => onChange("fontWeight", v)} />
+          </Row>
+
+          <Row label="Font style" current={computedV("fontStyle")}>
+            <DropdownWithCustom value={styleV("fontStyle")} options={FONT_STYLES} onChange={(v) => onChange("fontStyle", v)} />
+          </Row>
+
+          <Row label="Text align" current={computedV("textAlign")}>
+            <DropdownWithCustom value={styleV("textAlign")} options={TEXT_ALIGNS} onChange={(v) => onChange("textAlign", v)} />
+          </Row>
+
+          <Row label="Text transform" current={computedV("textTransform")}>
+            <DropdownWithCustom value={styleV("textTransform")} options={TEXT_TRANSFORMS} onChange={(v) => onChange("textTransform", v)} />
+          </Row>
+
+          <Row label="Letter spacing" current={computedV("letterSpacing")}>
+            <DropdownWithCustom value={styleV("letterSpacing")} options={LETTER_SPACINGS} onChange={(v) => onChange("letterSpacing", v)} />
+          </Row>
+
+          <Row label="Line height" current={computedV("lineHeight")}>
+            <DropdownWithCustom value={styleV("lineHeight")} options={LINE_HEIGHTS} onChange={(v) => onChange("lineHeight", v)} />
+          </Row>
+        </>
+      )}
+
+      <Row label={`Opacity — ${opacityNum.toFixed(2)}`} current={computedV("opacity")}>
+        <Slider
+          min={0}
+          max={1}
+          step={0.05}
+          value={[opacityNum]}
+          onValueChange={(v) => onChange("opacity", String(v[0]))}
+        />
+      </Row>
+
+      <Row label="Width" current={computedV("width")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("width")}
+          key={selection.editId + "-w"}
+          placeholder="e.g. 300px, 50%"
+          onBlur={(e) => onChange("width", e.target.value.trim())}
+        />
+      </Row>
+
+      <Row label="Height" current={computedV("height")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("height")}
+          key={selection.editId + "-h"}
+          placeholder="e.g. 200px, auto"
+          onBlur={(e) => onChange("height", e.target.value.trim())}
+        />
+      </Row>
+
+      <Row label="Padding" current={computedV("padding")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("padding")}
+          key={selection.editId + "-p"}
+          placeholder="e.g. 12px 24px"
+          onBlur={(e) => onChange("padding", e.target.value.trim())}
+        />
+      </Row>
+
+      <Row label="Border radius" current={computedV("borderRadius")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("borderRadius")}
+          key={selection.editId + "-br"}
+          placeholder="e.g. 8px"
+          onBlur={(e) => onChange("borderRadius", e.target.value.trim())}
+        />
+      </Row>
+
+      <Row label="Transform" current={computedV("transform")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("transform")}
+          key={selection.editId + "-tf"}
+          placeholder="translate(0,0) rotate(0deg)"
+          onBlur={(e) => onChange("transform", e.target.value.trim())}
+        />
+      </Row>
+
+      <Row label="z-index" current={computedV("zIndex")}>
+        <Input
+          className="h-8 bg-neutral-800 text-xs text-white"
+          defaultValue={styleV("zIndex")}
+          key={selection.editId + "-z"}
+          placeholder="10"
+          onBlur={(e) => onChange("zIndex", e.target.value.trim())}
+        />
+      </Row>
+    </div>
+  );
+}
