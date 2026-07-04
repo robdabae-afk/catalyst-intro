@@ -31,6 +31,66 @@
   handleLabel.style.display = "none";
   document.body.appendChild(handleLabel);
 
+  // Resize handles (for images)
+  const RESIZE_DIRS = ["nw", "ne", "sw", "se", "n", "s", "e", "w"];
+  const resizeCursors = {
+    nw: "nwse-resize", se: "nwse-resize",
+    ne: "nesw-resize", sw: "nesw-resize",
+    n: "ns-resize", s: "ns-resize",
+    e: "ew-resize", w: "ew-resize",
+  };
+  const resizeHandles = {};
+  let resizeState = null;
+  RESIZE_DIRS.forEach((d) => {
+    const h = document.createElement("div");
+    h.className = "__resize-handle";
+    h.dataset.dir = d;
+    h.style.cssText =
+      "position:fixed;width:12px;height:12px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;";
+    h.style.cursor = resizeCursors[d];
+    document.body.appendChild(h);
+    h.addEventListener("mousedown", (ev) => {
+      if (!selectedEl) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const r = selectedEl.getBoundingClientRect();
+      resizeState = {
+        dir: d,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        startW: r.width,
+        startH: r.height,
+        ratio: r.height > 0 ? r.width / r.height : 1,
+        aspect: !ev.altKey, // hold Alt to free-resize
+      };
+    });
+    resizeHandles[d] = h;
+  });
+
+  function positionResizeHandles() {
+    const show = selectedEl && selectedEl.dataset.editKind === "image";
+    if (!show) {
+      RESIZE_DIRS.forEach((d) => (resizeHandles[d].style.display = "none"));
+      return;
+    }
+    const r = selectedEl.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const pos = {
+      nw: [r.left, r.top], ne: [r.right, r.top],
+      sw: [r.left, r.bottom], se: [r.right, r.bottom],
+      n: [cx, r.top], s: [cx, r.bottom],
+      w: [r.left, cy], e: [r.right, cy],
+    };
+    RESIZE_DIRS.forEach((d) => {
+      const [x, y] = pos[d];
+      const h = resizeHandles[d];
+      h.style.left = x - 6 + "px";
+      h.style.top = y - 6 + "px";
+      h.style.display = "block";
+    });
+  }
+
   function send(msg) {
     parent.postMessage({ source: "deck-editor", ...msg }, PARENT_ORIGIN);
   }
