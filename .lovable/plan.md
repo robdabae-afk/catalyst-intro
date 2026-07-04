@@ -1,24 +1,41 @@
-Plan to fix the whitespace on profile pages:
+## Fix print/PDF output for the Catalyst deck
 
-1. **Compress the empty banner area**
-   - Reduce the mobile banner height dramatically.
-   - If no real banner image exists, use a compact dark header/toolbar instead of a large empty gradient block.
-   - Keep Back and Share visible without creating a tall blank section.
+**Problem:** The current print CSS (`public/catalystdeck.html` lines ~322–360) inherits the web layout: every `.scene` uses `min-height: 100vh` + `padding: 8vh 6vw`, and typography uses `clamp(..vw..)` sized against the browser viewport. When the browser prints, "viewport" becomes the paper, but `page-break-inside: avoid` on oversized slides causes clipping instead of resizing, so content near the bottom/edges of taller slides (team grid, ask breakdown, market tiers, etc.) is cut off. Aspect ratio also mismatches — the deck is designed 16:9 but prints to A4 landscape (roughly 1.41:1), so horizontal padding eats the sides.
 
-2. **Rebuild the profile header card for mobile density**
-   - Keep the avatar fully inside the shaded card border.
-   - Use a tighter horizontal layout on phone: avatar on the left, name/type/details on the right.
-   - Remove the large empty right-side area by preventing the header card from reserving unnecessary vertical space.
+**Approach:** Add a proper print stylesheet that treats each `.scene` as a fixed 16:9 page, so what you see on-screen is what lands on the PDF page, with nothing clipped.
 
-3. **Tighten spacing between sections**
-   - Reduce top margin below the banner, card padding, and gaps between profile detail cards on mobile.
-   - Keep desktop spacing more generous where it still looks professional.
+### Changes (single file: `public/catalystdeck.html`, inside the existing `@media print` block)
 
-4. **Preserve the existing visual direction**
-   - Maintain the black/silver Catalyst styling and semantic design tokens.
-   - Avoid white-on-white/black-on-black issues.
+1. **Fixed page size matching the design ratio**
+   - `@page { size: 13.333in 7.5in; margin: 0; }` (standard 1280×720 slide at 96dpi, 16:9)
+   - Users select "Landscape" automatically because the page is wider than tall.
 
-Technical scope:
-- Update `src/pages/ProfileView.tsx` only.
-- Use responsive Tailwind classes so the fix targets mobile first while preserving desktop layout.
-- No backend/data changes.
+2. **Pin every `.scene` to that page**
+   - `width: 13.333in; height: 7.5in; min-height: 0;`
+   - `padding: 0.5in 0.6in;` (replace `vh/vw` padding so it doesn't collapse)
+   - Keep `page-break-after: always`, drop `page-break-inside: avoid` (no longer needed once each slide fits the page exactly, and it's what causes clipping when content would otherwise overflow).
+   - `overflow: hidden;` as a safety net.
+
+3. **Print-scoped typography that doesn't depend on viewport units**
+   - Override the big `clamp(..vw..)` values used by cover title, section eyebrows, pillar bodies, stats, traction numbers, team grid, ask block, market tiers, etc., with fixed `pt`/`px` sizes tuned to the 13.333in × 7.5in page.
+   - Reduce oversized headers (cover title, big stat numbers) so they don't push content off the slide.
+   - Tighten `line-height` on long-body slides (Problem, Solution, Model, Team bios) so paragraphs fit.
+
+4. **Grid/flex tightening for print**
+   - Slightly reduce gaps on `.pillar-grid`, `.team-grid`, `.market-tiers`, `.ask-use-grid`, `.flywheel` for print only, so the wider aspect (vs A4) doesn't matter and nothing wraps unexpectedly.
+
+5. **Keep existing color overrides** (gold/grey palette) — already correct.
+
+6. **Chrome-specific hint:** add `-webkit-print-color-adjust: exact` (already present) and a small note in the deck footer / README isn't needed — but we'll make sure background colors survive in Chrome/Safari/Firefox.
+
+### Verification
+
+- Run the dev server, open `/catalystdeck` in the preview, use Chrome's "Print → Save as PDF" with default settings (no scaling, no headers/footers).
+- Open the generated PDF and check every slide: cover, problem, solution, pillars, market, model, traction, team, ask, close.
+- Iterate on any slide that still overflows by tightening its print-scoped font-size or gap.
+
+### Out of scope
+
+- No changes to the on-screen web layout.
+- No changes to the React `CatalystDeck.tsx` iframe wrapper.
+- No new "Download PDF" button — this fixes the browser's native Print → PDF flow, which is what recipients actually use.
