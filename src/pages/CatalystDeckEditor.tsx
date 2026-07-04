@@ -436,33 +436,16 @@ export default function CatalystDeckEditor() {
                 </div>
               )}
 
-              <div>
-                <Label className="text-xs">Style</Label>
-                <div className="mt-1 space-y-2">
-                  {STYLE_FIELDS.map((f) => (
-                    <div key={f.key} className="flex items-center gap-2">
-                      <div className="w-24 shrink-0 text-[10px] text-neutral-400">
-                        {f.label}
-                      </div>
-                      <Input
-                        className="h-8 flex-1 bg-neutral-800 text-xs text-white"
-                        placeholder={f.placeholder}
-                        defaultValue={styleValue(f.key)}
-                        key={selection.editId + "-" + f.key}
-                        onBlur={(e) => {
-                          const v = e.target.value.trim();
-                          const current = styleValue(f.key);
-                          if (v === current) return;
-                          const nextStyle = { ...(selection.override?.style || {}) };
-                          if (v) nextStyle[f.key] = v;
-                          else delete nextStyle[f.key];
-                          saveOverride(selection.editId, { style: nextStyle });
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <StyleInspector
+                selection={selection}
+                onChange={(key, value) => {
+                  const nextStyle = { ...(selection.override?.style || {}) };
+                  if (value === "" || value == null) delete nextStyle[key];
+                  else nextStyle[key] = value;
+                  saveOverride(selection.editId, { style: nextStyle });
+                }}
+              />
+
 
               <div className="flex flex-wrap gap-2 pt-2">
                 {selection.override?.hidden ? (
