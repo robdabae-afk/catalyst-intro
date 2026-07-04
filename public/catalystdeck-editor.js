@@ -46,15 +46,20 @@
     h.className = "__resize-handle";
     h.dataset.dir = d;
     h.style.cssText =
-      "position:fixed;width:12px;height:12px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;";
+      "position:fixed;width:14px;height:14px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;touch-action:none;";
     h.style.cursor = resizeCursors[d];
     document.body.appendChild(h);
-    h.addEventListener("mousedown", (ev) => {
+    h.addEventListener("pointerdown", (ev) => {
       if (!selectedEl) return;
       ev.preventDefault();
       ev.stopPropagation();
-      const r = selectedEl.getBoundingClientRect();
+      try { h.setPointerCapture(ev.pointerId); } catch (e) {}
+      const el = selectedEl;
+      const r = el.getBoundingClientRect();
       resizeState = {
+        el,
+        handle: h,
+        pointerId: ev.pointerId,
         dir: d,
         startX: ev.clientX,
         startY: ev.clientY,
@@ -63,6 +68,7 @@
         ratio: r.height > 0 ? r.width / r.height : 1,
         aspect: !ev.altKey, // hold Alt to free-resize
       };
+      el.style.setProperty("will-change", "width, height");
     });
     resizeHandles[d] = h;
   });
@@ -85,8 +91,8 @@
     RESIZE_DIRS.forEach((d) => {
       const [x, y] = pos[d];
       const h = resizeHandles[d];
-      h.style.left = x - 6 + "px";
-      h.style.top = y - 6 + "px";
+      h.style.left = x - 7 + "px";
+      h.style.top = y - 7 + "px";
       h.style.display = "block";
     });
   }
