@@ -124,6 +124,20 @@ export default function CatalystDeckEditor() {
     );
   };
 
+  const loadHidden = async () => {
+    const { data } = await supabase
+      .from("deck_overrides")
+      .select("*")
+      .eq("deck_slug", DECK_SLUG)
+      .eq("hidden", true);
+    setHiddenOverrides((data as unknown as Override[]) || []);
+  };
+
+  useEffect(() => {
+    loadHidden();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const saveOverride = async (
     editId: string,
     patch: Partial<Override>,
