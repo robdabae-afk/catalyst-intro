@@ -258,17 +258,36 @@ export default function CatalystDeckEditor() {
       toast.error("Scroll to a slide first");
       return;
     }
-    const url = await uploadImage(file);
-    const editId = `insert::${active}::${crypto.randomUUID().slice(0, 8)}`;
-    await saveOverride(editId, {
-      kind: "insert",
-      element_type: "image",
-      slide_key: active,
-      image_url: url,
-      style: { left: "10%", top: "10%", width: "300px" },
-    });
-    setTimeout(() => post({ type: "focus-edit-id", editId }), 300);
+    try {
+      const url = await uploadImage(file);
+      const editId = `insert::${active}::${crypto.randomUUID().slice(0, 8)}`;
+      await saveOverride(editId, {
+        kind: "insert",
+        element_type: "image",
+        slide_key: active,
+        image_url: url,
+        z_index: 10,
+        style: { left: "30%", top: "30%", width: "40%", height: "auto" },
+      });
+      toast.success("Image added — drag it into place");
+      setTimeout(() => post({ type: "focus-edit-id", editId }), 400);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      toast.error("Add image failed: " + msg);
+    }
   };
+
+  const bringToFront = () => {
+    if (!selection) return;
+    const style = { ...(selection.override?.style || {}), zIndex: "50" };
+    saveOverride(selection.editId, { style });
+  };
+  const sendToBack = () => {
+    if (!selection) return;
+    const style = { ...(selection.override?.style || {}), zIndex: "-1" };
+    saveOverride(selection.editId, { style });
+  };
+
 
   const getActiveScene = (): string | null => {
     try {
