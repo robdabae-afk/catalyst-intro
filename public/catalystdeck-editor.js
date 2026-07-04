@@ -31,6 +31,66 @@
   handleLabel.style.display = "none";
   document.body.appendChild(handleLabel);
 
+  // Resize handles (for images)
+  const RESIZE_DIRS = ["nw", "ne", "sw", "se", "n", "s", "e", "w"];
+  const resizeCursors = {
+    nw: "nwse-resize", se: "nwse-resize",
+    ne: "nesw-resize", sw: "nesw-resize",
+    n: "ns-resize", s: "ns-resize",
+    e: "ew-resize", w: "ew-resize",
+  };
+  const resizeHandles = {};
+  let resizeState = null;
+  RESIZE_DIRS.forEach((d) => {
+    const h = document.createElement("div");
+    h.className = "__resize-handle";
+    h.dataset.dir = d;
+    h.style.cssText =
+      "position:fixed;width:12px;height:12px;background:#b59410;border:2px solid #000;box-sizing:border-box;z-index:99999;display:none;pointer-events:auto;border-radius:2px;";
+    h.style.cursor = resizeCursors[d];
+    document.body.appendChild(h);
+    h.addEventListener("mousedown", (ev) => {
+      if (!selectedEl) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const r = selectedEl.getBoundingClientRect();
+      resizeState = {
+        dir: d,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        startW: r.width,
+        startH: r.height,
+        ratio: r.height > 0 ? r.width / r.height : 1,
+        aspect: !ev.altKey, // hold Alt to free-resize
+      };
+    });
+    resizeHandles[d] = h;
+  });
+
+  function positionResizeHandles() {
+    const show = selectedEl && selectedEl.dataset.editKind === "image";
+    if (!show) {
+      RESIZE_DIRS.forEach((d) => (resizeHandles[d].style.display = "none"));
+      return;
+    }
+    const r = selectedEl.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const pos = {
+      nw: [r.left, r.top], ne: [r.right, r.top],
+      sw: [r.left, r.bottom], se: [r.right, r.bottom],
+      n: [cx, r.top], s: [cx, r.bottom],
+      w: [r.left, cy], e: [r.right, cy],
+    };
+    RESIZE_DIRS.forEach((d) => {
+      const [x, y] = pos[d];
+      const h = resizeHandles[d];
+      h.style.left = x - 6 + "px";
+      h.style.top = y - 6 + "px";
+      h.style.display = "block";
+    });
+  }
+
   function send(msg) {
     parent.postMessage({ source: "deck-editor", ...msg }, PARENT_ORIGIN);
   }
@@ -90,11 +150,17 @@
       handleLabel.style.display = "none";
       send({ type: "selected", editId: null });
     }
+    positionResizeHandles();
   }
 
   document.addEventListener(
     "click",
     (e) => {
+      if (e.target.classList && e.target.classList.contains("__resize-handle")) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
       if (dragState && dragState.moved) {
         e.preventDefault();
         e.stopPropagation();
@@ -195,10 +261,45 @@
     const rect = dragState.el.getBoundingClientRect();
     handleLabel.style.left = rect.left + "px";
     handleLabel.style.top = Math.max(0, rect.top - 20) + "px";
+    positionResizeHandles();
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!resizeState || !selectedEl) return;
+    const dx = e.clientX - resizeState.startX;
+    const dy = e.clientY - resizeState.startY;
+    const dir = resizeState.dir;
+    const signX = dir.includes("e") ? 1 : dir.includes("w") ? -1 : 0;
+    const signY = dir.includes("s") ? 1 : dir.includes("n") ? -1 : 0;
+    let newW = Math.max(20, resizeState.startW + dx * signX);
+    let newH = Math.max(20, resizeState.startH + dy * signY);
+    const isCorner = signX !== 0 && signY !== 0;
+    if (resizeState.aspect && (isCorner || signX !== 0)) {
+      newH = newW / resizeState.ratio;
+    } else if (resizeState.aspect && signY !== 0) {
+      newW = newH * resizeState.ratio;
+    }
+    if (signX !== 0) selectedEl.style.width = Math.round(newW) + "px";
+    if (signY !== 0 || (resizeState.aspect && signX !== 0))
+      selectedEl.style.height = Math.round(newH) + "px";
+    positionResizeHandles();
   });
 
   document.addEventListener("mouseup", () => {
-    if (!dragState) return;
+    if (!dragState) {
+      if (resizeState && selectedEl) {
+        send({
+          type: "style-changed",
+          editId: selectedEl.dataset.editId,
+          style: {
+            width: selectedEl.style.width,
+            height: selectedEl.style.height,
+          },
+        });
+        resizeState = null;
+      }
+      return;
+    }
     if (dragState.moved) {
       send({
         type: "style-changed",
@@ -215,6 +316,7 @@
     const rect = selectedEl.getBoundingClientRect();
     handleLabel.style.left = rect.left + "px";
     handleLabel.style.top = Math.max(0, rect.top - 20) + "px";
+    positionResizeHandles();
   };
   window.addEventListener("scroll", reposition, true);
   window.addEventListener("resize", reposition);
