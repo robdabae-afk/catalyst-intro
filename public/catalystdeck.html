@@ -774,6 +774,19 @@
   }};
 
 
+  function setFinalCount(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const isInt = Number.isInteger(target);
+    el.textContent = (isInt ? Math.round(target) : target).toLocaleString() + suffix;
+    el.dataset.counted = '1';
+  }
+
+  if (document.documentElement.classList.contains('__deck-export')) {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+    document.querySelectorAll('.count').forEach(setFinalCount);
+  }
+
   // Reveal on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -781,6 +794,10 @@
         entry.target.classList.add('in');
         entry.target.querySelectorAll('.count').forEach(el => {
           if (el.dataset.counted) return;
+          if (document.documentElement.classList.contains('__deck-export')) {
+            setFinalCount(el);
+            return;
+          }
           el.dataset.counted = '1';
           animateCount(el);
         });
