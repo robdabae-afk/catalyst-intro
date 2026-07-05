@@ -1,101 +1,74 @@
-## Diagnosis
+# Glassmorphism Overlay — Site-Wide (excluding Pitch Deck)
 
-I reproduced the mismatch by capturing both the web-rendered deck and a generated PDF render. The issue is real: the PDF is not preserving the same layout tree as the web view.
+Add a consistent glass-morphism visual layer across every page except the pitch deck viewer (`/catalystdeck`, `public/catalystdeck.html`) and the deck editor (`/catalystdeck/edit`, `CatalystDeckEditor.tsx`). Keep current colors, fonts (Playfair Display / Plus Jakarta / Inter), photography, and layouts intact — only the surface treatment changes.
 
-Observed example:
-- Web slide 6: three pillar cards stay in one horizontal row.
-- PDF slide 6: the same cards reflow into a vertical mobile-style stack.
-- Web slide 10: the ask breakdown stays in three columns.
-- PDF slide 10: the breakdown stacks vertically and text positions shift.
+## Visual concept
 
-Root cause:
-- The current export relies on `window.print()` and `@media print` CSS.
-- During print/PDF rendering, the browser evaluates responsive media queries and print sizing differently than the live web viewport.
-- That lets mobile/tablet rules and print font/layout calculations override the deck’s intended 1920×1080 web layout.
-- Charts are affected for the same reason: print rendering recalculates layout, SVG/container sizing, fonts, and page flow instead of preserving the already-rendered web pixels.
+- Backgrounds stay black / silver-sleek. On top of them, primary surfaces (cards, modals, nav bars, sheets, popovers, dropdowns) become frosted glass: translucent fill, backdrop blur, subtle inner highlight, hairline border, soft outer shadow.
+- Photography and gradients remain the "hero" layer; glass panels sit above them so imagery bleeds through with a soft blur.
+- No color palette changes. No font changes. No layout changes.
 
-## Five possible plans considered
+## Design tokens (added to `src/index.css`)
 
-### Plan 1 — Patch print CSS only
-Force every print breakpoint back to desktop layout and tighten `@page`, `.scene`, and grid rules.
+New CSS variables under `:root` and `.dark` (values shared since app is dark-first):
 
-Success estimate: 70–85%.
+```
+--glass-bg: 0 0% 100% / 0.06;         /* translucent white fill */
+--glass-bg-strong: 0 0% 100% / 0.10;  /* modals / popovers */
+--glass-border: 0 0% 100% / 0.12;
+--glass-highlight: 0 0% 100% / 0.18;  /* top inner stroke */
+--glass-shadow: 0 20px 60px -20px hsl(0 0% 0% / 0.6);
+--glass-blur: 18px;
+--glass-blur-strong: 28px;
+```
 
-Why not choose it: it may fix today’s specific slides, but future edits, uploaded images, charts, and browser print quirks can still drift.
+Plus three utility classes in the `@layer utilities` block:
 
-### Plan 2 — Use section-by-section PDF capture
-Mark each slide section, capture sections separately, and assemble pages.
+- `.glass` — card-level frost (bg `--glass-bg`, `backdrop-filter: blur(var(--glass-blur)) saturate(1.4)`, 1px border `--glass-border`, top inner highlight via `box-shadow: inset 0 1px 0 var(--glass-highlight)`, outer `--glass-shadow`).
+- `.glass-strong` — modal/popover variant using `--glass-bg-strong` and `--glass-blur-strong`.
+- `.glass-nav` — thinner blur (10px), no shadow, sticky-header friendly.
 
-Success estimate: 80–90%.
+Fallback: `@supports not (backdrop-filter: blur(1px))` bumps the fill opacity to ~0.85 so panels stay legible on browsers without backdrop-filter (Firefox with the flag off).
 
-Why not choose it: sections can still be scaled/repositioned differently, and charts/text can land slightly differently than the full web slide.
+## Where the treatment is applied
 
-### Plan 3 — Generate a second simplified PDF-only deck layout
-Create a separate PDF template that manually matches the deck.
+Applied by editing a small number of primitives so it propagates everywhere without touching individual pages:
 
-Success estimate: 85–92%.
+1. `src/components/ui/card.tsx` — `Card` swaps `bg-card` for `glass` (keeps `text-card-foreground`, border becomes the glass hairline).
+2. `src/components/ui/dialog.tsx` — `DialogContent` uses `glass-strong`; overlay gets a slightly darker tint + blur.
+3. `src/components/ui/sheet.tsx` — same as dialog (`glass-strong`).
+4. `src/components/ui/popover.tsx`, `dropdown-menu.tsx`, `hover-card.tsx`, `command.tsx`, `menubar.tsx`, `navigation-menu.tsx`, `context-menu.tsx`, `select.tsx` content panels — `glass-strong`.
+5. `src/components/ui/tooltip.tsx` — `glass` (lighter).
+6. `src/components/ui/alert.tsx`, `badge.tsx` (default variant only) — `glass`.
+7. `src/components/ui/toast.tsx` + `sonner.tsx` — `glass-strong`.
+8. `src/components/ui/input.tsx`, `textarea.tsx`, `select.tsx` trigger — swap `bg-background` for `glass` so form fields match.
+9. `src/components/ui/tabs.tsx` (`TabsList`), `toggle-group.tsx` — `glass`.
+10. Navigation shells: `src/components/AppNavigation.tsx`, `BottomNavigation.tsx`, `src/components/desktop/Sidebar.tsx`, `src/match/MatchLayout.tsx` header, `src/components/discover/DiscoverMenuBar.tsx` — apply `glass-nav` to their outer container (replacing solid `bg-black` / `border-b` treatments while keeping the border color).
 
-Why not choose it: two layouts will drift over time; every deck edit would need to be reflected in both web and PDF templates.
+## Explicit exclusions (untouched)
 
-### Plan 4 — Server/headless-browser PDF service
-Use a backend/headless browser to render the deck and export PDFs.
+- `public/catalystdeck.html`
+- `public/catalystdeck-overlay.js`
+- `public/catalystdeck-editor.js`
+- `src/pages/CatalystDeck.tsx`
+- `src/pages/CatalystDeckEditor.tsx`
 
-Success estimate: 95–99%.
+Because the deck uses its own inline styles and print pipeline, the shared shadcn primitives are not referenced by the printed slide DOM, so editing the primitives has no effect on PDF output. We'll double-check by grepping the deck files for any shadcn imports before we ship.
 
-Why not choose it here: this app is currently client-side, and adding a full browser rendering service is heavier than needed.
+## Accessibility & performance
 
-### Plan 5 — Chosen: rasterize each exact web slide into one full-page PDF image
-Render each slide at the canonical 1920×1080 canvas, wait for fonts/images/charts/overrides, capture each complete slide as a high-resolution image, then place exactly one image on exactly one PDF page.
+- Contrast: verify body/foreground text on frosted panels still meets WCAG AA against the darkest photo backdrops; if a panel falls below, we raise the `--glass-bg` alpha to 0.10–0.14 for that specific surface.
+- `prefers-reduced-transparency`: media query removes `backdrop-filter` and raises fill opacity to ~0.9.
+- Blur is GPU-accelerated; we cap heavy blur (`glass-blur-strong`) to modal/popover surfaces to avoid painting cost on scroll.
 
-Success estimate: above 99.9% for placement fidelity.
+## Verification
 
-Why this wins:
-- PDF no longer reflows text.
-- PDF no longer recalculates charts.
-- PDF no longer applies mobile breakpoints.
-- Each web slide becomes one sealed page image.
-- If it looks correct on the web canvas, the PDF page uses that same visual snapshot.
+- Playwright pass: screenshot Home, Dashboard/Discover, Matches, Match landing, Settings, Admin, Auth — confirm frosted surfaces render and typography/colors are unchanged.
+- Load `/catalystdeck` and `/catalystdeck/edit`, screenshot, confirm zero visual change vs. current.
+- Trigger PDF print flow from the editor and confirm slide output is byte-identical to today (no shadcn leakage).
 
-## Implementation plan
+## Out of scope
 
-1. Add a dedicated export mode to `public/catalystdeck.html`.
-   - Use a query param like `?export=1` or `?print=1`.
-   - Force the deck into native 1920×1080 slide rendering.
-   - Disable scroll snap, nav UI, animations, hover transforms, and editor chrome.
-   - Force all `.reveal` elements visible and all counters to final values before capture.
-
-2. Replace the current `window.print()` export behavior.
-   - The editor’s “Export PDF” button should open/run the deterministic export path instead of relying on browser print CSS.
-   - Keep normal web browsing unchanged.
-
-3. Add a client-side PDF export script.
-   - Wait for `document.fonts.ready`.
-   - Wait for all images to load or fail safely.
-   - Wait for deck overrides from the backend to finish applying.
-   - Capture each `.scene` as a 1920×1080 image.
-   - Create a landscape PDF with one 16:9 page per captured slide.
-   - Place each slide image full-bleed on its page.
-
-4. Add export-specific CSS guards.
-   - Override all responsive breakpoints during export so the capture source is always desktop 1920×1080.
-   - Ensure inserted photos use fixed canvas-relative positioning.
-   - Ensure SVG/charts render in their final web dimensions before capture.
-
-5. Keep native print CSS only as a fallback.
-   - It can remain for manual browser printing, but the app’s official export should use the rasterized slide-to-PDF path.
-
-6. Verify with visual QA.
-   - Generate fresh web screenshots for representative slides: cover, traction, how-it-works, market/model, team, ask, and any chart slide.
-   - Generate the exported PDF.
-   - Convert PDF pages to images.
-   - Compare web screenshot vs PDF page image side by side.
-   - Fix any mismatch until the only differences are minor anti-aliasing/compression differences.
-
-## Final target behavior
-
-- One `.scene` = one PDF page.
-- No element can be split across pages.
-- Text cannot reflow in the PDF.
-- Charts cannot resize differently in the PDF.
-- Uploaded images keep the same location and size.
-- The exported PDF visually matches the web slide canvas.
+- No color, font, spacing, or layout changes.
+- No new pages or components.
+- No changes to deck rendering or print pipeline.

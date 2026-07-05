@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ matches, selectedMatchId, onSe
     // Let's stick to the logic: No message = New Match (Queue). Message = Conversation.
 
     return (
-        <div className="w-[360px] flex flex-col bg-background-dark border-r border-border-subtle h-full flex-shrink-0">
+        <div className="glass w-[360px] flex flex-col border-r border-border-subtle h-full flex-shrink-0">
             {/* Header */}
             <div className="p-6 pb-2">
                 <h3 className="text-luxury-gold text-xs uppercase tracking-widest font-bold mb-4">Match Queue</h3>
