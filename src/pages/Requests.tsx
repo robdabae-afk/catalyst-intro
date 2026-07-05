@@ -400,7 +400,7 @@ export default function Requests() {
   const requestTypes = userType === 'founder' ? FOUNDER_REQUEST_TYPES : INVESTOR_REQUEST_TYPES;
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-background">
       <AppNavigation
         userType={userType as 'founder' | 'investor' | null}
         userName={userName || undefined}

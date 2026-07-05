@@ -536,9 +536,9 @@ export default function Matches() {
   // Mobile: Full-screen chat view when a match is selected
   if (isMobile && selectedMatch) {
     return (
-      <div className="min-h-screen  flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         {/* Mobile Chat Header */}
-        <header className="sticky top-0 z-50  border-b border-border px-4 py-3">
+        <header className="sticky top-0 z-50 bg-background border-b border-border px-4 py-3">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" onClick={handleBackToList}>
               <ArrowLeft className="h-5 w-5" />
@@ -640,7 +640,7 @@ export default function Matches() {
         </div>
 
         {/* Mobile Chat Input */}
-        <div className="sticky bottom-0  border-t border-border p-4">
+        <div className="sticky bottom-0 bg-background border-t border-border p-4">
           <div className="flex gap-2">
             <Input
               value={newMessage}

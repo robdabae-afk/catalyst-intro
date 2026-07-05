@@ -139,7 +139,7 @@ const Dashboard = () => {
   const isLoading = authLoading || historyLoading;
 
   return (
-    <div className="h-[100dvh] overflow-hidden flex flex-col ">
+    <div className="h-[100dvh] overflow-hidden flex flex-col bg-background">
       <DiscoverMenuBar
         userId={user?.id}
         userType={viewerType}

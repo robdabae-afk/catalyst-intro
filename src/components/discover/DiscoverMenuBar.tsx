@@ -186,7 +186,7 @@ export function DiscoverMenuBar({
   );
 
   return (
-    <nav className="glass-nav shrink-0 z-50">
+    <nav className="shrink-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1.5 sm:gap-3 h-11 sm:h-12">
           <h1

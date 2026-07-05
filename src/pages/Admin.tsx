@@ -657,7 +657,7 @@ const Admin = () => {
                   value={adminEmail}
                   onChange={(e) => setAdminEmail(e.target.value)}
                   placeholder="user@example.com"
-                  className="flex-1 px-3 py-2 rounded-md border border-input  text-foreground text-sm"
+                  className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm"
                   onKeyDown={(e) => { if (e.key === 'Enter') addAdminByEmail(); }}
                 />
                 <Button onClick={addAdminByEmail} disabled={addingAdmin || !adminEmail.trim()}>

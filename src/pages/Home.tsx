@@ -35,7 +35,7 @@ export default function Home() {
   const oppositeLabel = userType === "founder" ? "investors" : userType === "investor" ? "founders" : "members";
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen bg-background">
       <AppNavigation
         userId={userId ?? undefined}
         userType={userType}

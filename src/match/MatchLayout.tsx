@@ -21,7 +21,7 @@ export const MatchLayout = ({ children, showNav = true }: MatchLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
-      <header className="glass-nav sticky top-0 z-50 px-4 py-3 flex items-center justify-between">
+      <header className="border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <Link to="/match" className="font-serif text-xl tracking-wide">
           Catalyst <span className="text-white/60">/ Match</span>
         </Link>
