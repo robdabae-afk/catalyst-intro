@@ -172,6 +172,65 @@
     positionResizeHandles();
   }
 
+  function isSelectable(el) {
+    if (!el || !el.dataset || !el.dataset.editId) return false;
+    const cs = getComputedStyle(el);
+    if (cs.display === "none" || cs.visibility === "hidden") return false;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }
+
+  function editableArea(el) {
+    const r = el.getBoundingClientRect();
+    return Math.max(1, r.width * r.height);
+  }
+
+  function editableFromPoint(x, y, opts) {
+    const options = opts || {};
+    const seen = new Set();
+    const candidates = [];
+    const add = (el, source) => {
+      if (!isSelectable(el) || seen.has(el)) return;
+      seen.add(el);
+      candidates.push({ el, source, area: editableArea(el) });
+    };
+
+    document.elementsFromPoint(x, y).forEach((node) => {
+      const el = node.closest && node.closest("[data-edit-id]");
+      if (el) add(el, "stack");
+    });
+
+    // Tiny images can be impossible to hit precisely after the slide is scaled.
+    // Add a small canvas-aware hit slop, then prefer the smallest image at the point.
+    const scale = getScale();
+    const slop = options.imageSlop === false ? 0 : Math.max(10, 16 * scale);
+    document.querySelectorAll('[data-edit-kind="image"]').forEach((img) => {
+      const r = img.getBoundingClientRect();
+      const isSmall = r.width < 72 || r.height < 72;
+      if (!isSmall && !options.preferImages) return;
+      if (
+        x >= r.left - slop &&
+        x <= r.right + slop &&
+        y >= r.top - slop &&
+        y <= r.bottom + slop
+      ) {
+        add(img, "image-slop");
+      }
+    });
+
+    if (!candidates.length) return null;
+    candidates.sort((a, b) => {
+      const aImg = a.el.dataset.editKind === "image" ? 1 : 0;
+      const bImg = b.el.dataset.editKind === "image" ? 1 : 0;
+      if (options.preferImages && aImg !== bImg) return bImg - aImg;
+      const aSelected = a.el === selectedEl ? 1 : 0;
+      const bSelected = b.el === selectedEl ? 1 : 0;
+      if (aSelected !== bSelected) return bSelected - aSelected;
+      return a.area - b.area;
+    });
+    return candidates[0].el;
+  }
+
   document.addEventListener(
     "click",
     (e) => {
@@ -185,7 +244,7 @@
         e.stopPropagation();
         return;
       }
-      const el = e.target.closest("[data-edit-id]");
+      const el = editableFromPoint(e.clientX, e.clientY, { preferImages: true }) || e.target.closest("[data-edit-id]");
       if (el) {
         e.preventDefault();
         e.stopPropagation();
@@ -200,7 +259,7 @@
   document.addEventListener(
     "dblclick",
     (e) => {
-      const el = e.target.closest("[data-edit-id]");
+      const el = editableFromPoint(e.clientX, e.clientY) || e.target.closest("[data-edit-id]");
       if (!el || el.dataset.editKind !== "text") return;
       e.preventDefault();
       e.stopPropagation();
@@ -241,7 +300,7 @@
   document.addEventListener(
     "mousedown",
     (e) => {
-      const el = e.target.closest("[data-edit-id]");
+      const el = editableFromPoint(e.clientX, e.clientY, { preferImages: true }) || e.target.closest("[data-edit-id]");
       if (!el || el !== selectedEl) return;
       if (el.getAttribute("contenteditable") === "true") return;
       const rect = el.getBoundingClientRect();
