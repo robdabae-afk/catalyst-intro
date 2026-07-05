@@ -320,4 +320,205 @@
 /* Typography polish — brighter primary text, softer secondary */
 @layer base {
   .text-muted-foreground { color: hsl(230 15% 78% / 0.85); }
+  body { color: #f5f7ff; }
+}
+
+/* ============================================================
+   GLASS ENFORCEMENT LAYER
+   Defeats every hard-coded opaque background across the app.
+   ============================================================ */
+@layer components {
+
+  /* --- 1. Nuke opaque container backgrounds ---------------- */
+  [class*="bg-black"]:not([class*="bg-black/"]):not(button),
+  [class*="bg-zinc-"]:not([class*="bg-zinc-"][class*="/"]),
+  [class*="bg-neutral-"]:not([class*="bg-neutral-"][class*="/"]),
+  [class*="bg-gray-9"]:not([class*="/"]),
+  [class*="bg-gray-8"]:not([class*="/"]),
+  [class*="bg-stone-9"]:not([class*="/"]),
+  [class*="bg-slate-9"]:not([class*="/"]),
+  [class*="bg-surface"],
+  [class*="bg-background-dark"],
+  [class*="bg-border-subtle"],
+  [class*="bg-[#0"]:not(button),
+  [class*="bg-[#1"]:not(button),
+  [class*="bg-[#2"]:not(button) {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    background-image: none !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* --- 2. Container gradients → glass (buttons preserved) -- */
+  [class*="bg-gradient-to-"]:not(button):not([role="button"]):not(a) {
+    background-image: none !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  }
+
+  /* --- 3. Glossy translucent primary buttons --------------- */
+  button[class*="bg-white"]:not([class*="bg-white/"]),
+  button[class*="bg-primary"]:not([class*="bg-primary/"]),
+  button[class*="bg-gradient-to-"][class*="from-amber"],
+  button[class*="bg-gradient-to-"][class*="from-primary"],
+  button[class*="bg-gradient-to-"][class*="from-orange"],
+  a[class*="bg-white"]:not([class*="bg-white/"]),
+  [role="button"][class*="bg-white"]:not([class*="bg-white/"]) {
+    background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.58)) !important;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.58)) !important;
+    color: #0a0a1a !important;
+    border: 1px solid rgba(255,255,255,0.55) !important;
+    box-shadow:
+      0 8px 24px -6px rgba(255,255,255,0.35),
+      inset 0 1px 0 rgba(255,255,255,0.95),
+      inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+    backdrop-filter: blur(14px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+  }
+  button[class*="bg-white"]:hover,
+  button[class*="bg-primary"]:hover,
+  button[class*="from-amber"]:hover,
+  button[class*="from-primary"]:hover {
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.72)) !important;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.72)) !important;
+    box-shadow:
+      0 12px 32px -6px rgba(255,255,255,0.5),
+      inset 0 1px 0 rgba(255,255,255,1),
+      inset 0 -1px 0 rgba(0,0,0,0.15) !important;
+    transform: translateY(-1px);
+  }
+
+  /* --- 4. Floating navigation surfaces --------------------- */
+  body > div > header,
+  body > div > div > header,
+  body > div > nav,
+  body > div > div > nav,
+  body > div > aside,
+  body > div > div > aside,
+  header.sticky,
+  header[class*="sticky"],
+  nav[class*="fixed"],
+  nav[class*="sticky"],
+  aside[class*="sticky"],
+  div[class*="fixed"][class*="bottom-0"],
+  div[class*="fixed"][class*="top-0"]:not([role="dialog"]) {
+    background-color: rgba(18, 18, 34, 0.35) !important;
+    background-image: none !important;
+    backdrop-filter: blur(32px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.10) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* --- 5. Inputs: frosted with glowing focus --------------- */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+  textarea,
+  select {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    background-image: none !important;
+    backdrop-filter: blur(20px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #f5f7ff !important;
+  }
+  input::placeholder, textarea::placeholder {
+    color: rgba(230, 232, 245, 0.45) !important;
+  }
+  input:focus, input:focus-visible,
+  textarea:focus, textarea:focus-visible,
+  select:focus, select:focus-visible {
+    background-color: rgba(255, 255, 255, 0.10) !important;
+    border-color: rgba(170, 140, 255, 0.55) !important;
+    box-shadow:
+      0 0 0 3px rgba(170, 140, 255, 0.18),
+      0 0 28px -4px rgba(170, 140, 255, 0.4) !important;
+    outline: none !important;
+  }
+
+  /* --- 6. Cards/panels with rounded corners get lift ------- */
+  [class*="rounded-2xl"][class*="border"],
+  [class*="rounded-3xl"][class*="border"],
+  [class*="rounded-xl"][class*="border"] {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  }
+
+  /* --- 7. Preserve dim overlays used as modal scrims ------- */
+  [class*="bg-black/"],
+  [class*="bg-black/40"],
+  [class*="bg-black/50"],
+  [class*="bg-black/60"],
+  [class*="bg-black/70"],
+  [class*="bg-black/80"] {
+    /* keep their opacity — used as backdrop scrims */
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+  }
+
+  /* --- 8. Tabs list already covered; also tab triggers ----- */
+  [role="tab"] {
+    background-color: transparent !important;
+  }
+  [role="tab"][data-state="active"] {
+    background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)) !important;
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)) !important;
+    color: #f5f7ff !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  }
+
+  /* --- 9. Avatars & badges stay readable ------------------- */
+  [class*="rounded-full"][class*="bg-zinc"],
+  [class*="rounded-full"][class*="bg-[#1a1a1a]"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+  }
+
+  /* --- 10. Progress / loading bars keep color -------------- */
+  [role="progressbar"] > *,
+  [class*="bg-gradient-to-r"][class*="from-emerald"] {
+    background-image: linear-gradient(90deg, hsl(160 80% 55%), hsl(180 80% 60%)) !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* --- 11. Aurora blobs behind glass ------------------------ */
+@keyframes aurora-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(80px, -60px) scale(1.15); }
+}
+@keyframes aurora-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-100px, 60px) scale(1.2); }
+}
+
+body > div#root::before {
+  content: "";
+  position: fixed;
+  top: -20%;
+  left: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, hsla(270, 95%, 60%, 0.35), transparent 60%);
+  filter: blur(80px);
+  z-index: -1;
+  pointer-events: none;
+  animation: aurora-drift-1 18s ease-in-out infinite;
+}
+body > div#root::after {
+  content: "";
+  position: fixed;
+  bottom: -20%;
+  right: -10%;
+  width: 65vw;
+  height: 65vw;
+  background: radial-gradient(circle, hsla(200, 95%, 55%, 0.32), transparent 60%);
+  filter: blur(90px);
+  z-index: -1;
+  pointer-events: none;
+  animation: aurora-drift-2 22s ease-in-out infinite;
 }
