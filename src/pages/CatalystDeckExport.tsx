@@ -20,6 +20,25 @@ const waitForImages = async (doc: Document) => {
   );
 };
 
+const waitForDeckDocument = async (iframe: HTMLIFrameElement) => {
+  const deadline = Date.now() + 15000;
+  while (Date.now() < deadline) {
+    const doc = iframe.contentDocument;
+    const win = iframe.contentWindow;
+    if (
+      doc &&
+      win &&
+      doc.URL.includes("catalystdeck.html") &&
+      doc.readyState === "complete" &&
+      doc.querySelectorAll(".scene").length > 0
+    ) {
+      return { doc, win };
+    }
+    await wait(100);
+  }
+  throw new Error("Deck did not finish loading for export.");
+};
+
 const finalizeAnimatedContent = (doc: Document) => {
   doc.querySelectorAll<HTMLElement>(".reveal").forEach((el) => {
     el.classList.add("in");
@@ -63,14 +82,7 @@ export default function CatalystDeckExport() {
         const iframe = iframeRef.current;
         if (!iframe) return;
 
-        await new Promise<void>((resolve) => {
-          if (iframe.contentDocument?.readyState === "complete") resolve();
-          else iframe.addEventListener("load", () => resolve(), { once: true });
-        });
-
-        const win = iframe.contentWindow;
-        const doc = iframe.contentDocument;
-        if (!win || !doc) throw new Error("Unable to access deck frame.");
+        const { win, doc } = await waitForDeckDocument(iframe);
 
         setStatus("Loading fonts, images, and edits…");
         await Promise.race([
