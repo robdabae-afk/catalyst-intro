@@ -265,9 +265,19 @@
     document.head.appendChild(iso);
     tagElements();
     applyAll().then(() => {
-      // Auto-print when opened with ?print=1
+      // Auto-print from the fixed 1920x1080 export layout.
       if (window.location.search.includes("print=1")) {
-        // Give images a chance to load before printing
+        document.documentElement.classList.add("__deck-export");
+        document.querySelectorAll(".reveal").forEach((el) => {
+          el.classList.add("in");
+          el.style.opacity = "1";
+          el.style.transform = "none";
+          el.style.transition = "none";
+        });
+        document.querySelectorAll(".count").forEach((el) => {
+          const target = Number(el.dataset.target || "0");
+          el.textContent = Number.isInteger(target) ? Math.round(target).toLocaleString() : target.toLocaleString();
+        });
         setTimeout(() => {
           try { window.print(); } catch (e) {}
         }, 800);
