@@ -2,143 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================================
-   LIQUID GLASS DESIGN SYSTEM
-   Pure visual reskin — no layout, IA, or functionality changes.
-   ============================================================ */
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
 
 @layer base {
   :root {
-    --background: 230 35% 6%;
-    --foreground: 0 0% 98%;
+    --background: 0 0% 0%;
+    /* Pure Black */
+    --foreground: 0 0% 100%;
+    /* White */
 
-    --card: 230 30% 10%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 230 30% 10%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
 
     --primary: 0 0% 100%;
-    --primary-foreground: 230 40% 8%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 230 25% 16%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 15%;
+    /* Dark surface for pills/buttons; foreground must contrast */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 230 20% 14%;
-    --muted-foreground: 230 15% 72%;
 
-    --accent: 260 40% 30%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 20%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: 210 20% 98%;
 
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 260 80% 70%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 100%;
 
-    --radius: 1rem;
-
-    /* Glass tokens */
-    --glass-bg: 255 255 255;         /* rgb base for translucent surfaces */
-    --glass-bg-alpha: 0.06;
-    --glass-bg-alpha-strong: 0.10;
-    --glass-border: 255 255 255;
-    --glass-border-alpha: 0.10;
-    --glass-blur: 28px;
-    --glass-saturate: 180%;
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255,255,255,0.08);
-    --glass-shadow-lg: 0 20px 60px -10px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255,255,255,0.10);
+    --radius: 0.75rem;
 
     --silver-gradient: linear-gradient(135deg, hsl(0 0% 95%) 0%, hsl(0 0% 80%) 100%);
-    --hero-gradient: linear-gradient(135deg, hsl(230 40% 15%) 0%, hsl(260 40% 25%) 100%);
-    --shadow-elegant: 0 10px 40px -10px hsl(230 60% 2% / 0.6);
+    --hero-gradient: linear-gradient(135deg, hsl(0 0% 15%) 0%, hsl(0 0% 30%) 100%);
+    --shadow-elegant: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 230 35% 6%;
-    --foreground: 0 0% 98%;
-    --card: 230 30% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 230 30% 10%;
-    --popover-foreground: 0 0% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+
     --primary: 0 0% 100%;
-    --primary-foreground: 230 40% 8%;
-    --secondary: 230 25% 16%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 230 20% 14%;
-    --muted-foreground: 230 15% 72%;
-    --accent: 260 40% 30%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 20%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 40%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 260 80% 70%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 85%;
+
+    --silver-gradient: linear-gradient(135deg, hsl(0 0% 20%) 0%, hsl(0 0% 30%) 100%);
+    --hero-gradient: linear-gradient(135deg, hsl(0 0% 15%) 0%, hsl(0 0% 25%) 100%);
   }
 }
 
 @layer base {
   * {
-    border-color: hsl(var(--border) / 0.10);
+    @apply border-border;
   }
 
-  html, body {
-    @apply text-foreground;
-    background-color: hsl(230 45% 4%);
-  }
-
-  /* Rich ambient gradient background — the "light" behind all glass */
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    background:
-      radial-gradient(1200px 800px at 10% -10%, hsla(260, 90%, 55%, 0.35), transparent 60%),
-      radial-gradient(1000px 700px at 100% 10%, hsla(200, 95%, 55%, 0.28), transparent 60%),
-      radial-gradient(900px 700px at 50% 110%, hsla(320, 85%, 55%, 0.28), transparent 60%),
-      radial-gradient(700px 500px at 85% 90%, hsla(30, 90%, 55%, 0.20), transparent 60%),
-      linear-gradient(160deg, hsl(230 55% 6%) 0%, hsl(255 45% 8%) 50%, hsl(220 55% 5%) 100%);
-    background-attachment: fixed;
-    pointer-events: none;
-  }
-
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background-image:
-      radial-gradient(rgba(255,255,255,0.035) 1px, transparent 1px);
-    background-size: 3px 3px;
-    mix-blend-mode: overlay;
-    opacity: 0.6;
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-/* ============================================================
-   GLASS UTILITIES
-   ============================================================ */
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  .glass {
-    background-color: rgba(var(--glass-bg), var(--glass-bg-alpha));
-    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    border: 1px solid rgba(var(--glass-border), var(--glass-border-alpha));
-    box-shadow: var(--glass-shadow);
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
-  .glass-strong {
-    background-color: rgba(var(--glass-bg), var(--glass-bg-alpha-strong));
-    backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(var(--glass-saturate));
-    -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(var(--glass-saturate));
-    border: 1px solid rgba(var(--glass-border), 0.14);
-    box-shadow: var(--glass-shadow-lg);
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .text-gradient-gold {
@@ -150,375 +111,8 @@
   }
 
   @keyframes shine {
-    to { background-position: 200% center; }
+    to {
+      background-position: 200% center;
+    }
   }
-
-  @keyframes glass-shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
-  }
-}
-
-/* ============================================================
-   GLOBAL REBAKE OF SHADCN / TAILWIND SURFACES INTO GLASS
-   These override the flat token backgrounds so every existing
-   component becomes translucent without touching component code.
-   ============================================================ */
-@layer components {
-
-  /* Cards, popovers, dropdowns, menus, sheets, dialogs, toasts, tooltips */
-  .bg-card,
-  .bg-popover,
-  .bg-secondary,
-  .bg-muted,
-  .bg-accent,
-  [data-radix-popper-content-wrapper] > *,
-  [role="dialog"] > div:not([data-radix-dialog-overlay]),
-  [role="menu"],
-  [role="listbox"],
-  [role="tooltip"] {
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    border-color: rgba(255, 255, 255, 0.10);
-    box-shadow: var(--glass-shadow);
-  }
-
-  .bg-secondary { background-color: rgba(255, 255, 255, 0.08) !important; }
-  .bg-muted { background-color: rgba(255, 255, 255, 0.05) !important; }
-  .bg-accent { background-color: rgba(160, 130, 255, 0.14) !important; }
-
-  /* Backgrounds that shouldn't become glass, but shouldn't be flat either */
-  .bg-background {
-    background-color: transparent !important;
-  }
-
-  /* Modals/sheets — strong glass */
-  [role="dialog"] > div:not([data-radix-dialog-overlay]),
-  [data-state][data-side] /* Radix Sheet content */ {
-    background-color: rgba(20, 20, 40, 0.55) !important;
-    backdrop-filter: blur(36px) saturate(200%);
-    -webkit-backdrop-filter: blur(36px) saturate(200%);
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  /* Dialog / sheet overlay — soft darken so glass reads */
-  [data-radix-dialog-overlay],
-  [data-radix-sheet-overlay] {
-    background-color: rgba(5, 5, 15, 0.55) !important;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-
-  /* Inputs, textareas, selects, search bars */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
-  textarea,
-  select,
-  .bg-input {
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-color: rgba(255, 255, 255, 0.12) !important;
-    color: hsl(var(--foreground));
-    transition: box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
-  }
-  input:focus, textarea:focus, select:focus,
-  input:focus-visible, textarea:focus-visible, select:focus-visible {
-    background-color: rgba(255, 255, 255, 0.10) !important;
-    border-color: rgba(170, 140, 255, 0.55) !important;
-    box-shadow: 0 0 0 3px rgba(170, 140, 255, 0.18), 0 0 24px -4px rgba(170, 140, 255, 0.35) !important;
-    outline: none !important;
-  }
-
-  /* Primary buttons — glossy translucent white */
-  .bg-primary {
-    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(230,230,255,0.75)) !important;
-    color: hsl(var(--primary-foreground)) !important;
-    box-shadow:
-      0 8px 24px -8px rgba(255,255,255,0.35),
-      inset 0 1px 0 0 rgba(255,255,255,0.9),
-      inset 0 -1px 0 0 rgba(0,0,0,0.12) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.35);
-  }
-  .hover\:bg-primary\/90:hover {
-    background: linear-gradient(180deg, rgba(255,255,255,1), rgba(240,240,255,0.85)) !important;
-    box-shadow:
-      0 10px 30px -8px rgba(255,255,255,0.5),
-      inset 0 1px 0 0 rgba(255,255,255,1),
-      inset 0 -1px 0 0 rgba(0,0,0,0.12) !important;
-  }
-
-  /* Destructive buttons stay recognizable but glossier */
-  .bg-destructive {
-    background: linear-gradient(180deg, hsla(0,85%,62%,0.85), hsla(0,80%,48%,0.75)) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.14);
-    box-shadow: 0 8px 24px -8px rgba(255,60,60,0.45), inset 0 1px 0 0 rgba(255,255,255,0.2) !important;
-  }
-
-  /* Outline / ghost buttons — clear glass */
-  .border-input {
-    border-color: rgba(255,255,255,0.14) !important;
-  }
-
-  /* Borders */
-  .border, .border-t, .border-b, .border-l, .border-r,
-  .border-border {
-    border-color: rgba(255,255,255,0.10);
-  }
-
-  /* Table rows */
-  tbody tr {
-    background-color: rgba(255,255,255,0.02);
-  }
-  tbody tr:hover {
-    background-color: rgba(255,255,255,0.06);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  /* Tabs list */
-  [role="tablist"] {
-    background-color: rgba(255,255,255,0.05) !important;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  [role="tab"][data-state="active"] {
-    background-color: rgba(255,255,255,0.14) !important;
-    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.18);
-  }
-
-  /* Toasts / sonner */
-  [data-sonner-toast], .toaster > * {
-    background-color: rgba(20,20,40,0.65) !important;
-    backdrop-filter: blur(30px) saturate(200%);
-    -webkit-backdrop-filter: blur(30px) saturate(200%);
-    border: 1px solid rgba(255,255,255,0.12) !important;
-    box-shadow: var(--glass-shadow-lg);
-  }
-
-  /* Rounded corners on typical surfaces get a bit more radius for the OS feel */
-  .rounded-md { border-radius: 0.75rem; }
-  .rounded-lg { border-radius: 1rem; }
-
-  /* Subtle hover lift for cards */
-  .bg-card {
-    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1),
-                box-shadow 0.3s cubic-bezier(0.4,0,0.2,1),
-                background-color 0.3s ease;
-  }
-  .bg-card:hover {
-    box-shadow: var(--glass-shadow-lg);
-  }
-}
-
-/* Typography polish — brighter primary text, softer secondary */
-@layer base {
-  .text-muted-foreground { color: hsl(230 15% 78% / 0.85); }
-  body { color: #f5f7ff; }
-}
-
-/* ============================================================
-   GLASS ENFORCEMENT LAYER
-   Defeats every hard-coded opaque background across the app.
-   ============================================================ */
-@layer components {
-
-  /* --- 1. Nuke opaque container backgrounds ---------------- */
-  [class*="bg-black"]:not([class*="bg-black/"]):not(button),
-  [class*="bg-zinc-"]:not([class*="bg-zinc-"][class*="/"]),
-  [class*="bg-neutral-"]:not([class*="bg-neutral-"][class*="/"]),
-  [class*="bg-gray-9"]:not([class*="/"]),
-  [class*="bg-gray-8"]:not([class*="/"]),
-  [class*="bg-stone-9"]:not([class*="/"]),
-  [class*="bg-slate-9"]:not([class*="/"]),
-  [class*="bg-surface"],
-  [class*="bg-background-dark"],
-  [class*="bg-border-subtle"],
-  [class*="bg-[#0"]:not(button),
-  [class*="bg-[#1"]:not(button),
-  [class*="bg-[#2"]:not(button) {
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    background-image: none !important;
-    backdrop-filter: blur(28px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25) !important;
-  }
-
-  /* --- 2. Container gradients → glass (buttons preserved) -- */
-  [class*="bg-gradient-to-"]:not(button):not([role="button"]):not(a) {
-    background-image: none !important;
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    backdrop-filter: blur(28px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  }
-
-  /* --- 3. Glossy translucent primary buttons --------------- */
-  button[class*="bg-white"]:not([class*="bg-white/"]),
-  button[class*="bg-primary"]:not([class*="bg-primary/"]),
-  button[class*="bg-gradient-to-"][class*="from-amber"],
-  button[class*="bg-gradient-to-"][class*="from-primary"],
-  button[class*="bg-gradient-to-"][class*="from-orange"],
-  a[class*="bg-white"]:not([class*="bg-white/"]),
-  [role="button"][class*="bg-white"]:not([class*="bg-white/"]) {
-    background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.58)) !important;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.58)) !important;
-    color: #0a0a1a !important;
-    border: 1px solid rgba(255,255,255,0.55) !important;
-    box-shadow:
-      0 8px 24px -6px rgba(255,255,255,0.35),
-      inset 0 1px 0 rgba(255,255,255,0.95),
-      inset 0 -1px 0 rgba(0,0,0,0.15) !important;
-    backdrop-filter: blur(14px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
-  }
-  button[class*="bg-white"]:hover,
-  button[class*="bg-primary"]:hover,
-  button[class*="from-amber"]:hover,
-  button[class*="from-primary"]:hover {
-    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.72)) !important;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.72)) !important;
-    box-shadow:
-      0 12px 32px -6px rgba(255,255,255,0.5),
-      inset 0 1px 0 rgba(255,255,255,1),
-      inset 0 -1px 0 rgba(0,0,0,0.15) !important;
-    transform: translateY(-1px);
-  }
-
-  /* --- 4. Floating navigation surfaces --------------------- */
-  body > div > header,
-  body > div > div > header,
-  body > div > nav,
-  body > div > div > nav,
-  body > div > aside,
-  body > div > div > aside,
-  header.sticky,
-  header[class*="sticky"],
-  nav[class*="fixed"],
-  nav[class*="sticky"],
-  aside[class*="sticky"],
-  div[class*="fixed"][class*="bottom-0"],
-  div[class*="fixed"][class*="top-0"]:not([role="dialog"]) {
-    background-color: rgba(18, 18, 34, 0.35) !important;
-    background-image: none !important;
-    backdrop-filter: blur(32px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.10) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35) !important;
-  }
-
-  /* --- 5. Inputs: frosted with glowing focus --------------- */
-  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
-  textarea,
-  select {
-    background-color: rgba(255, 255, 255, 0.06) !important;
-    background-image: none !important;
-    backdrop-filter: blur(20px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
-    color: #f5f7ff !important;
-  }
-  input::placeholder, textarea::placeholder {
-    color: rgba(230, 232, 245, 0.45) !important;
-  }
-  input:focus, input:focus-visible,
-  textarea:focus, textarea:focus-visible,
-  select:focus, select:focus-visible {
-    background-color: rgba(255, 255, 255, 0.10) !important;
-    border-color: rgba(170, 140, 255, 0.55) !important;
-    box-shadow:
-      0 0 0 3px rgba(170, 140, 255, 0.18),
-      0 0 28px -4px rgba(170, 140, 255, 0.4) !important;
-    outline: none !important;
-  }
-
-  /* --- 6. Cards/panels with rounded corners get lift ------- */
-  [class*="rounded-2xl"][class*="border"],
-  [class*="rounded-3xl"][class*="border"],
-  [class*="rounded-xl"][class*="border"] {
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
-  }
-
-  /* --- 7. Preserve dim overlays used as modal scrims ------- */
-  [class*="bg-black/"],
-  [class*="bg-black/40"],
-  [class*="bg-black/50"],
-  [class*="bg-black/60"],
-  [class*="bg-black/70"],
-  [class*="bg-black/80"] {
-    /* keep their opacity — used as backdrop scrims */
-    backdrop-filter: blur(6px) !important;
-    -webkit-backdrop-filter: blur(6px) !important;
-  }
-
-  /* --- 8. Tabs list already covered; also tab triggers ----- */
-  [role="tab"] {
-    background-color: transparent !important;
-  }
-  [role="tab"][data-state="active"] {
-    background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)) !important;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)) !important;
-    color: #f5f7ff !important;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2) !important;
-  }
-
-  /* --- 9. Avatars & badges stay readable ------------------- */
-  [class*="rounded-full"][class*="bg-zinc"],
-  [class*="rounded-full"][class*="bg-[#1a1a1a]"] {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
-  }
-
-  /* --- 10. Progress / loading bars keep color -------------- */
-  [role="progressbar"] > *,
-  [class*="bg-gradient-to-r"][class*="from-emerald"] {
-    background-image: linear-gradient(90deg, hsl(160 80% 55%), hsl(180 80% 60%)) !important;
-    background-color: transparent !important;
-    backdrop-filter: none !important;
-  }
-}
-
-/* --- 11. Aurora blobs behind glass ------------------------ */
-@keyframes aurora-drift-1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(80px, -60px) scale(1.15); }
-}
-@keyframes aurora-drift-2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-100px, 60px) scale(1.2); }
-}
-
-body > div#root::before {
-  content: "";
-  position: fixed;
-  top: -20%;
-  left: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, hsla(270, 95%, 60%, 0.35), transparent 60%);
-  filter: blur(80px);
-  z-index: -1;
-  pointer-events: none;
-  animation: aurora-drift-1 18s ease-in-out infinite;
-}
-body > div#root::after {
-  content: "";
-  position: fixed;
-  bottom: -20%;
-  right: -10%;
-  width: 65vw;
-  height: 65vw;
-  background: radial-gradient(circle, hsla(200, 95%, 55%, 0.32), transparent 60%);
-  filter: blur(90px);
-  z-index: -1;
-  pointer-events: none;
-  animation: aurora-drift-2 22s ease-in-out infinite;
 }

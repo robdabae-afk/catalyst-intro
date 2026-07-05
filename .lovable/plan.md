@@ -1,129 +1,101 @@
-# Enforce Liquid Glass on every surface (no exceptions)
+## Diagnosis
 
-## Why the first pass didn't stick
+I reproduced the mismatch by capturing both the web-rendered deck and a generated PDF render. The issue is real: the PDF is not preserving the same layout tree as the web view.
 
-The reskin only overrode the design-token utilities (`bg-card`, `bg-popover`, `bg-secondary`, `bg-muted`, `bg-accent`, `bg-background`, `input`). Large parts of the app bypass those tokens with **hard-coded** classes:
+Observed example:
+- Web slide 6: three pillar cards stay in one horizontal row.
+- PDF slide 6: the same cards reflow into a vertical mobile-style stack.
+- Web slide 10: the ask breakdown stays in three columns.
+- PDF slide 10: the breakdown stacks vertically and text positions shift.
 
-- `bg-black`, `bg-white`, `bg-zinc-900`, `bg-neutral-900`, `bg-gray-900`
-- Arbitrary hex: `bg-[#0A0A0A]`, `bg-[#111]`, `bg-[#1a1a1a]`, `bg-[#0F0F0F]`, `bg-[#0d1a13]`
-- Custom Tailwind tokens: `bg-surface-dark`, `bg-surface-card`, `bg-background-dark`, `bg-border-subtle`
-- Page-level gradients: `bg-gradient-to-b from-background to-muted/30`, `bg-gradient-to-br from-primary/20 to-accent/20`
-- Sticky headers using `bg-black/80 backdrop-blur-md` and Tabs using `bg-zinc-900/50`
+Root cause:
+- The current export relies on `window.print()` and `@media print` CSS.
+- During print/PDF rendering, the browser evaluates responsive media queries and print sizing differently than the live web viewport.
+- That lets mobile/tablet rules and print font/layout calculations override the deck’s intended 1920×1080 web layout.
+- Charts are affected for the same reason: print rendering recalculates layout, SVG/container sizing, fonts, and page flow instead of preserving the already-rendered web pixels.
 
-Files with the largest offender counts: `pages/InvestorPortal.tsx`, `pages/Onboarding.tsx`, `pages/Matches.tsx`, `pages/Home.tsx`, `pages/Concierge.tsx`, `pages/Settings.tsx`, `pages/ReferralDashboard.tsx`, `components/AppNavigation.tsx`, `components/BottomNavigation.tsx`, `components/desktop/*`, `components/Admin*.tsx`, `components/discover/*`, `components/SwipeCard.tsx`.
+## Five possible plans considered
 
-Chasing each file by hand would take dozens of edits and still miss things. Instead I'll extend `src/index.css` so the glass rules also **beat every hard-coded opaque class in the codebase**, in one place.
+### Plan 1 — Patch print CSS only
+Force every print breakpoint back to desktop layout and tighten `@page`, `.scene`, and grid rules.
 
-## Approach — CSS-only, zero component edits
+Success estimate: 70–85%.
 
-Extend `src/index.css` with a global "glass enforcement" layer using high-specificity + `!important` selectors that cover every opaque pattern in use.
+Why not choose it: it may fix today’s specific slides, but future edits, uploaded images, charts, and browser print quirks can still drift.
 
-### 1. Nuke opaque backgrounds on containers
+### Plan 2 — Use section-by-section PDF capture
+Mark each slide section, capture sections separately, and assemble pages.
 
-Force translucent glass on:
+Success estimate: 80–90%.
 
-```
-[class*="bg-black"]:not(button):not(.bg-black\/40):not(.bg-black\/70),
-[class*="bg-zinc-"], [class*="bg-neutral-"], [class*="bg-gray-9"], [class*="bg-gray-8"],
-[class*="bg-surface"], [class*="bg-background-dark"], [class*="bg-border-subtle"],
-[class*="bg-[#0"], [class*="bg-[#1"], [class*="bg-[#2"], [class*="bg-[#3"]
-{
-  background-color: rgba(255,255,255,0.06) !important;
-  background-image: none !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  border-color: rgba(255,255,255,0.12) !important;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.25) !important;
-}
-```
+Why not choose it: sections can still be scaled/repositioned differently, and charts/text can land slightly differently than the full web slide.
 
-Preserve semi-transparent overlays that use `/40`, `/60`, `/70`, `/80` alpha (they're intentional scrims — leave them so modals still dim behind).
+### Plan 3 — Generate a second simplified PDF-only deck layout
+Create a separate PDF template that manually matches the deck.
 
-### 2. Kill container gradients that create big solid bands
+Success estimate: 85–92%.
 
-```
-[class*="bg-gradient-to-"]:not(button):not([class*="from-primary"]):not([class*="from-amber"]) {
-  background-image: none !important;
-  background-color: rgba(255,255,255,0.05) !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-}
-```
+Why not choose it: two layouts will drift over time; every deck edit would need to be reflected in both web and PDF templates.
 
-Keep gradients on primary/accent **buttons** (they're the glossy highlight the user asked for).
+### Plan 4 — Server/headless-browser PDF service
+Use a backend/headless browser to render the deck and export PDFs.
 
-### 3. Glossy translucent primary buttons
+Success estimate: 95–99%.
 
-Every `button` (or `[role="button"]`) with `bg-white`, `bg-primary`, or gold/amber gradients becomes the glossy glass variant:
+Why not choose it here: this app is currently client-side, and adding a full browser rendering service is heavier than needed.
 
-```
-button[class*="bg-white"], button[class*="bg-primary"],
-button[class*="from-amber"], button[class*="from-primary"] {
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.55)) !important;
-  color: #0a0a1a !important;
-  border: 1px solid rgba(255,255,255,0.5) !important;
-  box-shadow:
-    0 8px 24px -6px rgba(255,255,255,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.9),
-    inset 0 -1px 0 rgba(0,0,0,0.15) !important;
-  backdrop-filter: blur(14px) !important;
-}
-```
+### Plan 5 — Chosen: rasterize each exact web slide into one full-page PDF image
+Render each slide at the canonical 1920×1080 canvas, wait for fonts/images/charts/overrides, capture each complete slide as a high-resolution image, then place exactly one image on exactly one PDF page.
 
-Non-button `bg-white` (rare decorative dots, avatars) left alone.
+Success estimate: above 99.9% for placement fidelity.
 
-### 4. Floating navigation
+Why this wins:
+- PDF no longer reflows text.
+- PDF no longer recalculates charts.
+- PDF no longer applies mobile breakpoints.
+- Each web slide becomes one sealed page image.
+- If it looks correct on the web canvas, the PDF page uses that same visual snapshot.
 
-Detach top bars, sidebars, bottom nav from edges and float them:
+## Implementation plan
 
-```
-nav, header, aside,
-[class*="sticky"][class*="top-0"],
-[class*="fixed"][class*="bottom-0"] {
-  background-color: rgba(20,20,40,0.35) !important;
-  backdrop-filter: blur(32px) saturate(200%) !important;
-  border: 1px solid rgba(255,255,255,0.10) !important;
-  border-radius: 20px !important;
-  margin: 8px !important;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35) !important;
-}
-```
+1. Add a dedicated export mode to `public/catalystdeck.html`.
+   - Use a query param like `?export=1` or `?print=1`.
+   - Force the deck into native 1920×1080 slide rendering.
+   - Disable scroll snap, nav UI, animations, hover transforms, and editor chrome.
+   - Force all `.reveal` elements visible and all counters to final values before capture.
 
-Scope carefully so it only applies to the outer nav containers, not every `<nav>`-descendant element (use `:where()` guards or drop the margin rule where it would break layout — see technical notes).
+2. Replace the current `window.print()` export behavior.
+   - The editor’s “Export PDF” button should open/run the deterministic export path instead of relying on browser print CSS.
+   - Keep normal web browsing unchanged.
 
-### 5. Inputs — frosted glass with glowing focus
+3. Add a client-side PDF export script.
+   - Wait for `document.fonts.ready`.
+   - Wait for all images to load or fail safely.
+   - Wait for deck overrides from the backend to finish applying.
+   - Capture each `.scene` as a 1920×1080 image.
+   - Create a landscape PDF with one 16:9 page per captured slide.
+   - Place each slide image full-bleed on its page.
 
-Already partially in place; broaden to catch hard-coded input classes like `bg-black border-zinc-800`:
+4. Add export-specific CSS guards.
+   - Override all responsive breakpoints during export so the capture source is always desktop 1920×1080.
+   - Ensure inserted photos use fixed canvas-relative positioning.
+   - Ensure SVG/charts render in their final web dimensions before capture.
 
-```
-input, textarea, select,
-[class*="bg-black"] input, [class*="bg-zinc"] input {
-  background-color: rgba(255,255,255,0.06) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 1px solid rgba(255,255,255,0.14) !important;
-}
-```
+5. Keep native print CSS only as a fallback.
+   - It can remain for manual browser printing, but the app’s official export should use the rasterized slide-to-PDF path.
 
-### 6. Cards, tabs, dialogs, sheets, popovers, toasts
+6. Verify with visual QA.
+   - Generate fresh web screenshots for representative slides: cover, traction, how-it-works, market/model, team, ask, and any chart slide.
+   - Generate the exported PDF.
+   - Convert PDF pages to images.
+   - Compare web screenshot vs PDF page image side by side.
+   - Fix any mismatch until the only differences are minor anti-aliasing/compression differences.
 
-Already covered by token overrides; add fallbacks for hard-coded card wrappers (`rounded-2xl`/`rounded-3xl` + any opaque `bg-`) so they become floating panes with `border-radius: 24px` and `box-shadow: 0 8px 40px rgba(0,0,0,.25)`.
+## Final target behavior
 
-### 7. Background — lighting only
-
-Body already has the multi-hue radial gradient. Add a stronger vignette + a couple of animated blurred "aurora" blobs (pure CSS, `@keyframes`) so glass surfaces have real color to refract.
-
-### 8. Typography polish
-
-Bump primary text to `#f5f7ff`, muted to `rgba(230,232,245,0.72)`. No font change.
-
-## Technical notes
-
-- All changes land in `src/index.css` inside `@layer components` so utilities can still override where truly needed.
-- `!important` is used only inside the enforcement layer — this is deliberate because the goal is to defeat inline utility classes across ~100 files.
-- The nav margin rule is applied via a more specific `body > div > nav`, `body > div > header:first-child` selector to avoid indenting nested navs inside cards.
-- `[class*="bg-white"]` matches `bg-white/10` too. I'll exclude alpha variants with `:not([class*="bg-white/"])` so overlays stay overlays.
-- No React/TSX files are modified; no layout, spacing, IA, or copy changes.
-- After the CSS ships I'll drive Playwright over `/dashboard`, `/matches`, `/investor-portal`, `/onboarding`, `/settings`, `/referrals` and take screenshots to verify no opaque surfaces remain. Any survivors get one more targeted selector added.
-
-## Deliverable
-
-A single edit to `src/index.css`. Zero component file edits. Every surface — cards, nav, sidebar, bottom bar, modals, sheets, inputs, tabs, buttons, popovers, toasts, dropdowns, dialogs, list rows, admin panels, onboarding sheets — renders as translucent frosted glass over a rich ambient gradient background.
+- One `.scene` = one PDF page.
+- No element can be split across pages.
+- Text cannot reflow in the PDF.
+- Charts cannot resize differently in the PDF.
+- Uploaded images keep the same location and size.
+- The exported PDF visually matches the web slide canvas.
