@@ -48,7 +48,7 @@ export default function Unsubscribe() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
+    <div className="min-h-screen  text-foreground flex items-center justify-center px-6">
       <div className="max-w-md w-full bg-card border border-border rounded-2xl p-8 text-center">
         <h1 className="font-serif text-2xl mb-4">Unsubscribe</h1>
         {state === "loading" && <p className="text-muted-foreground">Verifying…</p>}
