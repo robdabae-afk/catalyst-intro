@@ -324,6 +324,46 @@
     font-size: 10px; letter-spacing: 0.3em; color: var(--grey-dim); text-transform: uppercase; z-index: 100;
   }
 
+  html.__deck-export,
+  html.__deck-export body {
+    width: 1920px !important;
+    min-width: 1920px !important;
+    background: #000 !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+  }
+  html.__deck-export .scene-frame {
+    width: 1920px !important;
+    height: 1080px !important;
+    display: block !important;
+    overflow: hidden !important;
+    position: relative !important;
+    scroll-snap-align: none !important;
+  }
+  html.__deck-export .scene {
+    width: 1920px !important;
+    height: 1080px !important;
+    transform: none !important;
+    transform-origin: top left !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+  html.__deck-export .nav-dots,
+  html.__deck-export .nav-hint { display: none !important; }
+  html.__deck-export .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  html.__deck-export .cover-arrow path { stroke-dashoffset: 0 !important; animation: none !important; }
+  html.__deck-export .cover-arrow .head,
+  html.__deck-export .cover-divider,
+  html.__deck-export .cover-tagline { opacity: 1 !important; animation: none !important; }
+  html.__deck-export .pillar:hover { transform: none !important; }
+
   /* ===== PRINT =====
      Print at the native 1920x1080 slide canvas so 1 scene = 1 PDF page
      and every position/size is preserved exactly. */
@@ -693,9 +733,13 @@
   <button class="nav-dot" data-target="team" title="Team"></button>
   <button class="nav-dot" data-target="ask" title="The Ask"></button>
 </nav>
-<div class="nav-hint">↑ ↓ or scroll · Press P to print</div>
+<div class="nav-hint">↑ ↓ or scroll · Press P to export PDF</div>
 
 <script>
+  if (new URLSearchParams(window.location.search).has('export')) {
+    document.documentElement.classList.add('__deck-export');
+  }
+
   // ===== Wrap each .scene in a .scene-frame and uniformly scale to fit =====
   const CANVAS_W = 1920, CANVAS_H = 1080;
   (function wrapScenes() {
@@ -708,6 +752,10 @@
     });
   })();
   function updateSceneScale() {
+    if (document.documentElement.classList.contains('__deck-export')) {
+      document.documentElement.style.setProperty('--scene-scale', '1');
+      return;
+    }
     const s = Math.min(window.innerWidth / CANVAS_W, window.innerHeight / CANVAS_H);
     document.documentElement.style.setProperty('--scene-scale', String(s));
   }
@@ -782,7 +830,7 @@
       currentIdx = Math.max(0, currentIdx - 1);
       scenes[currentIdx].scrollIntoView({ behavior: 'smooth' });
     } else if (e.key === 'p' || e.key === 'P') {
-      window.print();
+      window.open('/catalystdeck/export', '_blank');
     }
   });
   window.addEventListener('scroll', () => {

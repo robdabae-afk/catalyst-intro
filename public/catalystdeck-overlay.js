@@ -265,12 +265,9 @@
     document.head.appendChild(iso);
     tagElements();
     applyAll().then(() => {
-      // Auto-print when opened with ?print=1
+      // Legacy print links now use the deterministic app export flow instead.
       if (window.location.search.includes("print=1")) {
-        // Give images a chance to load before printing
-        setTimeout(() => {
-          try { window.print(); } catch (e) {}
-        }, 800);
+        window.location.href = "/catalystdeck/export";
       }
     });
 
