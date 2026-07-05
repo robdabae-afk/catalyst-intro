@@ -409,6 +409,13 @@
       position: absolute; top: 0; left: 0;
       margin: 0 !important;
     }
+    .two-col { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 80px !important; }
+    .traction-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
+    .pillars { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .market-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .model-layer { display: grid !important; grid-template-columns: 60px 1fr 2fr !important; }
+    .team-grid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; }
+    .ask-breakdown { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 40px !important; }
     /* Cap inserted images so they never overflow the printed slide */
     [data-inserted="1"] { max-width: 100% !important; max-height: 100% !important; }
     img[data-inserted="1"] { object-fit: contain; }
@@ -736,7 +743,7 @@
 <div class="nav-hint">↑ ↓ or scroll · Press P to export PDF</div>
 
 <script>
-  if (new URLSearchParams(window.location.search).has('export')) {
+  if (new URLSearchParams(window.location.search).has('export') || new URLSearchParams(window.location.search).has('print')) {
     document.documentElement.classList.add('__deck-export');
   }
 
@@ -830,7 +837,7 @@
       currentIdx = Math.max(0, currentIdx - 1);
       scenes[currentIdx].scrollIntoView({ behavior: 'smooth' });
     } else if (e.key === 'p' || e.key === 'P') {
-      window.open('/catalystdeck/export', '_blank');
+      window.open('/catalystdeck.html?print=1', '_blank');
     }
   });
   window.addEventListener('scroll', () => {
