@@ -86,20 +86,29 @@
     const r = selectedEl.getBoundingClientRect();
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
+    // If element is small, push handles outside so they don't block dragging the image itself.
+    const small = r.width < 60 || r.height < 60;
+    const off = small ? 10 : 0; // outward offset in px
     const pos = {
-      nw: [r.left, r.top], ne: [r.right, r.top],
-      sw: [r.left, r.bottom], se: [r.right, r.bottom],
-      n: [cx, r.top], s: [cx, r.bottom],
-      w: [r.left, cy], e: [r.right, cy],
+      nw: [r.left - off, r.top - off], ne: [r.right + off, r.top - off],
+      sw: [r.left - off, r.bottom + off], se: [r.right + off, r.bottom + off],
+      n: [cx, r.top - off], s: [cx, r.bottom + off],
+      w: [r.left - off, cy], e: [r.right + off, cy],
     };
     RESIZE_DIRS.forEach((d) => {
       const [x, y] = pos[d];
       const h = resizeHandles[d];
+      // When small, hide edge handles (keep only corners) to reduce clutter.
+      if (small && (d === "n" || d === "s" || d === "e" || d === "w")) {
+        h.style.display = "none";
+        return;
+      }
       h.style.left = x - 7 + "px";
       h.style.top = y - 7 + "px";
       h.style.display = "block";
     });
   }
+
 
   function send(msg) {
     parent.postMessage({ source: "deck-editor", ...msg }, PARENT_ORIGIN);
