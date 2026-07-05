@@ -232,22 +232,6 @@
   .pillar-arrow { margin-top: 18px; color: var(--gold); font-size: 22px; }
 
 
-  /* ===== FLYWHEEL ===== */
-  .flywheel-wrap {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
-    max-width: 1300px; width: 100%; align-items: center;
-  }
-  @media (max-width: 880px) { .flywheel-wrap { grid-template-columns: 1fr; } }
-  .flywheel-svg { width: 100%; max-width: 720px; height: auto; display: block; margin: 0 auto; }
-  .flywheel-list { list-style: none; }
-  .flywheel-item {
-    padding: 18px 0; border-top: 1px solid #1a1a1a;
-    display: flex; gap: 24px; align-items: flex-start;
-  }
-  .flywheel-item:last-child { border-bottom: 1px solid #1a1a1a; }
-  .flywheel-step { font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 18px; letter-spacing: 0.2em; min-width: 40px; }
-  .flywheel-text { font-size: 17px; line-height: 1.6; color: #ddd; }
-  .flywheel-text strong { color: var(--white); font-weight: 500; }
 
 
   /* ===== MARKET ===== */
@@ -392,12 +376,12 @@
 
     /* Force colors */
     .section-eyebrow, .pillar-num, .market-tier-label, .model-num,
-    .team-role, .ask-use-label, .flywheel-step, .pillar-arrow,
+    .team-role, .ask-use-label, .pillar-arrow,
     .compare-arrow { color: #b59410 !important; }
     .gold, .stat-num.gold, .traction-num, .ask-amount { color: #b59410 !important; }
     .scene-num, .scene-label, .cover-tagline, .cover-footer { color: #666 !important; }
     .section-body, .pillar-body, .model-desc, .team-bio,
-    .ask-use-desc, .market-tier-desc, .flywheel-text, .solution-sub { color: #999 !important; }
+    .ask-use-desc, .market-tier-desc, .solution-sub { color: #999 !important; }
     .traction-label, .stat-label, .traction-caption { color: #888 !important; }
     .traction-caption strong { color: #fff !important; }
     .compare-then { color: #888 !important; }
@@ -407,7 +391,7 @@
 
     /* Borders */
     .pillar, .market-tier, .traction-stat, .compare-row,
-    .model-layer, .flywheel-item, .ask-use { border-color: #333 !important; }
+    .model-layer, .ask-use { border-color: #333 !important; }
 
     /* Team photos */
     .team-photo { background: #111 !important; border-color: #333 !important; }
@@ -534,7 +518,7 @@
 <section class="scene" id="how">
   <div class="scene-num">06</div>
   <div class="scene-label">How It Works</div>
-  <div class="section-eyebrow reveal">Three pillars. One flywheel.</div>
+  <div class="section-eyebrow reveal">Three pillars.</div>
   <h2 class="section-title reveal reveal-d1" style="text-align:center;margin:0 auto 0;">Each pillar feeds the next.</h2>
   <div class="pillars">
     <div class="pillar reveal reveal-d2">
@@ -558,68 +542,10 @@
   </div>
 </section>
 
-<!-- ===== 07 FLYWHEEL ===== -->
-<section class="scene" id="flywheel">
-  <div class="scene-num">07</div>
-  <div class="scene-label">The Flywheel</div>
-  <div class="flywheel-wrap">
-    <div class="reveal">
-      <svg class="flywheel-svg" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="160" stroke="#1c1c1c" stroke-width="1" fill="none"/>
-        <circle cx="200" cy="200" r="60" stroke="#b59410" stroke-width="1" fill="none" opacity="0.4"/>
-        <g font-family="Cormorant Garamond" fill="#fff" font-size="22" text-anchor="middle">
-          <circle cx="200" cy="40" r="7" fill="#b59410"/>
-          <text x="200" y="18">Founders</text>
-          <circle cx="360" cy="200" r="7" fill="#b59410"/>
-          <text x="360" y="182">Investors</text>
-          <circle cx="200" cy="360" r="7" fill="#b59410"/>
-          <text x="200" y="388">Data</text>
-          <circle cx="40" cy="200" r="7" fill="#b59410"/>
-          <text x="40" y="182">Institutions</text>
-        </g>
-        <g stroke="#b59410" stroke-width="1.2" fill="none" opacity="0.7">
-          <path d="M 230 50 Q 340 90, 350 175" marker-end="url(#arr)"/>
-          <path d="M 350 230 Q 340 320, 230 350" marker-end="url(#arr)"/>
-          <path d="M 170 350 Q 60 320, 50 230" marker-end="url(#arr)"/>
-          <path d="M 50 175 Q 60 90, 170 50" marker-end="url(#arr)"/>
-        </g>
-        <defs>
-          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#b59410"/>
-          </marker>
-        </defs>
-        <text x="200" y="196" font-family="Cormorant Garamond" font-size="20" fill="#b59410" text-anchor="middle" letter-spacing="3">CATALYST</text>
-        <text x="200" y="220" font-family="Inter" font-size="12" fill="#888" text-anchor="middle" letter-spacing="3">FLYWHEEL</text>
-      </svg>
-    </div>
-    <div class="reveal reveal-d2">
-      <div class="section-eyebrow">The compounding loop</div>
-      <h2 class="section-title" style="font-size:clamp(22px,53.76px,34px);margin-bottom:0;">More founders attract more investors. More investors generate more data. More data attracts institutions. Institutional capital attracts more founders.</h2>
-      <ul class="flywheel-list" style="margin-top:16px;">
-        <li class="flywheel-item">
-          <div class="flywheel-step">01</div>
-          <div class="flywheel-text"><strong>Founders list</strong> on Catalyst because the community is already here.</div>
-        </li>
-        <li class="flywheel-item">
-          <div class="flywheel-step">02</div>
-          <div class="flywheel-text"><strong>Retail investors join</strong> for access they've never had before.</div>
-        </li>
-        <li class="flywheel-item">
-          <div class="flywheel-step">03</div>
-          <div class="flywheel-text"><strong>Every interaction</strong> generates proprietary signal others can't replicate.</div>
-        </li>
-        <li class="flywheel-item">
-          <div class="flywheel-step">04</div>
-          <div class="flywheel-text"><strong>Institutions pay</strong> for that signal — and bring their capital back into the platform.</div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <!-- ===== 08 MARKET ===== -->
 <section class="scene" id="market">
-  <div class="scene-num">08</div>
+  <div class="scene-num">07</div>
   <div class="scene-label">Market</div>
   <div class="section-eyebrow reveal">Three layers. One platform.</div>
   <h2 class="section-title reveal reveal-d1" style="text-align:center;margin:0 auto;">A market the size of <em style="color:var(--gold)">retail itself.</em></h2>
@@ -650,7 +576,7 @@
 
 <!-- ===== 09 BUSINESS MODEL ===== -->
 <section class="scene" id="model">
-  <div class="scene-num">09</div>
+  <div class="scene-num">08</div>
   <div class="scene-label">Business Model</div>
   <div class="section-eyebrow reveal">Four revenue layers. One platform.</div>
   <h2 class="section-title reveal reveal-d1" style="margin-bottom:20px;">We monetize the marketplace <em style="color:var(--gold)">four ways</em> — each unlocks the next.</h2>
@@ -680,7 +606,7 @@
 
 <!-- ===== 10 TEAM ===== -->
 <section class="scene" id="team">
-  <div class="scene-num">10</div>
+  <div class="scene-num">09</div>
   <div class="scene-label">Team</div>
   <div class="section-eyebrow reveal">Operators, not theorists.</div>
   <h2 class="section-title reveal reveal-d1" style="font-size:clamp(28px,72.96px,52px);margin-bottom:16px;">The team that built a 20,000-person community <em style="color:var(--gold)">in four months.</em></h2>
@@ -713,7 +639,7 @@
 
 <!-- ===== 11 THE ASK ===== -->
 <section class="scene" id="ask">
-  <div class="scene-num">11</div>
+  <div class="scene-num">10</div>
   <div class="scene-label">The Ask</div>
   <div class="ask-wrap">
     <div class="ask-amount reveal">$2M</div>
@@ -749,7 +675,7 @@
   <button class="nav-dot" data-target="solution" title="Solution"></button>
   <button class="nav-dot" data-target="why-now" title="Why Now"></button>
   <button class="nav-dot" data-target="how" title="How It Works"></button>
-  <button class="nav-dot" data-target="flywheel" title="Flywheel"></button>
+  
   <button class="nav-dot" data-target="market" title="Market"></button>
   <button class="nav-dot" data-target="model" title="Model"></button>
   <button class="nav-dot" data-target="team" title="Team"></button>
