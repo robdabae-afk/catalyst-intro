@@ -39,6 +39,7 @@ import MatchThread from "./pages/match/MatchThread";
 import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import Unsubscribe from "./pages/Unsubscribe";
 import Onboarding from "./pages/Onboarding";
+import Waitlist from "./pages/Waitlist";
 import { AuthGuard } from "./components/AuthGuard";
 
 
