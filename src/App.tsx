@@ -103,8 +103,8 @@ const App = () => (
           <Route path="/app/requests" element={<AuthGuard><Requests /></AuthGuard>} />
           <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
           <Route path="/app/admin" element={<AuthGuard><Admin /></AuthGuard>} />
-          <Route path="/settings" element={<AuthGuard><Settings /></AuthGuard>} />
-          <Route path="/app/settings" element={<AuthGuard><Settings /></AuthGuard>} />
+          <Route path="/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
+          <Route path="/app/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
           <Route path="/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
           <Route path="/app/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
           <Route path="/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
