@@ -126,6 +126,8 @@ const App = () => (
           <Route path="/match/admin" element={<MatchAdminEvents />} />
 
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/waitlist" element={<Waitlist />} />
+          <Route path="/app/waitlist" element={<Waitlist />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
 
