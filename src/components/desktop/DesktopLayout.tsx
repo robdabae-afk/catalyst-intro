@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { ChatPanel } from './ChatPanel';
 import { SwipePanel } from './SwipePanel';
+import { PendingApprovalOverlay } from './PendingApprovalOverlay';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { AppNavigation } from '@/components/AppNavigation';
@@ -13,6 +14,7 @@ import { TokenPurchaseModal } from '@/components/TokenPurchaseModal';
 import { BoostPurchaseDialog } from '@/components/BoostPurchaseDialog';
 import { OrganicProfile, useSwipeQueue } from '@/hooks/useSwipeQueue';
 import { useSwipeHistory } from '@/hooks/useSwipeHistory';
+import { useApprovalCheck } from '@/hooks/useApprovalCheck';
 import { useDailySwipes } from '@/hooks/useDailySwipes';
 import { SwipeLimitReachedFlow } from '@/components/SwipeLimitReachedFlow';
 import { CaughtUpState } from '@/components/CaughtUpState';
@@ -51,9 +53,9 @@ type ViewMode = 'swipe' | 'chat';
 export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro }) => {
   const navigate = useNavigate();
   
-  const isApproved = true;
-  const approvalLoading = false;
-  const [showPendingBanner, setShowPendingBanner] = useState(false);
+  // Approval check for pending users
+  const { isApproved, isLoading: approvalLoading } = useApprovalCheck();
+  const [showPendingBanner, setShowPendingBanner] = useState(true);
   
   // View mode state - binary swipe/chat
   const [viewMode, setViewMode] = useState<ViewMode>('swipe');
@@ -81,7 +83,14 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
   const [boostCredits, setBoostCredits] = useState(0);
   const [hasMutualMatch, setHasMutualMatch] = useState(false);
 
-  const isPendingUser = false;
+  // If pending user, redirect to pending-approval page
+  useEffect(() => {
+    if (!approvalLoading && isApproved === false) {
+      navigate('/pending-approval', { replace: true });
+    }
+  }, [approvalLoading, isApproved, navigate]);
+
+  const isPendingUser = !approvalLoading && isApproved === false;
 
   // Swipe history for filtering out recently swiped profiles
   const { filterProfiles, loading: historyLoading, refetch: refetchHistory, resetSwipeHistory, addSwipedId } = useSwipeHistory(currentUser?.id);
@@ -413,6 +422,10 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
 
         {/* Right Panel - Swipe Mode or Chat Mode */}
         <div className="flex-1 overflow-hidden relative">
+          {/* Pending Approval Overlay - blocks swipe panel */}
+          {isPendingUser && showPendingBanner && viewMode === 'swipe' && (
+            <PendingApprovalOverlay onDismiss={() => setShowPendingBanner(false)} />
+          )}
           
           {viewMode === 'swipe' ? (
             isQueueEmpty ? (

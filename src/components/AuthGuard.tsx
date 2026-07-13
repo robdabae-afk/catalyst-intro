@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ProfileCompletionGate } from "./ProfileCompletionGate";
 
 interface AuthGuardProps {
   children: React.ReactNode;
-  /** Allow non-admin authenticated users. Defaults to false during pre-launch. */
-  allowNonAdmin?: boolean;
 }
 
-export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) => {
+export const AuthGuard = ({ children }: AuthGuardProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
@@ -22,28 +20,31 @@ export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) =
         return;
       }
 
-      if (!allowNonAdmin) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("role", "admin");
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("approved, early_access")
+        .eq("id", user.id)
+        .single();
 
-        const isAdmin = !!roles && roles.length > 0;
-        if (!isAdmin) {
-          // Pre-launch: non-admins can only access their settings page.
-          if (!location.pathname.endsWith("/settings")) {
-            navigate("/settings", { replace: true });
-            return;
-          }
-        }
+      const { data: roleData } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      const isAdmin = !!roleData;
+
+      if (!isAdmin && !profile?.approved && !profile?.early_access) {
+        navigate("/pending-approval");
+        return;
       }
 
       setChecking(false);
     };
 
     check();
-  }, [navigate, location.pathname, allowNonAdmin]);
+  }, [navigate]);
 
   if (checking) {
     return (
@@ -53,5 +54,9 @@ export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) =
     );
   }
 
-  return <>{children}</>;
+  return (
+    <ProfileCompletionGate>
+      {children}
+    </ProfileCompletionGate>
+  );
 };

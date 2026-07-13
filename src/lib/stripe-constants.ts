@@ -17,13 +17,6 @@ export const STRIPE_PRICES = {
     displayPrice: '$100/month',
     name: 'Investor Pro',
   },
-  PRO_DISCOVER: {
-    priceId: 'price_1ToAoJInI9cm3k8RbRNoZAYR', // Catalyst Pro Discover - $40/month
-    productId: 'prod_UnmNuGoVYWhjeZ',
-    amount: 4000,
-    displayPrice: '$40/month',
-    name: 'Catalyst Pro Discover',
-  },
 
   // Concierge Match (one-time payments)
   CONCIERGE_FOUNDER: {

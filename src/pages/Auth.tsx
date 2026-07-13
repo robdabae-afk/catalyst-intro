@@ -289,7 +289,7 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-6">
         <Button
           variant="ghost"
-          onClick={() => navigate("/app")}
+          onClick={() => navigate("/")}
           className="text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -367,7 +367,7 @@ const Auth = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate("/app/signup?role=founder")}
+                  onClick={() => navigate("/onboarding/founder")}
                   className="w-full"
                 >
                   Sign up as Founder
@@ -375,7 +375,7 @@ const Auth = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate("/app/signup?role=investor")}
+                  onClick={() => navigate("/onboarding/investor")}
                   className="w-full"
                 >
                   Sign up as Investor

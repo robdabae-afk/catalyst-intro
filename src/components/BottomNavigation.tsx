@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, Mail, MessageSquare, Settings as SettingsIcon, DollarSign } from "lucide-react";
+import { LayoutDashboard, Map, Mail, MessageSquare, User, DollarSign } from "lucide-react";
 
 interface BottomNavigationProps {
     userType?: 'founder' | 'investor';
@@ -13,11 +13,14 @@ export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
 
     const navItems = [
         { name: "Home", icon: LayoutDashboard, path: "/dashboard" },
+        // Replace Inbox/Requests with Portal for Investors
         userType === 'investor'
             ? { name: "Portal", icon: DollarSign, path: "/portal" }
             : { name: "Inbox", icon: Mail, path: "/requests" },
         { name: "Matches", icon: MessageSquare, path: "/matches" },
-        { name: "Settings", icon: SettingsIcon, path: "/settings" },
+        ...(userType !== 'investor'
+            ? [{ name: "Profile", icon: User, path: "/founder-input" }]
+            : [])
     ];
 
     return (

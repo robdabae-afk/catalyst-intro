@@ -17,7 +17,3 @@ export const PRO_FOUNDER_WEEKLY_INITIATIONS = 10;
 
 // Referral bonus swipes (max)
 export const MAX_REFERRAL_BONUS_SWIPES = 3;
-
-// Daily Discover profile limit
-export const BASIC_DAILY_DISCOVER_PROFILES = 6;
-export const PRO_DAILY_DISCOVER_PROFILES = Infinity;

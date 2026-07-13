@@ -22,10 +22,9 @@ All colors MUST be HSL.
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 0 0% 15%;
-    /* Dark surface for pills/buttons; foreground must contrast */
+    --secondary: 0 0% 100%;
+    /* Adjusted for visibility on black, handled via opacity in components usually */
     --secondary-foreground: 0 0% 100%;
-
 
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 60%;

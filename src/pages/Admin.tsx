@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -20,7 +20,6 @@ import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
 import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
-import { AdminProfileEditor } from "@/components/AdminProfileEditor";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
 import { AdminReferralPanel } from "@/components/AdminReferralPanel";
 import { AdminConciergePanel } from "@/components/AdminConciergePanel";
@@ -31,8 +30,6 @@ import { AdminDeckLeadsPanel } from "@/components/AdminDeckLeadsPanel";
 import { AdminTestDataSeeder } from "@/components/AdminTestDataSeeder";
 import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
 import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
-import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel";
-import { AdminFeedPanel } from "@/components/AdminFeedPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -71,12 +68,9 @@ const Admin = () => {
   const [subscriptionDialogUser, setSubscriptionDialogUser] = useState<UserWithStatus | null>(null);
   const [previewUser, setPreviewUser] = useState<UserWithStatus | null>(null);
   const [editSuggestionUser, setEditSuggestionUser] = useState<UserWithStatus | null>(null);
-  const [editProfileUser, setEditProfileUser] = useState<UserWithStatus | null>(null);
   const [userTypeFilter, setUserTypeFilter] = useState<'all' | 'founder' | 'investor'>('all');
   const [denyDialogUser, setDenyDialogUser] = useState<UserWithStatus | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [addingAdmin, setAddingAdmin] = useState(false);
 
   useEffect(() => {
     if (!adminLoading && !isAdmin) {
@@ -256,56 +250,6 @@ const Admin = () => {
       });
     } finally {
       setActionLoading(null);
-    }
-  };
-
-  const revokeAdmin = async (userId: string) => {
-    if (!confirm("Remove admin privileges from this user?")) return;
-    setActionLoading(userId);
-    try {
-      const { error } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId)
-        .eq('role', 'admin');
-      if (error) throw error;
-      toast({ title: "Admin role revoked" });
-      loadUsers();
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Error revoking admin", description: error.message });
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const addAdminByEmail = async () => {
-    const email = adminEmail.trim().toLowerCase();
-    if (!email) return;
-    setAddingAdmin(true);
-    try {
-      const { data: profile, error: lookupErr } = await supabase
-        .from('profiles')
-        .select('id, name, email')
-        .ilike('email', email)
-        .maybeSingle();
-      if (lookupErr) throw lookupErr;
-      if (!profile) {
-        toast({ variant: "destructive", title: "User not found", description: `No account with email ${email}. They must sign up first.` });
-        return;
-      }
-      // Ensure they have base 'user' role too (so they're approved)
-      await supabase.from('user_roles').insert({ user_id: profile.id, role: 'user' });
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({ user_id: profile.id, role: 'admin' });
-      if (error && !error.message.toLowerCase().includes('duplicate')) throw error;
-      toast({ title: "Admin added", description: `${profile.name || profile.email} is now an admin.` });
-      setAdminEmail("");
-      loadUsers();
-    } catch (error: any) {
-      toast({ variant: "destructive", title: "Error adding admin", description: error.message });
-    } finally {
-      setAddingAdmin(false);
     }
   };
 
@@ -540,7 +484,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(14, minmax(0, 1fr))" }}>
+          <TabsList className="grid w-full grid-cols-13 max-w-7xl" style={{ gridTemplateColumns: "repeat(13, minmax(0, 1fr))" }}>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
@@ -589,32 +533,15 @@ const Admin = () => {
               <CalendarDays className="w-4 h-4" />
               Events
             </TabsTrigger>
-            <TabsTrigger value="match-analytics" className="flex items-center gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Match Data
-            </TabsTrigger>
             <TabsTrigger value="test-data" className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Test Data
-            </TabsTrigger>
-            <TabsTrigger value="feed" className="flex items-center gap-2">
-              <Newspaper className="w-4 h-4" />
-              Feed
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="event-attendees">
             <AdminEventAttendeesPanel />
           </TabsContent>
-
-          <TabsContent value="match-analytics">
-            <AdminMatchAnalyticsPanel />
-          </TabsContent>
-
-          <TabsContent value="feed">
-            <AdminFeedPanel />
-          </TabsContent>
-
 
 
           <TabsContent value="analytics">
@@ -642,31 +569,6 @@ const Admin = () => {
           </TabsContent>
 
           <TabsContent value="users" className="space-y-8">
-            {/* Add Admin by Email */}
-            <div className="bg-card rounded-lg border border-border shadow-sm p-4">
-              <h2 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
-                <Crown className="w-5 h-5 text-amber-500" />
-                Add Admin
-              </h2>
-              <p className="text-sm text-muted-foreground mb-3">
-                Grant admin privileges to an existing user by email. The user must have signed up first.
-              </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={adminEmail}
-                  onChange={(e) => setAdminEmail(e.target.value)}
-                  placeholder="user@example.com"
-                  className="flex-1 px-3 py-2 rounded-md border border-input bg-background text-foreground text-sm"
-                  onKeyDown={(e) => { if (e.key === 'Enter') addAdminByEmail(); }}
-                />
-                <Button onClick={addAdminByEmail} disabled={addingAdmin || !adminEmail.trim()}>
-                  <Crown className="w-4 h-4 mr-1" />
-                  {addingAdmin ? "Adding..." : "Make Admin"}
-                </Button>
-              </div>
-            </div>
-
             {/* Pending Approvals */}
             {pendingUsers.length > 0 && (
               <div>
@@ -727,17 +629,10 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setEditProfileUser(user)}
-                            >
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
                               onClick={() => setEditSuggestionUser(user)}
                             >
-                              Suggest
+                              <Edit className="w-4 h-4 mr-1" />
+                              Suggest Edit
                             </Button>
                             <Button
                               size="sm"
@@ -921,14 +816,6 @@ const Admin = () => {
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => setEditProfileUser(user)}
-                            >
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
                               onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
                               className={user.is_flagged ? "text-red-500 border-red-500/50 hover:bg-red-500/10" : ""}
                             >
@@ -985,18 +872,6 @@ const Admin = () => {
                                   Revoke
                                 </Button>
                               </>
-                            )}
-                            {status === 'admin' && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => revokeAdmin(user.id)}
-                                disabled={actionLoading === user.id}
-                                className="text-red-500 border-red-500/50 hover:bg-red-500/10"
-                              >
-                                <Crown className="w-4 h-4 mr-1" />
-                                Revoke Admin
-                              </Button>
                             )}
                           </TableCell>
                         </TableRow>
@@ -1064,17 +939,6 @@ const Admin = () => {
             loadUsers();
             setEditSuggestionUser(null);
           }}
-        />
-      )}
-
-      {/* Direct Profile Editor */}
-      {editProfileUser && (
-        <AdminProfileEditor
-          userId={editProfileUser.id}
-          userType={editProfileUser.user_type}
-          open={!!editProfileUser}
-          onOpenChange={(open) => !open && setEditProfileUser(null)}
-          onSaved={() => loadUsers()}
         />
       )}
       <Dialog open={!!denyDialogUser} onOpenChange={(open) => !open && setDenyDialogUser(null)}>
