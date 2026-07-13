@@ -33,52 +33,6 @@ serve(async (req) => {
     const { action, userId, safeId } = await req.json();
     console.log(`Processing action: ${action}`);
 
-    // Authenticate non-webhook actions. verify_jwt is false at the platform
-    // level so Stripe webhooks (signature-verified) can call us, but every
-    // user-initiated action must present a valid Supabase JWT and may only
-    // act on its own resources.
-    if (action !== 'webhook') {
-      const authHeader = req.headers.get('Authorization');
-      if (!authHeader) {
-        return new Response(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      const token = authHeader.replace(/^Bearer\s+/i, '');
-      const authClient = createClient(
-        supabaseUrl,
-        Deno.env.get('SUPABASE_ANON_KEY')!,
-        { global: { headers: { Authorization: `Bearer ${token}` } } }
-      );
-      const { data: { user }, error: authError } = await authClient.auth.getUser(token);
-      if (authError || !user) {
-        return new Response(
-          JSON.stringify({ error: 'Invalid authentication token' }),
-          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (userId && userId !== user.id) {
-        return new Response(
-          JSON.stringify({ error: 'Forbidden: cannot act on another user\'s resources' }),
-          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      if (safeId) {
-        const { data: safe } = await supabase
-          .from('safes')
-          .select('founder_id, investor_id')
-          .eq('id', safeId)
-          .maybeSingle();
-        if (!safe || (safe.founder_id !== user.id && safe.investor_id !== user.id)) {
-          return new Response(
-            JSON.stringify({ error: 'Forbidden: not a party to this SAFE' }),
-            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-      }
-    }
-
     switch (action) {
       case 'create_account': {
         // ============================================================

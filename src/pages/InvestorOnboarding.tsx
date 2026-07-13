@@ -20,7 +20,6 @@ const InvestorOnboarding = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
-  const [accessStep, setAccessStep] = useState(false);
   const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const [referralValid, setReferralValid] = useState<boolean | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -39,12 +38,7 @@ const InvestorOnboarding = () => {
     checkSize: "",
     preferredStage: "" as "pre-seed" | "seed" | "series-a" | "series-b" | "",
     location: "",
-    portfolioLink: "",
-    linkedinUrl: "",
-    investorType: "",
-    investmentCount: "",
-    notablePortfolio: "",
-    accreditationStatus: ""
+    portfolioLink: ""
   });
 
   // Validate referral code when it changes
@@ -224,7 +218,6 @@ const InvestorOnboarding = () => {
           name: formData.name,
           email: formData.email,
           avatar_url: avatarUrl,
-          linkedin_url: formData.linkedinUrl || null,
           referred_by: referralValid ? (await supabase
             .from('profiles')
             .select('id')
@@ -268,21 +261,17 @@ const InvestorOnboarding = () => {
           sectors_of_interest: selectedSectors,
           location: formData.location || null,
           portfolio_link: formData.portfolioLink || null,
-          banner_url: bannerUrl,
-          investor_type: formData.investorType || null,
-          investment_count: formData.investmentCount ? parseInt(formData.investmentCount) : null,
-          notable_portfolio: formData.notablePortfolio || null,
-          accreditation_status: formData.accreditationStatus || null
+          banner_url: bannerUrl
         });
 
       if (investorError) throw investorError;
 
       toast({
-        title: "Profile created!",
-        description: "Choose how you'd like to access Catalyst.",
+        title: "Success!",
+        description: "Your investor profile has been created.",
       });
 
-      setAccessStep(true);
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -293,50 +282,6 @@ const InvestorOnboarding = () => {
       setLoading(false);
     }
   };
-
-  if (accessStep) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto">
-              <span className="text-2xl">✓</span>
-            </div>
-            <h1 className="text-3xl font-bold text-white">Account Created!</h1>
-            <p className="text-zinc-400">Choose how you'd like to access Catalyst while we're in private development.</p>
-          </div>
-
-          <div className="space-y-4">
-            <button
-              onClick={() => navigate('/early-access')}
-              className="w-full p-6 rounded-2xl border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 transition-all text-left space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-amber-500 font-bold text-lg">Get Early Access</span>
-                <span className="text-amber-500 font-bold">$29</span>
-              </div>
-              <p className="text-zinc-400 text-sm">One-time fee. Skip the waitlist and get priority review by our team.</p>
-            </button>
-
-            <button
-              onClick={() => navigate('/pending-approval')}
-              className="w-full p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 transition-all text-left space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-white font-bold text-lg">Join the Waitlist</span>
-                <span className="text-zinc-500 font-bold">Free</span>
-              </div>
-              <p className="text-zinc-500 text-sm">Your profile is submitted. We'll review and reach out when your spot opens.</p>
-            </button>
-          </div>
-
-          <p className="text-center text-zinc-600 text-xs">
-            All accounts are reviewed by our team before getting full access.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
@@ -429,17 +374,6 @@ const InvestorOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="linkedinUrl">LinkedIn Profile URL (Optional)</Label>
-                <Input
-                  id="linkedinUrl"
-                  type="url"
-                  placeholder="https://linkedin.com/in/..."
-                  value={formData.linkedinUrl}
-                  onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="password">Password *</Label>
                 <Input
                   id="password"
@@ -496,37 +430,6 @@ const InvestorOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="investorType">Investor Type *</Label>
-                <Select value={formData.investorType} onValueChange={(value) => setFormData({ ...formData, investorType: value })}>
-                  <SelectTrigger className={!formData.investorType ? 'border-destructive/50' : ''}>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Retail">Retail Investor</SelectItem>
-                    <SelectItem value="Angel">Angel Investor</SelectItem>
-                    <SelectItem value="Accredited">Accredited Individual</SelectItem>
-                    <SelectItem value="VC">Venture Capital (VC)</SelectItem>
-                    <SelectItem value="PE">Private Equity (PE)</SelectItem>
-                    <SelectItem value="Family Office">Family Office</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="accreditationStatus">Accreditation Status *</Label>
-                <Select value={formData.accreditationStatus} onValueChange={(value) => setFormData({ ...formData, accreditationStatus: value })}>
-                  <SelectTrigger className={!formData.accreditationStatus ? 'border-destructive/50' : ''}>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Accredited">Accredited</SelectItem>
-                    <SelectItem value="Non-Accredited">Non-Accredited</SelectItem>
-                    <SelectItem value="Qualified Purchaser">Qualified Purchaser</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="checkSize">Typical Check Size</Label>
                 <Input
                   id="checkSize"
@@ -534,28 +437,6 @@ const InvestorOnboarding = () => {
                   value={formData.checkSize}
                   onChange={(e) => setFormData({ ...formData, checkSize: e.target.value })}
                 />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="investmentCount">Total Investments (Est.)</Label>
-                  <Input
-                    id="investmentCount"
-                    type="number"
-                    placeholder="e.g. 5"
-                    value={formData.investmentCount}
-                    onChange={(e) => setFormData({ ...formData, investmentCount: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="notablePortfolio">Notable Portfolio</Label>
-                  <Input
-                    id="notablePortfolio"
-                    placeholder="e.g. Stripe, Airbnb"
-                    value={formData.notablePortfolio}
-                    onChange={(e) => setFormData({ ...formData, notablePortfolio: e.target.value })}
-                  />
-                </div>
               </div>
 
               <div className="space-y-2">

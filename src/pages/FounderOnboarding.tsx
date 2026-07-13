@@ -22,8 +22,6 @@ const FounderOnboarding = () => {
   const bannerInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
-  const [accessStep, setAccessStep] = useState(false);
-  const [createdUserId, setCreatedUserId] = useState<string | null>(null);
   const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const [referralValid, setReferralValid] = useState<boolean | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -33,8 +31,6 @@ const FounderOnboarding = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [incDocFile, setIncDocFile] = useState<File | null>(null);
-  const [financialFiles, setFinancialFiles] = useState<File[]>([]);
   const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
   const [legalAgreed, setLegalAgreed] = useState(false);
@@ -53,10 +49,7 @@ const FounderOnboarding = () => {
     videoUrl: "",
     fundingAmount: "",
     mrr: "",
-    backedBy: "",
-    einNumber: "",
-    location: "",
-    linkedinUrl: ""
+    backedBy: ""
   });
 
   // Validate referral code when it changes
@@ -213,25 +206,6 @@ const FounderOnboarding = () => {
     return publicUrl;
   };
 
-  const uploadDocument = async (userId: string, file: File, folder: string): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${userId}/${folder}/${Date.now()}.${fileExt}`;
-    const { error: uploadError } = await supabase.storage
-      .from('documents')
-      .upload(filePath, file, { upsert: true });
-
-    if (uploadError) {
-      console.error(`${folder} upload error:`, uploadError);
-      return null;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('documents')
-      .getPublicUrl(filePath);
-
-    return publicUrl;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -335,18 +309,6 @@ const FounderOnboarding = () => {
       // Use uploaded video URL if available, otherwise use the external URL from form
       const finalVideoUrl = uploadedVideoUrl || formData.videoUrl || null;
 
-      // Upload docs
-      let incDocUrl = null;
-      if (incDocFile) {
-        incDocUrl = await uploadDocument(authData.user.id, incDocFile, 'incorporation');
-      }
-
-      const financialUrls = [];
-      for (const file of financialFiles) {
-        const url = await uploadDocument(authData.user.id, file, 'financials');
-        if (url) financialUrls.push(url);
-      }
-
       // Create profile with legal acceptance
       const { error: profileError } = await supabase
         .from('profiles')
@@ -356,7 +318,6 @@ const FounderOnboarding = () => {
           name: formData.name,
           email: formData.email,
           avatar_url: avatarUrl,
-          linkedin_url: formData.linkedinUrl || null,
           referred_by: referralValid ? (await supabase
             .from('profiles')
             .select('id')
@@ -406,25 +367,18 @@ const FounderOnboarding = () => {
           banner_url: bannerUrl,
           video_url: finalVideoUrl,
           funding_amount: formData.fundingAmount || null,
-          seeking: formData.fundingAmount || null,
           mrr: formData.mrr || null,
-          backed_by: formData.backedBy || null,
-          ein_number: formData.einNumber || null,
-          location: formData.location || null,
-          incorporation_doc_url: incDocUrl,
-          financial_statement_urls: financialUrls.length > 0 ? financialUrls : null
+          backed_by: formData.backedBy || null
         });
 
       if (founderError) throw founderError;
 
-      setCreatedUserId(authData.user.id);
-
       toast({
-        title: "Profile created!",
-        description: "Choose how you'd like to access Catalyst.",
+        title: "Success!",
+        description: "Your founder profile has been created.",
       });
 
-      setAccessStep(true);
+      navigate('/dashboard');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -435,52 +389,6 @@ const FounderOnboarding = () => {
       setLoading(false);
     }
   };
-
-  if (accessStep) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center space-y-3">
-            <div className="w-16 h-16 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center mx-auto">
-              <span className="text-2xl">✓</span>
-            </div>
-            <h1 className="text-3xl font-bold text-white">Account Created!</h1>
-            <p className="text-zinc-400">Choose how you'd like to access Catalyst while we're in private development.</p>
-          </div>
-
-          <div className="space-y-4">
-            {/* Early Access Option */}
-            <button
-              onClick={() => navigate('/early-access')}
-              className="w-full p-6 rounded-2xl border border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 transition-all text-left space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-amber-500 font-bold text-lg">Get Early Access</span>
-                <span className="text-amber-500 font-bold">$29</span>
-              </div>
-              <p className="text-zinc-400 text-sm">One-time fee. Skip the waitlist and get priority review by our team.</p>
-            </button>
-
-            {/* Waitlist Option */}
-            <button
-              onClick={() => navigate('/pending-approval')}
-              className="w-full p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-900 transition-all text-left space-y-2"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-white font-bold text-lg">Join the Waitlist</span>
-                <span className="text-zinc-500 font-bold">Free</span>
-              </div>
-              <p className="text-zinc-500 text-sm">Your profile is submitted. We'll review and reach out when your spot opens.</p>
-            </button>
-          </div>
-
-          <p className="text-center text-zinc-600 text-xs">
-            All accounts are reviewed by our team before getting full access.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
@@ -615,28 +523,6 @@ const FounderOnboarding = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location (HQ) *</Label>
-                <Input
-                  id="location"
-                  required
-                  placeholder="City, State"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="linkedinUrl">LinkedIn Profile URL (Optional)</Label>
-                <Input
-                  id="linkedinUrl"
-                  type="url"
-                  placeholder="https://linkedin.com/in/..."
-                  value={formData.linkedinUrl}
-                  onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="oneLiner">One-Liner *</Label>
                 <Input
                   id="oneLiner"
@@ -735,40 +621,6 @@ const FounderOnboarding = () => {
                   value={formData.backedBy}
                   onChange={(e) => setFormData({ ...formData, backedBy: e.target.value })}
                 />
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <h3 className="font-medium">Due Diligence (Optional)</h3>
-                <p className="text-sm text-muted-foreground">Adding these fields increases your profile completion score and trust with investors.</p>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="einNumber">EIN Number</Label>
-                  <Input
-                    id="einNumber"
-                    placeholder="XX-XXXXXXX"
-                    value={formData.einNumber}
-                    onChange={(e) => setFormData({ ...formData, einNumber: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Incorporation Document</Label>
-                  <Input
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={(e) => setIncDocFile(e.target.files?.[0] || null)}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Financial / Bank Statements (Multiple allowed)</Label>
-                  <Input
-                    type="file"
-                    accept=".pdf,.csv,.png,.jpg"
-                    multiple
-                    onChange={(e) => setFinancialFiles(Array.from(e.target.files || []))}
-                  />
-                </div>
               </div>
 
               <div className="space-y-4">

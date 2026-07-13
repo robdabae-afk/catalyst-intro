@@ -353,33 +353,6 @@ export type Database = {
         }
         Relationships: []
       }
-      event_attendees: {
-        Row: {
-          consent_accepted: boolean
-          created_at: string
-          email: string | null
-          full_name: string
-          id: string
-          phone: string
-        }
-        Insert: {
-          consent_accepted?: boolean
-          created_at?: string
-          email?: string | null
-          full_name: string
-          id?: string
-          phone: string
-        }
-        Update: {
-          consent_accepted?: boolean
-          created_at?: string
-          email?: string | null
-          full_name?: string
-          id?: string
-          phone?: string
-        }
-        Relationships: []
-      }
       feedback_prompts: {
         Row: {
           admin_requested_at: string | null
@@ -418,13 +391,9 @@ export type Database = {
           company_name: string | null
           company_state: string | null
           created_at: string | null
-          ein_number: string | null
-          financial_statement_urls: string[] | null
           funding_amount: string | null
           id: string
-          incorporation_doc_url: string | null
           industry: string[] | null
-          location: string | null
           mrr: string | null
           one_liner: string
           pitch_deck_url: string | null
@@ -443,13 +412,9 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
-          ein_number?: string | null
-          financial_statement_urls?: string[] | null
           funding_amount?: string | null
           id?: string
-          incorporation_doc_url?: string | null
           industry?: string[] | null
-          location?: string | null
           mrr?: string | null
           one_liner: string
           pitch_deck_url?: string | null
@@ -468,13 +433,9 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
-          ein_number?: string | null
-          financial_statement_urls?: string[] | null
           funding_amount?: string | null
           id?: string
-          incorporation_doc_url?: string | null
           industry?: string[] | null
-          location?: string | null
           mrr?: string | null
           one_liner?: string
           pitch_deck_url?: string | null
@@ -498,54 +459,39 @@ export type Database = {
       }
       investor_profiles: {
         Row: {
-          accreditation_status: string | null
           banner_url: string | null
           created_at: string | null
           firm_name: string | null
           id: string
-          investment_count: number | null
           investment_thesis: string | null
-          investor_type: string | null
           location: string | null
-          notable_portfolio: string | null
           portfolio_link: string | null
-          position: string | null
           preferred_stage: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
           sectors_of_interest: string[] | null
           typical_check_size: string | null
         }
         Insert: {
-          accreditation_status?: string | null
           banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string
-          investment_count?: number | null
           investment_thesis?: string | null
-          investor_type?: string | null
           location?: string | null
-          notable_portfolio?: string | null
           portfolio_link?: string | null
-          position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
           sectors_of_interest?: string[] | null
           typical_check_size?: string | null
         }
         Update: {
-          accreditation_status?: string | null
           banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string
-          investment_count?: number | null
           investment_thesis?: string | null
-          investor_type?: string | null
           location?: string | null
-          notable_portfolio?: string | null
           portfolio_link?: string | null
-          position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id?: string
           sectors_of_interest?: string[] | null
@@ -709,12 +655,9 @@ export type Database = {
         Row: {
           admin_edit_message: string | null
           admin_edit_suggestion: string | null
-          approved: boolean
           avatar_url: string | null
           bonus_swipes: number
           created_at: string | null
-          early_access: boolean
-          early_access_paid_at: string | null
           email: string
           filter_industries: string[] | null
           filter_locations: string[] | null
@@ -725,7 +668,6 @@ export type Database = {
           hidden_by: string | null
           id: string
           is_featured: boolean | null
-          is_flagged: boolean
           is_hidden: boolean
           is_test_account: boolean | null
           is_test_mode: boolean | null
@@ -733,13 +675,10 @@ export type Database = {
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
           legal_acknowledged: boolean | null
-          linkedin_url: string | null
           match_banner_dismissed: boolean | null
           name: string
-          profile_grace_until: string | null
           referral_code: string
           referred_by: string | null
-          rejection_reason: string | null
           spotlight_active_until: string | null
           spotlight_credits: number
           stripe_account_id: string | null
@@ -759,12 +698,9 @@ export type Database = {
         Insert: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
-          approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
           created_at?: string | null
-          early_access?: boolean
-          early_access_paid_at?: string | null
           email: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
@@ -775,7 +711,6 @@ export type Database = {
           hidden_by?: string | null
           id: string
           is_featured?: boolean | null
-          is_flagged?: boolean
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
@@ -783,13 +718,10 @@ export type Database = {
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
-          linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name: string
-          profile_grace_until?: string | null
           referral_code: string
           referred_by?: string | null
-          rejection_reason?: string | null
           spotlight_active_until?: string | null
           spotlight_credits?: number
           stripe_account_id?: string | null
@@ -809,12 +741,9 @@ export type Database = {
         Update: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
-          approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
           created_at?: string | null
-          early_access?: boolean
-          early_access_paid_at?: string | null
           email?: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
@@ -825,7 +754,6 @@ export type Database = {
           hidden_by?: string | null
           id?: string
           is_featured?: boolean | null
-          is_flagged?: boolean
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
@@ -833,13 +761,10 @@ export type Database = {
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
-          linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name?: string
-          profile_grace_until?: string | null
           referral_code?: string
           referred_by?: string | null
-          rejection_reason?: string | null
           spotlight_active_until?: string | null
           spotlight_credits?: number
           stripe_account_id?: string | null
@@ -1088,36 +1013,64 @@ export type Database = {
         }
         Relationships: []
       }
-      waitlist_signups: {
-        Row: {
-          created_at: string
-          email: string
-          id: string
-          linkedin_url: string | null
-          name: string
-          user_type: string
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          id?: string
-          linkedin_url?: string | null
-          name: string
-          user_type: string
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          id?: string
-          linkedin_url?: string | null
-          name?: string
-          user_type?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
-      [_ in never]: never
+      public_founder_profiles: {
+        Row: {
+          banner_url: string | null
+          company_name: string | null
+          created_at: string | null
+          id: string | null
+          industry: string[] | null
+          one_liner: string | null
+          pitch_deck_url: string | null
+          pitch_deck_visibility: string | null
+          preferred_city: string | null
+          profile_id: string | null
+          stage: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name: string | null
+          traction: string | null
+        }
+        Insert: {
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          industry?: string[] | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          pitch_deck_visibility?: string | null
+          preferred_city?: string | null
+          profile_id?: string | null
+          stage?: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name?: string | null
+          traction?: string | null
+        }
+        Update: {
+          banner_url?: string | null
+          company_name?: string | null
+          created_at?: string | null
+          id?: string | null
+          industry?: string[] | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          pitch_deck_visibility?: string | null
+          preferred_city?: string | null
+          profile_id?: string | null
+          stage?: Database["public"]["Enums"]["funding_stage"] | null
+          startup_name?: string | null
+          traction?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "founder_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }

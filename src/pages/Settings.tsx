@@ -66,7 +66,6 @@ const Settings = () => {
     // Profile fields
     const [name, setName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
-    const [linkedinUrl, setLinkedinUrl] = useState("");
 
     // Founder fields
     const [startupName, setStartupName] = useState("");
@@ -84,17 +83,11 @@ const Settings = () => {
     const [fundingAmount, setFundingAmount] = useState("");
     const [mrr, setMrr] = useState("");
     const [backedBy, setBackedBy] = useState("");
-    const [einNumber, setEinNumber] = useState("");
-    const [location, setLocation] = useState("");
 
     // Investor fields
     const [firmName, setFirmName] = useState("");
     const [position, setPosition] = useState("");
     const [investorBannerUrl, setInvestorBannerUrl] = useState("");
-    const [investorType, setInvestorType] = useState("");
-    const [accreditationStatus, setAccreditationStatus] = useState("");
-    const [investmentCount, setInvestmentCount] = useState("");
-    const [notablePortfolio, setNotablePortfolio] = useState("");
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -121,7 +114,6 @@ const Settings = () => {
             setUserType(profile.user_type);
             setName(profile.name || "");
             setAvatarUrl(profile.avatar_url || "");
-            setLinkedinUrl(profile.linkedin_url || "");
 
             if (profile.user_type === 'founder') {
                 const { data: founderProfile } = await supabase
@@ -144,10 +136,9 @@ const Settings = () => {
                     setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
                     setVideoUrl(founderProfile.video_url || "");
                     setFundingAmount(founderProfile.funding_amount || "");
-                    setMrr(founderProfile.mrr || "");
-                    setBackedBy(founderProfile.backed_by || "");
-                    setEinNumber(founderProfile.ein_number || "");
-                    setLocation(founderProfile.location || "");
+                    // TODO: mrr and backed_by columns don't exist in founder_profiles yet
+                    setMrr("");
+                    setBackedBy("");
                 }
             } else {
                 const { data: investorProfile } = await supabase
@@ -158,12 +149,9 @@ const Settings = () => {
 
                 if (investorProfile) {
                     setFirmName(investorProfile.firm_name || "");
-                    setPosition(investorProfile.position || "");
+                    // TODO: position column doesn't exist in investor_profiles yet
+                    setPosition("");
                     setInvestorBannerUrl(investorProfile.banner_url || "");
-                    setInvestorType(investorProfile.investor_type || "");
-                    setAccreditationStatus(investorProfile.accreditation_status || "");
-                    setInvestmentCount(investorProfile.investment_count?.toString() || "");
-                    setNotablePortfolio(investorProfile.notable_portfolio || "");
                 }
             }
 
@@ -293,7 +281,6 @@ const Settings = () => {
                 .update({
                     name,
                     avatar_url: avatarUrl,
-                    linkedin_url: linkedinUrl,
                     has_pending_update: true,
                     last_profile_update_at: new Date().toISOString()
                 })
@@ -320,9 +307,7 @@ const Settings = () => {
 
                         funding_amount: fundingAmount || null,
                         mrr: mrr || null,
-                        backed_by: backedBy || null,
-                        ein_number: einNumber || null,
-                        location: location || null
+                        backed_by: backedBy || null
                     })
                     .eq('profile_id', userId);
 
@@ -334,10 +319,6 @@ const Settings = () => {
                         firm_name: firmName,
                         position: position,
                         banner_url: investorBannerUrl,
-                        investor_type: investorType || null,
-                        accreditation_status: accreditationStatus || null,
-                        investment_count: investmentCount ? parseInt(investmentCount) : null,
-                        notable_portfolio: notablePortfolio || null
                     })
                     .eq('profile_id', userId);
 
@@ -530,16 +511,6 @@ const Settings = () => {
                                 placeholder="Your name"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="linkedinUrl">LinkedIn Profile URL</Label>
-                            <Input
-                                id="linkedinUrl"
-                                type="url"
-                                value={linkedinUrl}
-                                onChange={(e) => setLinkedinUrl(e.target.value)}
-                                placeholder="https://linkedin.com/in/..."
-                            />
-                        </div>
                     </CardContent>
                 </Card>
 
@@ -557,15 +528,6 @@ const Settings = () => {
                                         id="startupName"
                                         value={startupName}
                                         onChange={(e) => setStartupName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="location">Location (HQ)</Label>
-                                    <Input
-                                        id="location"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                        placeholder="City, State"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -655,20 +617,6 @@ const Settings = () => {
                                     onChange={(e) => setPreferredCity(e.target.value)}
                                     placeholder="City for meetings"
                                 />
-                            </div>
-                            
-                            {/* Due Diligence Fields */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Due Diligence</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="einNumber">EIN Number</Label>
-                                    <Input
-                                        id="einNumber"
-                                        value={einNumber}
-                                        onChange={(e) => setEinNumber(e.target.value)}
-                                        placeholder="XX-XXXXXXX"
-                                    />
-                                </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -837,60 +785,6 @@ const Settings = () => {
                                         value={position}
                                         onChange={(e) => setPosition(e.target.value)}
                                         placeholder="e.g. Managing Partner, Associate"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="investorType">Investor Type</Label>
-                                    <Select value={investorType} onValueChange={setInvestorType}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Retail">Retail Investor</SelectItem>
-                                            <SelectItem value="Angel">Angel Investor</SelectItem>
-                                            <SelectItem value="Accredited">Accredited Individual</SelectItem>
-                                            <SelectItem value="VC">Venture Capital (VC)</SelectItem>
-                                            <SelectItem value="PE">Private Equity (PE)</SelectItem>
-                                            <SelectItem value="Family Office">Family Office</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="accreditationStatus">Accreditation Status</Label>
-                                    <Select value={accreditationStatus} onValueChange={setAccreditationStatus}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Accredited">Accredited</SelectItem>
-                                            <SelectItem value="Non-Accredited">Non-Accredited</SelectItem>
-                                            <SelectItem value="Qualified Purchaser">Qualified Purchaser</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="investmentCount">Total Investments (Est.)</Label>
-                                    <Input
-                                        id="investmentCount"
-                                        type="number"
-                                        value={investmentCount}
-                                        onChange={(e) => setInvestmentCount(e.target.value)}
-                                        placeholder="e.g. 5"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="notablePortfolio">Notable Portfolio</Label>
-                                    <Input
-                                        id="notablePortfolio"
-                                        value={notablePortfolio}
-                                        onChange={(e) => setNotablePortfolio(e.target.value)}
-                                        placeholder="e.g. Stripe, Airbnb"
                                     />
                                 </div>
                             </div>
