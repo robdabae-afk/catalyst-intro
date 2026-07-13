@@ -299,6 +299,54 @@ export type Database = {
         }
         Relationships: []
       }
+      deck_overrides: {
+        Row: {
+          deck_slug: string
+          edit_id: string
+          element_type: string | null
+          hidden: boolean
+          id: string
+          image_url: string | null
+          kind: string
+          parent_selector: string | null
+          slide_key: string | null
+          style: Json
+          text_content: string | null
+          updated_at: string
+          z_index: number
+        }
+        Insert: {
+          deck_slug?: string
+          edit_id: string
+          element_type?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          parent_selector?: string | null
+          slide_key?: string | null
+          style?: Json
+          text_content?: string | null
+          updated_at?: string
+          z_index?: number
+        }
+        Update: {
+          deck_slug?: string
+          edit_id?: string
+          element_type?: string | null
+          hidden?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          parent_selector?: string | null
+          slide_key?: string | null
+          style?: Json
+          text_content?: string | null
+          updated_at?: string
+          z_index?: number
+        }
+        Relationships: []
+      }
       discover_resets: {
         Row: {
           reset_at: string
@@ -353,6 +401,33 @@ export type Database = {
         }
         Relationships: []
       }
+      event_attendees: {
+        Row: {
+          consent_accepted: boolean
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          phone: string
+        }
+        Insert: {
+          consent_accepted?: boolean
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          phone: string
+        }
+        Update: {
+          consent_accepted?: boolean
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          phone?: string
+        }
+        Relationships: []
+      }
       feedback_prompts: {
         Row: {
           admin_requested_at: string | null
@@ -391,9 +466,13 @@ export type Database = {
           company_name: string | null
           company_state: string | null
           created_at: string | null
+          ein_number: string | null
+          financial_statement_urls: string[] | null
           funding_amount: string | null
           id: string
+          incorporation_doc_url: string | null
           industry: string[] | null
+          location: string | null
           mrr: string | null
           one_liner: string
           pitch_deck_url: string | null
@@ -412,9 +491,13 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
+          ein_number?: string | null
+          financial_statement_urls?: string[] | null
           funding_amount?: string | null
           id?: string
+          incorporation_doc_url?: string | null
           industry?: string[] | null
+          location?: string | null
           mrr?: string | null
           one_liner: string
           pitch_deck_url?: string | null
@@ -433,9 +516,13 @@ export type Database = {
           company_name?: string | null
           company_state?: string | null
           created_at?: string | null
+          ein_number?: string | null
+          financial_statement_urls?: string[] | null
           funding_amount?: string | null
           id?: string
+          incorporation_doc_url?: string | null
           industry?: string[] | null
+          location?: string | null
           mrr?: string | null
           one_liner?: string
           pitch_deck_url?: string | null
@@ -457,41 +544,223 @@ export type Database = {
           },
         ]
       }
+      home_hot_picks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          position: number
+          profile_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          position?: number
+          profile_id: string
+          role: Database["public"]["Enums"]["user_type"]
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          position?: number
+          profile_id?: string
+          role?: Database["public"]["Enums"]["user_type"]
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_hot_picks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_news: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_url: string | null
+          link: string | null
+          news_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          news_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_url?: string | null
+          link?: string | null
+          news_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      home_newsletter_submissions: {
+        Row: {
+          created_at: string
+          id: string
+          link: string | null
+          note: string | null
+          status: string
+          submitter_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          note?: string | null
+          status?: string
+          submitter_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          link?: string | null
+          note?: string | null
+          status?: string
+          submitter_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      intro_requests: {
+        Row: {
+          ask_amount: string | null
+          ask_stage: string | null
+          created_at: string
+          founder_id: string
+          id: string
+          include_deck: boolean
+          investor_id: string
+          pitch_summary: string | null
+          responded_at: string | null
+          status: string
+          updated_at: string
+          why_you: string | null
+        }
+        Insert: {
+          ask_amount?: string | null
+          ask_stage?: string | null
+          created_at?: string
+          founder_id: string
+          id?: string
+          include_deck?: boolean
+          investor_id: string
+          pitch_summary?: string | null
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          why_you?: string | null
+        }
+        Update: {
+          ask_amount?: string | null
+          ask_stage?: string | null
+          created_at?: string
+          founder_id?: string
+          id?: string
+          include_deck?: boolean
+          investor_id?: string
+          pitch_summary?: string | null
+          responded_at?: string | null
+          status?: string
+          updated_at?: string
+          why_you?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intro_requests_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intro_requests_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investor_profiles: {
         Row: {
+          accreditation_status: string | null
           banner_url: string | null
           created_at: string | null
           firm_name: string | null
           id: string
+          investment_count: number | null
           investment_thesis: string | null
+          investor_type: string | null
           location: string | null
+          notable_portfolio: string | null
           portfolio_link: string | null
+          position: string | null
           preferred_stage: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
           sectors_of_interest: string[] | null
           typical_check_size: string | null
         }
         Insert: {
+          accreditation_status?: string | null
           banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string
+          investment_count?: number | null
           investment_thesis?: string | null
+          investor_type?: string | null
           location?: string | null
+          notable_portfolio?: string | null
           portfolio_link?: string | null
+          position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
           sectors_of_interest?: string[] | null
           typical_check_size?: string | null
         }
         Update: {
+          accreditation_status?: string | null
           banner_url?: string | null
           created_at?: string | null
           firm_name?: string | null
           id?: string
+          investment_count?: number | null
           investment_thesis?: string | null
+          investor_type?: string | null
           location?: string | null
+          notable_portfolio?: string | null
           portfolio_link?: string | null
+          position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id?: string
           sectors_of_interest?: string[] | null
@@ -579,6 +848,430 @@ export type Database = {
         }
         Relationships: []
       }
+      match_document_requests: {
+        Row: {
+          created_at: string
+          doc_type: Database["public"]["Enums"]["match_doc_type"]
+          file_path: string | null
+          founder_id: string
+          fulfilled_at: string | null
+          id: string
+          note: string | null
+          requester_id: string
+          status: Database["public"]["Enums"]["match_doc_status"]
+          thread_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: Database["public"]["Enums"]["match_doc_type"]
+          file_path?: string | null
+          founder_id: string
+          fulfilled_at?: string | null
+          id?: string
+          note?: string | null
+          requester_id: string
+          status?: Database["public"]["Enums"]["match_doc_status"]
+          thread_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["match_doc_type"]
+          file_path?: string | null
+          founder_id?: string
+          fulfilled_at?: string | null
+          id?: string
+          note?: string | null
+          requester_id?: string
+          status?: Database["public"]["Enums"]["match_doc_status"]
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_document_requests_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_document_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_document_requests_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "match_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_event_attendees: {
+        Row: {
+          event_id: string
+          id: string
+          joined_at: string
+          profile_id: string
+        }
+        Insert: {
+          event_id: string
+          id?: string
+          joined_at?: string
+          profile_id: string
+        }
+        Update: {
+          event_id?: string
+          id?: string
+          joined_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_event_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "match_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_event_attendees_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_events: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          name: string
+          starts_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      match_founder_profiles: {
+        Row: {
+          created_at: string
+          funding_amount: string | null
+          id: string
+          industry: string[] | null
+          location: string | null
+          one_liner: string | null
+          pitch_deck_url: string | null
+          profile_id: string
+          stage: string | null
+          startup_name: string | null
+          traction: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          funding_amount?: string | null
+          id?: string
+          industry?: string[] | null
+          location?: string | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          profile_id: string
+          stage?: string | null
+          startup_name?: string | null
+          traction?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          funding_amount?: string | null
+          id?: string
+          industry?: string[] | null
+          location?: string | null
+          one_liner?: string | null
+          pitch_deck_url?: string | null
+          profile_id?: string
+          stage?: string | null
+          startup_name?: string | null
+          traction?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_founder_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_interests: {
+        Row: {
+          check_size_cents: number | null
+          created_at: string
+          event_id: string
+          founder_id: string
+          id: string
+          investor_id: string
+          message: string | null
+        }
+        Insert: {
+          check_size_cents?: number | null
+          created_at?: string
+          event_id: string
+          founder_id: string
+          id?: string
+          investor_id: string
+          message?: string | null
+        }
+        Update: {
+          check_size_cents?: number | null
+          created_at?: string
+          event_id?: string
+          founder_id?: string
+          id?: string
+          investor_id?: string
+          message?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_interests_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "match_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_interests_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_interests_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_investor_profiles: {
+        Row: {
+          accreditation: Database["public"]["Enums"]["match_accreditation"]
+          avg_check_size: string | null
+          created_at: string
+          firm_name: string | null
+          id: string
+          philosophy: string | null
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          accreditation?: Database["public"]["Enums"]["match_accreditation"]
+          avg_check_size?: string | null
+          created_at?: string
+          firm_name?: string | null
+          id?: string
+          philosophy?: string | null
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          accreditation?: Database["public"]["Enums"]["match_accreditation"]
+          avg_check_size?: string | null
+          created_at?: string
+          firm_name?: string | null
+          id?: string
+          philosophy?: string | null
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_investor_profiles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "match_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          payload: Json
+          read_at: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          payload?: Json
+          read_at?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      match_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          role: Database["public"]["Enums"]["match_role"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id: string
+          name: string
+          role: Database["public"]["Enums"]["match_role"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          role?: Database["public"]["Enums"]["match_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      match_threads: {
+        Row: {
+          created_at: string
+          event_id: string
+          founder_id: string
+          id: string
+          investor_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          founder_id: string
+          id?: string
+          investor_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          founder_id?: string
+          id?: string
+          investor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_threads_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "match_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_threads_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_threads_investor_id_fkey"
+            columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "match_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           created_at: string
@@ -655,9 +1348,12 @@ export type Database = {
         Row: {
           admin_edit_message: string | null
           admin_edit_suggestion: string | null
+          approved: boolean
           avatar_url: string | null
           bonus_swipes: number
           created_at: string | null
+          early_access: boolean
+          early_access_paid_at: string | null
           email: string
           filter_industries: string[] | null
           filter_locations: string[] | null
@@ -668,6 +1364,7 @@ export type Database = {
           hidden_by: string | null
           id: string
           is_featured: boolean | null
+          is_flagged: boolean
           is_hidden: boolean
           is_test_account: boolean | null
           is_test_mode: boolean | null
@@ -675,10 +1372,14 @@ export type Database = {
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
           legal_acknowledged: boolean | null
+          linkedin_url: string | null
           match_banner_dismissed: boolean | null
           name: string
+          onboarding_dismissed_at: string | null
+          profile_grace_until: string | null
           referral_code: string
           referred_by: string | null
+          rejection_reason: string | null
           spotlight_active_until: string | null
           spotlight_credits: number
           stripe_account_id: string | null
@@ -698,9 +1399,12 @@ export type Database = {
         Insert: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
+          approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
           created_at?: string | null
+          early_access?: boolean
+          early_access_paid_at?: string | null
           email: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
@@ -711,6 +1415,7 @@ export type Database = {
           hidden_by?: string | null
           id: string
           is_featured?: boolean | null
+          is_flagged?: boolean
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
@@ -718,10 +1423,14 @@ export type Database = {
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
+          linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name: string
+          onboarding_dismissed_at?: string | null
+          profile_grace_until?: string | null
           referral_code: string
           referred_by?: string | null
+          rejection_reason?: string | null
           spotlight_active_until?: string | null
           spotlight_credits?: number
           stripe_account_id?: string | null
@@ -741,9 +1450,12 @@ export type Database = {
         Update: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
+          approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
           created_at?: string | null
+          early_access?: boolean
+          early_access_paid_at?: string | null
           email?: string
           filter_industries?: string[] | null
           filter_locations?: string[] | null
@@ -754,6 +1466,7 @@ export type Database = {
           hidden_by?: string | null
           id?: string
           is_featured?: boolean | null
+          is_flagged?: boolean
           is_hidden?: boolean
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
@@ -761,10 +1474,14 @@ export type Database = {
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
+          linkedin_url?: string | null
           match_banner_dismissed?: boolean | null
           name?: string
+          onboarding_dismissed_at?: string | null
+          profile_grace_until?: string | null
           referral_code?: string
           referred_by?: string | null
+          rejection_reason?: string | null
           spotlight_active_until?: string | null
           spotlight_credits?: number
           stripe_account_id?: string | null
@@ -1013,64 +1730,57 @@ export type Database = {
         }
         Relationships: []
       }
-    }
-    Views: {
-      public_founder_profiles: {
+      waitlist_signups: {
         Row: {
-          banner_url: string | null
-          company_name: string | null
-          created_at: string | null
-          id: string | null
-          industry: string[] | null
-          one_liner: string | null
-          pitch_deck_url: string | null
-          pitch_deck_visibility: string | null
-          preferred_city: string | null
-          profile_id: string | null
-          stage: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name: string | null
-          traction: string | null
+          created_at: string
+          email: string
+          id: string
+          linkedin_url: string | null
+          name: string
+          user_type: string
         }
         Insert: {
-          banner_url?: string | null
-          company_name?: string | null
-          created_at?: string | null
-          id?: string | null
-          industry?: string[] | null
-          one_liner?: string | null
-          pitch_deck_url?: string | null
-          pitch_deck_visibility?: string | null
-          preferred_city?: string | null
-          profile_id?: string | null
-          stage?: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name?: string | null
-          traction?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          linkedin_url?: string | null
+          name: string
+          user_type: string
         }
         Update: {
-          banner_url?: string | null
-          company_name?: string | null
-          created_at?: string | null
-          id?: string | null
-          industry?: string[] | null
-          one_liner?: string | null
-          pitch_deck_url?: string | null
-          pitch_deck_visibility?: string | null
-          preferred_city?: string | null
-          profile_id?: string | null
-          stage?: Database["public"]["Enums"]["funding_stage"] | null
-          startup_name?: string | null
-          traction?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          linkedin_url?: string | null
+          name?: string
+          user_type?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "founder_profiles_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
+      watchlist: {
+        Row: {
+          created_at: string
+          id: string
+          target_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          target_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          target_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
@@ -1162,12 +1872,33 @@ export type Database = {
         Returns: boolean
       }
       is_approved: { Args: { _user_id: string }; Returns: boolean }
+      match_is_co_attendee: {
+        Args: { _event_id: string; _user: string }
+        Returns: boolean
+      }
+      match_is_thread_participant: {
+        Args: { _thread: string; _user: string }
+        Returns: boolean
+      }
+      match_share_active_event: {
+        Args: { _a: string; _b: string }
+        Returns: boolean
+      }
     }
     Enums: {
       ad_profile_type: "startup" | "investment_fund" | "external"
       app_role: "admin" | "user"
       funding_stage: "pre-seed" | "seed" | "series-a" | "series-b"
       manual_match_status: "pending" | "paid" | "fulfilled" | "cancelled"
+      match_accreditation: "accredited" | "institutional" | "none"
+      match_doc_status: "pending" | "fulfilled" | "declined"
+      match_doc_type:
+        | "pitch_deck"
+        | "cap_table"
+        | "incorporation"
+        | "financials"
+        | "other"
+      match_role: "founder" | "investor"
       match_status: "active" | "unmatched" | "successful_collaboration"
       payment_status: "pending" | "processing" | "completed"
       referral_status: "pending" | "approved" | "rejected"
@@ -1305,6 +2036,16 @@ export const Constants = {
       app_role: ["admin", "user"],
       funding_stage: ["pre-seed", "seed", "series-a", "series-b"],
       manual_match_status: ["pending", "paid", "fulfilled", "cancelled"],
+      match_accreditation: ["accredited", "institutional", "none"],
+      match_doc_status: ["pending", "fulfilled", "declined"],
+      match_doc_type: [
+        "pitch_deck",
+        "cap_table",
+        "incorporation",
+        "financials",
+        "other",
+      ],
+      match_role: ["founder", "investor"],
       match_status: ["active", "unmatched", "successful_collaboration"],
       payment_status: ["pending", "processing", "completed"],
       referral_status: ["pending", "approved", "rejected"],

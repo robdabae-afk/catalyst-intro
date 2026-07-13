@@ -93,18 +93,20 @@ const FOUNDER_REQUEST_TYPES = [
   { value: 'other', label: 'Other Request', icon: MoreHorizontal },
 ];
 
-// Helper to get signed URL from storage path
+// Helper to get signed URL from a stored bucket path (or legacy public URL)
 const getSignedUrl = async (fileUrl: string): Promise<string | null> => {
   try {
-    // Extract the path from the full URL
-    const url = new URL(fileUrl);
-    const pathMatch = url.pathname.match(/\/storage\/v1\/object\/public\/documents\/(.+)/);
-    if (!pathMatch) return fileUrl; // Return original if not a storage URL
+    let filePath = fileUrl;
+    if (/^https?:\/\//i.test(fileUrl)) {
+      const url = new URL(fileUrl);
+      const pathMatch = url.pathname.match(/\/storage\/v1\/object\/(?:public|sign)\/documents\/(.+)/);
+      if (pathMatch) filePath = decodeURIComponent(pathMatch[1]);
+      else return null;
+    }
 
-    const filePath = decodeURIComponent(pathMatch[1]);
     const { data, error } = await supabase.storage
       .from('documents')
-      .createSignedUrl(filePath, 3600); // 1 hour expiry
+      .createSignedUrl(filePath, 3600);
 
     if (error) {
       console.error('Error creating signed URL:', error);
@@ -112,7 +114,7 @@ const getSignedUrl = async (fileUrl: string): Promise<string | null> => {
     }
     return data.signedUrl;
   } catch {
-    return fileUrl; // Return original URL if parsing fails
+    return null;
   }
 };
 
@@ -319,13 +321,11 @@ export default function Requests() {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('documents')
-        .getPublicUrl(filePath);
-
+      // Store the bucket path (NOT a public URL) so the storage RLS policy
+      // matches it exactly when signed URLs are generated.
       await supabase
         .from('document_requests')
-        .update({ file_url: publicUrl, status: 'approved' })
+        .update({ file_url: filePath, status: 'approved' })
         .eq('id', requestId);
 
       toast({ title: 'File uploaded and request approved' });

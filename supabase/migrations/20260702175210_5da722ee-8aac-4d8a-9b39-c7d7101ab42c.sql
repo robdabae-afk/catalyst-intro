@@ -1,0 +1,1 @@
+UPDATE public.investor_profiles SET typical_check_size = '$50k' WHERE typical_check_size = 'k$50';

@@ -1,0 +1,1 @@
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_flagged BOOLEAN DEFAULT false; ALTER TABLE profiles ADD COLUMN IF NOT EXISTS rejection_reason TEXT;
