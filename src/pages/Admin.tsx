@@ -18,7 +18,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
-import { AdminProfilePreview } from "@/components/AdminProfilePreview";
 import { AdminReviewMode } from "@/components/AdminReviewMode";
 import { AdminProfileReviewsPanel } from "@/components/AdminProfileReviewsPanel";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
