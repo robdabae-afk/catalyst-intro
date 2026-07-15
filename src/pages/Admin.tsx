@@ -823,227 +823,225 @@ const Admin = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-card rounded-lg border border-border shadow-sm overflow-x-auto max-w-full">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Visibility</TableHead>
-                      <TableHead>Pro</TableHead>
-                      <TableHead>Signed Up</TableHead>
-                      <TableHead>Verification</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredUsers.map(user => {
-                      const status = getStatus(user);
-                      return (
-                        <TableRow key={user.id} className={user.is_flagged ? "bg-red-500/5 hover:bg-red-500/10" : ""}>
-                          <TableCell className="font-medium">
-                            <div className="flex items-center gap-2">
-                              {user.early_access && (
-                                <span title="Paid Early Access" className="inline-flex">
-                                  <Zap className="w-4 h-4 text-amber-500" />
-                                </span>
-                              )}
-                              {user.has_pending_update && (
-                                <span
-                                  className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse cursor-pointer"
-                                  title="User made updates - click to clear"
-                                  onClick={() => clearUpdateFlag(user.id)}
-                                />
-                              )}
-                              <span className={user.is_flagged ? "text-red-500" : ""}>{user.name}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="capitalize text-black bg-white hover:bg-gray-100">
+              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+                <div className="divide-y divide-border">
+                  {filteredUsers.map(user => {
+                    const status = getStatus(user);
+                    return (
+                      <div
+                        key={user.id}
+                        className={`grid grid-cols-1 gap-4 p-4 lg:grid-cols-[minmax(220px,1.2fr)_minmax(210px,0.85fr)_minmax(220px,0.9fr)_minmax(280px,1.15fr)] ${user.is_flagged ? "bg-destructive/5" : ""}`}
+                      >
+                        <div className="min-w-0 space-y-2">
+                          <div className="flex min-w-0 items-center gap-2 font-medium">
+                            {user.early_access && (
+                              <span title="Paid Early Access" className="inline-flex shrink-0">
+                                <Zap className="w-4 h-4 text-amber-500" />
+                              </span>
+                            )}
+                            {user.has_pending_update && (
+                              <button
+                                type="button"
+                                className="h-3 w-3 shrink-0 rounded-full bg-destructive animate-pulse"
+                                title="User made updates - click to clear"
+                                onClick={() => clearUpdateFlag(user.id)}
+                              />
+                            )}
+                            <span className={`truncate ${user.is_flagged ? "text-destructive" : ""}`}>{user.name}</span>
+                          </div>
+                          <div className="break-words text-sm text-muted-foreground">{user.email}</div>
+                          <div className="flex flex-wrap gap-2">
+                            <Badge variant="secondary" className="capitalize">
                               {user.user_type}
                             </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : status === 'rejected' ? 'destructive' : 'outline'}
-                              className="capitalize"
-                            >
-                              {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
-                              {status}
+                            <Badge variant="outline">
+                              {new Date(user.created_at).toLocaleDateString()}
                             </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {user.is_hidden ? (
-                              <Badge variant="destructive" className="cursor-pointer" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
-                                <EyeOff className="w-3 h-3 mr-1" />
-                                Hidden
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline" className="cursor-pointer" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
-                                <Eye className="w-3 h-3 mr-1" />
-                                Visible
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {user.subscription_status === 'active' ? (
-                              <Badge className="bg-amber-500 hover:bg-amber-500">
-                                <Crown className="w-3 h-3 mr-1" />
-                                Pro
-                              </Badge>
-                            ) : (
-                              <Badge variant="outline">Free</Badge>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {new Date(user.created_at).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-col gap-2">
-                              {user.is_verified ? (
-                                <Badge
-                                  variant="default"
-                                  className="cursor-pointer bg-green-600 hover:bg-green-700 w-fit"
-                                  onClick={() => handleToggleVerification(user.id, user.is_verified)}
-                                >
-                                  <CheckCircle2 className="w-3 h-3 mr-1" />
-                                  Verified
-                                </Badge>
-                              ) : (
-                                <Badge
-                                  variant="outline"
-                                  className="cursor-pointer w-fit"
-                                  onClick={() => handleToggleVerification(user.id, user.is_verified)}
-                                >
-                                  <Circle className="w-3 h-3 mr-1" />
-                                  Unverified
-                                </Badge>
-                              )}
+                          </div>
+                        </div>
 
-                              {/* Featured Toggle */}
-                              {user.user_type === 'founder' && (
-                                user.is_featured ? (
-                                  <Badge
-                                    variant="default"
-                                    className="cursor-pointer bg-[#C5A059] hover:bg-[#b08d4d] text-black w-fit"
-                                    onClick={() => handleToggleFeatured(user.id, user.is_featured)}
-                                  >
-                                    <Star className="w-3 h-3 mr-1 fill-black" />
-                                    Featured
-                                  </Badge>
-                                ) : (
-                                  <Badge
-                                    variant="outline"
-                                    className="cursor-pointer w-fit opacity-50 hover:opacity-100"
-                                    onClick={() => handleToggleFeatured(user.id, user.is_featured)}
-                                  >
-                                    <Star className="w-3 h-3 mr-1" />
-                                    Feature
-                                  </Badge>
-                                )
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-1 flex-nowrap">
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              title="Preview"
-                              onClick={() => setPreviewUser(user)}
+                        <div className="grid grid-cols-2 gap-2 self-start sm:max-w-sm lg:max-w-none">
+                          <Badge
+                            variant={status === 'admin' ? 'default' : status === 'approved' ? 'secondary' : status === 'rejected' ? 'destructive' : 'outline'}
+                            className="h-10 justify-center capitalize"
+                          >
+                            {status === 'admin' && <Crown className="w-3 h-3 mr-1" />}
+                            {status}
+                          </Badge>
+                          {user.subscription_status === 'active' ? (
+                            <Badge className="h-10 justify-center bg-primary hover:bg-primary">
+                              <Crown className="w-3 h-3 mr-1" />
+                              Pro
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="h-10 justify-center">Free</Badge>
+                          )}
+                          {user.is_hidden ? (
+                            <Badge variant="destructive" className="h-10 cursor-pointer justify-center" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
+                              <EyeOff className="w-3 h-3 mr-1" />
+                              Hidden
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="h-10 cursor-pointer justify-center" onClick={() => toggleHideProfile(user.id, user.is_hidden)}>
+                              <Eye className="w-3 h-3 mr-1" />
+                              Visible
+                            </Badge>
+                          )}
+                          {user.is_verified ? (
+                            <Badge
+                              variant="default"
+                              className="h-10 cursor-pointer justify-center"
+                              onClick={() => handleToggleVerification(user.id, user.is_verified)}
                             >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="icon"
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Verified
+                            </Badge>
+                          ) : (
+                            <Badge
                               variant="outline"
-                              title="Edit profile"
-                              onClick={() => setEditProfileUser(user)}
+                              className="h-10 cursor-pointer justify-center"
+                              onClick={() => handleToggleVerification(user.id, user.is_verified)}
                             >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              title={user.is_flagged ? "Unflag" : "Flag"}
-                              onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
-                              className={user.is_flagged ? "text-red-500 border-red-500/50 hover:bg-red-500/10" : ""}
-                            >
-                              <Flag className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              title="Manage subscription"
-                              onClick={() => setSubscriptionDialogUser(user)}
-                            >
-                              <Sparkles className="w-4 h-4" />
-                            </Button>
-                            {status === 'pending' && (
-                              <>
-                                <Button
-                                  size="icon"
-                                  title="Approve"
-                                  onClick={() => approveUser(user.id)}
-                                  disabled={actionLoading === user.id}
-                                >
-                                  <UserCheck className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="destructive"
-                                  title="Deny"
-                                  onClick={() => setDenyDialogUser(user)}
-                                  disabled={actionLoading === user.id}
-                                >
-                                  <XCircle className="w-4 h-4" />
-                                </Button>
-                              </>
-                            )}
-                            {status === 'approved' && (
-                              <>
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  title="Make admin"
-                                  onClick={() => makeAdmin(user.id)}
-                                  disabled={actionLoading === user.id}
-                                >
-                                  <Crown className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="destructive"
-                                  title="Revoke access"
-                                  onClick={() => revokeAccess(user.id)}
-                                  disabled={actionLoading === user.id}
-                                >
-                                  <UserX className="w-4 h-4" />
-                                </Button>
-                              </>
-                            )}
-                            {status === 'admin' && (
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                title="Revoke admin"
-                                onClick={() => revokeAdmin(user.id)}
-                                disabled={actionLoading === user.id}
-                                className="text-red-500 border-red-500/50 hover:bg-red-500/10"
+                              <Circle className="w-3 h-3 mr-1" />
+                              Unverified
+                            </Badge>
+                          )}
+                          {user.user_type === 'founder' && (
+                            user.is_featured ? (
+                              <Badge
+                                variant="default"
+                                className="h-10 cursor-pointer justify-center"
+                                onClick={() => handleToggleFeatured(user.id, user.is_featured)}
                               >
-                                <Crown className="w-4 h-4" />
+                                <Star className="w-3 h-3 mr-1" />
+                                Featured
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                className="h-10 cursor-pointer justify-center"
+                                onClick={() => handleToggleFeatured(user.id, user.is_featured)}
+                              >
+                                <Star className="w-3 h-3 mr-1" />
+                                Feature
+                              </Badge>
+                            )
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 self-start sm:max-w-sm lg:max-w-none">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            title="Preview"
+                            onClick={() => setPreviewUser(user)}
+                            className="h-10 justify-start"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Preview
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            title="Edit profile"
+                            onClick={() => setEditProfileUser(user)}
+                            className="h-10 justify-start"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            title={user.is_flagged ? "Unflag" : "Flag"}
+                            onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
+                            className={`h-10 justify-start ${user.is_flagged ? "text-destructive border-destructive/50 hover:bg-destructive/10" : ""}`}
+                          >
+                            <Flag className="w-4 h-4 mr-2" />
+                            {user.is_flagged ? "Unflag" : "Flag"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            title="Manage subscription"
+                            onClick={() => setSubscriptionDialogUser(user)}
+                            className="h-10 justify-start"
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Pro
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 self-start sm:max-w-sm lg:max-w-none">
+                          {status === 'pending' && (
+                            <>
+                              <Button
+                                size="sm"
+                                title="Approve"
+                                onClick={() => approveUser(user.id)}
+                                disabled={actionLoading === user.id}
+                                className="h-10 justify-start"
+                              >
+                                <UserCheck className="w-4 h-4 mr-2" />
+                                Approve
                               </Button>
-                            )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                title="Deny"
+                                onClick={() => setDenyDialogUser(user)}
+                                disabled={actionLoading === user.id}
+                                className="h-10 justify-start"
+                              >
+                                <XCircle className="w-4 h-4 mr-2" />
+                                Deny
+                              </Button>
+                            </>
+                          )}
+                          {status === 'approved' && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                title="Make admin"
+                                onClick={() => makeAdmin(user.id)}
+                                disabled={actionLoading === user.id}
+                                className="h-10 justify-start"
+                              >
+                                <Crown className="w-4 h-4 mr-2" />
+                                Admin
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                title="Revoke access"
+                                onClick={() => revokeAccess(user.id)}
+                                disabled={actionLoading === user.id}
+                                className="h-10 justify-start"
+                              >
+                                <UserX className="w-4 h-4 mr-2" />
+                                Revoke
+                              </Button>
+                            </>
+                          )}
+                          {status === 'admin' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              title="Revoke admin"
+                              onClick={() => revokeAdmin(user.id)}
+                              disabled={actionLoading === user.id}
+                              className="h-10 justify-start text-destructive border-destructive/50 hover:bg-destructive/10"
+                            >
+                              <Crown className="w-4 h-4 mr-2" />
+                              Revoke admin
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </TabsContent>
