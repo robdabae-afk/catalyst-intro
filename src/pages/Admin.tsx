@@ -208,11 +208,26 @@ const Admin = () => {
   const approveUser = async (userId: string) => {
     setActionLoading(userId);
     try {
-      const { error } = await supabase
+      // Idempotent role grant — ignore duplicates when the user already has the role
+      const { error: roleErr } = await supabase
         .from('user_roles')
-        .insert({ user_id: userId, role: 'user' });
+        .upsert(
+          { user_id: userId, role: 'user' },
+          { onConflict: 'user_id,role', ignoreDuplicates: true }
+        );
 
-      if (error) throw error;
+      if (roleErr) throw roleErr;
+
+      // Clear stale review flags so the row leaves Pending / Needs Re-Review cleanly
+      await supabase
+        .from('profiles')
+        .update({
+          has_pending_update: false,
+          admin_edit_suggestion: null,
+          admin_edit_message: null,
+          rejection_reason: null,
+        } as any)
+        .eq('id', userId);
 
       // Send approval email
       await sendNotification(userId, 'approved');
@@ -541,7 +556,7 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
+          <TabsList className="flex flex-wrap gap-1 h-auto justify-start w-full bg-muted p-1">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
