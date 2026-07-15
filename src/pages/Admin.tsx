@@ -385,6 +385,14 @@ const Admin = () => {
 
       if (updateError) throw updateError;
 
+      // Revoke any previously granted 'user' role so denial actually takes effect
+      // even for users who were previously approved.
+      await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', 'user');
+
       // Send denial email (will need backend function update to include reason)
       await sendNotification(userId, 'denied', undefined, rejectionReason);
 
