@@ -823,7 +823,7 @@ const Admin = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+              <div className="bg-card rounded-lg border border-border shadow-sm overflow-x-auto max-w-full">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -947,94 +947,97 @@ const Admin = () => {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right space-x-2">
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1 flex-nowrap">
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="ghost"
+                              title="Preview"
                               onClick={() => setPreviewUser(user)}
                             >
                               <Eye className="w-4 h-4" />
                             </Button>
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="outline"
+                              title="Edit profile"
                               onClick={() => setEditProfileUser(user)}
                             >
-                              <Edit className="w-4 h-4 mr-1" />
-                              Edit
+                              <Edit className="w-4 h-4" />
                             </Button>
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="outline"
+                              title={user.is_flagged ? "Unflag" : "Flag"}
                               onClick={() => toggleFlagProfile(user.id, user.is_flagged)}
                               className={user.is_flagged ? "text-red-500 border-red-500/50 hover:bg-red-500/10" : ""}
                             >
-                              <Flag className="w-4 h-4 mr-1" />
-                              {user.is_flagged ? "Unflag" : "Flag"}
+                              <Flag className="w-4 h-4" />
                             </Button>
                             <Button
-                              size="sm"
+                              size="icon"
                               variant="outline"
+                              title="Manage subscription"
                               onClick={() => setSubscriptionDialogUser(user)}
                             >
-                              <Sparkles className="w-4 h-4 mr-1" />
-                              Manage
+                              <Sparkles className="w-4 h-4" />
                             </Button>
                             {status === 'pending' && (
                               <>
                                 <Button
-                                  size="sm"
+                                  size="icon"
+                                  title="Approve"
                                   onClick={() => approveUser(user.id)}
                                   disabled={actionLoading === user.id}
                                 >
-                                  <UserCheck className="w-4 h-4 mr-1" />
-                                  Approve
+                                  <UserCheck className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                  size="sm"
+                                  size="icon"
                                   variant="destructive"
+                                  title="Deny"
                                   onClick={() => setDenyDialogUser(user)}
                                   disabled={actionLoading === user.id}
                                 >
-                                  <XCircle className="w-4 h-4 mr-1" />
-                                  Deny
+                                  <XCircle className="w-4 h-4" />
                                 </Button>
                               </>
                             )}
                             {status === 'approved' && (
                               <>
                                 <Button
-                                  size="sm"
+                                  size="icon"
                                   variant="outline"
+                                  title="Make admin"
                                   onClick={() => makeAdmin(user.id)}
                                   disabled={actionLoading === user.id}
                                 >
-                                  <Crown className="w-4 h-4 mr-1" />
-                                  Admin
+                                  <Crown className="w-4 h-4" />
                                 </Button>
                                 <Button
-                                  size="sm"
+                                  size="icon"
                                   variant="destructive"
+                                  title="Revoke access"
                                   onClick={() => revokeAccess(user.id)}
                                   disabled={actionLoading === user.id}
                                 >
-                                  <UserX className="w-4 h-4 mr-1" />
-                                  Revoke
+                                  <UserX className="w-4 h-4" />
                                 </Button>
                               </>
                             )}
                             {status === 'admin' && (
                               <Button
-                                size="sm"
+                                size="icon"
                                 variant="outline"
+                                title="Revoke admin"
                                 onClick={() => revokeAdmin(user.id)}
                                 disabled={actionLoading === user.id}
                                 className="text-red-500 border-red-500/50 hover:bg-red-500/10"
                               >
-                                <Crown className="w-4 h-4 mr-1" />
-                                Revoke Admin
+                                <Crown className="w-4 h-4" />
                               </Button>
                             )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       );
