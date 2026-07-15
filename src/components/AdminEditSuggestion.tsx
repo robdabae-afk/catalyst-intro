@@ -52,7 +52,8 @@ export function AdminEditSuggestion({
           admin_edit_suggestion: suggestion,
           admin_edit_message: message || null,
           has_pending_update: true,
-        })
+          rejection_reason: null,
+        } as any)
         .eq("id", userId);
 
       if (error) throw error;
