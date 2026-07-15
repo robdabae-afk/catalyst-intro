@@ -823,7 +823,7 @@ const Admin = () => {
                   ))}
                 </div>
               </div>
-              <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+              <div className="bg-card rounded-lg border border-border shadow-sm overflow-x-auto max-w-full">
                 <Table>
                   <TableHeader>
                     <TableRow>
