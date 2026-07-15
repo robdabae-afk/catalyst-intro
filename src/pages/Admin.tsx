@@ -542,10 +542,14 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(14, minmax(0, 1fr))" }}>
+          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4" />
+              Reviews
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
