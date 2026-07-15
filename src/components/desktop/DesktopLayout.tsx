@@ -132,7 +132,10 @@ export const DesktopLayout: React.FC<DesktopLayoutProps> = ({ currentUser, isPro
           query = query.eq('is_test_account', true);
         } else {
           const targetType = currentUser.user_type === 'founder' ? 'investor' : 'founder';
-          query = query.eq('is_test_account', false).eq('user_type', targetType);
+          query = query
+            .eq('is_test_account', false)
+            .eq('is_hidden', false)
+            .eq('user_type', targetType);
         }
 
         const { data, error } = await query.limit(50); // Fetch more to account for filtering
