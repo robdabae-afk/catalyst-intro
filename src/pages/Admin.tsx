@@ -627,6 +627,15 @@ const Admin = () => {
             <AdminAnalyticsPanel />
           </TabsContent>
 
+          <TabsContent value="reviews">
+            <AdminProfileReviewsPanel
+              actionLoadingId={actionLoading}
+              onApprove={approveUser}
+              onRequestEdits={(u) => setEditSuggestionUser(u as any)}
+              onReject={(u) => setDenyDialogUser(u as any)}
+            />
+          </TabsContent>
+
           <TabsContent value="revenue">
             <AdminRevenueTracker />
           </TabsContent>
