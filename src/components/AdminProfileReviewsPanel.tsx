@@ -180,13 +180,19 @@ export function AdminProfileReviewsPanel({
           setReviewUser(null);
           load();
         }}
-        onRequestEdits={(u) => {
-          setReviewUser(null);
-          onRequestEdits(u);
+        onRequestEdits={() => {
+          if (reviewUser) {
+            const u = reviewUser;
+            setReviewUser(null);
+            onRequestEdits(u);
+          }
         }}
-        onReject={(u) => {
-          setReviewUser(null);
-          onReject(u);
+        onReject={() => {
+          if (reviewUser) {
+            const u = reviewUser;
+            setReviewUser(null);
+            onReject(u);
+          }
         }}
         actionDisabled={actionLoadingId === reviewUser?.id}
       />
