@@ -18,7 +18,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSupportPanel } from "@/components/AdminSupportPanel";
 import { AdminAdPanel } from "@/components/AdminAdPanel";
 import { AdminUserSubscriptions } from "@/components/AdminUserSubscriptions";
-import { AdminProfilePreview } from "@/components/AdminProfilePreview";
+import { AdminReviewMode } from "@/components/AdminReviewMode";
+import { AdminProfileReviewsPanel } from "@/components/AdminProfileReviewsPanel";
 import { AdminEditSuggestion } from "@/components/AdminEditSuggestion";
 import { AdminProfileEditor } from "@/components/AdminProfileEditor";
 import { AdminEmailComposer } from "@/components/AdminEmailComposer";
@@ -540,10 +541,14 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(14, minmax(0, 1fr))" }}>
+          <TabsList className="grid w-full max-w-7xl" style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}>
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Analytics
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="flex items-center gap-2">
+              <UserCheck className="w-4 h-4" />
+              Reviews
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
@@ -619,6 +624,15 @@ const Admin = () => {
 
           <TabsContent value="analytics">
             <AdminAnalyticsPanel />
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <AdminProfileReviewsPanel
+              actionLoadingId={actionLoading}
+              onApprove={approveUser}
+              onRequestEdits={(u) => setEditSuggestionUser(u as any)}
+              onReject={(u) => setDenyDialogUser(u as any)}
+            />
           </TabsContent>
 
           <TabsContent value="revenue">
@@ -1043,15 +1057,26 @@ const Admin = () => {
         />
       )}
 
-      {/* Profile Preview Dialog */}
-      {previewUser && (
-        <AdminProfilePreview
-          userId={previewUser.id}
-          userType={previewUser.user_type}
-          open={!!previewUser}
-          onOpenChange={(open) => !open && setPreviewUser(null)}
-        />
-      )}
+      {/* Profile Review Mode */}
+      <AdminReviewMode
+        user={previewUser}
+        open={!!previewUser}
+        onOpenChange={(open) => !open && setPreviewUser(null)}
+        actionDisabled={actionLoading === previewUser?.id}
+        onApprove={async (id) => {
+          await approveUser(id);
+          setPreviewUser(null);
+        }}
+        onRequestEdits={(u) => {
+          setPreviewUser(null);
+          setEditSuggestionUser(u as any);
+        }}
+        onReject={(u) => {
+          setPreviewUser(null);
+          setDenyDialogUser(u as any);
+        }}
+      />
+      
 
       {/* Edit Suggestion Dialog */}
       {editSuggestionUser && (
