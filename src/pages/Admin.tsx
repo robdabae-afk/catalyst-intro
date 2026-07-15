@@ -1058,15 +1058,26 @@ const Admin = () => {
         />
       )}
 
-      {/* Profile Preview Dialog */}
-      {previewUser && (
-        <AdminProfilePreview
-          userId={previewUser.id}
-          userType={previewUser.user_type}
-          open={!!previewUser}
-          onOpenChange={(open) => !open && setPreviewUser(null)}
-        />
-      )}
+      {/* Profile Review Mode */}
+      <AdminReviewMode
+        user={previewUser}
+        open={!!previewUser}
+        onOpenChange={(open) => !open && setPreviewUser(null)}
+        actionDisabled={actionLoading === previewUser?.id}
+        onApprove={async (id) => {
+          await approveUser(id);
+          setPreviewUser(null);
+        }}
+        onRequestEdits={(u) => {
+          setPreviewUser(null);
+          setEditSuggestionUser(u as any);
+        }}
+        onReject={(u) => {
+          setPreviewUser(null);
+          setDenyDialogUser(u as any);
+        }}
+      />
+      {false && <AdminProfilePreview userId="" userType="founder" open={false} onOpenChange={() => {}} />}
 
       {/* Edit Suggestion Dialog */}
       {editSuggestionUser && (
