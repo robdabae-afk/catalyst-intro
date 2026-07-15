@@ -1,45 +1,28 @@
+## Plan: Make hidden profiles disappear from discovery reliably
 
-## Two issues to fix
+### What I found
+- The admin Visible/Hidden button does update `profiles.is_hidden`.
+- The current `/dashboard` discovery grid already asks for the opposite user type and excludes test accounts.
+- The likely mismatch is backend visibility logic: admins have a separate “view all profiles” rule, so if the signed-in account is also an admin, hidden profiles can still be returned by discovery queries.
+- There are also older desktop swipe/feed paths that query `profiles` directly and may rely on backend filtering rather than explicitly filtering `is_hidden`.
 
-### 1. Admin tabs overflow horizontally
-`src/pages/Admin.tsx` renders the top `TabsList` as a fixed 15-column CSS grid (`gridTemplateColumns: repeat(15, minmax(0,1fr))`). On any viewport narrower than ~1400px the individual triggers get squeezed unreadable or force horizontal scrolling to reach the Users tab (where already-approved members live).
+### Fix
+1. **Add explicit client-side discovery filters**
+   - In `/dashboard` discovery feed queries, add `.eq("is_hidden", false)` so the feed never intentionally asks for hidden users.
+   - In the older desktop swipe query path, add the same `is_hidden = false` filter for live discovery mode.
 
-**Fix**: replace the fixed-grid `TabsList` with a wrap-friendly flex layout so triggers wrap onto multiple rows and remain fully clickable at any width.
+2. **Tighten backend discovery visibility**
+   - Update profile SELECT policies so general discovery access requires `is_hidden = false`.
+   - Preserve admin ability to manage/view users in the admin dashboard, but avoid admin “view all” accidentally making hidden users appear in normal discovery contexts if possible.
 
-- Change the wrapper to `flex flex-wrap gap-1 h-auto justify-start` and drop the `gridTemplateColumns` inline style.
-- Keep the existing tab set and icons unchanged; no route or state changes.
+3. **Verify the current data state**
+   - Confirm how many founders/investors are still marked visible.
+   - If old profile cards are from profiles that are still visible, report those remaining visible accounts clearly.
 
-### 2. Approve / Deny / Edit Suggestion actions break in real usage
+4. **Validate**
+   - Re-query as a non-admin discovery user where possible and confirm hidden profiles are not returned.
+   - Check the admin toggle still updates hidden/unhidden status.
 
-Verified in `src/pages/Admin.tsx`:
-
-- `approveUser` does a naked `INSERT` into `user_roles`. `user_roles` has a `UNIQUE (user_id, role)` constraint. When admin re-approves someone who already has the `user` role (typical after a "pending update" resubmission), the insert fails with a duplicate-key error and the user sees "Error approving user". The re-approval path is effectively broken.
-- `approveUser` also never clears `has_pending_update`, `admin_edit_suggestion`, `admin_edit_message`, or `rejection_reason`. After a successful approval the profile still shows stale flags — the row keeps appearing under Pending / Needs Re-Review and the previous rejection reason lingers.
-- `denyUser` updates `profiles` but never removes the existing `user` role from `user_roles`. A previously approved user who is then denied still passes `is_approved()` and keeps platform access. Denial silently doesn't take effect.
-- `AdminEditSuggestion` sets `has_pending_update: true` on the target profile but doesn't clear a prior `rejection_reason`. If admin ever wants to move a rejected profile back into the edit-request flow, the profile still classifies as "rejected".
-
-**Fix (all in existing frontend code, no schema changes):**
-
-- `approveUser`:
-  - Replace `insert` with `upsert({ user_id, role: 'user' }, { onConflict: 'user_id,role', ignoreDuplicates: true })` so re-approval is idempotent.
-  - After the role write succeeds, run one `profiles` update that clears `has_pending_update`, `admin_edit_suggestion`, `admin_edit_message`, and `rejection_reason`.
-- `denyUser`:
-  - After the profiles update, also `DELETE FROM user_roles WHERE user_id = ? AND role = 'user'` so previously approved users actually lose access on denial. Ignore "no rows" errors.
-- `AdminEditSuggestion.handleSendSuggestion`:
-  - Also set `rejection_reason: null` in the update so an in-progress edit request cleanly overrides any prior rejection status.
-
-No RLS or migration changes needed — admin policies already permit these writes (verified against `pg_policies`).
-
-### Verification
-
-After edits:
-1. Approve a user who already has the `user` role (has_pending_update = true) → succeeds, row disappears from Pending / Needs Re-Review, flags cleared.
-2. Approve a previously rejected user → succeeds, `rejection_reason` cleared, they gain access.
-3. Deny a previously approved user → `user` role removed, profile flagged rejected, they lose access.
-4. Send an edit suggestion to a rejected user → `rejection_reason` cleared, `has_pending_update` flips true.
-5. On a 1024px-wide viewport, all admin tabs are visible without horizontal scrolling.
-
-### Files touched
-
-- `src/pages/Admin.tsx` — TabsList layout, `approveUser`, `denyUser`.
-- `src/components/AdminEditSuggestion.tsx` — clear `rejection_reason` in the update.
+### Technical notes
+- Current visible counts show 10 visible founders including one test founder, and 1 visible investor. If you expected almost everyone hidden, some profiles are still intentionally visible in the database.
+- The safest immediate app fix is adding `is_hidden = false` directly to the discovery queries, because it works even when the current user has admin privileges.

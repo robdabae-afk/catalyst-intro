@@ -72,6 +72,7 @@ export function useDiscoverFeed(
         .select(`*, founder_profiles(*), investor_profiles(*)`, { count: "exact" })
         .neq("id", currentUserId)
         .eq("user_type", targetType)
+        .eq("is_hidden", false)
         .eq("is_test_account", false);
 
       if (filters.search && filters.search.trim()) {
