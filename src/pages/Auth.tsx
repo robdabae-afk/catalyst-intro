@@ -1,18 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { lovable } from "@/integrations/lovable/index";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, LogIn, Loader2, KeyRound } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [isLoading, setIsLoading] = useState(false);
   
   // Password reset states
@@ -217,173 +215,650 @@ const Auth = () => {
     }
   };
 
-  // Password Reset Form
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email.trim() || !password.trim() || !name.trim()) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all fields to create an account.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/onboarding`,
+          data: {
+            name: name.trim(),
+            user_type: "founder", // Default to founder, onboarding flow allows changing
+          },
+        },
+      });
+
+      if (error) {
+        toast({
+          title: "Sign up failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Account created!",
+          description: "Please check your email to confirm your account.",
+        });
+        
+        if (data.session) {
+          navigate("/onboarding");
+        } else {
+          // If email confirmation is required, switch to signin mode
+          setMode("signin");
+        }
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/onboarding`,
+      });
+      if (result.error) throw result.error;
+    } catch (error: any) {
+      toast({
+        title: "Google sign-in failed",
+        description: error.message || "An error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAppleLogin = async () => {
+    setIsLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: `${window.location.origin}/onboarding`,
+      });
+      if (result.error) throw result.error;
+    } catch (error: any) {
+      toast({
+        title: "Apple sign-in failed",
+        description: error.message || "An error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Password Reset Form View
   if (isRecoveryMode) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
-        <div className="w-full max-w-md space-y-6">
-          <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-xl">
-            <CardHeader className="space-y-1 text-center">
-              <CardTitle className="text-2xl font-bold tracking-tight">
-                Set New Password
-              </CardTitle>
-              <CardDescription>
-                Enter your new password below
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handlePasswordReset} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input
-                    id="new-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    disabled={isLoading}
-                    className="bg-background/50"
-                    minLength={6}
-                  />
+      <div className="min-h-screen w-full bg-black flex items-center justify-center p-4">
+        {/* Outer wrapper */}
+        <div style={{
+          width: "487px",
+          padding: "24px",
+          background: "linear-gradient(0deg, #111111 0%, #111111 100%)",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          display: "inline-flex",
+          borderRadius: "48px",
+        }}>
+          {/* Phone container */}
+          <div style={{
+            width: "390px",
+            maxWidth: "100%",
+            height: "844px",
+            paddingLeft: "30px",
+            paddingRight: "30px",
+            position: "relative",
+            background: "#0A0A0D",
+            overflow: "hidden",
+            borderRadius: "40px",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            display: "inline-flex"
+          }}>
+            {/* Background blobs */}
+            <div style={{ width: "300px", height: "300px", left: "130px", top: "180px", position: "absolute", opacity: 0.24, background: "#C6A02C", boxShadow: "0px 10px 30px rgba(198, 160, 44, 0.4)", borderRadius: "150px", filter: "blur(60px)" }}></div>
+            <div style={{ width: "300px", height: "300px", left: "-70px", top: "380px", position: "absolute", opacity: 0.34, background: "#C6A02C", boxShadow: "0px 10px 30px rgba(198, 160, 44, 0.4)", borderRadius: "150px", filter: "blur(60px)" }}></div>
+            
+            {/* Logo */}
+            <div style={{ width: "390px", left: 0, top: "60px", position: "absolute", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
+              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+                <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>CAT</span>
+                <span style={{ color: "#C6A02C", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>A</span>
+                <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>LYST</span>
+              </div>
+            </div>
+
+            {/* Header Text */}
+            <div style={{ alignSelf: "stretch", paddingTop: "150px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+              <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "6px", display: "flex" }}>
+                <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                  <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#C6A02C", fontSize: "11.50px", fontFamily: "Inter", fontWeight: 400, textTransform: "uppercase", letterSpacing: "1.84px", wordWrap: "break-word" }}>Security</div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    disabled={isLoading}
-                    className="bg-background/50"
-                    minLength={6}
-                  />
+                <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                  <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "30px", fontFamily: "Fraunces", fontWeight: 600, wordWrap: "break-word" }}>Set New Password</div>
                 </div>
-                <Button
+                <div style={{ alignSelf: "stretch", paddingTop: "2px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                  <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#94908A", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Enter your new password details below.</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Inputs & Form */}
+            <form onSubmit={handlePasswordReset} style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+              <div style={{ alignSelf: "stretch", paddingTop: "26px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "12px", display: "flex" }}>
+                
+                {/* New Password input */}
+                <div style={{
+                  alignSelf: "stretch",
+                  height: "56px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  background: "rgba(255, 255, 255, 0.06)",
+                  boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                  borderRadius: "16px",
+                  outline: "1px rgba(255, 255, 255, 0.14) solid",
+                  outlineOffset: "-1px",
+                  backdropFilter: "blur(9px)",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  gap: "12px",
+                  display: "inline-flex"
+                }}>
+                  <div data-variant="3" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                    <div style={{ width: "10.50px", height: "6.75px", left: "3.75px", top: "8.25px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                    <div style={{ width: "6px", height: "5.25px", left: "6px", top: "3px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                  </div>
+                  <div style={{ flex: "1 1 0", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "inline-flex" }}>
+                    <input
+                      type="password"
+                      placeholder="New password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
+                      minLength={6}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Confirm Password input */}
+                <div style={{
+                  alignSelf: "stretch",
+                  height: "56px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  background: "rgba(255, 255, 255, 0.06)",
+                  boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                  borderRadius: "16px",
+                  outline: "1px rgba(255, 255, 255, 0.14) solid",
+                  outlineOffset: "-1px",
+                  backdropFilter: "blur(9px)",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  gap: "12px",
+                  display: "inline-flex"
+                }}>
+                  <div data-variant="3" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                    <div style={{ width: "10.50px", height: "6.75px", left: "3.75px", top: "8.25px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                    <div style={{ width: "6px", height: "5.25px", left: "6px", top: "3px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                  </div>
+                  <div style={{ flex: "1 1 0", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "inline-flex" }}>
+                    <input
+                      type="password"
+                      placeholder="Confirm password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
+                      minLength={6}
+                      required
+                    />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Submit button */}
+              <div style={{ alignSelf: "stretch", height: "76px", paddingTop: "22px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                <button
                   type="submit"
-                  className="w-full"
                   disabled={isLoading}
+                  style={{
+                    alignSelf: "stretch",
+                    height: "54px",
+                    background: "#F6F5F2",
+                    borderRadius: "16px",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    display: "inline-flex",
+                    border: "none",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    opacity: isLoading ? 0.7 : 1,
+                    width: "100%"
+                  }}
+                  className="hover:opacity-90 active:opacity-85 transition-opacity"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Updating...
-                    </>
-                  ) : (
-                    <>
-                      <KeyRound className="mr-2 h-4 w-4" />
-                      Update Password
-                    </>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#0A0A0C", fontSize: "15px", fontFamily: "Inter", fontWeight: 500, wordWrap: "break-word" }}>
+                    {isLoading ? "Updating..." : "Update Password"}
+                  </div>
+                </button>
+              </div>
+            </form>
+
+            {/* Back to sign in link */}
+            <div style={{ alignSelf: "stretch", paddingTop: "26px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
+              <button
+                type="button"
+                onClick={() => setIsRecoveryMode(false)}
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                className="hover:opacity-90 transition-opacity"
+              >
+                <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+                  <span>
+                    <span style={{ color: "#94908A", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 400 }}>Remember password? </span>
+                    <span style={{ color: "#F6F5F2", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 500 }}>Sign in</span>
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            {/* Top-left back button */}
+            <button
+              type="button"
+              onClick={() => navigate("/app")}
+              style={{
+                width: "40px",
+                height: "40px",
+                left: "30px",
+                top: "56px",
+                position: "absolute",
+                background: "rgba(255, 255, 255, 0.06)",
+                boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                borderRadius: "20px",
+                outline: "1px rgba(255, 255, 255, 0.14) solid",
+                outlineOffset: "-1px",
+                backdropFilter: "blur(9px)",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "inline-flex",
+                border: "none",
+                cursor: "pointer",
+              }}
+              className="hover:bg-white/10 active:bg-white/5 transition-colors"
+              aria-label="Back"
+            >
+              <div data-variant="6" style={{ width: "19px", height: "19px", position: "relative", overflow: "hidden" }}>
+                <div style={{ width: "4.75px", height: "9.50px", left: "7.13px", top: "4.75px", position: "absolute", outline: "1.50px #F6F5F2 solid", outlineOffset: "-0.75px" }}></div>
+              </div>
+            </button>
+
+          </div>
         </div>
       </div>
     );
   }
 
+  // Normal Sign In / Sign Up Form View
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/app")}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
-        </Button>
+    <div className="min-h-screen w-full bg-black flex items-center justify-center p-4">
+      {/* Outer wrapper */}
+      <div style={{
+        width: "487px",
+        padding: "24px",
+        background: "linear-gradient(0deg, #111111 0%, #111111 100%)",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        display: "inline-flex",
+        borderRadius: "48px",
+      }}>
+        {/* Phone container */}
+        <div style={{
+          width: "390px",
+          maxWidth: "100%",
+          height: "844px",
+          paddingLeft: "30px",
+          paddingRight: "30px",
+          position: "relative",
+          background: "#0A0A0D",
+          overflow: "hidden",
+          borderRadius: "40px",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+          display: "inline-flex"
+        }}>
+          {/* Background blobs */}
+          <div style={{ width: "300px", height: "300px", left: "130px", top: "180px", position: "absolute", opacity: 0.24, background: "#C6A02C", boxShadow: "0px 10px 30px rgba(198, 160, 44, 0.4)", borderRadius: "150px", filter: "blur(60px)" }}></div>
+          <div style={{ width: "300px", height: "300px", left: "-70px", top: "380px", position: "absolute", opacity: 0.34, background: "#C6A02C", boxShadow: "0px 10px 30px rgba(198, 160, 44, 0.4)", borderRadius: "150px", filter: "blur(60px)" }}></div>
+          
+          {/* Logo */}
+          <div style={{ width: "390px", left: 0, top: "60px", position: "absolute", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
+            <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+              <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>CAT</span>
+              <span style={{ color: "#C6A02C", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>A</span>
+              <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>LYST</span>
+            </div>
+          </div>
 
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-xl">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold tracking-tight">
-              Welcome Back
-            </CardTitle>
-            <CardDescription>
-              Sign in to your account to continue
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  className="bg-background/50"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Button
-                    type="button"
-                    variant="link"
-                    size="sm"
-                    className="px-0 h-auto text-xs text-muted-foreground hover:text-primary"
-                    onClick={() => navigate("/forgot-password")}
-                  >
-                    Forgot password?
-                  </Button>
+          {/* Header Text */}
+          <div style={{ alignSelf: "stretch", paddingTop: "150px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+            <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "6px", display: "flex" }}>
+              <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#C6A02C", fontSize: "11.50px", fontFamily: "Inter", fontWeight: 400, textTransform: "uppercase", letterSpacing: "1.84px", wordWrap: "break-word" }}>
+                  {mode === "signup" ? "Get started" : "Welcome back"}
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                  className="bg-background/50"
-                />
               </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Sign In
-                  </>
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              <p>Don't have an account?</p>
-              <div className="mt-2 flex flex-col gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/app/signup?role=founder")}
-                  className="w-full"
-                >
-                  Sign up as Founder
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/app/signup?role=investor")}
-                  className="w-full"
-                >
-                  Sign up as Investor
-                </Button>
+              <div style={{ alignSelf: "stretch", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "30px", fontFamily: "Fraunces", fontWeight: 600, wordWrap: "break-word" }}>
+                  {mode === "signup" ? "Create your account" : "Sign in to account"}
+                </div>
+              </div>
+              <div style={{ alignSelf: "stretch", paddingTop: "2px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+                <div style={{ alignSelf: "stretch", justifyContent: "center", display: "flex", flexDirection: "column", color: "#94908A", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>
+                  {mode === "signup" ? "Join the network in under a minute." : "Welcome back. Enter your credentials."}
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={mode === "signup" ? handleSignUp : handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column" }}>
+            <div style={{ alignSelf: "stretch", paddingTop: "26px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", gap: "12px", display: "flex" }}>
+              
+              {/* Full name input (only for signup) */}
+              {mode === "signup" && (
+                <div style={{
+                  alignSelf: "stretch",
+                  height: "56px",
+                  paddingLeft: "10px",
+                  paddingRight: "16px",
+                  background: "rgba(255, 255, 255, 0.06)",
+                  boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                  borderRadius: "16px",
+                  outline: "1px rgba(255, 255, 255, 0.14) solid",
+                  outlineOffset: "-1px",
+                  backdropFilter: "blur(9px)",
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  gap: "12px",
+                  display: "inline-flex"
+                }}>
+                  <div data-variant="1" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                    <div style={{ width: "6px", height: "6px", left: "6px", top: "3px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                    <div style={{ width: "12px", height: "4.50px", left: "3px", top: "11.25px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                  </div>
+                  <div style={{ flex: "1 1 0", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "inline-flex" }}>
+                    <input
+                      type="text"
+                      placeholder="Full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      disabled={isLoading}
+                      className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
+                      required={mode === "signup"}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Email input */}
+              <div style={{
+                alignSelf: "stretch",
+                height: "56px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                background: "rgba(255, 255, 255, 0.06)",
+                boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                borderRadius: "16px",
+                outline: "1px rgba(255, 255, 255, 0.14) solid",
+                outlineOffset: "-1px",
+                backdropFilter: "blur(9px)",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                gap: "12px",
+                display: "inline-flex"
+              }}>
+                <div data-variant="2" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                  <div style={{ width: "12px", height: "9px", left: "3px", top: "4.50px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                </div>
+                <div style={{ flex: "1 1 0", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "inline-flex" }}>
+                  <input
+                    type="email"
+                    placeholder="name@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password input */}
+              <div style={{
+                alignSelf: "stretch",
+                height: "56px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                background: "rgba(255, 255, 255, 0.06)",
+                boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                borderRadius: "16px",
+                outline: "1px rgba(255, 255, 255, 0.14) solid",
+                outlineOffset: "-1px",
+                backdropFilter: "blur(9px)",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                gap: "12px",
+                display: "inline-flex"
+              }}>
+                <div data-variant="3" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                  <div style={{ width: "10.50px", height: "6.75px", left: "3.75px", top: "8.25px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                  <div style={{ width: "6px", height: "5.25px", left: "6px", top: "3px", position: "absolute", outline: "1.28px #94908A solid", outlineOffset: "-0.64px" }}></div>
+                </div>
+                <div style={{ flex: "1 1 0", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "inline-flex" }}>
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                    className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Forgot password link (only for signin) */}
+              {mode === "signin" && (
+                <div style={{ alignSelf: "flex-end", marginTop: "-4px" }}>
+                  <button
+                    type="button"
+                    onClick={() => navigate("/forgot-password")}
+                    className="text-xs text-[#94908A] hover:text-[#F6F5F2] transition-colors underline underline-offset-2"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+            </div>
+
+            {/* Submit button */}
+            <div style={{ alignSelf: "stretch", height: "76px", paddingTop: "22px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+              <button
+                type="submit"
+                disabled={isLoading}
+                style={{
+                  alignSelf: "stretch",
+                  height: "54px",
+                  background: "#F6F5F2",
+                  borderRadius: "16px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  display: "inline-flex",
+                  border: "none",
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                  opacity: isLoading ? 0.7 : 1,
+                  width: "100%"
+                }}
+                className="hover:opacity-90 active:opacity-85 transition-opacity"
+              >
+                <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#0A0A0C", fontSize: "15px", fontFamily: "Inter", fontWeight: 500, wordWrap: "break-word" }}>
+                  {isLoading ? "Please wait..." : mode === "signup" ? "Create account" : "Sign in"}
+                </div>
+              </button>
+            </div>
+          </form>
+
+          {/* Social login divider */}
+          <div style={{ alignSelf: "stretch", paddingTop: "22px", paddingBottom: "22px", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", display: "flex" }}>
+            <div style={{ alignSelf: "stretch", justifyContent: "flex-start", alignItems: "center", gap: "12px", display: "inline-flex" }}>
+              <div style={{ flex: "1 1 0", height: "1px", background: "rgba(255, 255, 255, 0.14)" }}></div>
+              <div style={{ justifyContent: "center", display: "flex", flexDirection: "column", color: "#94908A", fontSize: "12px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>or continue with</div>
+              <div style={{ flex: "1 1 0", height: "1px", background: "rgba(255, 255, 255, 0.14)" }}></div>
+            </div>
+          </div>
+
+          {/* Social login buttons */}
+          <div style={{ alignSelf: "stretch", justifyContent: "center", alignItems: "flex-start", gap: "12px", display: "inline-flex" }}>
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              disabled={isLoading}
+              style={{
+                flex: "1 1 0",
+                height: "52px",
+                background: "rgba(255, 255, 255, 0.06)",
+                boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                borderRadius: "14px",
+                outline: "1px rgba(255, 255, 255, 0.14) solid",
+                outlineOffset: "-1px",
+                backdropFilter: "blur(9px)",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+                display: "flex",
+                border: "none",
+                cursor: "pointer",
+              }}
+              className="hover:bg-white/10 active:bg-white/5 transition-colors"
+            >
+              <div data-variant="4" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                <div style={{ width: "6.75px", height: "6.82px", left: "9px", top: "7.65px", position: "absolute", background: "#F6F5F2" }}></div>
+              </div>
+              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Google</div>
+            </button>
+            <button
+              type="button"
+              onClick={handleAppleLogin}
+              disabled={isLoading}
+              style={{
+                flex: "1 1 0",
+                height: "52px",
+                background: "rgba(255, 255, 255, 0.06)",
+                boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+                borderRadius: "14px",
+                outline: "1px rgba(255, 255, 255, 0.14) solid",
+                outlineOffset: "-1px",
+                backdropFilter: "blur(9px)",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "8px",
+                display: "flex",
+                border: "none",
+                cursor: "pointer",
+              }}
+              className="hover:bg-white/10 active:bg-white/5 transition-colors"
+            >
+              <div data-variant="5" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
+                <div style={{ width: "14.74px", height: "16.05px", left: "-0.49px", top: "1.50px", position: "absolute", background: "#F6F5F2" }}></div>
+              </div>
+              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Apple</div>
+            </button>
+          </div>
+
+          {/* Toggle link */}
+          <div style={{ alignSelf: "stretch", paddingTop: "26px", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
+            <button
+              type="button"
+              onClick={() => setMode(mode === "signup" ? "signin" : "signup")}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+              className="hover:opacity-90 transition-opacity"
+            >
+              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+                {mode === "signup" ? (
+                  <span>
+                    <span style={{ color: "#94908A", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Already have an account? </span>
+                    <span style={{ color: "#F6F5F2", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 500, wordWrap: "break-word" }}>Sign in</span>
+                  </span>
+                ) : (
+                  <span>
+                    <span style={{ color: "#94908A", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Don't have an account? </span>
+                    <span style={{ color: "#F6F5F2", fontSize: "13.50px", fontFamily: "Inter", fontWeight: 500, wordWrap: "break-word" }}>Create account</span>
+                  </span>
+                )}
+              </div>
+            </button>
+          </div>
+
+          {/* Top-left back button */}
+          <button
+            type="button"
+            onClick={() => navigate("/app")}
+            style={{
+              width: "40px",
+              height: "40px",
+              left: "30px",
+              top: "56px",
+              position: "absolute",
+              background: "rgba(255, 255, 255, 0.06)",
+              boxShadow: "0px 1px 0px 1px rgba(255, 255, 255, 0.25) inset",
+              borderRadius: "20px",
+              outline: "1px rgba(255, 255, 255, 0.14) solid",
+              outlineOffset: "-1px",
+              backdropFilter: "blur(9px)",
+              justifyContent: "center",
+              alignItems: "center",
+              display: "inline-flex",
+              border: "none",
+              cursor: "pointer",
+            }}
+            className="hover:bg-white/10 active:bg-white/5 transition-colors"
+            aria-label="Back"
+          >
+            <div data-variant="6" style={{ width: "19px", height: "19px", position: "relative", overflow: "hidden" }}>
+              <div style={{ width: "4.75px", height: "9.50px", left: "7.13px", top: "4.75px", position: "absolute", outline: "1.50px #F6F5F2 solid", outlineOffset: "-0.75px" }}></div>
+            </div>
+          </button>
+
+        </div>
       </div>
     </div>
   );
