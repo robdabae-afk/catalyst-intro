@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -347,7 +348,7 @@ const Auth = () => {
             
             {/* Logo */}
             <div style={{ width: "390px", left: 0, top: "60px", position: "absolute", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
-              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+              <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "row", alignItems: "center" }}>
                 <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>CAT</span>
                 <span style={{ color: "#C6A02C", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>A</span>
                 <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>LYST</span>
@@ -514,9 +515,7 @@ const Auth = () => {
               className="hover:bg-white/10 active:bg-white/5 transition-colors"
               aria-label="Back"
             >
-              <div data-variant="6" style={{ width: "19px", height: "19px", position: "relative", overflow: "hidden" }}>
-                <div style={{ width: "4.75px", height: "9.50px", left: "7.13px", top: "4.75px", position: "absolute", outline: "1.50px #F6F5F2 solid", outlineOffset: "-0.75px" }}></div>
-              </div>
+              <ArrowLeft className="w-5 h-5 text-[#F6F5F2]" />
             </button>
 
           </div>
@@ -560,7 +559,7 @@ const Auth = () => {
           
           {/* Logo */}
           <div style={{ width: "390px", left: 0, top: "60px", position: "absolute", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", display: "flex" }}>
-            <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column" }}>
+            <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "row", alignItems: "center" }}>
               <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>CAT</span>
               <span style={{ color: "#C6A02C", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>A</span>
               <span style={{ color: "#F6F5F2", fontSize: "20px", fontFamily: "Inter", fontWeight: 600, letterSpacing: "3.20px", wordWrap: "break-word" }}>LYST</span>
@@ -853,9 +852,7 @@ const Auth = () => {
             className="hover:bg-white/10 active:bg-white/5 transition-colors"
             aria-label="Back"
           >
-            <div data-variant="6" style={{ width: "19px", height: "19px", position: "relative", overflow: "hidden" }}>
-              <div style={{ width: "4.75px", height: "9.50px", left: "7.13px", top: "4.75px", position: "absolute", outline: "1.50px #F6F5F2 solid", outlineOffset: "-0.75px" }}></div>
-            </div>
+            <ArrowLeft className="w-5 h-5 text-[#F6F5F2]" />
           </button>
 
         </div>
