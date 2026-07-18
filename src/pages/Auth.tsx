@@ -315,7 +315,7 @@ const Auth = () => {
   // Password Reset Form View
   if (isRecoveryMode) {
     return (
-      <div className="min-h-screen w-full bg-black flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-[#111111] flex items-center justify-center p-4">
         {/* Outer wrapper */}
         <div style={{
           width: "487px",
