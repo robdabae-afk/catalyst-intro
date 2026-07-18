@@ -769,9 +769,12 @@ const Auth = () => {
               }}
               className="hover:bg-white/10 active:bg-white/5 transition-colors"
             >
-              <div data-variant="4" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
-                <div style={{ width: "6.75px", height: "6.82px", left: "9px", top: "7.65px", position: "absolute", background: "#F6F5F2" }}></div>
-              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M17.64 9.2045c0-.6391-.0573-1.2518-.1645-1.8414H9v3.4814h4.8445c-.2091 1.125-.8373 2.0782-1.7809 2.7182v2.2582h2.8736c1.6864-1.5518 2.6564-3.84 2.6564-6.6164z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.4691-.8064 5.9564-2.1809l-2.8736-2.2582c-.8064.54-1.8373.8591-3.0828.8591-2.3718 0-4.3836-1.6028-5.0986-3.7573H.9564v2.3318C2.4364 15.9832 5.4818 18 9 18z" fill="#34A853"/>
+                <path d="M3.9014 10.6627c-.18-.54-.2836-1.1164-.2836-1.7127s.1036-1.1727.2836-1.7127V5.5055H.9564C.3473 6.72 0 8.0718 0 9.5s.3473 2.78.9564 3.9945l2.945-2.8318z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.3218 0 2.5073.4545 3.44 1.3455l2.5818-2.58C13.4636.8918 11.4255 0 9 0 5.4818 0 2.4364 2.0168.9564 4.5055l2.945 2.8318C4.6164 5.1828 6.6282 3.58 9 3.58z" fill="#EA4335"/>
+              </svg>
               <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Google</div>
             </button>
             <button
@@ -796,9 +799,9 @@ const Auth = () => {
               }}
               className="hover:bg-white/10 active:bg-white/5 transition-colors"
             >
-              <div data-variant="5" style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}>
-                <div style={{ width: "14.74px", height: "16.05px", left: "-0.49px", top: "1.50px", position: "absolute", background: "#F6F5F2" }}></div>
-              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12.755 0c.073 0 .146.003.218.01-.773 1.073-1.37 2.29-1.37 3.63 0 .15.012.3.035.446.055.35.168.69.33 1.002.42.79 1.12 1.41 1.97 1.69-.04.17-.09.34-.15.5-.34.95-.95 1.78-1.74 2.41-.77.62-1.69.99-2.66 1.07-.16.01-.32.02-.48.02-.98 0-1.92-.3-2.72-.86-.53-.36-1.01-.8-1.41-1.31-.4-.51-.72-1.08-.95-1.69-.23-.61-.35-1.26-.35-1.92 0-.84.19-1.66.56-2.41.37-.75.91-1.4 1.57-1.9.66-.5 1.43-.85 2.26-1.02.83-.17 1.69-.14 2.51.09.82.23 1.56.65 2.16 1.22.05-.3.13-.59.24-.87C13.38.86 13.58.4 12.76 0z" fill="#F6F5F2"/>
+              </svg>
               <div style={{ textAlign: "center", justifyContent: "center", display: "flex", flexDirection: "column", color: "#F6F5F2", fontSize: "14px", fontFamily: "Inter", fontWeight: 400, wordWrap: "break-word" }}>Apple</div>
             </button>
           </div>
