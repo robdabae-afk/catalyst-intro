@@ -493,7 +493,7 @@ const Auth = () => {
             {/* Top-left back button */}
             <button
               type="button"
-              onClick={() => navigate("/app")}
+              onClick={() => navigate("/waitlist")}
               style={{
                 width: "40px",
                 height: "40px",
@@ -833,7 +833,7 @@ const Auth = () => {
           {/* Top-left back button */}
           <button
             type="button"
-            onClick={() => navigate("/app")}
+            onClick={() => navigate("/waitlist")}
             style={{
               width: "40px",
               height: "40px",
