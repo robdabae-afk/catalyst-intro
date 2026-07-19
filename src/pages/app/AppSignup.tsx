@@ -152,6 +152,7 @@ export default function AppSignup() {
             fontFamily: "Fraunces, serif",
             fontWeight: 600,
             lineHeight: "41px",
+            textAlign: "center",
           }}
         >
           Where founders
@@ -163,7 +164,7 @@ export default function AppSignup() {
         <div
           style={{
             width: "300px",
-            left: "30px",
+            left: "45px",
             top: "590px",
             position: "absolute",
             color: "#94908A",
@@ -171,13 +172,10 @@ export default function AppSignup() {
             fontFamily: "Inter, sans-serif",
             fontWeight: 400,
             lineHeight: "24px",
+            textAlign: "center",
           }}
         >
-          Curated intros between founders and
-          <br />
-          investors who actually fit. No noise, no
-          <br />
-          cold outreach.
+          Curated intros between founders and investors who actually fit. No noise, no cold outreach.
         </div>
 
         {/* Create account button */}
