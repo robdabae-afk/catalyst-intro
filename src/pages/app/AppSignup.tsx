@@ -175,11 +175,7 @@ export default function AppSignup() {
             textAlign: "center",
           }}
         >
-          Curated intros between founders and
-          <br />
-          investors who actually fit. No noise, no
-          <br />
-          cold outreach.
+          Curated intros between founders and investors who actually fit. No noise, no cold outreach.
         </div>
 
         {/* Create account button */}
