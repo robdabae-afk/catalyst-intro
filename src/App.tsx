@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
+import AppSignupForm from "./pages/app/AppSignupForm";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
@@ -57,6 +58,8 @@ const App = () => (
           <Route path="/app" element={<AppLanding />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
+          <Route path="/app/signup/form" element={<AppSignupForm />} />
+          <Route path="/signup/form" element={<AppSignupForm />} />
 
           {/* Event check-in */}
           <Route path="/events" element={<EventSignIn />} />
