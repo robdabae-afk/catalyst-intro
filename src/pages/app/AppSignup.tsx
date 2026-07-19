@@ -8,14 +8,13 @@ export default function AppSignup() {
     <div
       style={{
         width: "100%",
-        height: "100%",
+        minHeight: "100vh",
         padding: "24px",
-        background:
-          "linear-gradient(0deg, var(--color-grey-7, #111111) 0%, var(--color-grey-7, #111111) 100%), var(--color-white-solid, white)",
+        background: "#111111",
+        display: "flex",
         justifyContent: "center",
         alignItems: "flex-start",
-        display: "inline-flex",
-        minHeight: "100vh",
+        boxSizing: "border-box",
       }}
     >
       <div
@@ -23,55 +22,12 @@ export default function AppSignup() {
           width: "390px",
           height: "844px",
           position: "relative",
-          background: "var(--color-blue-5, #0A0A0D)",
+          background: "#0A0A0D",
           overflow: "hidden",
           borderRadius: "40px",
+          flexShrink: 0,
         }}
       >
-        {/* "I already have an account" */}
-        <div
-          style={{
-            width: "330px",
-            height: "52px",
-            paddingTop: "8px",
-            left: "30px",
-            top: "744px",
-            position: "absolute",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            display: "inline-flex",
-          }}
-        >
-          <div
-            style={{
-              alignSelf: "stretch",
-              height: "44px",
-              justifyContent: "center",
-              alignItems: "center",
-              display: "inline-flex",
-              cursor: "pointer",
-            }}
-            onClick={() => navigate("/auth")}
-          >
-            <div
-              style={{
-                textAlign: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-                color: "var(--color-grey-96, #F6F5F2)",
-                fontSize: "15px",
-                fontFamily: "Inter",
-                fontWeight: 400,
-                wordWrap: "break-word",
-              }}
-            >
-              I already have an account
-            </div>
-          </div>
-        </div>
-
         {/* Decorative blobs */}
         <div
           style={{
@@ -81,10 +37,9 @@ export default function AppSignup() {
             top: "120px",
             position: "absolute",
             opacity: 0.28,
-            background: "var(--color-yellow-47, #C6A02C)",
-            boxShadow: "10px 10px 10px",
+            background: "#C6A02C",
             borderRadius: "160px",
-            filter: "blur(5px)",
+            filter: "blur(60px)",
           }}
         />
         <div
@@ -95,260 +50,200 @@ export default function AppSignup() {
             top: "220px",
             position: "absolute",
             opacity: 0.36,
-            background: "var(--color-yellow-47, #C6A02C)",
-            boxShadow: "10px 10px 10px",
+            background: "#C6A02C",
             borderRadius: "150px",
-            filter: "blur(5px)",
+            filter: "blur(60px)",
           }}
         />
 
-        {/* Logo */}
+        {/* Logo block */}
         <div
           style={{
             width: "390px",
-            left: "0px",
+            left: 0,
             top: "250px",
             position: "absolute",
+            display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-start",
             alignItems: "center",
             gap: "8px",
-            display: "inline-flex",
           }}
         >
+          {/* CATALYST — all on one line */}
           <div
             style={{
-              alignSelf: "stretch",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
+              textAlign: "center",
               display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "baseline",
             }}
           >
-            <div
+            <span
               style={{
-                textAlign: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
+                color: "#F6F5F2",
+                fontSize: "36px",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 600,
+                letterSpacing: "6.48px",
               }}
             >
-              <span
-                style={{
-                  color: "var(--color-grey-96, #F6F5F2)",
-                  fontSize: "36px",
-                  fontFamily: "Inter",
-                  fontWeight: 600,
-                  letterSpacing: "6.48px",
-                  wordWrap: "break-word",
-                }}
-              >
-                CAT
-              </span>
-              <span
-                style={{
-                  color: "var(--color-yellow-47, #C6A02C)",
-                  fontSize: "36px",
-                  fontFamily: "Inter",
-                  fontWeight: 600,
-                  letterSpacing: "6.48px",
-                  wordWrap: "break-word",
-                }}
-              >
-                A
-              </span>
-              <span
-                style={{
-                  color: "var(--color-grey-96, #F6F5F2)",
-                  fontSize: "36px",
-                  fontFamily: "Inter",
-                  fontWeight: 600,
-                  letterSpacing: "6.48px",
-                  wordWrap: "break-word",
-                }}
-              >
-                LYST
-              </span>
-            </div>
+              CAT
+            </span>
+            <span
+              style={{
+                color: "#C6A02C",
+                fontSize: "36px",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 600,
+                letterSpacing: "6.48px",
+              }}
+            >
+              A
+            </span>
+            <span
+              style={{
+                color: "#F6F5F2",
+                fontSize: "36px",
+                fontFamily: "Inter, sans-serif",
+                fontWeight: 600,
+                letterSpacing: "6.48px",
+              }}
+            >
+              LYST
+            </span>
           </div>
+
+          {/* Tagline */}
           <div
             style={{
-              alignSelf: "stretch",
               paddingTop: "4px",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "center",
-              display: "flex",
+              textAlign: "center",
+              color: "#F6F5F2",
+              fontSize: "10px",
+              fontFamily: "Inter, sans-serif",
+              fontWeight: 400,
+              textTransform: "uppercase",
+              letterSpacing: "2.20px",
             }}
           >
-            <div
-              style={{
-                textAlign: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-                color: "var(--color-grey-96, #F6F5F2)",
-                fontSize: "10px",
-                fontFamily: "Inter",
-                fontWeight: 400,
-                textTransform: "uppercase",
-                letterSpacing: "2.20px",
-                wordWrap: "break-word",
-              }}
-            >
-              Shaping the future of retail investing
-            </div>
+            Shaping the future of retail investing
           </div>
+
+          {/* Gold divider */}
           <div
             style={{
               width: "120px",
               height: "2px",
-              background: "var(--color-yellow-47, #C6A02C)",
+              background: "#C6A02C",
             }}
           />
         </div>
 
-        {/* Tagline */}
+        {/* Headline */}
         <div
           style={{
             width: "330px",
-            paddingBottom: "14px",
             left: "30px",
-            top: "491.94px",
+            top: "491px",
             position: "absolute",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            display: "inline-flex",
+            color: "#F6F5F2",
+            fontSize: "38px",
+            fontFamily: "Fraunces, serif",
+            fontWeight: 600,
+            lineHeight: "41px",
           }}
         >
-          <div
-            style={{
-              alignSelf: "stretch",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "stretch",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-                color: "var(--color-grey-96, #F6F5F2)",
-                fontSize: "38px",
-                fontFamily: "Fraunces",
-                fontWeight: 600,
-                lineHeight: "41px",
-                wordWrap: "break-word",
-              }}
-            >
-              Where founders
-              <br />
-              meet capital.
-            </div>
-          </div>
+          Where founders
+          <br />
+          meet capital.
         </div>
 
         {/* Description */}
         <div
           style={{
             width: "300px",
-            maxWidth: "300px",
-            paddingBottom: "30px",
             left: "30px",
-            top: "588px",
+            top: "590px",
             position: "absolute",
-            flexDirection: "column",
-            justifyContent: "flex-start",
-            alignItems: "flex-start",
-            display: "inline-flex",
+            color: "#94908A",
+            fontSize: "15px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 400,
+            lineHeight: "24px",
           }}
         >
-          <div
-            style={{
-              width: "100%",
-              maxWidth: "300px",
-              flexDirection: "column",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
-              display: "flex",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "stretch",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-                color: "var(--color-grey-56, #94908A)",
-                fontSize: "15px",
-                fontFamily: "Inter",
-                fontWeight: 400,
-                lineHeight: "24px",
-                wordWrap: "break-word",
-              }}
-            >
-              Curated intros between founders and
-              <br />
-              investors who actually fit. No noise, no
-              <br />
-              cold outreach.
-            </div>
-          </div>
+          Curated intros between founders and
+          <br />
+          investors who actually fit. No noise, no
+          <br />
+          cold outreach.
         </div>
 
         {/* Create account button */}
         <div
-          onClick={() => navigate("/app/signup/form")}
+          onClick={() => navigate("/signup/form")}
           style={{
             width: "330px",
             height: "54px",
             left: "30px",
             top: "690px",
             position: "absolute",
-            background: "var(--color-grey-96, #F6F5F2)",
+            background: "#F6F5F2",
             borderRadius: "16px",
+            display: "flex",
+            flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
-            gap: "8.01px",
-            display: "inline-flex",
+            gap: "8px",
             cursor: "pointer",
           }}
         >
-          <div
+          <span
             style={{
-              textAlign: "center",
-              justifyContent: "center",
-              display: "flex",
-              flexDirection: "column",
-              color: "var(--color-grey-4, #0A0A0C)",
+              color: "#0A0A0C",
               fontSize: "15px",
-              fontFamily: "Inter",
+              fontFamily: "Inter, sans-serif",
               fontWeight: 500,
-              wordWrap: "break-word",
             }}
           >
             Create account
-          </div>
-          <div
-            data-variant="1"
-            style={{ width: "18px", height: "18px", position: "relative", overflow: "hidden" }}
+          </span>
+          {/* Arrow icon */}
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 18 18"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <div
-              style={{
-                width: "10.50px",
-                height: "9px",
-                left: "3.75px",
-                top: "4.50px",
-                position: "absolute",
-                outline: "1.50px var(--color-grey-4, #0A0A0C) solid",
-                outlineOffset: "-0.75px",
-              }}
+            <path
+              d="M3.75 9H14.25M14.25 9L10.125 4.875M14.25 9L10.125 13.125"
+              stroke="#0A0A0C"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
-          </div>
+          </svg>
+        </div>
+
+        {/* I already have an account */}
+        <div
+          onClick={() => navigate("/auth")}
+          style={{
+            width: "330px",
+            left: "30px",
+            top: "756px",
+            position: "absolute",
+            textAlign: "center",
+            color: "#F6F5F2",
+            fontSize: "15px",
+            fontFamily: "Inter, sans-serif",
+            fontWeight: 400,
+            cursor: "pointer",
+          }}
+        >
+          I already have an account
         </div>
       </div>
     </div>
