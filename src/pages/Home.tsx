@@ -43,7 +43,7 @@ export default function Home() {
         avatarUrl={avatarUrl}
       />
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-        <header>
+        <header className="text-center">
           <h1 className="text-2xl font-bold text-foreground">Home</h1>
           <p className="text-sm text-muted-foreground">What's happening in the community.</p>
         </header>
