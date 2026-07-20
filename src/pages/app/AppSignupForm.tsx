@@ -14,6 +14,7 @@ import {
   MapPin,
   ImagePlus,
   Check,
+  ChevronDown,
   Loader2,
 } from "lucide-react";
 
@@ -151,6 +152,41 @@ function Field({
   );
 }
 
+function Select({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: readonly string[];
+  placeholder: string;
+}) {
+  return (
+    <div className={`h-[58px] px-[18px] rounded-[14px] ${glass} flex items-center justify-between gap-2`}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={[
+          "flex-1 min-w-0 appearance-none bg-transparent outline-none text-[15px]",
+          value ? "text-[#F6F5F2]" : "text-[#CFCCC5]",
+        ].join(" ")}
+      >
+        <option value="" disabled hidden>
+          {placeholder}
+        </option>
+        {options.map((o) => (
+          <option key={o} value={o} className="bg-[#0A0A0D] text-[#F6F5F2]">
+            {o}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="w-[18px] h-[18px] text-[#94908A] shrink-0 pointer-events-none" strokeWidth={1.5} />
+    </div>
+  );
+}
+
 function Chip({
   selected,
   onClick,
@@ -237,7 +273,7 @@ export default function AppSignupForm() {
   const [oneLiner, setOneLiner] = useState("");
   const [stage, setStage] = useState("Pre-seed");
 
-  // Investor fields — placeholder styling; restyle once the investor mockups arrive
+  // Investor fields
   const [firmName, setFirmName] = useState("");
   const [invLocation, setInvLocation] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
@@ -272,7 +308,7 @@ export default function AppSignupForm() {
         return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length > 0;
       case 3:
         if (role === "founder") return startupName.trim() !== "" && hqLocation.trim() !== "" && oneLiner.trim() !== "";
-        return invLocation.trim() !== "";
+        return firmName.trim() !== "" && invLocation.trim() !== "";
       case 4:
         if (role === "founder") return !!stage && industries.length > 0;
         return !!investorType && !!accreditation && industries.length > 0;
@@ -405,7 +441,7 @@ export default function AppSignupForm() {
           <Title>
             {step === 1 && "I am a..."}
             {step === 2 && "Your account"}
-            {step === 3 && (role === "founder" ? "Your Startup" : "Your profile")}
+            {step === 3 && (role === "founder" ? "Your Startup" : "Your Profile")}
             {step === 4 && (role === "founder" ? "Stage & industries" : "Investor type & sectors")}
             {step === 5 && "Almost done"}
           </Title>
@@ -509,20 +545,20 @@ export default function AppSignupForm() {
             <div className="flex flex-col gap-6">
               <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
               <div className="flex flex-col gap-4">
-                <Field label="Firm name">
+                <Field label="Start up name" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="Northwind Ventures" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
+                    <input className={inputCls} placeholder="Aperture AI" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
                   </div>
                 </Field>
-                <Field label="Location" required>
+                <Field label="HQ location" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="New York, NY" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
+                    <input className={inputCls} placeholder="San Francisco, CA" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
                     <MapPin className="w-[18px] h-[18px] text-[#6F6B63] shrink-0" strokeWidth={1.5} />
                   </div>
                 </Field>
                 <Field label="LinkedIn">
                   <div className={inputWrapCls}>
-                    <input type="url" className={inputCls} placeholder="linkedin.com/in/..." value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} />
+                    <input type="url" className={inputCls} placeholder="linkedin.com/in/ ..." value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} />
                   </div>
                 </Field>
               </div>
@@ -555,22 +591,10 @@ export default function AppSignupForm() {
           {step === 4 && role === "investor" && (
             <div className="flex flex-col gap-6">
               <Field label="Investor type" required>
-                <div className="flex flex-wrap gap-2">
-                  {INVESTOR_TYPES.map((t) => (
-                    <Chip key={t} selected={investorType === t} onClick={() => setInvestorType(t)}>
-                      {t}
-                    </Chip>
-                  ))}
-                </div>
+                <Select value={investorType} onChange={setInvestorType} options={INVESTOR_TYPES} placeholder="Select type" />
               </Field>
               <Field label="Accreditation status" required>
-                <div className="flex flex-wrap gap-2">
-                  {ACCREDITATION.map((a) => (
-                    <Chip key={a} selected={accreditation === a} onClick={() => setAccreditation(a)}>
-                      {a}
-                    </Chip>
-                  ))}
-                </div>
+                <Select value={accreditation} onChange={setAccreditation} options={ACCREDITATION} placeholder="Select status" />
               </Field>
               <Field label="Sectors of interest" required>
                 <div className="flex flex-wrap gap-2">
