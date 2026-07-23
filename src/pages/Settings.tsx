@@ -373,6 +373,19 @@ const Settings = () => {
                         <ArrowLeft className="w-5 h-5" />
                     </Button>
                     <h1 className="text-xl font-semibold">Profile Settings</h1>
+                    <div className="ml-auto">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                                await supabase.auth.signOut();
+                                navigate('/');
+                            }}
+                        >
+                            <LogOut className="w-4 h-4 mr-2" />
+                            Log out
+                        </Button>
+                    </div>
                 </div>
             </header>
 
