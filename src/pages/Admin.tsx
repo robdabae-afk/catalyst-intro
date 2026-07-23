@@ -533,6 +533,17 @@ const Admin = () => {
                 Admin Dashboard
               </h1>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate('/');
+              }}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Log out
+            </Button>
           </div>
         </div>
       </nav>
