@@ -2,33 +2,43 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Building2, MapPin, TrendingUp, DollarSign, Briefcase, Globe, User, Mail, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useExpressInterest } from "@/hooks/useExpressInterest";
+import {
+  ArrowLeft,
+  Share2,
+  MapPin,
+  BadgeCheck,
+  Send,
+  X,
+} from "lucide-react";
 
 interface ProfileData {
   id: string;
   name: string;
   email: string;
   avatar_url: string | null;
-  user_type: 'founder' | 'investor';
+  user_type: "founder" | "investor";
+  is_verified?: boolean | null;
   founder_profile?: {
     startup_name: string;
-    one_liner: string;
-    industry: string[] | null;
-    traction: string | null;
-    preferred_city: string | null;
     company_name: string | null;
+    one_liner: string;
+    traction: string | null;
+    industry: string[] | null;
+    preferred_city: string | null;
     company_state: string | null;
-    company_address: string | null;
+    stage: string | null;
+    mrr: string | null;
+    backed_by: string | null;
+    funding_amount: string | null;
     pitch_deck_url: string | null;
     banner_url: string | null;
   };
   investor_profile?: {
     firm_name: string | null;
+    position: string | null;
     typical_check_size: string | null;
     preferred_stage: string | null;
     sectors_of_interest: string[] | null;
@@ -36,67 +46,60 @@ interface ProfileData {
     portfolio_link: string | null;
     banner_url: string | null;
     investment_thesis: string | null;
+    investor_type: string | null;
+    investment_count: number | null;
+    notable_portfolio: string | null;
   };
 }
 
-// OG Image - CATALYST banner from public assets
 const OG_IMAGE_URL = "/favicon.jpg";
 
 export default function ProfileView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isPro } = useAuth();
+  const { expressInterest } = useExpressInterest(user?.id);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentUserType, setCurrentUserType] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (!id) return;
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/auth');
+    if (!id) return;
+    (async () => {
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
+      if (!authUser) {
+        navigate("/auth");
         return;
       }
 
-      // Get current user type
-      const { data: currentProfile } = await supabase
-        .from('profiles')
-        .select('user_type')
-        .eq('id', user.id)
-        .single();
-      
-      setCurrentUserType(currentProfile?.user_type || null);
-
-      // Fetch the profile being viewed
       const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', id)
+        .from("profiles")
+        .select("*")
+        .eq("id", id)
         .single();
 
       if (error || !profileData) {
-        navigate('/dashboard');
+        navigate("/dashboard");
         return;
       }
 
-      // Fetch type-specific profile
       let founderProfile = null;
       let investorProfile = null;
 
-      if (profileData.user_type === 'founder') {
+      if (profileData.user_type === "founder") {
         const { data } = await supabase
-          .from('founder_profiles')
-          .select('*')
-          .eq('profile_id', id)
+          .from("founder_profiles")
+          .select("*")
+          .eq("profile_id", id)
           .single();
         founderProfile = data;
       } else {
         const { data } = await supabase
-          .from('investor_profiles')
-          .select('*')
-          .eq('profile_id', id)
+          .from("investor_profiles")
+          .select("*")
+          .eq("profile_id", id)
           .single();
         investorProfile = data;
       }
@@ -105,339 +108,565 @@ export default function ProfileView() {
         ...profileData,
         founder_profile: founderProfile,
         investor_profile: investorProfile,
-      });
+      } as ProfileData);
       setLoading(false);
-    };
-
-    fetchProfile();
+    })();
   }, [id, navigate]);
 
-  const handleShareProfile = async () => {
-    const profileUrl = `${window.location.origin}/profile/${id}`;
+  const handleShare = async () => {
+    const url = `${window.location.origin}/profile/${id}`;
     try {
-      await navigator.clipboard.writeText(profileUrl);
-      toast({
-        title: "Link copied to clipboard!",
-        description: "Share this profile with others.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Failed to copy",
-        description: "Please try again.",
-      });
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link copied!", description: "Profile link is in the clipboard." });
+    } catch {
+      toast({ variant: "destructive", title: "Failed to copy" });
+    }
+  };
+
+  const handleLike = async () => {
+    if (!profile || !user) return;
+    const res = await expressInterest(profile.id);
+    if (res.ok) {
+      toast({ title: "Interest sent!" });
+    } else {
+      toast({ variant: "destructive", title: "Could not send interest" });
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div
+        className="min-h-[100dvh] flex items-center justify-center"
+        style={{ background: "#060606" }}
+      >
+        <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
-  const isFounder = profile.user_type === 'founder';
-  const bannerUrl = isFounder ? profile.founder_profile?.banner_url : profile.investor_profile?.banner_url;
-  
-  // Dynamic OG meta content
+  const isFounder = profile.user_type === "founder";
   const ogTitle = `${profile.name} on Catalyst`;
-  const headline = isFounder 
-    ? (profile.founder_profile?.industry?.join(", ") || "Founder")
-    : (profile.investor_profile?.sectors_of_interest?.join(", ") || "Investor");
-  const ogDescription = `${headline} - Join the platform where meaningful founder-investor relationships begin.`;
-  const ogImageUrl = `${window.location.origin}${OG_IMAGE_URL}`;
+  const ogDescription = isFounder
+    ? `${profile.founder_profile?.industry?.join(", ") ?? "Founder"} — Catalyst`
+    : `${profile.investor_profile?.sectors_of_interest?.join(", ") ?? "Investor"} — Catalyst`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-      {/* Dynamic SEO/OG Tags */}
+    <div
+      className="relative min-h-[100dvh] flex flex-col"
+      style={{ background: "#060606" }}
+    >
       <Helmet>
         <title>{ogTitle}</title>
         <meta name="description" content={ogDescription} />
-        
-        {/* Open Graph */}
-        <meta property="og:type" content="profile" />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={ogDescription} />
-        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image" content={`${window.location.origin}${OG_IMAGE_URL}`} />
         <meta property="og:url" content={`${window.location.origin}/profile/${id}`} />
-        <meta property="og:site_name" content="Catalyst" />
-        
-        {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={ogTitle} />
-        <meta name="twitter:description" content={ogDescription} />
-        <meta name="twitter:image" content={ogImageUrl} />
       </Helmet>
 
-      {/* Banner */}
-      <div className={`relative ${bannerUrl ? 'h-24 md:h-64' : 'h-20 md:h-44'} bg-gradient-to-br from-primary/20 to-accent/20`}>
-        {bannerUrl ? (
-          <img 
-            src={bannerUrl} 
-            alt="Profile banner"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-primary/30 via-primary/20 to-accent/30" />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-        
-        <div className="absolute top-3 left-4 right-4 md:top-4 flex justify-between items-start">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate(-1)}
-            className="bg-background/50 backdrop-blur-sm hover:bg-background/80"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleShareProfile}
-            className="bg-background/50 backdrop-blur-sm hover:bg-background/80"
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            Share
-          </Button>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 mt-3 md:mt-6 relative z-10 pb-6 md:pb-12">
-        {/* Profile Header */}
-        <Card className="mb-3 md:mb-6">
-          <CardContent className="p-4 md:pt-6">
-            <div className="flex flex-row gap-3 md:gap-4 items-center md:items-end">
-              <Avatar className="w-20 h-20 md:w-24 md:h-24 shrink-0 border-4 border-background shadow-xl">
-                <AvatarImage src={profile.avatar_url || undefined} alt={profile.name} />
-                <AvatarFallback className="bg-primary/20 text-primary text-2xl md:text-3xl">
-                  {profile.name?.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-
-              
-              <div className="min-w-0 flex-1 md:pb-4">
-                <h1 className="text-xl md:text-2xl font-bold leading-tight truncate">{profile.name}</h1>
-                {isFounder && profile.founder_profile && (
-                  <p className="text-sm md:text-xl text-muted-foreground truncate">{profile.founder_profile.startup_name}</p>
-                )}
-                {!isFounder && profile.investor_profile?.firm_name && (
-                  <p className="text-sm md:text-xl text-muted-foreground truncate">{profile.investor_profile.firm_name}</p>
-                )}
-                <Badge className="mt-2" variant="secondary">
-                  {isFounder ? 'Founder' : 'Investor'}
-                </Badge>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Profile Details */}
-        {!isFounder ? (
-          <InvestorProfileSections profile={profile} />
-        ) : !profile.founder_profile ? (
-          <Card>
-            <CardContent className="pt-6 text-center py-10">
-              <User className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-              <h2 className="text-lg font-semibold mb-1">Profile not yet completed</h2>
-              <p className="text-sm text-muted-foreground">This founder hasn't filled out their startup details yet.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid md:grid-cols-2 gap-3 md:gap-6">
-            {/* Main Info Card */}
-            <Card>
-              <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
-                <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Startup Details</h2>
-                <div className="space-y-3">
-                  <div className="p-3 md:p-4 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-1">One-liner</p>
-                    <p className="font-medium">{profile.founder_profile.one_liner}</p>
-                  </div>
-                  {profile.founder_profile.industry && profile.founder_profile.industry.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="w-5 h-5 text-primary" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Industry</p>
-                        <p className="font-medium">{profile.founder_profile.industry.join(", ")}</p>
-                      </div>
-                    </div>
-                  )}
-                  {profile.founder_profile.traction && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Traction</p>
-                      <p className="font-medium">{profile.founder_profile.traction}</p>
-                    </div>
-                  )}
-                  {profile.founder_profile.preferred_city && (
-                    <div className="flex items-center gap-3">
-                      <MapPin className="w-5 h-5 text-muted-foreground" />
-                      <div>
-                        <p className="text-sm text-muted-foreground">Preferred City</p>
-                         <p className="font-medium">{profile.founder_profile.preferred_city}</p>
-                       </div>
-                     </div>
-                   )}
-                 </div>
-               </CardContent>
-             </Card>
-
-             {/* Company Card */}
-             <Card>
-               <CardContent className="p-4 md:pt-6 space-y-3 md:space-y-4">
-                 <h2 className="text-base md:text-lg font-semibold mb-2 md:mb-4">Company Information</h2>
-                 {profile.founder_profile && (
-                   <div className="space-y-3">
-                     {profile.founder_profile.company_name && (
-                       <div className="flex items-center gap-3">
-                         <Building2 className="w-5 h-5 text-muted-foreground" />
-                         <div>
-                           <p className="text-sm text-muted-foreground">Company Name</p>
-                           <p className="font-medium">{profile.founder_profile.company_name}</p>
-                         </div>
-                       </div>
-                     )}
-                     {profile.founder_profile.company_state && (
-                       <div className="flex items-center gap-3">
-                         <MapPin className="w-5 h-5 text-muted-foreground" />
-                         <div>
-                           <p className="text-sm text-muted-foreground">State of Incorporation</p>
-                           <p className="font-medium">{profile.founder_profile.company_state}</p>
-                         </div>
-                       </div>
-                     )}
-                     {profile.founder_profile.pitch_deck_url && (
-                       <div className="flex items-center gap-3">
-                         <Globe className="w-5 h-5 text-muted-foreground" />
-                         <div>
-                           <p className="text-sm text-muted-foreground">Pitch Deck</p>
-                           <a
-                             href={profile.founder_profile.pitch_deck_url}
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="font-medium text-primary hover:underline"
-                           >
-                             View Pitch Deck
-                           </a>
-                         </div>
-                       </div>
-                     )}
-                   </div>
-                 )}
-               </CardContent>
-             </Card>
-           </div>
-         )}
-       </div>
-     </div>
-   );
- }
-
-/* -------------------- INVESTOR PROFILE SECTIONS -------------------- */
-function InvestorProfileSections({ profile }: { profile: ProfileData }) {
-  const inv = profile.investor_profile;
-  if (!inv) {
-    return (
-      <Card>
-        <CardContent className="pt-6 text-center py-10">
-          <User className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-          <h2 className="text-lg font-semibold mb-1">Profile not yet completed</h2>
-          <p className="text-sm text-muted-foreground">This investor hasn't filled out their profile details yet.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-  const sectors = inv.sectors_of_interest ?? [];
-  const hasFocus = inv.typical_check_size || inv.preferred_stage || sectors.length > 0 || inv.location;
-
-  return (
-    <div className="space-y-4">
-      {/* Thesis */}
-      {inv.investment_thesis && (
-        <Card>
-          <CardContent className="pt-6">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">Investment Thesis</h2>
-            <p className="text-base leading-relaxed italic text-foreground/90">"{inv.investment_thesis}"</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Focus chips */}
-      {hasFocus && (
-        <Card>
-          <CardContent className="pt-6 space-y-4">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Investment Focus</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {inv.typical_check_size && (
-                <FocusChip icon={<DollarSign className="w-4 h-4" />} label="Check size" value={inv.typical_check_size} />
-              )}
-              {inv.preferred_stage && (
-                <FocusChip icon={<Briefcase className="w-4 h-4" />} label="Preferred stage" value={String(inv.preferred_stage)} />
-              )}
-              {inv.location && (
-                <FocusChip icon={<MapPin className="w-4 h-4" />} label="Geography" value={inv.location} />
-              )}
-            </div>
-            {sectors.length > 0 && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">Sectors of interest</p>
-                <div className="flex flex-wrap gap-2">
-                  {sectors.map((s) => (
-                    <Badge key={s} variant="outline">{s}</Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Track record */}
-      {(inv.portfolio_link || inv.firm_name) && (
-        <Card>
-          <CardContent className="pt-6 space-y-3">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Track Record</h2>
-            {inv.firm_name && (
-              <div className="flex items-center gap-3">
-                <Building2 className="w-5 h-5 text-muted-foreground" />
-                <div>
-                  <p className="text-xs text-muted-foreground">Firm</p>
-                  <p className="font-medium">{inv.firm_name}</p>
-                </div>
-              </div>
-            )}
-            {inv.portfolio_link && (
-              <a
-                href={inv.portfolio_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-              >
-                <Globe className="w-4 h-4" /> View portfolio
-              </a>
-            )}
-          </CardContent>
-        </Card>
+      {isFounder ? (
+        <FounderView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
+      ) : (
+        <InvestorView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       )}
     </div>
   );
 }
 
-function FocusChip({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+/* ───────────────────────────────── Founder Full Profile ───────────────────────────────── */
+
+function FounderView({
+  profile,
+  onBack,
+  onShare,
+  onLike,
+  onPass,
+}: {
+  profile: ProfileData;
+  onBack: () => void;
+  onShare: () => void;
+  onLike: () => void;
+  onPass: () => void;
+}) {
+  const fp = profile.founder_profile;
+  const companyName = fp?.startup_name ?? fp?.company_name ?? "";
+  const location = fp?.preferred_city ?? "";
+
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/30 px-3 py-2">
-      <div className="text-primary">{icon}</div>
-      <div className="min-w-0">
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value}</p>
+    <div className="flex flex-col min-h-[100dvh]">
+      {/* Hero Header */}
+      <div
+        className="relative shrink-0 overflow-hidden"
+        style={{ height: 330 }}
+      >
+        {profile.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "#1A1916" }} />
+        )}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%)",
+          }}
+        />
+
+        {/* Back + Share */}
+        <div className="absolute top-14 left-5 right-5 flex justify-between">
+          <button onClick={onBack} className="icon-btn">
+            <ArrowLeft size={18} color="#F6F5F2" strokeWidth={2} />
+          </button>
+          <button onClick={onShare} className="icon-btn">
+            <Share2 size={17} color="#F6F5F2" strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Chips */}
+        <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
+          {fp?.stage && <InfoChip>{fp.stage}</InfoChip>}
+          {location && (
+            <InfoChip>
+              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
+              {location}
+            </InfoChip>
+          )}
+        </div>
+
+        {/* Name + subtitle */}
+        <div className="absolute left-5 right-5 bottom-5">
+          <h1
+            style={{
+              fontFamily: "Fraunces, serif",
+              fontSize: 34,
+              fontWeight: 700,
+              color: "#F6F5F2",
+              lineHeight: 1.1,
+            }}
+          >
+            {profile.name}
+          </h1>
+          <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
+            Founder{companyName ? ` · ${companyName}` : ""}
+          </p>
+        </div>
       </div>
+
+      {/* Scrollable body */}
+      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {/* One-liner */}
+        {fp?.one_liner && (
+          <div>
+            <p
+              style={{
+                fontFamily: "Fraunces, serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#F6F5F2",
+                lineHeight: 1.3,
+              }}
+            >
+              {fp.one_liner}
+            </p>
+          </div>
+        )}
+        {fp?.traction && (
+          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp.traction}</p>
+        )}
+
+        {/* Traction Card */}
+        {(fp?.mrr || fp?.backed_by || fp?.funding_amount) && (
+          <SectionCard label="Traction">
+            <div className="grid grid-cols-2 gap-3">
+              {fp?.mrr && <TractionStat label="MRR" value={fp.mrr} />}
+              {fp?.backed_by && <TractionStat label="Backed by" value={fp.backed_by} />}
+              {fp?.funding_amount && <TractionStat label="Raised" value={fp.funding_amount} />}
+              {fp?.stage && <TractionStat label="Stage" value={fp.stage} />}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Industries */}
+        {fp?.industry && fp.industry.length > 0 && (
+          <SectionCard label="Industries">
+            <div className="flex flex-wrap gap-2">
+              {fp.industry.map((t) => (
+                <Tag key={t}>{t}</Tag>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Pitch Deck */}
+        {fp?.pitch_deck_url && (
+          <a
+            href={fp.pitch_deck_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between px-4 py-4 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+            }}
+          >
+            <span style={{ color: "#E9E7E1", fontSize: 14 }}>View Pitch Deck</span>
+            <ArrowLeft size={16} color="#94908A" style={{ transform: "rotate(180deg)" }} />
+          </a>
+        )}
+      </div>
+
+      {/* Sticky action bar */}
+      <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
     </div>
+  );
+}
+
+/* ───────────────────────────────── Investor Full Profile ───────────────────────────────── */
+
+function InvestorView({
+  profile,
+  onBack,
+  onShare,
+  onLike,
+  onPass,
+}: {
+  profile: ProfileData;
+  onBack: () => void;
+  onShare: () => void;
+  onLike: () => void;
+  onPass: () => void;
+}) {
+  const ip = profile.investor_profile;
+  const location = ip?.location ?? "";
+  const subtitle = [ip?.position, ip?.firm_name].filter(Boolean).join(" · ");
+
+  return (
+    <div className="flex flex-col min-h-[100dvh]">
+      {/* Hero Header */}
+      <div className="relative shrink-0 overflow-hidden" style={{ height: 330 }}>
+        {profile.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt={profile.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "#1A1916" }} />
+        )}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%)",
+          }}
+        />
+
+        {/* Back + Share */}
+        <div className="absolute top-14 left-5 right-5 flex justify-between">
+          <button onClick={onBack} className="icon-btn">
+            <ArrowLeft size={18} color="#F6F5F2" strokeWidth={2} />
+          </button>
+          <button onClick={onShare} className="icon-btn">
+            <Share2 size={17} color="#F6F5F2" strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Chips */}
+        <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
+          {profile.is_verified && (
+            <InfoChip gold>
+              <BadgeCheck size={11} color="#2A2005" strokeWidth={2.5} />
+              Verified investor
+            </InfoChip>
+          )}
+          {location && (
+            <InfoChip>
+              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
+              {location}
+            </InfoChip>
+          )}
+        </div>
+
+        {/* Name + subtitle */}
+        <div className="absolute left-5 right-5 bottom-5">
+          <h1
+            style={{
+              fontFamily: "Fraunces, serif",
+              fontSize: 34,
+              fontWeight: 700,
+              color: "#F6F5F2",
+              lineHeight: 1.1,
+            }}
+          >
+            {profile.name}
+          </h1>
+          {subtitle && (
+            <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>{subtitle}</p>
+          )}
+        </div>
+      </div>
+
+      {/* Scrollable body */}
+      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {/* Stat chips row */}
+        <div className="flex gap-2 flex-wrap">
+          {ip?.typical_check_size && (
+            <BigStatChip label="Check" value={ip.typical_check_size} />
+          )}
+          {ip?.preferred_stage && (
+            <BigStatChip label="Focus" value={String(ip.preferred_stage)} />
+          )}
+          {ip?.investor_type && (
+            <BigStatChip label="Leads" value={ip.investor_type} gold />
+          )}
+        </div>
+
+        {/* Investment thesis */}
+        {ip?.investment_thesis && (
+          <SectionCard label="Investment Thesis">
+            <p
+              style={{
+                fontFamily: "Fraunces, serif",
+                fontStyle: "italic",
+                color: "#E9E7E1",
+                fontSize: 16,
+                lineHeight: 1.6,
+              }}
+            >
+              "{ip.investment_thesis}"
+            </p>
+          </SectionCard>
+        )}
+
+        {/* Sectors */}
+        {ip?.sectors_of_interest && ip.sectors_of_interest.length > 0 && (
+          <SectionCard label="Sectors of Interest">
+            <div className="flex flex-wrap gap-2">
+              {ip.sectors_of_interest.map((s) => (
+                <Tag key={s}>{s}</Tag>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Portfolio */}
+        {(ip?.investment_count || ip?.notable_portfolio || ip?.portfolio_link) && (
+          <SectionCard label="Portfolio">
+            {ip?.investment_count && (
+              <div className="flex justify-between py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                <span style={{ color: "#94908A", fontSize: 13.5 }}>Total deals</span>
+                <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600 }}>{ip.investment_count}</span>
+              </div>
+            )}
+            {ip?.notable_portfolio && (
+              <div className="flex justify-between py-2">
+                <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
+                <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
+                  {ip.notable_portfolio}
+                </span>
+              </div>
+            )}
+            {ip?.portfolio_link && (
+              <a
+                href={ip.portfolio_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between mt-2 pt-3"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+              >
+                <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
+                <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
+              </a>
+            )}
+          </SectionCard>
+        )}
+      </div>
+
+      {/* Sticky action bar */}
+      <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
+    </div>
+  );
+}
+
+/* ───────────────────────────────── Shared sub-components ───────────────────────────────── */
+
+function ActionBar({
+  onPass,
+  onSend,
+  onLike,
+}: {
+  onPass: () => void;
+  onSend: () => void;
+  onLike: () => void;
+}) {
+  return (
+    <div
+      className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-center gap-5 px-6 pt-4 pb-8"
+      style={{
+        background:
+          "linear-gradient(0deg, rgba(6,6,6,1) 60%, rgba(6,6,6,0) 100%)",
+      }}
+    >
+      <button
+        onClick={onPass}
+        className="flex items-center justify-center rounded-full"
+        style={{
+          width: 58,
+          height: 58,
+          background: "rgba(255,255,255,0.07)",
+          border: "1.5px solid rgba(255,255,255,0.18)",
+        }}
+        aria-label="Pass"
+      >
+        <X size={23} color="#8E8B84" strokeWidth={2} />
+      </button>
+      <button
+        onClick={onSend}
+        className="flex items-center justify-center rounded-full"
+        style={{
+          width: 70,
+          height: 70,
+          background: "#FFFFFF",
+          boxShadow: "0 8px 24px rgba(255,255,255,0.2)",
+        }}
+        aria-label="Connect"
+      >
+        <Send size={24} color="#0A0A0C" strokeWidth={2} />
+      </button>
+      <button
+        onClick={onLike}
+        className="flex items-center justify-center rounded-full"
+        style={{
+          width: 58,
+          height: 58,
+          background: "#C6A02C",
+          boxShadow: "0 8px 20px rgba(198,160,44,0.4)",
+        }}
+        aria-label="Like"
+      >
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M12 21C12 21 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 13.5 14 21 12 21Z"
+            fill="#2A2005"
+          />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+function InfoChip({
+  children,
+  gold,
+}: {
+  children: React.ReactNode;
+  gold?: boolean;
+}) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-medium"
+      style={
+        gold
+          ? { background: "#C6A02C", color: "#2A2005" }
+          : {
+              background: "rgba(255,255,255,0.14)",
+              color: "#E9E7E1",
+              border: "1px solid rgba(255,255,255,0.22)",
+              backdropFilter: "blur(8px)",
+            }
+      }
+    >
+      {children}
+    </span>
+  );
+}
+
+function SectionCard({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="px-4 py-4 rounded-2xl"
+      style={{
+        background:
+          "linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
+        border: "1px solid rgba(255,255,255,0.1)",
+      }}
+    >
+      <p
+        className="mb-3"
+        style={{
+          color: "#94908A",
+          fontSize: 10.5,
+          textTransform: "uppercase",
+          letterSpacing: "1px",
+          fontWeight: 500,
+        }}
+      >
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+function TractionStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      className="flex flex-col px-3 py-3 rounded-xl"
+      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+    >
+      <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px" }}>
+        {label}
+      </span>
+      <span style={{ color: "#F6F5F2", fontSize: 18, fontWeight: 700, marginTop: 2 }}>{value}</span>
+    </div>
+  );
+}
+
+function BigStatChip({
+  label,
+  value,
+  gold,
+}: {
+  label: string;
+  value: string;
+  gold?: boolean;
+}) {
+  return (
+    <div
+      className="inline-flex flex-col px-4 py-3 rounded-2xl"
+      style={{
+        background: gold ? "rgba(198,160,44,0.12)" : "rgba(255,255,255,0.06)",
+        border: gold ? "1px solid rgba(198,160,44,0.3)" : "1px solid rgba(255,255,255,0.12)",
+      }}
+    >
+      <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.7px" }}>
+        {label}
+      </span>
+      <span style={{ color: gold ? "#E7CB7E" : "#F6F5F2", fontSize: 17, fontWeight: 700, marginTop: 2 }}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <span
+      className="inline-block px-3 py-1.5 rounded-full text-[12px]"
+      style={{
+        background: "rgba(255,255,255,0.08)",
+        border: "1px solid rgba(255,255,255,0.14)",
+        color: "#E9E7E1",
+      }}
+    >
+      {children}
+    </span>
   );
 }
