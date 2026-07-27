@@ -18,7 +18,11 @@ import {
   Loader2,
   Trophy,
   FileCheck2,
+  Clock,
+  IdCard,
 } from "lucide-react";
+import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
+import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 
 type UserType = "founder" | "investor";
 
@@ -28,6 +32,7 @@ type ChecklistItem = {
   desc: string;
   icon: React.ReactNode;
   done: boolean;
+  onClick?: () => void;
 };
 
 export default function Onboarding() {
@@ -36,6 +41,9 @@ export default function Onboarding() {
   const [userType, setUserType] = useState<UserType>("founder");
   const [profile, setProfile] = useState<any>(null);
   const [roleProfile, setRoleProfile] = useState<any>(null);
+  const [showPreBetaNotice, setShowPreBetaNotice] = useState(true);
+  const [verificationCaptureOpen, setVerificationCaptureOpen] = useState(false);
+  const { status: idVerificationStatus, refetch: refetchIdVerification } = useIdentityVerification(profile?.id ?? null);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -139,6 +147,14 @@ export default function Onboarding() {
       icon: <ShieldCheck size={15} className="text-[#C6A02C]" />,
       done: !!profile?.legal_accepted_at,
     },
+    {
+      id: "id_verification",
+      title: "Government ID verification",
+      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Upload ID + selfie for manual review",
+      icon: <IdCard size={15} className="text-[#C6A02C]" />,
+      done: idVerificationStatus === "approved",
+      onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),
+    },
   ];
 
   const investorItems = (): ChecklistItem[] => [
@@ -198,6 +214,14 @@ export default function Onboarding() {
       icon: <ShieldCheck size={15} className="text-[#C6A02C]" />,
       done: !!profile?.legal_accepted_at,
     },
+    {
+      id: "id_verification",
+      title: "Government ID verification",
+      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Upload ID + selfie for manual review",
+      icon: <IdCard size={15} className="text-[#C6A02C]" />,
+      done: idVerificationStatus === "approved",
+      onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),
+    },
   ];
 
   const items = profile
@@ -212,6 +236,126 @@ export default function Onboarding() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#0A0A0D" }}>
         <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#C6A02C" }} />
+      </div>
+    );
+  }
+
+  if (showPreBetaNotice) {
+    return (
+      <div
+        className="h-[100dvh] overflow-hidden flex justify-center"
+        style={{ background: "#0A0A0D", overscrollBehavior: "none" }}
+      >
+        <div className="w-full max-w-[390px] h-full relative flex flex-col overflow-hidden">
+          {/* Glowing orbs */}
+          <div
+            style={{
+              position: "absolute",
+              width: 300,
+              height: 300,
+              left: 130,
+              top: 90,
+              opacity: 0.24,
+              background: "#C6A02C",
+              borderRadius: "50%",
+              filter: "blur(60px)",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              width: 300,
+              height: 300,
+              left: -70,
+              top: 470,
+              opacity: 0.28,
+              background: "#C6A02C",
+              borderRadius: "50%",
+              filter: "blur(60px)",
+              pointerEvents: "none",
+            }}
+          />
+
+          <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 text-center">
+            <div
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: "rgba(198, 160, 44, 0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 22,
+              }}
+            >
+              <Clock size={28} style={{ color: "#C6A02C" }} />
+            </div>
+
+            <p
+              style={{
+                color: "#C6A02C",
+                fontSize: 11.5,
+                fontFamily: "Inter",
+                fontWeight: 400,
+                textTransform: "uppercase",
+                letterSpacing: "1.84px",
+                marginBottom: 10,
+              }}
+            >
+              Pre-beta
+            </p>
+
+            <h1
+              style={{
+                color: "#F6F5F2",
+                fontSize: 26,
+                fontFamily: "Fraunces, serif",
+                fontWeight: 600,
+                lineHeight: 1.25,
+                marginBottom: 12,
+                maxWidth: 300,
+              }}
+            >
+              Catalyst is currently in pre-beta
+            </h1>
+
+            <p
+              style={{
+                color: "#94908A",
+                fontSize: 14,
+                fontFamily: "Inter",
+                fontWeight: 400,
+                lineHeight: 1.6,
+                maxWidth: 300,
+                marginBottom: 28,
+              }}
+            >
+              Our launch is planned for <span style={{ color: "#CFCCC5", fontWeight: 500 }}>August 31st</span>. Your account is pending approval — you can finish setting up your profile in the meantime.
+            </p>
+
+            <button
+              onClick={() => setShowPreBetaNotice(false)}
+              style={{
+                width: "100%",
+                maxWidth: 330,
+                height: 54,
+                background: "#F6F5F2",
+                borderRadius: 16,
+                border: "none",
+                cursor: "pointer",
+                color: "#0A0A0C",
+                fontSize: 15,
+                fontFamily: "Inter",
+                fontWeight: 500,
+              }}
+              className="hover:opacity-90 active:opacity-85 transition-opacity"
+            >
+              Continue to profile setup
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -341,6 +485,13 @@ export default function Onboarding() {
           </div>
         </div>
       </div>
+
+      <IdentityVerificationCapture
+        open={verificationCaptureOpen}
+        onClose={() => setVerificationCaptureOpen(false)}
+        userId={profile?.id ?? null}
+        onSubmitted={refetchIdVerification}
+      />
     </div>
   );
 }
@@ -358,8 +509,12 @@ function glassCard(style: React.CSSProperties): React.CSSProperties {
 }
 
 function ChecklistRow({ item }: { item: ChecklistItem }) {
+  const Wrapper = item.onClick ? "button" : "div";
   return (
-    <div style={glassCard({ borderRadius: 14, padding: "10px 14px" })}>
+    <Wrapper
+      onClick={item.onClick}
+      style={{ ...glassCard({ borderRadius: 14, padding: "10px 14px" }), width: "100%", textAlign: "left", cursor: item.onClick ? "pointer" : "default" }}
+    >
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         {/* Icon box */}
         <div
@@ -417,6 +572,6 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
           <ChevronRight size={18} style={{ color: "#94908A", flexShrink: 0 }} />
         )}
       </div>
-    </div>
+    </Wrapper>
   );
 }

@@ -11,9 +11,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2, LogOut } from "lucide-react";
-import { INDUSTRIES, FUNDING_STAGES } from "@/lib/constants";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2, LogOut, ShieldCheck, Clock, ShieldX, ShieldQuestion } from "lucide-react";
+import { INDUSTRIES, FUNDING_STAGES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
+import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
+import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 import { SubscriptionSettings } from "@/components/SubscriptionSettings";
 import { SpotlightManager } from "@/components/SpotlightManager";
 import { AdminRevenueAdjustment } from "@/components/AdminRevenueAdjustment";
@@ -48,9 +50,13 @@ const Settings = () => {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [userType, setUserType] = useState<'founder' | 'investor' | null>(null);
-    
+    const [verificationCaptureOpen, setVerificationCaptureOpen] = useState(false);
+
     // Swipe history hook
     const { resetSwipeHistory } = useSwipeHistory(userId || undefined);
+
+    // Identity verification
+    const { status: idVerificationStatus, record: idVerificationRecord, refetch: refetchIdVerification } = useIdentityVerification(userId);
 
     const handleResetSwipeHistory = async () => {
         setResettingHistory(true);
@@ -86,6 +92,7 @@ const Settings = () => {
     const [backedBy, setBackedBy] = useState("");
     const [einNumber, setEinNumber] = useState("");
     const [location, setLocation] = useState("");
+    const [stage, setStage] = useState("");
 
     // Investor fields
     const [firmName, setFirmName] = useState("");
@@ -95,6 +102,9 @@ const Settings = () => {
     const [accreditationStatus, setAccreditationStatus] = useState("");
     const [investmentCount, setInvestmentCount] = useState("");
     const [notablePortfolio, setNotablePortfolio] = useState("");
+    const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
+    const [typicalCheckSize, setTypicalCheckSize] = useState("");
+    const [investmentThesis, setInvestmentThesis] = useState("");
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -148,6 +158,7 @@ const Settings = () => {
                     setBackedBy(founderProfile.backed_by || "");
                     setEinNumber(founderProfile.ein_number || "");
                     setLocation(founderProfile.location || "");
+                    setStage(founderProfile.stage || "");
                 }
             } else {
                 const { data: investorProfile } = await supabase
@@ -164,6 +175,9 @@ const Settings = () => {
                     setAccreditationStatus(investorProfile.accreditation_status || "");
                     setInvestmentCount(investorProfile.investment_count?.toString() || "");
                     setNotablePortfolio(investorProfile.notable_portfolio || "");
+                    setSectorsOfInterest(investorProfile.sectors_of_interest || []);
+                    setTypicalCheckSize(investorProfile.typical_check_size || "");
+                    setInvestmentThesis(investorProfile.investment_thesis || "");
                 }
             }
 
@@ -322,7 +336,8 @@ const Settings = () => {
                         mrr: mrr || null,
                         backed_by: backedBy || null,
                         ein_number: einNumber || null,
-                        location: location || null
+                        location: location || null,
+                        stage: (stage || null) as any
                     })
                     .eq('profile_id', userId);
 
@@ -337,7 +352,10 @@ const Settings = () => {
                         investor_type: investorType || null,
                         accreditation_status: accreditationStatus || null,
                         investment_count: investmentCount ? parseInt(investmentCount) : null,
-                        notable_portfolio: notablePortfolio || null
+                        notable_portfolio: notablePortfolio || null,
+                        sectors_of_interest: sectorsOfInterest,
+                        typical_check_size: typicalCheckSize || null,
+                        investment_thesis: investmentThesis || null
                     })
                     .eq('profile_id', userId);
 
@@ -507,6 +525,70 @@ const Settings = () => {
                     </CardContent>
                 </Card>
 
+                {/* Identity Verification */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <ShieldCheck className="w-5 h-5" />
+                            Identity Verification
+                        </CardTitle>
+                        <CardDescription>
+                            Verify your identity with a government-issued ID and a selfie. Reviewed manually by our team.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {idVerificationStatus === 'approved' && (
+                            <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                                <ShieldCheck className="w-5 h-5 text-green-500 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium">Verified</p>
+                                    <p className="text-xs text-muted-foreground">Your identity has been confirmed.</p>
+                                </div>
+                            </div>
+                        )}
+                        {idVerificationStatus === 'pending' && (
+                            <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+                                <Clock className="w-5 h-5 text-amber-500 shrink-0" />
+                                <div>
+                                    <p className="text-sm font-medium">Pending review</p>
+                                    <p className="text-xs text-muted-foreground">Submitted {idVerificationRecord ? new Date(idVerificationRecord.submitted_at).toLocaleDateString() : ""} — we'll notify you once it's reviewed.</p>
+                                </div>
+                            </div>
+                        )}
+                        {idVerificationStatus === 'rejected' && (
+                            <div className="space-y-3">
+                                <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                                    <ShieldX className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+                                    <div>
+                                        <p className="text-sm font-medium">Not approved</p>
+                                        {idVerificationRecord?.rejection_reason && (
+                                            <p className="text-xs text-muted-foreground mt-1">{idVerificationRecord.rejection_reason}</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <Button variant="outline" onClick={() => setVerificationCaptureOpen(true)}>
+                                    <ShieldCheck className="w-4 h-4 mr-2" />
+                                    Resubmit
+                                </Button>
+                            </div>
+                        )}
+                        {idVerificationStatus === 'unverified' && (
+                            <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                                <div className="flex items-center gap-3">
+                                    <ShieldQuestion className="w-5 h-5 text-muted-foreground shrink-0" />
+                                    <div>
+                                        <p className="text-sm font-medium">Not verified</p>
+                                        <p className="text-xs text-muted-foreground">Required to unlock full platform access.</p>
+                                    </div>
+                                </div>
+                                <Button size="sm" onClick={() => setVerificationCaptureOpen(true)}>
+                                    Verify now
+                                </Button>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
                 {/* Discovery Filters */}
                 <Card>
                     <CardHeader>
@@ -604,6 +686,19 @@ const Settings = () => {
                                         onChange={(e) => setBackedBy(e.target.value)}
                                         placeholder="e.g. YC S23, or 'No lead yet'"
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="stage">Company Stage</Label>
+                                    <Select value={stage} onValueChange={setStage}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select stage" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {FUNDING_STAGES.map((s) => (
+                                                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -907,6 +1002,52 @@ const Settings = () => {
                                     />
                                 </div>
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
+                                <Select value={typicalCheckSize} onValueChange={setTypicalCheckSize}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select range" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {CHECK_SIZE_OPTIONS.map((c) => (
+                                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Sectors of Interest</Label>
+                                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
+                                    {INDUSTRIES.map((ind) => (
+                                        <div key={ind} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`settings-sector-${ind}`}
+                                                checked={sectorsOfInterest.includes(ind)}
+                                                onCheckedChange={() => {
+                                                    setSectorsOfInterest(prev =>
+                                                        prev.includes(ind)
+                                                            ? prev.filter(i => i !== ind)
+                                                            : [...prev, ind]
+                                                    );
+                                                }}
+                                            />
+                                            <label htmlFor={`settings-sector-${ind}`} className="text-sm cursor-pointer">
+                                                {ind}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="investmentThesis">Investment Thesis</Label>
+                                <Textarea
+                                    id="investmentThesis"
+                                    value={investmentThesis}
+                                    onChange={(e) => setInvestmentThesis(e.target.value)}
+                                    placeholder="What you back, and why."
+                                    rows={3}
+                                />
+                            </div>
                         </CardContent>
                     </Card>
                 )}
@@ -1076,6 +1217,13 @@ const Settings = () => {
                 {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
                 {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
             </main>
+
+            <IdentityVerificationCapture
+                open={verificationCaptureOpen}
+                onClose={() => setVerificationCaptureOpen(false)}
+                userId={userId}
+                onSubmitted={refetchIdVerification}
+            />
         </div >
     );
 };

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { INDUSTRIES } from "@/lib/constants";
+import { INDUSTRIES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
 import {
   ArrowLeft,
   Rocket,
@@ -279,6 +279,8 @@ export default function AppSignupForm() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [investorType, setInvestorType] = useState("");
   const [accreditation, setAccreditation] = useState("");
+  const [typicalCheckSize, setTypicalCheckSize] = useState("");
+  const [investmentThesis, setInvestmentThesis] = useState("");
 
   const [industries, setIndustries] = useState<string[]>([]);
   const [agreed, setAgreed] = useState(false);
@@ -311,7 +313,7 @@ export default function AppSignupForm() {
         return firmName.trim() !== "" && invLocation.trim() !== "";
       case 4:
         if (role === "founder") return !!stage && industries.length > 0;
-        return !!investorType && !!accreditation && industries.length > 0;
+        return !!investorType && !!accreditation && industries.length > 0 && !!typicalCheckSize;
       case 5:
         return agreed;
       default:
@@ -374,6 +376,8 @@ export default function AppSignupForm() {
           linkedin_url: linkedinUrl || null,
           investor_type: investorType || null,
           accreditation_status: accreditation || null,
+          typical_check_size: typicalCheckSize || null,
+          investment_thesis: investmentThesis.trim() || null,
         });
       }
 
@@ -603,6 +607,19 @@ export default function AppSignupForm() {
                       {i}
                     </Chip>
                   ))}
+                </div>
+              </Field>
+              <Field label="Typical check size" required>
+                <Select value={typicalCheckSize} onChange={setTypicalCheckSize} options={CHECK_SIZE_OPTIONS} placeholder="Select range" />
+              </Field>
+              <Field label="Investment thesis">
+                <div className={`${glass} rounded-[14px] p-4`}>
+                  <textarea
+                    className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[15px] text-[#F6F5F2] placeholder:text-[#6F6B63]"
+                    placeholder="What you back, and why."
+                    value={investmentThesis}
+                    onChange={(e) => setInvestmentThesis(e.target.value)}
+                  />
                 </div>
               </Field>
             </div>

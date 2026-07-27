@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper, LogOut } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper, LogOut, IdCard } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -34,6 +34,7 @@ import { AdminAnalyticsPanel } from "@/components/AdminAnalyticsPanel";
 import { AdminEventAttendeesPanel } from "@/components/AdminEventAttendeesPanel";
 import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel";
 import { AdminFeedPanel } from "@/components/AdminFeedPanel";
+import { AdminIdentityVerificationPanel } from "@/components/AdminIdentityVerificationPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -584,6 +585,10 @@ const Admin = () => {
               <UserCheck className="w-4 h-4" />
               Reviews
             </TabsTrigger>
+            <TabsTrigger value="id-verification" className="flex items-center gap-2">
+              <IdCard className="w-4 h-4" />
+              ID Verification
+            </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Users
@@ -667,6 +672,10 @@ const Admin = () => {
               onRequestEdits={(u) => setEditSuggestionUser(u as any)}
               onReject={(u) => setDenyDialogUser(u as any)}
             />
+          </TabsContent>
+
+          <TabsContent value="id-verification">
+            <AdminIdentityVerificationPanel />
           </TabsContent>
 
           <TabsContent value="revenue">

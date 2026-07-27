@@ -33,3 +33,13 @@ export const FUNDING_STAGES = [
 ] as const;
 
 export type FundingStage = typeof FUNDING_STAGES[number]["value"];
+
+// Typical investor check size bands (free-text field on investor_profiles)
+export const CHECK_SIZE_OPTIONS = [
+  "<$25k",
+  "$25k-$100k",
+  "$100k-$500k",
+  "$500k-$1M",
+  "$1M-$5M",
+  "$5M+",
+] as const;
