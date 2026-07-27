@@ -84,15 +84,6 @@ const Auth = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast({
-        title: "Password too short",
-        description: "Password must be at least 6 characters.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (newPassword !== confirmPassword) {
       toast({
         title: "Passwords don't match",
@@ -403,7 +394,6 @@ const Auth = () => {
                       onChange={(e) => setNewPassword(e.target.value)}
                       disabled={isLoading}
                       className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
-                      minLength={6}
                       required
                     />
                   </div>
@@ -438,7 +428,6 @@ const Auth = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       disabled={isLoading}
                       className="w-full bg-transparent border-none outline-none text-[#F6F5F2] placeholder-[#94908A] text-[15px] font-sans focus:ring-0 focus:outline-none"
-                      minLength={6}
                       required
                     />
                   </div>

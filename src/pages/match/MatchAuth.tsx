@@ -97,7 +97,7 @@ export default function MatchAuth() {
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           <Button type="submit" disabled={loading} className="w-full bg-white text-black hover:bg-white/90">
             {loading ? "..." : mode === "signup" ? "Create Account" : "Sign In"}
