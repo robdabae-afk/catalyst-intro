@@ -155,9 +155,7 @@ export default function AppSignup() {
             textAlign: "center",
           }}
         >
-          Where founders
-          <br />
-          meet capital.
+          Back the next unicorn before anyone else.
         </div>
 
         {/* Description */}
