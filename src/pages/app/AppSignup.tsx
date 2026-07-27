@@ -175,7 +175,7 @@ export default function AppSignup() {
             textAlign: "center",
           }}
         >
-          Curated intros between founders and investors who actually fit. No noise, no cold outreach.
+          &nbsp;
         </div>
 
         {/* Create account button */}
