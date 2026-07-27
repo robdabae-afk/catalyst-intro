@@ -205,7 +205,7 @@ export default function AppSignup() {
               fontWeight: 500,
             }}
           >
-            Create account
+            Join beta now
           </span>
           {/* Arrow icon */}
           <svg
