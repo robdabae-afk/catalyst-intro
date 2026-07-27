@@ -9,7 +9,6 @@ import {
   Grid2X2,
   TrendingUp,
   BarChart2,
-  ShieldCheck,
   Briefcase,
   DollarSign,
   FileText,
@@ -104,6 +103,7 @@ export default function Onboarding() {
       desc: "Startup name, HQ location",
       icon: <Building2 size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.startup_name && roleProfile.startup_name !== "Untitled",
+      onClick: () => navigate("/settings#section-startup"),
     },
     {
       id: "avatar",
@@ -111,6 +111,7 @@ export default function Onboarding() {
       desc: "Add one — recommended",
       icon: <Camera size={15} className="text-[#C6A02C]" />,
       done: !!profile?.avatar_url,
+      onClick: () => navigate("/settings#section-photos"),
     },
     {
       id: "oneliner",
@@ -118,6 +119,7 @@ export default function Onboarding() {
       desc: "One line on what you do",
       icon: <MessageSquare size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.one_liner,
+      onClick: () => navigate("/settings#section-startup"),
     },
     {
       id: "stage",
@@ -125,6 +127,7 @@ export default function Onboarding() {
       desc: "Pre-seed to Series B",
       icon: <TrendingUp size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.stage,
+      onClick: () => navigate("/settings#section-startup"),
     },
     {
       id: "industries",
@@ -132,6 +135,7 @@ export default function Onboarding() {
       desc: "Pick your sectors",
       icon: <Grid2X2 size={15} className="text-[#C6A02C]" />,
       done: Array.isArray(roleProfile?.industry) && roleProfile.industry.length > 0,
+      onClick: () => navigate("/settings#section-startup"),
     },
     {
       id: "traction",
@@ -139,18 +143,12 @@ export default function Onboarding() {
       desc: "MRR, growth, burn",
       icon: <BarChart2 size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.traction || !!roleProfile?.mrr,
+      onClick: () => navigate("/settings#section-startup"),
     },
     {
       id: "identity",
       title: "Verify identity",
-      desc: "Confirm 18+ & agree to terms",
-      icon: <ShieldCheck size={15} className="text-[#C6A02C]" />,
-      done: !!profile?.legal_accepted_at,
-    },
-    {
-      id: "id_verification",
-      title: "Government ID verification",
-      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Upload ID + selfie for manual review",
+      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Government ID + selfie, manually reviewed",
       icon: <IdCard size={15} className="text-[#C6A02C]" />,
       done: idVerificationStatus === "approved",
       onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),
@@ -171,6 +169,7 @@ export default function Onboarding() {
       desc: "Add one — recommended",
       icon: <Camera size={15} className="text-[#C6A02C]" />,
       done: !!profile?.avatar_url,
+      onClick: () => navigate("/settings#section-photos"),
     },
     {
       id: "investor_type",
@@ -178,6 +177,7 @@ export default function Onboarding() {
       desc: "Angel, VC, syndicate…",
       icon: <Briefcase size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.investor_type,
+      onClick: () => navigate("/settings#section-investor"),
     },
     {
       id: "accreditation",
@@ -185,6 +185,7 @@ export default function Onboarding() {
       desc: "Required by law",
       icon: <FileCheck2 size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.accreditation_status,
+      onClick: () => navigate("/settings#section-investor"),
     },
     {
       id: "sectors",
@@ -192,6 +193,7 @@ export default function Onboarding() {
       desc: "Pick your focus",
       icon: <Grid2X2 size={15} className="text-[#C6A02C]" />,
       done: Array.isArray(roleProfile?.sectors_of_interest) && roleProfile.sectors_of_interest.length > 0,
+      onClick: () => navigate("/settings#section-investor"),
     },
     {
       id: "check_size",
@@ -199,6 +201,7 @@ export default function Onboarding() {
       desc: "Typical ticket range",
       icon: <DollarSign size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.typical_check_size,
+      onClick: () => navigate("/settings#section-investor"),
     },
     {
       id: "thesis",
@@ -206,18 +209,12 @@ export default function Onboarding() {
       desc: "What you back & why",
       icon: <FileText size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.investment_thesis,
+      onClick: () => navigate("/settings#section-investor"),
     },
     {
       id: "identity",
       title: "Verify identity",
-      desc: "Confirm 18+ & agree to terms",
-      icon: <ShieldCheck size={15} className="text-[#C6A02C]" />,
-      done: !!profile?.legal_accepted_at,
-    },
-    {
-      id: "id_verification",
-      title: "Government ID verification",
-      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Upload ID + selfie for manual review",
+      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Government ID + selfie, manually reviewed",
       icon: <IdCard size={15} className="text-[#C6A02C]" />,
       done: idVerificationStatus === "approved",
       onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),

@@ -187,6 +187,24 @@ const Settings = () => {
         loadUserData();
     }, [navigate]);
 
+    // Deep-link support: scroll to and briefly highlight the section named in the URL hash
+    // (used by the onboarding checklist to jump straight to the relevant field group).
+    useEffect(() => {
+        if (loading) return;
+        const hash = window.location.hash.replace('#', '');
+        if (!hash) return;
+        const el = document.getElementById(hash);
+        if (!el) return;
+
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.transition = 'box-shadow 0.3s ease';
+        el.style.boxShadow = '0 0 0 2px hsl(var(--primary))';
+        const timer = setTimeout(() => {
+            el.style.boxShadow = '';
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [loading]);
+
     const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !userId) return;
@@ -451,7 +469,7 @@ const Settings = () => {
                 </Card>
 
                 {/* Banner & Avatar Section */}
-                <Card>
+                <Card id="section-photos">
                     <CardHeader>
                         <CardTitle>Profile Photos</CardTitle>
                         <CardDescription>Update your avatar and banner image</CardDescription>
@@ -526,7 +544,7 @@ const Settings = () => {
                 </Card>
 
                 {/* Identity Verification */}
-                <Card>
+                <Card id="section-verification">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <ShieldCheck className="w-5 h-5" />
@@ -640,7 +658,7 @@ const Settings = () => {
 
                 {/* Founder-specific fields */}
                 {userType === 'founder' && (
-                    <Card>
+                    <Card id="section-startup">
                         <CardHeader>
                             <CardTitle>Startup Details</CardTitle>
                         </CardHeader>
@@ -923,7 +941,7 @@ const Settings = () => {
 
                 {/* Investor-specific fields */}
                 {userType === 'investor' && (
-                    <Card>
+                    <Card id="section-investor">
                         <CardHeader>
                             <CardTitle>Investor Details</CardTitle>
                         </CardHeader>
