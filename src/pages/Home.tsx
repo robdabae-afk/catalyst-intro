@@ -82,7 +82,7 @@ export default function Home() {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-14 pb-2">
+      <div className="flex items-center justify-between px-6 pt-10 pb-2">
         <div>
           <p style={{ color: "#94908A", fontSize: 13 }}>Welcome back,</p>
           <h1 style={{ color: "#F6F5F2", fontSize: 24, fontWeight: 700, lineHeight: 1.2 }}>
@@ -108,9 +108,9 @@ export default function Home() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto pb-24 px-6 space-y-4" style={{ paddingTop: 8 }}>
+      <div className="flex-1 overflow-y-auto pb-20 px-6 space-y-4" style={{ paddingTop: 8 }}>
         {/* Priority Match Card */}
-        <GlassCard className="relative px-6 py-8">
+        <GlassCard className="relative px-6 py-5">
           <p
             style={{
               color: "#E7CB7E",
@@ -122,7 +122,7 @@ export default function Home() {
           >
             Priority match
           </p>
-          <p style={{ color: "#F6F5F2", fontSize: 32, fontWeight: 700, marginTop: 4 }}>
+          <p style={{ color: "#F6F5F2", fontSize: 28, fontWeight: 700, marginTop: 4 }}>
             {newMatchCount > 0 ? `${newMatchCount} new` : "0 new"}
           </p>
           <p style={{ color: "#94908A", fontSize: 13, maxWidth: 210 }}>{matchLabel}</p>
@@ -164,7 +164,7 @@ export default function Home() {
         ) : events.length === 0 ? (
           <p style={{ color: "#94908A", fontSize: 13 }}>No upcoming events.</p>
         ) : (
-          events.slice(0, 3).map((event) => <EventCard key={event.id} event={event} />)
+          events.slice(0, 2).map((event) => <EventCard key={event.id} event={event} />)
         )}
 
         {/* Latest Updates */}
@@ -223,7 +223,7 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
 
 function SectionHeader({ label, onViewAll }: { label: string; onViewAll: () => void }) {
   return (
-    <div className="flex items-center justify-between pt-3">
+    <div className="flex items-center justify-between pt-1">
       <p
         style={{
           color: "#94908A",
@@ -250,14 +250,14 @@ function EventCard({ event }: { event: any }) {
   const isToday = new Date().toDateString() === date.toDateString();
 
   return (
-    <GlassCard className="flex items-center gap-3.5 px-4 py-3.5">
+    <GlassCard className="flex items-center gap-3.5 px-4 py-2.5">
       {/* Date badge */}
       <div
         className="flex flex-col items-center justify-center shrink-0"
         style={{
           width: 52,
-          paddingTop: 8,
-          paddingBottom: 8,
+          paddingTop: 6,
+          paddingBottom: 6,
           background: "rgba(198,160,44,0.14)",
           borderRadius: 13,
           outline: "1px solid rgba(198,160,44,0.25)",
@@ -318,14 +318,14 @@ function NewsCard({ item }: { item: any }) {
       className="shrink-0 relative flex flex-col"
       style={{
         width: 236,
-        minHeight: 160,
+        minHeight: 130,
         background:
           "linear-gradient(162deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
         boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
         borderRadius: 18,
         outline: "1px solid rgba(255,255,255,0.12)",
         backdropFilter: "blur(10px)",
-        padding: "19px 17px 17px",
+        padding: "14px 14px 12px",
       }}
     >
       <span
@@ -345,7 +345,7 @@ function NewsCard({ item }: { item: any }) {
             lineHeight: "1.45",
             marginTop: 4,
             display: "-webkit-box",
-            WebkitLineClamp: 2,
+            WebkitLineClamp: 1,
             WebkitBoxOrient: "vertical" as any,
             overflow: "hidden",
           }}
