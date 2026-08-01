@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+let channelSeq = 0;
+
 export function useUnreadMessages() {
   const [count, setCount] = useState(0);
+
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -22,13 +25,18 @@ export function useUnreadMessages() {
 
     // Subscribe to changes — unique topic per hook instance so multiple
     // mounts (e.g. Messages page + menu drawer) don't collide
-    const channel = supabase
-      .channel(`unread-messages-${Math.random().toString(36).slice(2)}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchCount)
-      .subscribe();
+    const topic = `unread-messages-${++channelSeq}-${Date.now()}`;
+    const channel = supabase.channel(topic);
+    channel.on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'messages' },
+      () => { fetchCount(); },
+    );
+    channel.subscribe();
 
     return () => { supabase.removeChannel(channel); };
   }, []);
+
 
   return count;
 }
