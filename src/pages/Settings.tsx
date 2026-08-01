@@ -2,26 +2,47 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2, LogOut, ShieldCheck, Clock, ShieldX, ShieldQuestion, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Upload,
+  User,
+  Camera,
+  Loader2,
+  MessageCircle,
+  SlidersHorizontal,
+  Gift,
+  AlertTriangle,
+  Video,
+  Coins,
+  RotateCcw,
+  Share2,
+  LogOut,
+  ShieldCheck,
+  Clock,
+  ShieldX,
+  ShieldQuestion,
+  X,
+  FileText,
+  Users,
+  Briefcase,
+  Crown,
+  Check,
+} from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
-import { SubscriptionSettings } from "@/components/SubscriptionSettings";
+import { useSubscription } from "@/hooks/useSubscription";
+import { getProPrice } from "@/lib/stripe-constants";
 import { SpotlightManager } from "@/components/SpotlightManager";
 import { AdminRevenueAdjustment } from "@/components/AdminRevenueAdjustment";
 import { TokenBalance } from "@/components/TokenBalance";
 import { TokenPurchaseDialog } from "@/components/TokenPurchaseDialog";
-import { useTokens } from "@/hooks/useTokens";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useSwipeHistory } from "@/hooks/useSwipeHistory";
 import {
@@ -36,1455 +57,1193 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const GOLD = "#C6A02C";
+const GOLD_LIGHT = "#E7CB7E";
+const TEXT = "#F6F5F2";
+const TEXT_DIM = "#94908A";
+const TEXT_LABEL = "#CFCCC5";
+const TEXT_VALUE = "#F2F0EA";
+const TEXT_DISABLED = "#5F5C57";
+const DARK_ON_GOLD = "#2A2005";
+
+const glass = "bg-white/[0.06] shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.24)] outline outline-1 outline-white/[0.10] backdrop-blur-[10px]";
+const fieldCls = `w-full h-[46px] px-[14px] rounded-[14px] ${glass} flex items-center gap-2 text-[14px]`;
+const inputCls = "flex-1 min-w-0 bg-transparent outline-none text-[14px]";
+
 const Settings = () => {
-    const navigate = useNavigate();
-    const { toast } = useToast();
-    const { isAdmin } = useIsAdmin();
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [resettingHistory, setResettingHistory] = useState(false);
-    const [uploadingAvatar, setUploadingAvatar] = useState(false);
-    const [uploadingBanner, setUploadingBanner] = useState(false);
-    const [uploadingVideo, setUploadingVideo] = useState(false);
-    const [supportChatOpen, setSupportChatOpen] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { isAdmin } = useIsAdmin();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [resettingHistory, setResettingHistory] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [supportChatOpen, setSupportChatOpen] = useState(false);
 
-    const [userId, setUserId] = useState<string | null>(null);
-    const [userType, setUserType] = useState<'founder' | 'investor' | null>(null);
-    const [verificationCaptureOpen, setVerificationCaptureOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userType, setUserType] = useState<"founder" | "investor" | null>(null);
+  const [verificationCaptureOpen, setVerificationCaptureOpen] = useState(false);
 
-    // Swipe history hook
-    const { resetSwipeHistory } = useSwipeHistory(userId || undefined);
+  const { resetSwipeHistory } = useSwipeHistory(userId || undefined);
+  const { status: idVerificationStatus, record: idVerificationRecord, refetch: refetchIdVerification } = useIdentityVerification(userId);
+  const { isPro, expiresAt, hasStripeSubscription } = useSubscription(userId);
+  const [subscribing, setSubscribing] = useState(false);
 
-    // Identity verification
-    const { status: idVerificationStatus, record: idVerificationRecord, refetch: refetchIdVerification } = useIdentityVerification(userId);
+  const handleSubscribe = async () => {
+    setSubscribing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ variant: "destructive", title: "Please sign in to subscribe" });
+        return;
+      }
+      const targetPlan = userType === "founder" ? "startup_pro" : "investor_pro";
+      const { data, error } = await supabase.functions.invoke("manage-subscription", {
+        body: { action: "create_checkout", plan: targetPlan },
+      });
+      if (error) throw error;
+      if (data?.error?.includes("not configured")) {
+        toast({ variant: "destructive", title: "Stripe not configured", description: "Payment processing is not yet available." });
+        return;
+      }
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Subscription error", description: error.message || "Failed to start checkout" });
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
-    const handleResetSwipeHistory = async () => {
-        setResettingHistory(true);
-        const success = await resetSwipeHistory();
-        setResettingHistory(false);
-        if (success) {
-            toast({ title: "Swipe history reset", description: "You can now see all profiles again." });
-        } else {
-            toast({ variant: "destructive", title: "Failed to reset", description: "Please try again." });
+  const handleManageBilling = async () => {
+    setSubscribing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("manage-subscription", { body: { action: "create_portal" } });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message || "Failed to open billing portal" });
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
+  const handleResetSwipeHistory = async () => {
+    setResettingHistory(true);
+    const success = await resetSwipeHistory();
+    setResettingHistory(false);
+    if (success) {
+      toast({ title: "Swipe history reset", description: "You can now see all profiles again." });
+    } else {
+      toast({ variant: "destructive", title: "Failed to reset", description: "Please try again." });
+    }
+  };
+
+  // Profile fields
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+
+  // Founder fields
+  const [startupName, setStartupName] = useState("");
+  const [oneLiner, setOneLiner] = useState("");
+  const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
+  const [traction, setTraction] = useState("");
+  const [preferredCity, setPreferredCity] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyState, setCompanyState] = useState("");
+  const [companyAddress, setCompanyAddress] = useState("");
+  const [founderBannerUrl, setFounderBannerUrl] = useState("");
+  const [pitchDeckUrl, setPitchDeckUrl] = useState("");
+  const [pitchDeckVisibility, setPitchDeckVisibility] = useState<"public" | "private">("public");
+  const [videoUrl, setVideoUrl] = useState("");
+  const [fundingAmount, setFundingAmount] = useState("");
+  const [mrr, setMrr] = useState("");
+  const [backedBy, setBackedBy] = useState("");
+  const [einNumber, setEinNumber] = useState("");
+  const [location, setLocation] = useState("");
+  const [stage, setStage] = useState("");
+  const [teamMembers, setTeamMembers] = useState<{ name: string; title: string }[]>([]);
+  const [headcount, setHeadcount] = useState("");
+
+  // Investor fields
+  const [firmName, setFirmName] = useState("");
+  const [position, setPosition] = useState("");
+  const [investorBannerUrl, setInvestorBannerUrl] = useState("");
+  const [investorType, setInvestorType] = useState("");
+  const [accreditationStatus, setAccreditationStatus] = useState("");
+  const [investmentCount, setInvestmentCount] = useState("");
+  const [notablePortfolio, setNotablePortfolio] = useState("");
+  const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
+  const [typicalCheckSize, setTypicalCheckSize] = useState("");
+  const [investmentThesis, setInvestmentThesis] = useState("");
+  const [portfolioCompanies, setPortfolioCompanies] = useState<{ name: string; logo_url: string | null }[]>([]);
+  const [responseRate, setResponseRate] = useState("");
+  const [avgReplyTime, setAvgReplyTime] = useState("");
+  const [responsivenessStatus, setResponsivenessStatus] = useState("");
+  const [dealsLast12mo, setDealsLast12mo] = useState("");
+  const [totalInvested, setTotalInvested] = useState("");
+  const [notableExits, setNotableExits] = useState("");
+  const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate("/");
+        return;
+      }
+
+      setUserId(user.id);
+
+      const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+
+      if (!profile) {
+        navigate("/");
+        return;
+      }
+
+      setUserType(profile.user_type);
+      setName(profile.name || "");
+      setEmail(profile.email || "");
+      setPhone((profile as any).phone || "");
+      setAvatarUrl(profile.avatar_url || "");
+      setLinkedinUrl(profile.linkedin_url || "");
+
+      if (profile.user_type === "founder") {
+        const { data: founderProfile } = await supabase
+          .from("founder_profiles")
+          .select("*")
+          .eq("profile_id", user.id)
+          .maybeSingle();
+
+        if (founderProfile) {
+          setStartupName(founderProfile.startup_name || "");
+          setOneLiner(founderProfile.one_liner || "");
+          setSelectedIndustries(founderProfile.industry || []);
+          setTraction(founderProfile.traction || "");
+          setPreferredCity(founderProfile.preferred_city || "");
+          setCompanyName(founderProfile.company_name || "");
+          setCompanyState(founderProfile.company_state || "");
+          setCompanyAddress(founderProfile.company_address || "");
+          setFounderBannerUrl(founderProfile.banner_url || "");
+          setPitchDeckUrl(founderProfile.pitch_deck_url || "");
+          setPitchDeckVisibility((founderProfile.pitch_deck_visibility as "public" | "private") || "public");
+          setVideoUrl(founderProfile.video_url || "");
+          setFundingAmount(founderProfile.funding_amount || "");
+          setMrr(founderProfile.mrr || "");
+          setBackedBy(founderProfile.backed_by || "");
+          setEinNumber(founderProfile.ein_number || "");
+          setLocation(founderProfile.location || "");
+          setStage(founderProfile.stage || "");
+          setTeamMembers((founderProfile as any).team_members || []);
+          setHeadcount((founderProfile as any).headcount?.toString() || "");
         }
+      } else {
+        const { data: investorProfile } = await supabase
+          .from("investor_profiles")
+          .select("*")
+          .eq("profile_id", user.id)
+          .maybeSingle();
+
+        if (investorProfile) {
+          setFirmName(investorProfile.firm_name || "");
+          setPosition(investorProfile.position || "");
+          setInvestorBannerUrl(investorProfile.banner_url || "");
+          setInvestorType(investorProfile.investor_type || "");
+          setAccreditationStatus(investorProfile.accreditation_status || "");
+          setInvestmentCount(investorProfile.investment_count?.toString() || "");
+          setNotablePortfolio(investorProfile.notable_portfolio || "");
+          setSectorsOfInterest(investorProfile.sectors_of_interest || []);
+          setTypicalCheckSize(investorProfile.typical_check_size || "");
+          setInvestmentThesis(investorProfile.investment_thesis || "");
+          setPortfolioCompanies((investorProfile as any).portfolio_companies || []);
+          setResponseRate((investorProfile as any).response_rate?.toString() || "");
+          setAvgReplyTime((investorProfile as any).avg_reply_time || "");
+          setResponsivenessStatus((investorProfile as any).responsiveness_status || "");
+          setDealsLast12mo((investorProfile as any).deals_last_12mo?.toString() || "");
+          setTotalInvested((investorProfile as any).total_invested || "");
+          setNotableExits((investorProfile as any).notable_exits?.toString() || "");
+        }
+      }
+
+      setLoading(false);
     };
 
-    // Profile fields
-    const [name, setName] = useState("");
-    const [avatarUrl, setAvatarUrl] = useState("");
-    const [linkedinUrl, setLinkedinUrl] = useState("");
+    loadUserData();
+  }, [navigate]);
 
-    // Founder fields
-    const [startupName, setStartupName] = useState("");
-    const [oneLiner, setOneLiner] = useState("");
-    const [selectedIndustries, setSelectedIndustries] = useState<string[]>([]);
-    const [traction, setTraction] = useState("");
-    const [preferredCity, setPreferredCity] = useState("");
-    const [companyName, setCompanyName] = useState("");
-    const [companyState, setCompanyState] = useState("");
-    const [companyAddress, setCompanyAddress] = useState("");
-    const [founderBannerUrl, setFounderBannerUrl] = useState("");
-    const [pitchDeckUrl, setPitchDeckUrl] = useState("");
-    const [pitchDeckVisibility, setPitchDeckVisibility] = useState<'public' | 'private'>('public');
-    const [videoUrl, setVideoUrl] = useState("");
-    const [fundingAmount, setFundingAmount] = useState("");
-    const [mrr, setMrr] = useState("");
-    const [backedBy, setBackedBy] = useState("");
-    const [einNumber, setEinNumber] = useState("");
-    const [location, setLocation] = useState("");
-    const [stage, setStage] = useState("");
-    const [teamMembers, setTeamMembers] = useState<{ name: string; title: string }[]>([]);
-    const [headcount, setHeadcount] = useState("");
+  // Deep-link support: scroll to and briefly highlight the section named in the URL hash
+  // (used by the onboarding checklist to jump straight to the relevant field group).
+  useEffect(() => {
+    if (loading) return;
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    const el = document.getElementById(hash);
+    if (!el) return;
 
-    // Investor fields
-    const [firmName, setFirmName] = useState("");
-    const [position, setPosition] = useState("");
-    const [investorBannerUrl, setInvestorBannerUrl] = useState("");
-    const [investorType, setInvestorType] = useState("");
-    const [accreditationStatus, setAccreditationStatus] = useState("");
-    const [investmentCount, setInvestmentCount] = useState("");
-    const [notablePortfolio, setNotablePortfolio] = useState("");
-    const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
-    const [typicalCheckSize, setTypicalCheckSize] = useState("");
-    const [investmentThesis, setInvestmentThesis] = useState("");
-    const [portfolioCompanies, setPortfolioCompanies] = useState<{ name: string; logo_url: string | null }[]>([]);
-    const [responseRate, setResponseRate] = useState("");
-    const [avgReplyTime, setAvgReplyTime] = useState("");
-    const [responsivenessStatus, setResponsivenessStatus] = useState("");
-    const [dealsLast12mo, setDealsLast12mo] = useState("");
-    const [totalInvested, setTotalInvested] = useState("");
-    const [notableExits, setNotableExits] = useState("");
-    const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.style.transition = "box-shadow 0.3s ease";
+    el.style.boxShadow = `0 0 0 2px ${GOLD}`;
+    const timer = setTimeout(() => {
+      el.style.boxShadow = "";
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
-    useEffect(() => {
-        const loadUserData = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                navigate('/');
-                return;
-            }
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
 
-            setUserId(user.id);
+    setUploadingAvatar(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/avatar.${fileExt}`;
 
-            // Load profile
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
 
-            if (!profile) {
-                navigate('/');
-                return;
-            }
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-            setUserType(profile.user_type);
-            setName(profile.name || "");
-            setAvatarUrl(profile.avatar_url || "");
-            setLinkedinUrl(profile.linkedin_url || "");
+      setAvatarUrl(publicUrl);
+      toast({ title: "Avatar uploaded successfully" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
-            if (profile.user_type === 'founder') {
-                const { data: founderProfile } = await supabase
-                    .from('founder_profiles')
-                    .select('*')
-                    .eq('profile_id', user.id)
-                    .maybeSingle();
+  const handlePortfolioLogoUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
 
-                if (founderProfile) {
-                    setStartupName(founderProfile.startup_name || "");
-                    setOneLiner(founderProfile.one_liner || "");
-                    setSelectedIndustries(founderProfile.industry || []);
-                    setTraction(founderProfile.traction || "");
-                    setPreferredCity(founderProfile.preferred_city || "");
-                    setCompanyName(founderProfile.company_name || "");
-                    setCompanyState(founderProfile.company_state || "");
-                    setCompanyAddress(founderProfile.company_address || "");
-                    setFounderBannerUrl(founderProfile.banner_url || "");
-                    setPitchDeckUrl(founderProfile.pitch_deck_url || "");
-                    setPitchDeckVisibility((founderProfile.pitch_deck_visibility as 'public' | 'private') || 'public');
-                    setVideoUrl(founderProfile.video_url || "");
-                    setFundingAmount(founderProfile.funding_amount || "");
-                    setMrr(founderProfile.mrr || "");
-                    setBackedBy(founderProfile.backed_by || "");
-                    setEinNumber(founderProfile.ein_number || "");
-                    setLocation(founderProfile.location || "");
-                    setStage(founderProfile.stage || "");
-                    setTeamMembers((founderProfile as any).team_members || []);
-                    setHeadcount((founderProfile as any).headcount?.toString() || "");
-                }
-            } else {
-                const { data: investorProfile } = await supabase
-                    .from('investor_profiles')
-                    .select('*')
-                    .eq('profile_id', user.id)
-                    .maybeSingle();
+    setUploadingLogoIndex(index);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/portfolio-${index}-${Date.now()}.${fileExt}`;
 
-                if (investorProfile) {
-                    setFirmName(investorProfile.firm_name || "");
-                    setPosition(investorProfile.position || "");
-                    setInvestorBannerUrl(investorProfile.banner_url || "");
-                    setInvestorType(investorProfile.investor_type || "");
-                    setAccreditationStatus(investorProfile.accreditation_status || "");
-                    setInvestmentCount(investorProfile.investment_count?.toString() || "");
-                    setNotablePortfolio(investorProfile.notable_portfolio || "");
-                    setSectorsOfInterest(investorProfile.sectors_of_interest || []);
-                    setTypicalCheckSize(investorProfile.typical_check_size || "");
-                    setInvestmentThesis(investorProfile.investment_thesis || "");
-                    setPortfolioCompanies((investorProfile as any).portfolio_companies || []);
-                    setResponseRate((investorProfile as any).response_rate?.toString() || "");
-                    setAvgReplyTime((investorProfile as any).avg_reply_time || "");
-                    setResponsivenessStatus((investorProfile as any).responsiveness_status || "");
-                    setDealsLast12mo((investorProfile as any).deals_last_12mo?.toString() || "");
-                    setTotalInvested((investorProfile as any).total_invested || "");
-                    setNotableExits((investorProfile as any).notable_exits?.toString() || "");
-                }
-            }
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
 
-            setLoading(false);
-        };
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-        loadUserData();
-    }, [navigate]);
+      setPortfolioCompanies((prev) => prev.map((c, idx) => (idx === index ? { ...c, logo_url: publicUrl } : c)));
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Logo upload failed", description: error.message });
+    } finally {
+      setUploadingLogoIndex(null);
+    }
+  };
 
-    // Deep-link support: scroll to and briefly highlight the section named in the URL hash
-    // (used by the onboarding checklist to jump straight to the relevant field group).
-    useEffect(() => {
-        if (loading) return;
-        const hash = window.location.hash.replace('#', '');
-        if (!hash) return;
-        const el = document.getElementById(hash);
-        if (!el) return;
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
 
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.style.transition = 'box-shadow 0.3s ease';
-        el.style.boxShadow = '0 0 0 2px hsl(var(--primary))';
-        const timer = setTimeout(() => {
-            el.style.boxShadow = '';
-        }, 2000);
-        return () => clearTimeout(timer);
-    }, [loading]);
+    setUploadingBanner(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/banner.${fileExt}`;
 
-    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !userId) return;
+      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
 
-        setUploadingAvatar(true);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const filePath = `${userId}/avatar.${fileExt}`;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, file, { upsert: true });
+      if (userType === "founder") {
+        setFounderBannerUrl(publicUrl);
+      } else {
+        setInvestorBannerUrl(publicUrl);
+      }
+      toast({ title: "Banner uploaded successfully" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingBanner(false);
+    }
+  };
 
-            if (uploadError) throw uploadError;
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
 
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            setAvatarUrl(publicUrl);
-            toast({ title: "Avatar uploaded successfully" });
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Upload failed", description: error.message });
-        } finally {
-            setUploadingAvatar(false);
-        }
-    };
-
-    const handlePortfolioLogoUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !userId) return;
-
-        setUploadingLogoIndex(index);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const filePath = `${userId}/portfolio-${index}-${Date.now()}.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, file, { upsert: true });
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            setPortfolioCompanies((prev) => prev.map((c, idx) => idx === index ? { ...c, logo_url: publicUrl } : c));
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Logo upload failed", description: error.message });
-        } finally {
-            setUploadingLogoIndex(null);
-        }
-    };
-
-    const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !userId) return;
-
-        setUploadingBanner(true);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const filePath = `${userId}/banner.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, file, { upsert: true });
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            if (userType === 'founder') {
-                setFounderBannerUrl(publicUrl);
-            } else {
-                setInvestorBannerUrl(publicUrl);
-            }
-            toast({ title: "Banner uploaded successfully" });
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Upload failed", description: error.message });
-        } finally {
-            setUploadingBanner(false);
-        }
-    };
-
-    const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !userId) return;
-
-        // Validate file size (100MB max)
-        if (file.size > 100 * 1024 * 1024) {
-            toast({
-                variant: "destructive",
-                title: "File too large",
-                description: "Please select a video under 100MB"
-            });
-            return;
-        }
-
-        // Validate file type
-        const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v'];
-        if (!allowedTypes.includes(file.type)) {
-            toast({
-                variant: "destructive",
-                title: "Invalid file type",
-                description: "Please select an MP4, WebM, or MOV video"
-            });
-            return;
-        }
-
-        setUploadingVideo(true);
-        try {
-            const fileExt = file.name.split('.').pop();
-            const filePath = `${userId}/pitch-video.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('videos')
-                .upload(filePath, file, { upsert: true });
-
-            if (uploadError) throw uploadError;
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('videos')
-                .getPublicUrl(filePath);
-
-            setVideoUrl(publicUrl);
-            toast({ title: "Video uploaded successfully" });
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Upload failed", description: error.message });
-        } finally {
-            setUploadingVideo(false);
-        }
-    };
-
-    const handleSave = async () => {
-        if (!userId) return;
-
-        setSaving(true);
-        try {
-            // Update main profile with update tracking
-            const { error: profileError } = await supabase
-                .from('profiles')
-                .update({
-                    name,
-                    avatar_url: avatarUrl,
-                    linkedin_url: linkedinUrl,
-                    has_pending_update: true,
-                    last_profile_update_at: new Date().toISOString()
-                })
-                .eq('id', userId);
-
-            if (profileError) throw profileError;
-
-            if (userType === 'founder') {
-                const { error: founderError } = await supabase
-                    .from('founder_profiles')
-                    .update({
-                        startup_name: startupName,
-                        one_liner: oneLiner,
-                        industry: selectedIndustries,
-                        traction,
-                        preferred_city: preferredCity,
-                        company_name: companyName,
-                        company_state: companyState,
-                        company_address: companyAddress,
-                        banner_url: founderBannerUrl,
-                        pitch_deck_url: pitchDeckUrl,
-                        pitch_deck_visibility: pitchDeckVisibility,
-                        video_url: videoUrl || null,
-
-                        funding_amount: fundingAmount || null,
-                        mrr: mrr || null,
-                        backed_by: backedBy || null,
-                        ein_number: einNumber || null,
-                        location: location || null,
-                        stage: (stage || null) as any,
-                        team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
-                        headcount: headcount ? parseInt(headcount) : null
-                    })
-                    .eq('profile_id', userId);
-
-                if (founderError) throw founderError;
-            } else {
-                const { error: investorError } = await supabase
-                    .from('investor_profiles')
-                    .update({
-                        firm_name: firmName,
-                        position: position,
-                        banner_url: investorBannerUrl,
-                        investor_type: investorType || null,
-                        accreditation_status: accreditationStatus || null,
-                        investment_count: investmentCount ? parseInt(investmentCount) : null,
-                        notable_portfolio: notablePortfolio || null,
-                        sectors_of_interest: sectorsOfInterest,
-                        typical_check_size: typicalCheckSize || null,
-                        investment_thesis: investmentThesis || null,
-                        portfolio_companies: portfolioCompanies.filter((c) => c.name.trim()) as any,
-                        response_rate: responseRate ? parseInt(responseRate) : null,
-                        avg_reply_time: avgReplyTime || null,
-                        responsiveness_status: responsivenessStatus || null,
-                        deals_last_12mo: dealsLast12mo ? parseInt(dealsLast12mo) : null,
-                        total_invested: totalInvested || null,
-                        notable_exits: notableExits ? parseInt(notableExits) : null
-                    } as any)
-                    .eq('profile_id', userId);
-
-                if (investorError) throw investorError;
-            }
-
-            toast({ title: "Profile updated successfully" });
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Save failed", description: error.message });
-        } finally {
-            setSaving(false);
-        }
-    };
-
-
-
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
+    if (file.size > 100 * 1024 * 1024) {
+      toast({ variant: "destructive", title: "File too large", description: "Please select a video under 100MB" });
+      return;
     }
 
-    const bannerUrl = userType === 'founder' ? founderBannerUrl : investorBannerUrl;
+    const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-m4v"];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ variant: "destructive", title: "Invalid file type", description: "Please select an MP4, WebM, or MOV video" });
+      return;
+    }
 
+    setUploadingVideo(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/pitch-video.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage.from("videos").upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage.from("videos").getPublicUrl(filePath);
+
+      setVideoUrl(publicUrl);
+      toast({ title: "Video uploaded successfully" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!userId) return;
+
+    setSaving(true);
+    try {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          name,
+          avatar_url: avatarUrl,
+          linkedin_url: linkedinUrl,
+          phone: phone || null,
+          has_pending_update: true,
+          last_profile_update_at: new Date().toISOString(),
+        } as any)
+        .eq("id", userId);
+
+      if (profileError) throw profileError;
+
+      if (userType === "founder") {
+        const { error: founderError } = await supabase
+          .from("founder_profiles")
+          .update({
+            startup_name: startupName,
+            one_liner: oneLiner,
+            industry: selectedIndustries,
+            traction,
+            preferred_city: preferredCity,
+            company_name: companyName,
+            company_state: companyState,
+            company_address: companyAddress,
+            banner_url: founderBannerUrl,
+            pitch_deck_url: pitchDeckUrl,
+            pitch_deck_visibility: pitchDeckVisibility,
+            video_url: videoUrl || null,
+
+            funding_amount: fundingAmount || null,
+            mrr: mrr || null,
+            backed_by: backedBy || null,
+            ein_number: einNumber || null,
+            location: location || null,
+            stage: (stage || null) as any,
+            team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
+            headcount: headcount ? parseInt(headcount) : null,
+          })
+          .eq("profile_id", userId);
+
+        if (founderError) throw founderError;
+      } else {
+        const { error: investorError } = await supabase
+          .from("investor_profiles")
+          .update({
+            firm_name: firmName,
+            position: position,
+            banner_url: investorBannerUrl,
+            investor_type: investorType || null,
+            accreditation_status: accreditationStatus || null,
+            investment_count: investmentCount ? parseInt(investmentCount) : null,
+            notable_portfolio: notablePortfolio || null,
+            sectors_of_interest: sectorsOfInterest,
+            typical_check_size: typicalCheckSize || null,
+            investment_thesis: investmentThesis || null,
+            portfolio_companies: portfolioCompanies.filter((c) => c.name.trim()) as any,
+            response_rate: responseRate ? parseInt(responseRate) : null,
+            avg_reply_time: avgReplyTime || null,
+            responsiveness_status: responsivenessStatus || null,
+            deals_last_12mo: dealsLast12mo ? parseInt(dealsLast12mo) : null,
+            total_invested: totalInvested || null,
+            notable_exits: notableExits ? parseInt(notableExits) : null,
+          } as any)
+          .eq("profile_id", userId);
+
+        if (investorError) throw investorError;
+      }
+
+      toast({ title: "Profile updated successfully" });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Save failed", description: error.message });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/");
+  };
+
+  const handleShareProfile = async () => {
+    if (!userId) return;
+    const profileUrl = `${window.location.origin}/profile/${userId}`;
+    try {
+      await navigator.clipboard.writeText(profileUrl);
+      toast({ title: "Link copied to clipboard!", description: "Share this link to invite others to view your profile." });
+    } catch {
+      toast({ variant: "destructive", title: "Failed to copy", description: "Please try again." });
+    }
+  };
+
+  if (loading) {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-                <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
-                    <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-                        <ArrowLeft className="w-5 h-5" />
-                    </Button>
-                    <h1 className="text-xl font-semibold">Profile Settings</h1>
-                    <div className="ml-auto">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={async () => {
-                                await supabase.auth.signOut();
-                                navigate('/');
-                            }}
-                        >
-                            <LogOut className="w-4 h-4 mr-2" />
-                            Log out
-                        </Button>
-                    </div>
+      <div
+        className="min-h-[100dvh] flex items-center justify-center"
+        style={{ background: "#0A0A0C" }}
+      >
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: GOLD }} />
+      </div>
+    );
+  }
+
+  const bannerUrl = userType === "founder" ? founderBannerUrl : investorBannerUrl;
+  const planDetails = getProPrice(userType ?? "founder");
+
+  return (
+    <div
+      className="min-h-[100dvh] flex justify-center"
+      style={{
+        background:
+          "radial-gradient(ellipse 100% 55% at 26% 4%, rgba(198,160,44,0.10) 0%, rgba(198,160,44,0) 44%), radial-gradient(ellipse 90% 45% at 88% 100%, rgba(198,160,44,0.07) 0%, rgba(198,160,44,0) 50%), #0A0A0C",
+      }}
+    >
+      <div className="w-full max-w-[422px] px-4 pb-16">
+        {/* Header */}
+        <div className="flex items-center gap-3 pt-14 pb-4">
+          <button onClick={() => navigate(-1)} className="shrink-0" aria-label="Back">
+            <ArrowLeft size={22} color={TEXT} strokeWidth={1.7} />
+          </button>
+          <h1 className="flex-1" style={{ fontFamily: "Fraunces, serif", fontSize: 26, fontWeight: 600, color: TEXT }}>
+            Profile Settings
+          </h1>
+          <button
+            onClick={handleLogout}
+            className={`h-9 px-4 rounded-full flex items-center gap-1.5 ${glass}`}
+          >
+            <LogOut size={13} color={TEXT_LABEL} strokeWidth={1.8} />
+            <span style={{ color: TEXT_LABEL, fontSize: 12.5, fontWeight: 500 }}>Log out</span>
+          </button>
+        </div>
+
+        <div className="space-y-3.5">
+          {/* Share my profile */}
+          <Section icon={<Share2 size={16} color={GOLD} strokeWidth={1.8} />} title="Share my profile">
+            <p style={descCls}>Copy your unique CATALYST profile link to share with investors, founders, or anyone.</p>
+            <PillPrimary onClick={handleShareProfile} icon={<Share2 size={14} strokeWidth={2} />}>
+              Copy link
+            </PillPrimary>
+          </Section>
+
+          {/* Profile photos */}
+          <Section id="section-photos" icon={<Camera size={16} color={GOLD} strokeWidth={1.8} />} title="Profile photos">
+            <p style={descCls}>Update your avatar and banner image.</p>
+
+            <FieldLabel>Banner image (optional)</FieldLabel>
+            <div
+              className={`relative h-[114px] rounded-[16px] cursor-pointer group overflow-hidden flex flex-col items-center justify-center gap-1.5 ${glass}`}
+              onClick={() => document.getElementById("banner-upload")?.click()}
+            >
+              {bannerUrl ? (
+                <img src={bannerUrl} alt="Banner" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <>
+                  <Upload size={22} color={GOLD} strokeWidth={1.6} />
+                  <span style={{ color: TEXT_DIM, fontSize: 12.5 }}>Click to upload a banner</span>
+                  <span style={{ color: TEXT_DISABLED, fontSize: 11 }}>JPG or PNG, 1600 × 500 recommended</span>
+                </>
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                {uploadingBanner ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : <Upload className="w-5 h-5 text-white" />}
+              </div>
+            </div>
+            <input id="banner-upload" type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
+
+            <FieldLabel>Profile photo</FieldLabel>
+            <div className="flex items-center gap-3.5">
+              <div
+                className={`relative w-16 h-16 shrink-0 rounded-full cursor-pointer group overflow-hidden flex items-center justify-center ${glass}`}
+                style={{ outline: `1px solid ${GOLD}`, outlineOffset: -1 }}
+                onClick={() => document.getElementById("avatar-upload")?.click()}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User size={26} color={GOLD} strokeWidth={1.6} />
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  {uploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Upload className="w-4 h-4 text-white" />}
                 </div>
-            </header>
+              </div>
+              <span style={{ color: TEXT_DIM, fontSize: 12.5 }}>Click to upload a new profile photo</span>
+            </div>
+            <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+          </Section>
 
-            <main className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-                {/* Share Profile Section - Top of Settings */}
-                <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden relative">
-                    <div className="absolute top-2 right-3 text-[10px] font-bold tracking-widest text-primary/40 uppercase">
-                        CATALYST
-                    </div>
-                    <CardContent className="p-6">
-                        <div 
-                            className="flex items-center gap-4 cursor-pointer group"
-                            onClick={async () => {
-                                if (!userId) return;
-                                const profileUrl = `${window.location.origin}/profile/${userId}`;
-                                try {
-                                    await navigator.clipboard.writeText(profileUrl);
-                                    toast({
-                                        title: "Link copied to clipboard!",
-                                        description: "Share this link to invite others to view your profile.",
-                                    });
-                                } catch (error) {
-                                    toast({
-                                        variant: "destructive",
-                                        title: "Failed to copy",
-                                        description: "Please try again.",
-                                    });
-                                }
-                            }}
-                        >
-                            <div className="flex-shrink-0 p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                <Share2 className="w-8 h-8 text-primary" />
-                            </div>
-                            <div className="flex-1">
-                                <h3 className="font-bold text-xl">Share My Profile</h3>
-                                <p className="text-sm text-muted-foreground">
-                                    Copy your unique CATALYST profile link to share with investors, founders, or anyone
-                                </p>
-                            </div>
-                            <Button variant="default" size="lg" className="flex-shrink-0">
-                                Copy Link
-                            </Button>
-                        </div>
-                    </CardContent>
-                </Card>
+          {/* Identity verification */}
+          <Section id="section-verification" icon={<ShieldCheck size={16} color={GOLD} strokeWidth={1.8} />} title="Identity verification">
+            <p style={descCls}>Verify your identity with a government-issued ID and a selfie. Reviewed manually by our team.</p>
 
-                {/* Banner & Avatar Section */}
-                <Card id="section-photos">
-                    <CardHeader>
-                        <CardTitle>Profile Photos</CardTitle>
-                        <CardDescription>Update your avatar and banner image</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {/* Banner */}
-                        <div className="space-y-2">
-                            <Label>Banner Image (Optional)</Label>
-                            <div
-                                className="relative h-40 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 overflow-hidden cursor-pointer group"
-                                onClick={() => document.getElementById('banner-upload')?.click()}
-                            >
-                                {bannerUrl ? (
-                                    <img src={bannerUrl} alt="Banner" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <Camera className="w-10 h-10 text-muted-foreground/50" />
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    {uploadingBanner ? (
-                                        <Loader2 className="w-6 h-6 animate-spin text-white" />
-                                    ) : (
-                                        <Upload className="w-6 h-6 text-white" />
-                                    )}
-                                </div>
-                            </div>
-                            <input
-                                id="banner-upload"
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleBannerUpload}
-                            />
-                        </div>
-
-                        {/* Avatar */}
-                        <div className="space-y-2">
-                            <Label>Profile Photo</Label>
-                            <div className="flex items-center gap-4">
-                                <div
-                                    className="relative cursor-pointer group"
-                                    onClick={() => document.getElementById('avatar-upload')?.click()}
-                                >
-                                    <Avatar className="w-24 h-24 border-4 border-border">
-                                        <AvatarImage src={avatarUrl} />
-                                        <AvatarFallback className="text-2xl">
-                                            <User className="w-10 h-10" />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        {uploadingAvatar ? (
-                                            <Loader2 className="w-6 h-6 animate-spin text-white" />
-                                        ) : (
-                                            <Upload className="w-5 h-5 text-white" />
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                    Click to upload a new profile photo
-                                </div>
-                            </div>
-                            <input
-                                id="avatar-upload"
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleAvatarUpload}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Identity Verification */}
-                <Card id="section-verification">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <ShieldCheck className="w-5 h-5" />
-                            Identity Verification
-                        </CardTitle>
-                        <CardDescription>
-                            Verify your identity with a government-issued ID and a selfie. Reviewed manually by our team.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {idVerificationStatus === 'approved' && (
-                            <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                                <ShieldCheck className="w-5 h-5 text-green-500 shrink-0" />
-                                <div>
-                                    <p className="text-sm font-medium">Verified</p>
-                                    <p className="text-xs text-muted-foreground">Your identity has been confirmed.</p>
-                                </div>
-                            </div>
-                        )}
-                        {idVerificationStatus === 'pending' && (
-                            <div className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-                                <Clock className="w-5 h-5 text-amber-500 shrink-0" />
-                                <div>
-                                    <p className="text-sm font-medium">Pending review</p>
-                                    <p className="text-xs text-muted-foreground">Submitted {idVerificationRecord ? new Date(idVerificationRecord.submitted_at).toLocaleDateString() : ""} — we'll notify you once it's reviewed.</p>
-                                </div>
-                            </div>
-                        )}
-                        {idVerificationStatus === 'rejected' && (
-                            <div className="space-y-3">
-                                <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
-                                    <ShieldX className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-                                    <div>
-                                        <p className="text-sm font-medium">Not approved</p>
-                                        {idVerificationRecord?.rejection_reason && (
-                                            <p className="text-xs text-muted-foreground mt-1">{idVerificationRecord.rejection_reason}</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <Button variant="outline" onClick={() => setVerificationCaptureOpen(true)}>
-                                    <ShieldCheck className="w-4 h-4 mr-2" />
-                                    Resubmit
-                                </Button>
-                            </div>
-                        )}
-                        {idVerificationStatus === 'unverified' && (
-                            <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-muted/50 border border-border">
-                                <div className="flex items-center gap-3">
-                                    <ShieldQuestion className="w-5 h-5 text-muted-foreground shrink-0" />
-                                    <div>
-                                        <p className="text-sm font-medium">Not verified</p>
-                                        <p className="text-xs text-muted-foreground">Required to unlock full platform access.</p>
-                                    </div>
-                                </div>
-                                <Button size="sm" onClick={() => setVerificationCaptureOpen(true)}>
-                                    Verify now
-                                </Button>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Discovery Filters */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <SlidersHorizontal className="w-5 h-5" />
-                            Discovery Filters
-                        </CardTitle>
-                        <CardDescription>Set preferences for the profiles you want to see</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button
-                            variant="outline"
-                            onClick={() => navigate('/filters')}
-                            className="w-full sm:w-auto"
-                        >
-                            <SlidersHorizontal className="w-4 h-4 mr-2" />
-                            Manage Filters
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Basic Info */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Basic Information</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
-                            <Input
-                                id="name"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Your name"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="linkedinUrl">LinkedIn Profile URL</Label>
-                            <Input
-                                id="linkedinUrl"
-                                type="url"
-                                value={linkedinUrl}
-                                onChange={(e) => setLinkedinUrl(e.target.value)}
-                                placeholder="https://linkedin.com/in/..."
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Founder-specific fields */}
-                {userType === 'founder' && (
-                    <Card id="section-startup">
-                        <CardHeader>
-                            <CardTitle>Startup Details</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="startupName">Startup Name</Label>
-                                    <Input
-                                        id="startupName"
-                                        value={startupName}
-                                        onChange={(e) => setStartupName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="location">Location (HQ)</Label>
-                                    <Input
-                                        id="location"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                        placeholder="City, State"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="mrr">MRR / Revenue</Label>
-                                    <Select value={mrr} onValueChange={setMrr}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select MRR" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Pre-revenue">Pre-revenue</SelectItem>
-                                            <SelectItem value="$0 - $1k">$0 - $1k</SelectItem>
-                                            <SelectItem value="$1k - $10k">$1k - $10k</SelectItem>
-                                            <SelectItem value="$10k - $50k">$10k - $50k</SelectItem>
-                                            <SelectItem value="$50k+">$50k+</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="backedBy">Backed By</Label>
-                                    <Input
-                                        id="backedBy"
-                                        value={backedBy}
-                                        onChange={(e) => setBackedBy(e.target.value)}
-                                        placeholder="e.g. YC S23, or 'No lead yet'"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="stage">Company Stage</Label>
-                                    <Select value={stage} onValueChange={setStage}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select stage" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {FUNDING_STAGES.map((s) => (
-                                                <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>Industries</Label>
-                                    <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                                        {INDUSTRIES.map((ind) => (
-                                            <div key={ind} className="flex items-center space-x-2">
-                                                <Checkbox
-                                                    id={`settings-industry-${ind}`}
-                                                    checked={selectedIndustries.includes(ind)}
-                                                    onCheckedChange={() => {
-                                                        setSelectedIndustries(prev =>
-                                                            prev.includes(ind)
-                                                                ? prev.filter(i => i !== ind)
-                                                                : [...prev, ind]
-                                                        );
-                                                    }}
-                                                />
-                                                <label htmlFor={`settings-industry-${ind}`} className="text-sm cursor-pointer">
-                                                    {ind}
-                                                </label>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="oneLiner">One-Liner</Label>
-                                <Textarea
-                                    id="oneLiner"
-                                    value={oneLiner}
-                                    onChange={(e) => setOneLiner(e.target.value)}
-                                    placeholder="A brief description of your startup"
-                                    rows={2}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="traction">Traction</Label>
-                                <Textarea
-                                    id="traction"
-                                    value={traction}
-                                    onChange={(e) => {
-                                        if (e.target.value.length <= 250) {
-                                            setTraction(e.target.value);
-                                        }
-                                    }}
-                                    placeholder="Key metrics, users, revenue, etc."
-                                    rows={2}
-                                    maxLength={250}
-                                    className={traction.length > 250 ? "border-destructive" : ""}
-                                />
-                                <p className={`text-xs ${traction.length > 250 ? "text-destructive" : traction.length > 200 ? "text-amber-500" : "text-muted-foreground"}`}>
-                                    {traction.length}/250 characters
-                                </p>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="preferredCity">Preferred City</Label>
-                                <Input
-                                    id="preferredCity"
-                                    value={preferredCity}
-                                    onChange={(e) => setPreferredCity(e.target.value)}
-                                    placeholder="City for meetings"
-                                />
-                            </div>
-                            
-                            {/* Due Diligence Fields */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Due Diligence</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="einNumber">EIN Number</Label>
-                                    <Input
-                                        id="einNumber"
-                                        value={einNumber}
-                                        onChange={(e) => setEinNumber(e.target.value)}
-                                        placeholder="XX-XXXXXXX"
-                                    />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="companyName">Legal Company Name</Label>
-                                    <Input
-                                        id="companyName"
-                                        value={companyName}
-                                        onChange={(e) => setCompanyName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="companyState">State of Incorporation</Label>
-                                    <Input
-                                        id="companyState"
-                                        value={companyState}
-                                        onChange={(e) => setCompanyState(e.target.value)}
-                                        placeholder="e.g., Delaware"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="companyAddress">Company Address</Label>
-                                <Input
-                                    id="companyAddress"
-                                    value={companyAddress}
-                                    onChange={(e) => setCompanyAddress(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Pitch Deck Section */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <div className="space-y-2">
-                                    <Label htmlFor="pitchDeckUrl">Pitch Deck URL</Label>
-                                    <Input
-                                        id="pitchDeckUrl"
-                                        type="url"
-                                        value={pitchDeckUrl}
-                                        onChange={(e) => setPitchDeckUrl(e.target.value)}
-                                        placeholder="https://..."
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Who can see your pitch deck?</Label>
-                                    <RadioGroup
-                                        value={pitchDeckVisibility}
-                                        onValueChange={(value: 'public' | 'private') => setPitchDeckVisibility(value)}
-                                        className="flex flex-col gap-2"
-                                    >
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="public" id="settings-visibility-public" />
-                                            <Label htmlFor="settings-visibility-public" className="font-normal cursor-pointer">
-                                                Public on Discover — visible to all investors
-                                            </Label>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <RadioGroupItem value="private" id="settings-visibility-private" />
-                                            <Label htmlFor="settings-visibility-private" className="font-normal cursor-pointer">
-                                                Private — share manually or upon request
-                                            </Label>
-                                        </div>
-                                    </RadioGroup>
-                                </div>
-                            </div>
-
-                            {/* Video Profile Section */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Video Profile (Optional)</h3>
-                                <p className="text-sm text-muted-foreground">Add a video to make your profile stand out. This will replace the banner image on your swipe card.</p>
-
-                                {/* Video Preview/Upload */}
-                                <div className="space-y-2">
-                                    <Label>Upload Video</Label>
-                                    <div
-                                        className="relative cursor-pointer group w-full h-40 rounded-lg overflow-hidden bg-muted/50 border-2 border-dashed border-muted-foreground/30 hover:border-primary/50 transition-colors"
-                                        onClick={() => document.getElementById('video-upload')?.click()}
-                                    >
-                                        {videoUrl ? (
-                                            <video src={videoUrl} className="w-full h-full object-cover" muted />
-                                        ) : (
-                                            <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
-                                                <Video className="w-8 h-8 mb-2" />
-                                                <span className="text-sm">Click to upload video (max 100MB)</span>
-                                                <span className="text-xs mt-1">MP4, WebM, or MOV</span>
-                                            </div>
-                                        )}
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            {uploadingVideo ? (
-                                                <Loader2 className="w-6 h-6 animate-spin text-white" />
-                                            ) : (
-                                                <Upload className="w-6 h-6 text-white" />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <input
-                                        id="video-upload"
-                                        type="file"
-                                        accept="video/mp4,video/webm,video/quicktime,video/x-m4v"
-                                        className="hidden"
-                                        onChange={handleVideoUpload}
-                                    />
-                                    {videoUrl && (
-                                        <div className="flex items-center justify-between">
-                                            <p className="text-xs text-muted-foreground truncate flex-1">Current: {videoUrl.split('/').pop()}</p>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                className="text-destructive hover:text-destructive"
-                                                onClick={() => setVideoUrl('')}
-                                            >
-                                                Remove
-                                            </Button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className="text-center text-sm text-muted-foreground">— or —</div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="videoUrl">Video URL</Label>
-                                    <Input
-                                        id="videoUrl"
-                                        type="url"
-                                        value={videoUrl}
-                                        onChange={(e) => setVideoUrl(e.target.value)}
-                                        placeholder="https://... (mp4, webm, or hosted video link)"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="fundingAmount">Funding Amount Sought</Label>
-                                    <Input
-                                        id="fundingAmount"
-                                        value={fundingAmount}
-                                        onChange={(e) => setFundingAmount(e.target.value)}
-                                        placeholder="e.g., 500K, 1M, 2.5M"
-                                    />
-                                    <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
-                                </div>
-                            </div>
-
-                            {/* Team Section */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Team</h3>
-                                {teamMembers.map((member, i) => (
-                                    <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                        <Input
-                                            value={member.name}
-                                            onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => idx === i ? { ...m, name: e.target.value } : m))}
-                                            placeholder="Name"
-                                        />
-                                        <div className="flex gap-2">
-                                            <Input
-                                                value={member.title}
-                                                onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => idx === i ? { ...m, title: e.target.value } : m))}
-                                                placeholder="Title, e.g. CEO · ex-Flexport"
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                className="shrink-0 text-destructive"
-                                                onClick={() => setTeamMembers((prev) => prev.filter((_, idx) => idx !== i))}
-                                            >
-                                                <X className="w-4 h-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setTeamMembers((prev) => [...prev, { name: "", title: "" }])}
-                                >
-                                    Add team member
-                                </Button>
-                                <div className="space-y-2">
-                                    <Label htmlFor="headcount">Headcount</Label>
-                                    <Input
-                                        id="headcount"
-                                        type="number"
-                                        value={headcount}
-                                        onChange={(e) => setHeadcount(e.target.value)}
-                                        placeholder="e.g. 7"
-                                    />
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Investor-specific fields */}
-                {userType === 'investor' && (
-                    <Card id="section-investor">
-                        <CardHeader>
-                            <CardTitle>Investor Details</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="firmName">Firm Name (Optional)</Label>
-                                    <Input
-                                        id="firmName"
-                                        value={firmName}
-                                        onChange={(e) => setFirmName(e.target.value)}
-                                        placeholder="Leave blank if angel investor"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="position">Position (Optional)</Label>
-                                    <Input
-                                        id="position"
-                                        value={position}
-                                        onChange={(e) => setPosition(e.target.value)}
-                                        placeholder="e.g. Managing Partner, Associate"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="investorType">Investor Type</Label>
-                                    <Select value={investorType} onValueChange={setInvestorType}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Retail">Retail Investor</SelectItem>
-                                            <SelectItem value="Angel">Angel Investor</SelectItem>
-                                            <SelectItem value="Accredited">Accredited Individual</SelectItem>
-                                            <SelectItem value="VC">Venture Capital (VC)</SelectItem>
-                                            <SelectItem value="PE">Private Equity (PE)</SelectItem>
-                                            <SelectItem value="Family Office">Family Office</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="accreditationStatus">Accreditation Status</Label>
-                                    <Select value={accreditationStatus} onValueChange={setAccreditationStatus}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Accredited">Accredited</SelectItem>
-                                            <SelectItem value="Non-Accredited">Non-Accredited</SelectItem>
-                                            <SelectItem value="Qualified Purchaser">Qualified Purchaser</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="investmentCount">Total Investments (Est.)</Label>
-                                    <Input
-                                        id="investmentCount"
-                                        type="number"
-                                        value={investmentCount}
-                                        onChange={(e) => setInvestmentCount(e.target.value)}
-                                        placeholder="e.g. 5"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="notablePortfolio">Notable Portfolio</Label>
-                                    <Input
-                                        id="notablePortfolio"
-                                        value={notablePortfolio}
-                                        onChange={(e) => setNotablePortfolio(e.target.value)}
-                                        placeholder="e.g. Stripe, Airbnb"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="typicalCheckSize">Typical Check Size</Label>
-                                <Select value={typicalCheckSize} onValueChange={setTypicalCheckSize}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select range" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {CHECK_SIZE_OPTIONS.map((c) => (
-                                            <SelectItem key={c} value={c}>{c}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label>Sectors of Interest</Label>
-                                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border rounded-md p-3">
-                                    {INDUSTRIES.map((ind) => (
-                                        <div key={ind} className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id={`settings-sector-${ind}`}
-                                                checked={sectorsOfInterest.includes(ind)}
-                                                onCheckedChange={() => {
-                                                    setSectorsOfInterest(prev =>
-                                                        prev.includes(ind)
-                                                            ? prev.filter(i => i !== ind)
-                                                            : [...prev, ind]
-                                                    );
-                                                }}
-                                            />
-                                            <label htmlFor={`settings-sector-${ind}`} className="text-sm cursor-pointer">
-                                                {ind}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="investmentThesis">Investment Thesis</Label>
-                                <Textarea
-                                    id="investmentThesis"
-                                    value={investmentThesis}
-                                    onChange={(e) => setInvestmentThesis(e.target.value)}
-                                    placeholder="What you back, and why."
-                                    rows={3}
-                                />
-                            </div>
-
-                            {/* Responsiveness */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Responsiveness</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="responseRate">Response rate (%)</Label>
-                                        <Input
-                                            id="responseRate"
-                                            type="number"
-                                            min={0}
-                                            max={100}
-                                            value={responseRate}
-                                            onChange={(e) => setResponseRate(e.target.value)}
-                                            placeholder="e.g. 98"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="avgReplyTime">Avg. reply time</Label>
-                                        <Input
-                                            id="avgReplyTime"
-                                            value={avgReplyTime}
-                                            onChange={(e) => setAvgReplyTime(e.target.value)}
-                                            placeholder="e.g. 2 hours"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="responsivenessStatus">Active status</Label>
-                                    <Input
-                                        id="responsivenessStatus"
-                                        value={responsivenessStatus}
-                                        onChange={(e) => setResponsivenessStatus(e.target.value)}
-                                        placeholder="e.g. This week"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Portfolio Stats */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Portfolio Stats</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="dealsLast12mo">Deals (12 mo)</Label>
-                                        <Input
-                                            id="dealsLast12mo"
-                                            type="number"
-                                            value={dealsLast12mo}
-                                            onChange={(e) => setDealsLast12mo(e.target.value)}
-                                            placeholder="e.g. 12"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="totalInvested">Total invested</Label>
-                                        <Input
-                                            id="totalInvested"
-                                            value={totalInvested}
-                                            onChange={(e) => setTotalInvested(e.target.value)}
-                                            placeholder="e.g. $28M"
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="notableExits">Notable exits</Label>
-                                        <Input
-                                            id="notableExits"
-                                            type="number"
-                                            value={notableExits}
-                                            onChange={(e) => setNotableExits(e.target.value)}
-                                            placeholder="e.g. 2"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Portfolio Companies */}
-                            <div className="space-y-4 pt-4 border-t">
-                                <h3 className="font-medium">Portfolio Companies</h3>
-                                <p className="text-sm text-muted-foreground">Shown on your full profile as recent investments.</p>
-                                {portfolioCompanies.map((company, i) => (
-                                    <div key={i} className="flex items-center gap-3">
-                                        <div
-                                            className="relative w-12 h-12 shrink-0 rounded-full bg-muted overflow-hidden cursor-pointer group border border-border"
-                                            onClick={() => document.getElementById(`portfolio-logo-upload-${i}`)?.click()}
-                                        >
-                                            {company.logo_url ? (
-                                                <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <Camera className="w-4 h-4 text-muted-foreground/50" />
-                                                </div>
-                                            )}
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                {uploadingLogoIndex === i ? (
-                                                    <Loader2 className="w-4 h-4 animate-spin text-white" />
-                                                ) : (
-                                                    <Upload className="w-4 h-4 text-white" />
-                                                )}
-                                            </div>
-                                        </div>
-                                        <input
-                                            id={`portfolio-logo-upload-${i}`}
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={(e) => handlePortfolioLogoUpload(i, e)}
-                                        />
-                                        <Input
-                                            value={company.name}
-                                            onChange={(e) => setPortfolioCompanies((prev) => prev.map((c, idx) => idx === i ? { ...c, name: e.target.value } : c))}
-                                            placeholder="Company name"
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            className="shrink-0 text-destructive"
-                                            onClick={() => setPortfolioCompanies((prev) => prev.filter((_, idx) => idx !== i))}
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                ))}
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setPortfolioCompanies((prev) => [...prev, { name: "", logo_url: null }])}
-                                >
-                                    Add portfolio company
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Subscription Settings */}
-                {userId && userType && (
-                    <SubscriptionSettings userId={userId} userType={userType} />
-                )}
-
-                {/* Tokens Section */}
-                {userId && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Coins className="w-5 h-5 text-amber-500" />
-                                Tokens
-                            </CardTitle>
-                            <CardDescription>
-                                Manage your token balance and purchase history
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <TokenBalance userId={userId} variant="default" showPurchaseButton={false} />
-                            <div className="flex gap-2">
-                                <TokenPurchaseDialog userId={userId} />
-                            </div>
-                            <div className="pt-4 border-t">
-                                <h4 className="text-sm font-medium mb-2">Transaction History</h4>
-                                <TokenTransactionHistory userId={userId} />
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Spotlight Manager (Pro users only) */}
-                {userId && userType && (
-                    <SpotlightManager userId={userId} userType={userType} />
-                )}
-
-                {/* Reset Swipe History */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <RotateCcw className="w-5 h-5 text-primary" />
-                            Discovery Settings
-                        </CardTitle>
-                        <CardDescription>Manage your swipe history and profile visibility</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            <div>
-                                <h4 className="text-sm font-medium mb-2">Reset Swipe History</h4>
-                                <p className="text-sm text-muted-foreground mb-3">
-                                    Profiles you've swiped on will reappear after 14 days. Reset to see all profiles immediately (except matches).
-                                </p>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="outline" disabled={resettingHistory}>
-                                            {resettingHistory ? (
-                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                            ) : (
-                                                <RotateCcw className="w-4 h-4 mr-2" />
-                                            )}
-                                            Reset Swipe History
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Reset Swipe History?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This will let you see all profiles again that you've previously swiped on. Your matches and conversations will not be affected.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleResetSwipeHistory}>
-                                                Reset History
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Referral Program */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Gift className="w-5 h-5 text-primary" />
-                            Refer & Earn
-                        </CardTitle>
-                        <CardDescription>Invite friends and unlock rewards</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button
-                            variant="outline"
-                            onClick={() => navigate('/referrals')}
-                            className="w-full sm:w-auto"
-                        >
-                            <Gift className="w-4 h-4 mr-2" />
-                            View Referral Dashboard
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Platform Disclaimer */}
-                <Card className="border-yellow-500/50 bg-yellow-500/5">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
-                            <AlertTriangle className="w-5 h-5" />
-                            Important Notice
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                            <strong>This platform does not handle or facilitate the exchange of funds or securities.</strong> All financial transactions, SAFE agreements, and investment transfers must be conducted off-platform through proper legal and financial channels. This platform is for networking, tracking, and template generation purposes only.
-                        </p>
-                    </CardContent>
-                </Card>
-
-                {/* Contact Support */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <MessageCircle className="w-5 h-5" />
-                            Help & Support
-                        </CardTitle>
-                        <CardDescription>Get help from our support team</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Button
-                            variant="outline"
-                            onClick={() => setSupportChatOpen(true)}
-                            className="w-full sm:w-auto"
-                        >
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Contact Support
-                        </Button>
-                    </CardContent>
-                </Card>
-
-                {/* Save Button */}
-                <div className="flex justify-end">
-                    <Button onClick={handleSave} disabled={saving} size="lg">
-                        {saving ? (
-                            <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Saving...
-                            </>
-                        ) : (
-                            "Save Changes"
-                        )}
-                    </Button>
+            {idVerificationStatus === "approved" && (
+              <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
+                <div className="w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0" style={{ background: "rgba(94,201,142,0.12)" }}>
+                  <ShieldCheck size={15} color="#5EC98E" strokeWidth={1.8} />
                 </div>
+                <div>
+                  <p style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 600 }}>Verified</p>
+                  <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>Your identity has been confirmed.</p>
+                </div>
+              </div>
+            )}
+            {idVerificationStatus === "pending" && (
+              <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
+                <div className={`w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0 ${glass}`}>
+                  <Clock size={15} color={GOLD} strokeWidth={1.8} />
+                </div>
+                <div>
+                  <p style={{ color: GOLD_LIGHT, fontSize: 13.5, fontWeight: 600 }}>Pending review</p>
+                  <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>
+                    Submitted {idVerificationRecord ? new Date(idVerificationRecord.submitted_at).toLocaleDateString() : ""} — we'll notify you once it's reviewed.
+                  </p>
+                </div>
+              </div>
+            )}
+            {idVerificationStatus === "rejected" && (
+              <>
+                <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
+                  <div className={`w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0 ${glass}`}>
+                    <ShieldX size={15} color="#E79A6C" strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <p style={{ color: "#E79A6C", fontSize: 13.5, fontWeight: 600 }}>Not approved</p>
+                    {idVerificationRecord?.rejection_reason && (
+                      <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>{idVerificationRecord.rejection_reason}</p>
+                    )}
+                  </div>
+                </div>
+                <PillPrimary onClick={() => setVerificationCaptureOpen(true)} icon={<ShieldCheck size={14} strokeWidth={2} />}>
+                  Resubmit
+                </PillPrimary>
+              </>
+            )}
+            {idVerificationStatus === "unverified" && (
+              <>
+                <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
+                  <div className={`w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0 ${glass}`}>
+                    <ShieldQuestion size={15} color={GOLD} strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <p style={{ color: GOLD_LIGHT, fontSize: 13.5, fontWeight: 600 }}>Not verified</p>
+                    <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>Required to unlock full platform access.</p>
+                  </div>
+                </div>
+                <PillPrimary onClick={() => setVerificationCaptureOpen(true)} icon={<ShieldCheck size={14} strokeWidth={2} />}>
+                  Verify now
+                </PillPrimary>
+              </>
+            )}
+          </Section>
 
-                {/* Support Chat Dialog */}
-                {userId && (
-                    <SupportChat
-                        open={supportChatOpen}
-                        onOpenChange={setSupportChatOpen}
-                        userId={userId}
-                    />
+          {/* Discovery filters */}
+          <Section icon={<SlidersHorizontal size={16} color={GOLD} strokeWidth={1.8} />} title="Discovery filters">
+            <p style={descCls}>Set preferences for the profiles you want to see.</p>
+            <PillSecondary onClick={() => navigate("/filters")} icon={<SlidersHorizontal size={14} strokeWidth={1.8} />}>
+              Manage filters
+            </PillSecondary>
+          </Section>
+
+          {/* Basic information */}
+          <Section title="Basic information">
+            <TextField label="Full name" value={name} onChange={setName} />
+            <TextField label="LinkedIn profile URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="linkedin.com/in/..." />
+            <TextField label="Email" value={email} onChange={() => {}} disabled />
+            <TextField label="Phone" value={phone} onChange={setPhone} placeholder="Add a phone number" />
+          </Section>
+
+          {/* Founder-specific */}
+          {userType === "founder" && (
+            <Section id="section-startup" title="Startup details">
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Startup name" value={startupName} onChange={setStartupName} />
+                <TextField label="Location (HQ)" value={location} onChange={setLocation} placeholder="City, State" />
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <SelectField
+                  label="MRR / revenue"
+                  value={mrr}
+                  onChange={setMrr}
+                  placeholder="Select MRR"
+                  options={[
+                    { value: "Pre-revenue", label: "Pre-revenue" },
+                    { value: "$0 - $1k", label: "$0 - $1k" },
+                    { value: "$1k - $10k", label: "$1k - $10k" },
+                    { value: "$10k - $50k", label: "$10k - $50k" },
+                    { value: "$50k+", label: "$50k+" },
+                  ]}
+                />
+                <TextField label="Backed by" value={backedBy} onChange={setBackedBy} placeholder="e.g. YC S23" />
+              </div>
+              <SelectField
+                label="Company stage"
+                value={stage}
+                onChange={setStage}
+                placeholder="Select stage"
+                options={FUNDING_STAGES.map((s) => ({ value: s.value, label: s.label }))}
+              />
+              <FieldLabel>Industries</FieldLabel>
+              <IndustryGrid
+                selected={selectedIndustries}
+                onToggle={(ind) =>
+                  setSelectedIndustries((prev) => (prev.includes(ind) ? prev.filter((i) => i !== ind) : [...prev, ind]))
+                }
+              />
+              <TextField label="One-liner" value={oneLiner} onChange={setOneLiner} placeholder="A brief description of your startup" />
+              <FieldLabel>Traction</FieldLabel>
+              <Textarea
+                value={traction}
+                onChange={(e) => e.target.value.length <= 250 && setTraction(e.target.value)}
+                placeholder="Key metrics, users, revenue, etc."
+                rows={3}
+                className={`${glass} border-0 rounded-[16px] text-[14px] resize-none`}
+                style={{ color: TEXT_VALUE }}
+              />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>{traction.length} / 250 characters</p>
+              <TextField label="Preferred city" value={preferredCity} onChange={setPreferredCity} placeholder="City for meetings" />
+
+              <Divider />
+              <SubTitle>Team</SubTitle>
+              {teamMembers.map((member, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    value={member.name}
+                    onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => (idx === i ? { ...m, name: e.target.value } : m)))}
+                    placeholder="Name"
+                    className={fieldCls}
+                    style={{ color: TEXT_VALUE }}
+                  />
+                  <input
+                    value={member.title}
+                    onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => (idx === i ? { ...m, title: e.target.value } : m)))}
+                    placeholder="Title, e.g. CEO · ex-Flexport"
+                    className={fieldCls}
+                    style={{ color: TEXT_VALUE }}
+                  />
+                  <button onClick={() => setTeamMembers((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0" aria-label="Remove">
+                    <X size={16} color="#E79A6C" />
+                  </button>
+                </div>
+              ))}
+              <PillSecondary onClick={() => setTeamMembers((prev) => [...prev, { name: "", title: "" }])} icon={<Users size={14} strokeWidth={1.8} />}>
+                Add team member
+              </PillSecondary>
+              <TextField label="Headcount" value={headcount} onChange={setHeadcount} placeholder="e.g. 7" type="number" />
+
+              <Divider />
+              <SubTitle>Due diligence</SubTitle>
+              <TextField label="EIN number" value={einNumber} onChange={setEinNumber} placeholder="XX-XXXXXXX" />
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Legal company name" value={companyName} onChange={setCompanyName} />
+                <TextField label="State of incorporation" value={companyState} onChange={setCompanyState} placeholder="e.g. Delaware" />
+              </div>
+              <TextField label="Company address" value={companyAddress} onChange={setCompanyAddress} />
+            </Section>
+          )}
+
+          {userType === "founder" && (
+            <Section icon={<FileText size={16} color={GOLD} strokeWidth={1.8} />} title="Pitch deck">
+              <TextField label="Pitch deck URL" value={pitchDeckUrl} onChange={setPitchDeckUrl} placeholder="https://..." />
+              <FieldLabel>Who can see your pitch deck?</FieldLabel>
+              <RadioGroup value={pitchDeckVisibility} onValueChange={(v: "public" | "private") => setPitchDeckVisibility(v)} className="flex flex-col gap-2.5">
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <RadioGroupItem value="public" className="w-[15px] h-[15px]" style={{ borderColor: GOLD, color: GOLD }} />
+                  <span style={{ color: TEXT_VALUE, fontSize: 13 }}>Public on Discover — visible to all investors</span>
+                </label>
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <RadioGroupItem value="private" className="w-[15px] h-[15px]" />
+                  <span style={{ color: TEXT_LABEL, fontSize: 13 }}>Private — share manually or upon request</span>
+                </label>
+              </RadioGroup>
+            </Section>
+          )}
+
+          {userType === "founder" && (
+            <Section icon={<Video size={16} color={GOLD} strokeWidth={1.8} />} title="Video profile (optional)">
+              <p style={descCls}>Add a video to make your profile stand out. This replaces the banner image on your swipe card.</p>
+              <FieldLabel>Upload video</FieldLabel>
+              <div
+                className={`relative h-[114px] rounded-[16px] cursor-pointer group overflow-hidden flex flex-col items-center justify-center gap-1.5 ${glass}`}
+                onClick={() => document.getElementById("video-upload")?.click()}
+              >
+                {videoUrl ? (
+                  <video src={videoUrl} className="absolute inset-0 w-full h-full object-cover" muted />
+                ) : (
+                  <>
+                    <Video size={22} color={GOLD} strokeWidth={1.6} />
+                    <span style={{ color: TEXT_DIM, fontSize: 12.5 }}>Click to upload video (max 100MB)</span>
+                    <span style={{ color: TEXT_DISABLED, fontSize: 11 }}>MP4, WebM or MOV</span>
+                  </>
                 )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  {uploadingVideo ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : <Upload className="w-5 h-5 text-white" />}
+                </div>
+              </div>
+              <input id="video-upload" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" className="hidden" onChange={handleVideoUpload} />
+              {videoUrl && (
+                <button onClick={() => setVideoUrl("")} style={{ color: "#E79A6C", fontSize: 12 }} className="self-start">
+                  Remove video
+                </button>
+              )}
+              <TextField label="Video URL" value={videoUrl} onChange={setVideoUrl} placeholder="https://… (mp4, webm or hosted link)" />
+              <TextField label="Funding amount sought" value={fundingAmount} onChange={setFundingAmount} placeholder="$2M" />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>This is displayed on your video profile card.</p>
+            </Section>
+          )}
 
-                {/* Hidden Admin Revenue Adjustment - Triple click to reveal */}
-                {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
-            </main>
+          {/* Investor-specific */}
+          {userType === "investor" && (
+            <Section id="section-investor" title="Investor details">
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Firm name (optional)" value={firmName} onChange={setFirmName} placeholder="Leave blank if angel" />
+                <TextField label="Position (optional)" value={position} onChange={setPosition} placeholder="Managing Partner" />
+              </div>
+              <SelectField
+                label="Investor type"
+                value={investorType}
+                onChange={setInvestorType}
+                placeholder="Select type"
+                options={[
+                  { value: "Retail", label: "Retail Investor" },
+                  { value: "Angel", label: "Angel Investor" },
+                  { value: "Accredited", label: "Accredited Individual" },
+                  { value: "VC", label: "Venture Capital (VC)" },
+                  { value: "PE", label: "Private Equity (PE)" },
+                  { value: "Family Office", label: "Family Office" },
+                ]}
+              />
+              <SelectField
+                label="Accreditation status"
+                value={accreditationStatus}
+                onChange={setAccreditationStatus}
+                placeholder="Select status"
+                options={[
+                  { value: "Accredited", label: "Accredited" },
+                  { value: "Non-Accredited", label: "Non-Accredited" },
+                  { value: "Qualified Purchaser", label: "Qualified Purchaser" },
+                ]}
+              />
+              <SelectField
+                label="Typical check size"
+                value={typicalCheckSize}
+                onChange={setTypicalCheckSize}
+                placeholder="Select range"
+                options={CHECK_SIZE_OPTIONS.map((c) => ({ value: c, label: c }))}
+              />
+              <FieldLabel>Sectors of interest</FieldLabel>
+              <IndustryGrid
+                selected={sectorsOfInterest}
+                onToggle={(ind) =>
+                  setSectorsOfInterest((prev) => (prev.includes(ind) ? prev.filter((i) => i !== ind) : [...prev, ind]))
+                }
+              />
+              <FieldLabel>Investment thesis</FieldLabel>
+              <Textarea
+                value={investmentThesis}
+                onChange={(e) => setInvestmentThesis(e.target.value)}
+                placeholder="What you back, and why."
+                rows={3}
+                className={`${glass} border-0 rounded-[16px] text-[14px] resize-none`}
+                style={{ color: TEXT_VALUE }}
+              />
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Total investments (est.)" value={investmentCount} onChange={setInvestmentCount} placeholder="e.g. 5" type="number" />
+                <TextField label="Notable portfolio" value={notablePortfolio} onChange={setNotablePortfolio} placeholder="e.g. Stripe, Airbnb" />
+              </div>
 
-            <IdentityVerificationCapture
-                open={verificationCaptureOpen}
-                onClose={() => setVerificationCaptureOpen(false)}
-                userId={userId}
-                onSubmitted={refetchIdVerification}
+              <Divider />
+              <SubTitle>Responsiveness</SubTitle>
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Response rate (%)" value={responseRate} onChange={setResponseRate} placeholder="98" type="number" />
+                <TextField label="Avg. reply time" value={avgReplyTime} onChange={setAvgReplyTime} placeholder="2 hours" />
+              </div>
+              <TextField label="Active status" value={responsivenessStatus} onChange={setResponsivenessStatus} placeholder="This week" />
+
+              <Divider />
+              <SubTitle>Portfolio stats</SubTitle>
+              <div className="grid grid-cols-3 gap-2">
+                <TextField label="Deals (12mo)" value={dealsLast12mo} onChange={setDealsLast12mo} placeholder="12" type="number" />
+                <TextField label="Total invested" value={totalInvested} onChange={setTotalInvested} placeholder="$28M" />
+                <TextField label="Notable exits" value={notableExits} onChange={setNotableExits} placeholder="2" type="number" />
+              </div>
+
+              <Divider />
+              <SubTitle>Portfolio companies</SubTitle>
+              <p style={descCls}>Shown on your full profile as recent investments.</p>
+              {portfolioCompanies.map((company, i) => (
+                <div key={i} className="flex items-center gap-2.5">
+                  <div
+                    className={`relative w-11 h-11 shrink-0 rounded-full cursor-pointer group overflow-hidden flex items-center justify-center ${glass}`}
+                    onClick={() => document.getElementById(`portfolio-logo-upload-${i}`)?.click()}
+                  >
+                    {company.logo_url ? (
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Camera size={16} color={TEXT_DIM} strokeWidth={1.6} />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      {uploadingLogoIndex === i ? <Loader2 className="w-4 h-4 animate-spin text-white" /> : <Upload className="w-4 h-4 text-white" />}
+                    </div>
+                  </div>
+                  <input
+                    id={`portfolio-logo-upload-${i}`}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handlePortfolioLogoUpload(i, e)}
+                  />
+                  <input
+                    value={company.name}
+                    onChange={(e) => setPortfolioCompanies((prev) => prev.map((c, idx) => (idx === i ? { ...c, name: e.target.value } : c)))}
+                    placeholder="Company name"
+                    className={fieldCls}
+                    style={{ color: TEXT_VALUE }}
+                  />
+                  <button onClick={() => setPortfolioCompanies((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0" aria-label="Remove">
+                    <X size={16} color="#E79A6C" />
+                  </button>
+                </div>
+              ))}
+              <PillSecondary onClick={() => setPortfolioCompanies((prev) => [...prev, { name: "", logo_url: null }])} icon={<Briefcase size={14} strokeWidth={1.8} />}>
+                Add portfolio company
+              </PillSecondary>
+            </Section>
+          )}
+
+          {/* Pro upsell */}
+          <Section icon={<Crown size={16} color={GOLD} strokeWidth={1.8} />} title={isPro ? planDetails.name : `${userType === "investor" ? "Investor" : "Startup"} Pro`}>
+            {isPro ? (
+              <>
+                <p style={descCls}>Your subscription is active{expiresAt ? ` until ${expiresAt.toLocaleDateString()}` : ""}.</p>
+                {hasStripeSubscription ? (
+                  <PillSecondary onClick={handleManageBilling} disabled={subscribing} icon={subscribing ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} strokeWidth={1.8} />}>
+                    Manage billing
+                  </PillSecondary>
+                ) : (
+                  <p style={descCls}>Your subscription was assigned by an administrator. Contact support for billing inquiries.</p>
+                )}
+              </>
+            ) : (
+              <>
+                <p style={descCls}>Upgrade to Pro for an ad-free experience and a weekly spotlight.</p>
+                {["No ad profiles in your swipe feed", "No 3-second delay on ads", "One weekly spotlight (8 hours) to promote yourself", "Priority visibility to matches"].map((b) => (
+                  <div key={b} className="flex items-center gap-2.5">
+                    <Check size={13} color={GOLD} strokeWidth={2} className="shrink-0" />
+                    <span style={{ color: TEXT_VALUE, fontSize: 13 }}>{b}</span>
+                  </div>
+                ))}
+                <div className="flex items-baseline gap-1.5 pt-1">
+                  <span style={{ fontFamily: "Fraunces, serif", fontSize: 28, fontWeight: 600, color: TEXT }}>{planDetails.displayPrice.split("/")[0]}</span>
+                  <span style={{ color: TEXT_DIM, fontSize: 13 }}>/ month</span>
+                </div>
+                <PillPrimary onClick={handleSubscribe} disabled={subscribing} icon={subscribing ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} strokeWidth={2} />}>
+                  Upgrade to Pro
+                </PillPrimary>
+              </>
+            )}
+          </Section>
+
+          {userId && userType && <SpotlightManager userId={userId} userType={userType} />}
+
+          {/* Tokens */}
+          {userId && (
+            <Section icon={<Coins size={16} color={GOLD} strokeWidth={1.8} />} title="Tokens">
+              <p style={descCls}>Manage your token balance and purchase history.</p>
+              <TokenBalance userId={userId} variant="default" showPurchaseButton={false} />
+              <TokenPurchaseDialog userId={userId} />
+              <Divider />
+              <FieldLabel>Transaction history</FieldLabel>
+              <p style={{ color: TEXT_DIM, fontSize: 12, lineHeight: "18px" }}>No transactions yet.</p>
+            </Section>
+          )}
+
+          {/* Discovery settings */}
+          <Section icon={<SlidersHorizontal size={16} color={GOLD} strokeWidth={1.8} />} title="Discovery settings">
+            <p style={descCls}>Manage your swipe history and profile visibility.</p>
+            <FieldLabel>Reset swipe history</FieldLabel>
+            <p style={{ color: TEXT_DIM, fontSize: 12, lineHeight: "18px" }}>
+              Profiles you have swiped on reappear after 14 days. Reset to see all profiles immediately, matches excluded.
+            </p>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div>
+                  <PillSecondary disabled={resettingHistory} icon={resettingHistory ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} strokeWidth={1.8} />}>
+                    Reset swipe history
+                  </PillSecondary>
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset Swipe History?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will let you see all profiles again that you've previously swiped on. Your matches and conversations will not be affected.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleResetSwipeHistory}>Reset History</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </Section>
+
+          {/* Refer and earn */}
+          <Section icon={<Gift size={16} color={GOLD} strokeWidth={1.8} />} title="Refer and earn">
+            <p style={descCls}>Invite friends and unlock rewards.</p>
+            <PillSecondary onClick={() => navigate("/referrals")} icon={<Gift size={14} strokeWidth={1.8} />}>
+              View referral dashboard
+            </PillSecondary>
+          </Section>
+
+          {/* Important notice */}
+          <div
+            className="rounded-[22px] p-[17px] flex flex-col gap-2"
+            style={{ background: "rgba(198,160,44,0.07)", outline: "1px solid rgba(198,160,44,0.32)", outlineOffset: -1 }}
+          >
+            <div className="flex items-center gap-2">
+              <AlertTriangle size={16} color={GOLD_LIGHT} strokeWidth={1.8} />
+              <span style={{ color: GOLD_LIGHT, fontSize: 18, fontWeight: 700 }}>Important notice</span>
+            </div>
+            <p style={{ fontSize: 12, lineHeight: "19.2px" }}>
+              <span style={{ color: GOLD_LIGHT, fontWeight: 600 }}>
+                This platform does not handle or facilitate the exchange of funds or securities.
+              </span>
+              <span style={{ color: TEXT_LABEL }}>
+                {" "}
+                All financial transactions, SAFE agreements and investment transfers must be conducted off-platform through
+                proper legal and financial channels. This platform is for networking, tracking and template generation
+                purposes only.
+              </span>
+            </p>
+          </div>
+
+          {/* Help and support */}
+          <Section icon={<MessageCircle size={16} color={GOLD} strokeWidth={1.8} />} title="Help and support">
+            <p style={descCls}>Get help from our support team.</p>
+            <PillSecondary onClick={() => setSupportChatOpen(true)} icon={<MessageCircle size={14} strokeWidth={1.8} />}>
+              Contact support
+            </PillSecondary>
+          </Section>
+
+          {/* Save button */}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full h-[52px] rounded-full flex items-center justify-center gap-2"
+            style={{ background: GOLD, color: DARK_ON_GOLD, fontSize: 15, fontWeight: 600 }}
+          >
+            {saving ? <Loader2 size={16} className="animate-spin" /> : <Check size={15} strokeWidth={2.2} />}
+            {saving ? "Saving..." : "Save changes"}
+          </button>
+
+          {userId && <SupportChat open={supportChatOpen} onOpenChange={setSupportChatOpen} userId={userId} />}
+          {isAdmin && userId && <AdminRevenueAdjustment userId={userId} />}
+        </div>
+      </div>
+
+      <IdentityVerificationCapture
+        open={verificationCaptureOpen}
+        onClose={() => setVerificationCaptureOpen(false)}
+        userId={userId}
+        onSubmitted={refetchIdVerification}
+      />
+    </div>
+  );
+};
+
+/* ---------- Shared styled sub-components ---------- */
+
+const descCls: React.CSSProperties = { color: TEXT_DIM, fontSize: 12, lineHeight: "18px" };
+
+function Section({
+  id,
+  icon,
+  title,
+  children,
+}: {
+  id?: string;
+  icon?: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div id={id} className={`rounded-[22px] p-[17px] flex flex-col gap-3 ${glass}`}>
+      <div className="flex items-center gap-2">
+        {icon}
+        <span style={{ color: TEXT, fontSize: 18, fontWeight: 700 }}>{title}</span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <p style={{ color: TEXT_LABEL, fontSize: 12 }}>{children}</p>;
+}
+
+function SubTitle({ children }: { children: React.ReactNode }) {
+  return <h3 style={{ color: TEXT, fontSize: 15, fontWeight: 600 }}>{children}</h3>;
+}
+
+function Divider() {
+  return <div style={{ height: 1, background: "rgba(255,255,255,0.09)" }} />;
+}
+
+function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  disabled,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <FieldLabel>{label}</FieldLabel>
+      <input
+        type={type}
+        value={value}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={fieldCls}
+        style={{ color: disabled ? TEXT_DIM : value ? TEXT_VALUE : TEXT_DISABLED, cursor: disabled ? "default" : "text" }}
+      />
+    </div>
+  );
+}
+
+function SelectField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <FieldLabel>{label}</FieldLabel>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className={`${fieldCls} justify-between [&>svg]:opacity-100 [&>svg]:text-[#94908A]`}>
+          <SelectValue placeholder={placeholder} style={{ color: value ? TEXT_VALUE : TEXT_DISABLED }} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+function IndustryGrid({ selected, onToggle }: { selected: string[]; onToggle: (ind: string) => void }) {
+  return (
+    <div className={`rounded-[16px] p-3.5 max-h-56 overflow-y-auto grid grid-cols-2 gap-x-3 gap-y-2.5 ${glass}`}>
+      {INDUSTRIES.map((ind) => {
+        const checked = selected.includes(ind);
+        return (
+          <label key={ind} className="flex items-center gap-2 cursor-pointer">
+            <Checkbox
+              checked={checked}
+              onCheckedChange={() => onToggle(ind)}
+              className="w-[15px] h-[15px] rounded-full border-white/[0.24] data-[state=checked]:bg-[var(--gold)] data-[state=checked]:border-[var(--gold)] data-[state=checked]:text-[#2A2005]"
+              style={{ ["--gold" as any]: GOLD }}
             />
-        </div >
-    );
-};
+            <span style={{ color: checked ? GOLD_LIGHT : TEXT_LABEL, fontSize: 12.5 }}>{ind}</span>
+          </label>
+        );
+      })}
+    </div>
+  );
+}
 
-// Token Transaction History Component - placeholder until token_transactions table is created
-const TokenTransactionHistory = ({ userId }: { userId: string }) => {
-    return (
-        <p className="text-sm text-muted-foreground">No transactions yet.</p>
-    );
-};
+function PillPrimary({
+  onClick,
+  icon,
+  children,
+  disabled,
+}: {
+  onClick?: () => void;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full h-[42px] rounded-full flex items-center justify-center gap-2 self-start"
+      style={{ background: GOLD, color: DARK_ON_GOLD, fontSize: 13.5, fontWeight: 600, opacity: disabled ? 0.6 : 1 }}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+}
+
+function PillSecondary({
+  onClick,
+  icon,
+  children,
+  disabled,
+}: {
+  onClick?: () => void;
+  icon?: React.ReactNode;
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`w-full h-[42px] rounded-full flex items-center justify-center gap-2 ${glass}`}
+      style={{ color: TEXT_LABEL, fontSize: 13.5, fontWeight: 500, opacity: disabled ? 0.6 : 1 }}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+}
 
 export default Settings;
