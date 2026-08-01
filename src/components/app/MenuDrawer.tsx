@@ -104,8 +104,8 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
           ) : (
             <MenuItem
               icon={<FileText size={17} color={GOLD} />}
-              label="Deals"
-              onClick={() => go("/investments")}
+              label="Cap Table"
+              onClick={() => go("/portfolio")}
             />
           )}
           <MenuItem

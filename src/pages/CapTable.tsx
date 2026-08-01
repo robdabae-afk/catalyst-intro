@@ -9,7 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Calculator, Trash2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Plus, Calculator, Trash2, AlertTriangle, Megaphone } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 interface CapTableEntry {
@@ -20,6 +21,14 @@ interface CapTableEntry {
   investment_date: string | null;
   investor_name: string;
   firm_name: string | null;
+}
+
+interface StartupUpdate {
+  id: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  created_at: string;
 }
 
 interface DilutionScenario {
@@ -58,10 +67,60 @@ const CapTable = () => {
     newInvestment: 1000000,
     preMoneyValuation: 10000000,
   });
+  const [updates, setUpdates] = useState<StartupUpdate[]>([]);
+  const [showUpdateDialog, setShowUpdateDialog] = useState(false);
+  const [updateForm, setUpdateForm] = useState({ title: "", body: "", link: "" });
+  const [postingUpdate, setPostingUpdate] = useState(false);
 
   useEffect(() => {
     loadCapTable();
   }, []);
+
+  useEffect(() => {
+    if (currentUserId) loadUpdates(currentUserId);
+  }, [currentUserId]);
+
+  const loadUpdates = async (userId: string) => {
+    const { data } = await (supabase as any)
+      .from("startup_updates")
+      .select("id, title, body, link, created_at")
+      .eq("founder_id", userId)
+      .order("created_at", { ascending: false });
+    setUpdates((data ?? []) as StartupUpdate[]);
+  };
+
+  const handlePostUpdate = async () => {
+    if (!currentUserId || !updateForm.title.trim()) {
+      toast({ variant: "destructive", title: "Title is required" });
+      return;
+    }
+    setPostingUpdate(true);
+    const { error } = await (supabase as any).from("startup_updates").insert({
+      founder_id: currentUserId,
+      title: updateForm.title.trim(),
+      body: updateForm.body.trim() || null,
+      link: updateForm.link.trim() || null,
+    });
+    setPostingUpdate(false);
+    if (error) {
+      toast({ variant: "destructive", title: "Failed to post update", description: error.message });
+      return;
+    }
+    toast({ title: "Update posted", description: "Your investors will see this on their portfolio page." });
+    setUpdateForm({ title: "", body: "", link: "" });
+    setShowUpdateDialog(false);
+    loadUpdates(currentUserId);
+  };
+
+  const handleDeleteUpdate = async (id: string) => {
+    if (!currentUserId) return;
+    const { error } = await (supabase as any).from("startup_updates").delete().eq("id", id);
+    if (error) {
+      toast({ variant: "destructive", title: "Failed to delete update", description: error.message });
+      return;
+    }
+    loadUpdates(currentUserId);
+  };
 
   useEffect(() => {
     const totalInvestorEquity = entries.reduce((sum, entry) => sum + (entry.equity_percentage || 0), 0);
@@ -254,6 +313,10 @@ const CapTable = () => {
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => navigate('/safe')}>
               Download SAFE Template
+            </Button>
+            <Button variant="outline" onClick={() => setShowUpdateDialog(true)}>
+              <Megaphone className="w-4 h-4 mr-2" />
+              Post investor update
             </Button>
             <Button onClick={() => setShowAddDialog(true)}>
               <Plus className="w-4 h-4 mr-2" />
@@ -483,7 +546,112 @@ const CapTable = () => {
             )}
           </CardContent>
         </Card>
+        {/* Investor updates */}
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Megaphone className="w-5 h-5" />
+              Investor Updates
+            </CardTitle>
+            <CardDescription>
+              News and announcements you post here are shown to investors who hold your startup in
+              their portfolio.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {updates.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">No updates posted yet</p>
+                <Button variant="outline" onClick={() => setShowUpdateDialog(true)}>
+                  <Megaphone className="w-4 h-4 mr-2" />
+                  Post Your First Update
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {updates.map((u) => (
+                  <div key={u.id} className="flex items-start gap-3 rounded-lg border p-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{u.title}</p>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(u.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {u.body && (
+                        <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">{u.body}</p>
+                      )}
+                      {u.link && (
+                        <a
+                          href={u.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary underline mt-1 inline-block"
+                        >
+                          {u.link}
+                        </a>
+                      )}
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteUpdate(u.id)}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Post Update Dialog */}
+      <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Post Investor Update</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="update_title">Title *</Label>
+              <Input
+                id="update_title"
+                value={updateForm.title}
+                maxLength={200}
+                onChange={(e) => setUpdateForm({ ...updateForm, title: e.target.value })}
+                placeholder="e.g., Closed our seed round"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update_body">Update</Label>
+              <Textarea
+                id="update_body"
+                value={updateForm.body}
+                maxLength={2000}
+                rows={4}
+                onChange={(e) => setUpdateForm({ ...updateForm, body: e.target.value })}
+                placeholder="Share news, metrics, or announcements with your investors..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update_link">Link (optional)</Label>
+              <Input
+                id="update_link"
+                value={updateForm.link}
+                maxLength={500}
+                onChange={(e) => setUpdateForm({ ...updateForm, link: e.target.value })}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowUpdateDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePostUpdate} disabled={postingUpdate}>
+              {postingUpdate ? "Posting..." : "Post Update"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add Entry Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>

@@ -19,6 +19,7 @@ import SafeDetail from "./pages/SafeDetail";
 import SafeGenerator from "./pages/SafeGenerator";
 import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
+import InvestorPortfolio from "./pages/InvestorPortfolio";
 import Admin from "./pages/Admin";
 
 import ProfileView from "./pages/ProfileView";
@@ -103,6 +104,8 @@ const App = () => (
           <Route path="/app/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
           <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
+          <Route path="/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
+          <Route path="/app/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
           <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
