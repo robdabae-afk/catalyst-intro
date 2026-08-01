@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+let channelSeq = 0;
+
 export function useUnreadMessages() {
   const [count, setCount] = useState(0);
+
 
   useEffect(() => {
     const fetchCount = async () => {
