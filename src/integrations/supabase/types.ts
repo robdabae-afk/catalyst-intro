@@ -469,6 +469,7 @@ export type Database = {
           ein_number: string | null
           financial_statement_urls: string[] | null
           funding_amount: string | null
+          headcount: number | null
           id: string
           incorporation_doc_url: string | null
           industry: string[] | null
@@ -481,6 +482,7 @@ export type Database = {
           profile_id: string
           stage: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
+          team_members: Json
           traction: string | null
           video_url: string | null
         }
@@ -494,6 +496,7 @@ export type Database = {
           ein_number?: string | null
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
+          headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
           industry?: string[] | null
@@ -506,6 +509,7 @@ export type Database = {
           profile_id: string
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
+          team_members?: Json
           traction?: string | null
           video_url?: string | null
         }
@@ -519,6 +523,7 @@ export type Database = {
           ein_number?: string | null
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
+          headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
           industry?: string[] | null
@@ -531,6 +536,7 @@ export type Database = {
           profile_id?: string
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name?: string
+          team_members?: Json
           traction?: string | null
           video_url?: string | null
         }
