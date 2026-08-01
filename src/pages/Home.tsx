@@ -122,7 +122,7 @@ export default function Home() {
           >
             Priority match
           </p>
-          <p style={{ color: "#F6F5F2", fontSize: 32, fontWeight: 700, marginTop: 4 }}>
+          <p style={{ color: "#F6F5F2", fontSize: 28, fontWeight: 700, marginTop: 4 }}>
             {newMatchCount > 0 ? `${newMatchCount} new` : "0 new"}
           </p>
           <p style={{ color: "#94908A", fontSize: 13, maxWidth: 210 }}>{matchLabel}</p>
