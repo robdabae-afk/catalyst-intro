@@ -774,56 +774,77 @@ export type Database = {
       investor_profiles: {
         Row: {
           accreditation_status: string | null
+          avg_reply_time: string | null
           banner_url: string | null
           created_at: string | null
+          deals_last_12mo: number | null
           firm_name: string | null
           id: string
           investment_count: number | null
           investment_thesis: string | null
           investor_type: string | null
           location: string | null
+          notable_exits: number | null
           notable_portfolio: string | null
+          portfolio_companies: Json
           portfolio_link: string | null
           position: string | null
           preferred_stage: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
+          response_rate: number | null
+          responsiveness_status: string | null
           sectors_of_interest: string[] | null
+          total_invested: string | null
           typical_check_size: string | null
         }
         Insert: {
           accreditation_status?: string | null
+          avg_reply_time?: string | null
           banner_url?: string | null
           created_at?: string | null
+          deals_last_12mo?: number | null
           firm_name?: string | null
           id?: string
           investment_count?: number | null
           investment_thesis?: string | null
           investor_type?: string | null
           location?: string | null
+          notable_exits?: number | null
           notable_portfolio?: string | null
+          portfolio_companies?: Json
           portfolio_link?: string | null
           position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id: string
+          response_rate?: number | null
+          responsiveness_status?: string | null
           sectors_of_interest?: string[] | null
+          total_invested?: string | null
           typical_check_size?: string | null
         }
         Update: {
           accreditation_status?: string | null
+          avg_reply_time?: string | null
           banner_url?: string | null
           created_at?: string | null
+          deals_last_12mo?: number | null
           firm_name?: string | null
           id?: string
           investment_count?: number | null
           investment_thesis?: string | null
           investor_type?: string | null
           location?: string | null
+          notable_exits?: number | null
           notable_portfolio?: string | null
+          portfolio_companies?: Json
           portfolio_link?: string | null
           position?: string | null
           preferred_stage?: Database["public"]["Enums"]["funding_stage"] | null
           profile_id?: string
+          response_rate?: number | null
+          responsiveness_status?: string | null
           sectors_of_interest?: string[] | null
+          total_invested?: string | null
           typical_check_size?: string | null
         }
         Relationships: [
