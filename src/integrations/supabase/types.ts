@@ -1457,6 +1457,7 @@ export type Database = {
           match_banner_dismissed: boolean | null
           name: string
           onboarding_dismissed_at: string | null
+          phone: string | null
           profile_grace_until: string | null
           referral_code: string
           referred_by: string | null
@@ -1508,6 +1509,7 @@ export type Database = {
           match_banner_dismissed?: boolean | null
           name: string
           onboarding_dismissed_at?: string | null
+          phone?: string | null
           profile_grace_until?: string | null
           referral_code: string
           referred_by?: string | null
@@ -1559,6 +1561,7 @@ export type Database = {
           match_banner_dismissed?: boolean | null
           name?: string
           onboarding_dismissed_at?: string | null
+          phone?: string | null
           profile_grace_until?: string | null
           referral_code?: string
           referred_by?: string | null
@@ -1680,6 +1683,41 @@ export type Database = {
           {
             foreignKeyName: "safes_investor_id_fkey"
             columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      startup_updates: {
+        Row: {
+          body: string | null
+          created_at: string
+          founder_id: string
+          id: string
+          link: string | null
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          founder_id: string
+          id?: string
+          link?: string | null
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          founder_id?: string
+          id?: string
+          link?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_updates_founder_id_fkey"
+            columns: ["founder_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
