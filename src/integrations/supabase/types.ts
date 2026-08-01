@@ -1450,6 +1450,7 @@ export type Database = {
           is_test_account: boolean | null
           is_test_mode: boolean | null
           last_profile_update_at: string | null
+          last_seen_at: string | null
           legal_accepted_at: string | null
           legal_accepted_ip: string | null
           legal_acknowledged: boolean | null
@@ -1502,6 +1503,7 @@ export type Database = {
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
           last_profile_update_at?: string | null
+          last_seen_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
@@ -1554,6 +1556,7 @@ export type Database = {
           is_test_account?: boolean | null
           is_test_mode?: boolean | null
           last_profile_update_at?: string | null
+          last_seen_at?: string | null
           legal_accepted_at?: string | null
           legal_accepted_ip?: string | null
           legal_acknowledged?: boolean | null
