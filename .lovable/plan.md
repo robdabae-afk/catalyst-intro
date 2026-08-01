@@ -1,28 +1,43 @@
-## Plan: Make hidden profiles disappear from discovery reliably
+Goal: Reduce the vertical length of `/app/home` (mobile homepage) so users do not need to scroll on a typical phone viewport, while keeping all existing content and being conservative with sizing changes.
 
-### What I found
-- The admin Visible/Hidden button does update `profiles.is_hidden`.
-- The current `/dashboard` discovery grid already asks for the opposite user type and excludes test accounts.
-- The likely mismatch is backend visibility logic: admins have a separate “view all profiles” rule, so if the signed-in account is also an admin, hidden profiles can still be returned by discovery queries.
-- There are also older desktop swipe/feed paths that query `profiles` directly and may rely on backend filtering rather than explicitly filtering `is_hidden`.
+Current state (from `src/pages/Home.tsx`):
+- Header: `pt-14 pb-2` plus 24px title
+- Priority Match card: `px-6 py-8`
+- Section headers: `pt-3`
+- Latest Events: renders up to 3 `EventCard`s
+- `EventCard`: `px-4 py-3.5` plus 52px date badge
+- Latest Updates horizontal strip: cards have `minHeight: 160` and `padding: 19px 17px 17px`
+- Scroll container: `pb-24` to clear bottom nav
 
-### Fix
-1. **Add explicit client-side discovery filters**
-   - In `/dashboard` discovery feed queries, add `.eq("is_hidden", false)` so the feed never intentionally asks for hidden users.
-   - In the older desktop swipe query path, add the same `is_hidden = false` filter for live discovery mode.
+Planned conservative changes:
+1. Header
+   - Reduce top padding from `pt-14` to `pt-10`.
+   - Keep welcome text and settings button.
 
-2. **Tighten backend discovery visibility**
-   - Update profile SELECT policies so general discovery access requires `is_hidden = false`.
-   - Preserve admin ability to manage/view users in the admin dashboard, but avoid admin “view all” accidentally making hidden users appear in normal discovery contexts if possible.
+2. Priority Match card
+   - Reduce vertical padding from `py-8` to `py-5`.
+   - Slightly reduce the large "0 new" number font size from 32px to 28px.
+   - Keep the arrow button and label text unchanged.
 
-3. **Verify the current data state**
-   - Confirm how many founders/investors are still marked visible.
-   - If old profile cards are from profiles that are still visible, report those remaining visible accounts clearly.
+3. Section headers
+   - Reduce top padding from `pt-3` to `pt-1`.
 
-4. **Validate**
-   - Re-query as a non-admin discovery user where possible and confirm hidden profiles are not returned.
-   - Check the admin toggle still updates hidden/unhidden status.
+4. Latest Events
+   - Cap displayed events at 2 instead of 3 (`events.slice(0, 2)`).
+   - Reduce `EventCard` vertical padding from `py-3.5` to `py-2.5`.
+   - Reduce date badge vertical padding slightly.
 
-### Technical notes
-- Current visible counts show 10 visible founders including one test founder, and 1 visible investor. If you expected almost everyone hidden, some profiles are still intentionally visible in the database.
-- The safest immediate app fix is adding `is_hidden = false` directly to the discovery queries, because it works even when the current user has admin privileges.
+5. Latest Updates
+   - Reduce news card `minHeight` from 160px to 130px.
+   - Reduce card padding from `19px 17px 17px` to `14px 14px 12px`.
+   - Reduce body line clamp from 2 to 1 to save height.
+
+6. Scroll container
+   - Reduce bottom padding from `pb-24` to `pb-20` since the bottom nav is 66px tall and floating with margin.
+
+7. Verification
+   - Switch the preview to mobile viewport.
+   - Take a screenshot to confirm the full homepage is visible without scrolling.
+   - If still scrolling, make one additional conservative pass on padding/spacing before considering content removal.
+
+No content will be removed; only spacing, font sizing, and the event cap will be adjusted.
