@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2, LogOut, ShieldCheck, Clock, ShieldX, ShieldQuestion } from "lucide-react";
+import { ArrowLeft, Upload, User, Camera, Loader2, MessageCircle, SlidersHorizontal, Gift, AlertTriangle, Video, Coins, RotateCcw, Share2, LogOut, ShieldCheck, Clock, ShieldX, ShieldQuestion, X } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
 import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
@@ -93,6 +93,8 @@ const Settings = () => {
     const [einNumber, setEinNumber] = useState("");
     const [location, setLocation] = useState("");
     const [stage, setStage] = useState("");
+    const [teamMembers, setTeamMembers] = useState<{ name: string; title: string }[]>([]);
+    const [headcount, setHeadcount] = useState("");
 
     // Investor fields
     const [firmName, setFirmName] = useState("");
@@ -159,6 +161,8 @@ const Settings = () => {
                     setEinNumber(founderProfile.ein_number || "");
                     setLocation(founderProfile.location || "");
                     setStage(founderProfile.stage || "");
+                    setTeamMembers((founderProfile as any).team_members || []);
+                    setHeadcount((founderProfile as any).headcount?.toString() || "");
                 }
             } else {
                 const { data: investorProfile } = await supabase
@@ -355,7 +359,9 @@ const Settings = () => {
                         backed_by: backedBy || null,
                         ein_number: einNumber || null,
                         location: location || null,
-                        stage: (stage || null) as any
+                        stage: (stage || null) as any,
+                        team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
+                        headcount: headcount ? parseInt(headcount) : null
                     })
                     .eq('profile_id', userId);
 
@@ -933,6 +939,54 @@ const Settings = () => {
                                         placeholder="e.g., 500K, 1M, 2.5M"
                                     />
                                     <p className="text-xs text-muted-foreground">This will be displayed on your video profile card</p>
+                                </div>
+                            </div>
+
+                            {/* Team Section */}
+                            <div className="space-y-4 pt-4 border-t">
+                                <h3 className="font-medium">Team</h3>
+                                {teamMembers.map((member, i) => (
+                                    <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <Input
+                                            value={member.name}
+                                            onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => idx === i ? { ...m, name: e.target.value } : m))}
+                                            placeholder="Name"
+                                        />
+                                        <div className="flex gap-2">
+                                            <Input
+                                                value={member.title}
+                                                onChange={(e) => setTeamMembers((prev) => prev.map((m, idx) => idx === i ? { ...m, title: e.target.value } : m))}
+                                                placeholder="Title, e.g. CEO · ex-Flexport"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="shrink-0 text-destructive"
+                                                onClick={() => setTeamMembers((prev) => prev.filter((_, idx) => idx !== i))}
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setTeamMembers((prev) => [...prev, { name: "", title: "" }])}
+                                >
+                                    Add team member
+                                </Button>
+                                <div className="space-y-2">
+                                    <Label htmlFor="headcount">Headcount</Label>
+                                    <Input
+                                        id="headcount"
+                                        type="number"
+                                        value={headcount}
+                                        onChange={(e) => setHeadcount(e.target.value)}
+                                        placeholder="e.g. 7"
+                                    />
                                 </div>
                             </div>
                         </CardContent>

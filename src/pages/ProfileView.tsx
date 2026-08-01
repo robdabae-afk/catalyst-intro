@@ -35,6 +35,8 @@ interface ProfileData {
     funding_amount: string | null;
     pitch_deck_url: string | null;
     banner_url: string | null;
+    team_members?: { name: string; title: string }[] | null;
+    headcount?: number | null;
   };
   investor_profile?: {
     firm_name: string | null;
@@ -194,6 +196,9 @@ function FounderView({
   const fp = profile.founder_profile;
   const companyName = fp?.startup_name ?? fp?.company_name ?? "";
   const location = fp?.preferred_city ?? "";
+  const isPostRevenue = !!fp?.mrr && fp.mrr !== "Pre-revenue";
+  const hasRaised = !!fp?.funding_amount;
+  const teamMembers = fp?.team_members ?? [];
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -283,12 +288,23 @@ function FounderView({
 
         {/* Traction Card */}
         {(fp?.mrr || fp?.backed_by || fp?.funding_amount) && (
-          <SectionCard label="Traction">
+          <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
             <div className="grid grid-cols-2 gap-3">
               {fp?.mrr && <TractionStat label="MRR" value={fp.mrr} />}
               {fp?.backed_by && <TractionStat label="Backed by" value={fp.backed_by} />}
               {fp?.funding_amount && <TractionStat label="Raised" value={fp.funding_amount} />}
               {fp?.stage && <TractionStat label="Stage" value={fp.stage} />}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Funding Card */}
+        {(fp?.funding_amount || fp?.backed_by) && (
+          <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
+            <div>
+              {fp?.stage && <FundingRow label="Round" value={fp.stage} />}
+              {fp?.funding_amount && <FundingRow label="Amount" value={fp.funding_amount} />}
+              {fp?.backed_by && <FundingRow label="Lead" value={fp.backed_by} last />}
             </div>
           </SectionCard>
         )}
@@ -300,6 +316,18 @@ function FounderView({
               {fp.industry.map((t) => (
                 <Tag key={t}>{t}</Tag>
               ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Team */}
+        {(teamMembers.length > 0 || fp?.headcount) && (
+          <SectionCard label="Team">
+            <div>
+              {teamMembers.map((m, i) => (
+                <FundingRow key={i} label={m.name} value={m.title} last={i === teamMembers.length - 1 && !fp?.headcount} />
+              ))}
+              {fp?.headcount != null && <FundingRow label="Headcount" value={String(fp.headcount)} last />}
             </div>
           </SectionCard>
         )}
@@ -588,7 +616,17 @@ function InfoChip({
   );
 }
 
-function SectionCard({ label, children }: { label: string; children: React.ReactNode }) {
+function SectionCard({
+  label,
+  badge,
+  badgeActive = true,
+  children,
+}: {
+  label: string;
+  badge?: string;
+  badgeActive?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <div
       className="px-4 py-4 rounded-2xl"
@@ -598,19 +636,44 @@ function SectionCard({ label, children }: { label: string; children: React.React
         border: "1px solid rgba(255,255,255,0.1)",
       }}
     >
-      <p
-        className="mb-3"
-        style={{
-          color: "#94908A",
-          fontSize: 10.5,
-          textTransform: "uppercase",
-          letterSpacing: "1px",
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </p>
+      <div className="flex items-center justify-between mb-3">
+        <p
+          style={{
+            color: "#94908A",
+            fontSize: 10.5,
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            fontWeight: 500,
+          }}
+        >
+          {label}
+        </p>
+        {badge && (
+          <span
+            className="px-2.5 py-1 rounded-full text-[10px] font-semibold"
+            style={
+              badgeActive
+                ? { background: "#C6A02C", color: "#2A2005" }
+                : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
+            }
+          >
+            {badge}
+          </span>
+        )}
+      </div>
       {children}
+    </div>
+  );
+}
+
+function FundingRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+  return (
+    <div
+      className="flex items-center justify-between py-2"
+      style={last ? undefined : { borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+    >
+      <span style={{ color: "#94908A", fontSize: 13.5 }}>{label}</span>
+      <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }}>{value}</span>
     </div>
   );
 }

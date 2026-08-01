@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
+  const dragMoved = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { excludedIds } = useSwipeHistory(user?.id);
@@ -91,13 +92,16 @@ export default function Dashboard() {
   // Drag to swipe
   const onPointerDown = (e: React.PointerEvent) => {
     dragStartX.current = e.clientX;
+    dragMoved.current = 0;
     setIsDragging(true);
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (!isDragging) return;
-    setDragX(e.clientX - dragStartX.current);
+    const dx = e.clientX - dragStartX.current;
+    dragMoved.current = Math.max(dragMoved.current, Math.abs(dx));
+    setDragX(dx);
   };
 
   const onPointerUp = () => {
@@ -108,6 +112,9 @@ export default function Dashboard() {
       handlePass();
     } else {
       setDragX(0);
+      if (dragMoved.current < 6 && currentProfile) {
+        navigate(`/profile/${currentProfile.id}`);
+      }
     }
   };
 
