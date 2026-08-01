@@ -108,9 +108,9 @@ export default function Home() {
       </div>
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto pb-20 px-6 space-y-4" style={{ paddingTop: 8 }}>
+      <div className="flex-1 min-h-0 overflow-y-auto pb-16 px-6 space-y-3" style={{ paddingTop: 6 }}>
         {/* Priority Match Card */}
-        <GlassCard className="relative px-6 py-5">
+        <GlassCard className="relative px-6 py-4">
           <p
             style={{
               color: "#E7CB7E",
@@ -164,7 +164,7 @@ export default function Home() {
         ) : events.length === 0 ? (
           <p style={{ color: "#94908A", fontSize: 13 }}>No upcoming events.</p>
         ) : (
-          events.slice(0, 2).map((event) => <EventCard key={event.id} event={event} />)
+          events.slice(0, 1).map((event) => <EventCard key={event.id} event={event} />)
         )}
 
         {/* Latest Updates */}
@@ -318,7 +318,7 @@ function NewsCard({ item }: { item: any }) {
       className="shrink-0 relative flex flex-col"
       style={{
         width: 236,
-        minHeight: 130,
+        minHeight: 116,
         background:
           "linear-gradient(162deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
         boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
