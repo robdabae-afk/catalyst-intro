@@ -266,7 +266,7 @@ export default function Matches() {
       markThreadRead(selectedMatch.profile.id);
 
       const channel = supabase
-        .channel('messages-channel')
+        .channel(`messages-${selectedMatch.profile.id}-${Math.random().toString(36).slice(2)}`)
         .on(
           'postgres_changes',
           {

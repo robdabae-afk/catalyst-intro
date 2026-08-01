@@ -20,9 +20,10 @@ export function useUnreadMessages() {
 
     fetchCount();
 
-    // Subscribe to changes
+    // Subscribe to changes — unique topic per hook instance so multiple
+    // mounts (e.g. Messages page + menu drawer) don't collide
     const channel = supabase
-      .channel('unread-messages')
+      .channel(`unread-messages-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, fetchCount)
       .subscribe();
 
