@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutGrid, Users, FileText, MessageSquare } from "lucide-react";
+import { LayoutGrid, Search, MessageSquare, Users } from "lucide-react";
 
 interface BottomNavProps {
   userType?: "founder" | "investor" | null;
   inboxBadge?: number;
 }
 
-export function BottomNav({ userType, inboxBadge = 0 }: BottomNavProps) {
+export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,23 +18,23 @@ export function BottomNav({ userType, inboxBadge = 0 }: BottomNavProps) {
       onClick: () => navigate("/app/home"),
     },
     {
-      icon: Users,
+      icon: Search,
       label: "Discover",
       paths: ["/dashboard"],
       onClick: () => navigate("/dashboard"),
     },
     {
-      icon: FileText,
-      label: userType === "investor" ? "Deals" : "Cap Table",
-      paths: ["/captable", "/investments"],
-      onClick: () => navigate(userType === "investor" ? "/investments" : "/captable"),
-    },
-    {
       icon: MessageSquare,
-      label: "Inbox",
+      label: "Messages",
       paths: ["/matches", "/requests"],
       onClick: () => navigate("/matches"),
       badge: inboxBadge,
+    },
+    {
+      icon: Users,
+      label: "Connections",
+      paths: ["/connections"],
+      onClick: () => navigate("/connections"),
     },
   ];
 
