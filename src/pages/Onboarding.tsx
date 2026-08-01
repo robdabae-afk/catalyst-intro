@@ -19,6 +19,7 @@ import {
   FileCheck2,
   Clock,
   IdCard,
+  Users,
 } from "lucide-react";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
@@ -146,6 +147,14 @@ export default function Onboarding() {
       onClick: () => navigate("/settings#section-startup"),
     },
     {
+      id: "team",
+      title: "Team",
+      desc: "Member names, titles, headcount",
+      icon: <Users size={15} className="text-[#C6A02C]" />,
+      done: (Array.isArray(roleProfile?.team_members) && roleProfile.team_members.length > 0) || roleProfile?.headcount != null,
+      onClick: () => navigate("/settings#section-startup"),
+    },
+    {
       id: "identity",
       title: "Verify identity",
       desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Government ID + selfie, manually reviewed",
@@ -209,6 +218,30 @@ export default function Onboarding() {
       desc: "What you back & why",
       icon: <FileText size={15} className="text-[#C6A02C]" />,
       done: !!roleProfile?.investment_thesis,
+      onClick: () => navigate("/settings#section-investor"),
+    },
+    {
+      id: "responsiveness",
+      title: "Responsiveness",
+      desc: "Response rate & reply time",
+      icon: <Clock size={15} className="text-[#C6A02C]" />,
+      done: roleProfile?.response_rate != null || !!roleProfile?.avg_reply_time,
+      onClick: () => navigate("/settings#section-investor"),
+    },
+    {
+      id: "portfolio_stats",
+      title: "Portfolio stats",
+      desc: "Deals, total invested, exits",
+      icon: <DollarSign size={15} className="text-[#C6A02C]" />,
+      done: roleProfile?.deals_last_12mo != null || !!roleProfile?.total_invested || roleProfile?.notable_exits != null,
+      onClick: () => navigate("/settings#section-investor"),
+    },
+    {
+      id: "portfolio_companies",
+      title: "Portfolio companies",
+      desc: "Logos of recent investments",
+      icon: <Users size={15} className="text-[#C6A02C]" />,
+      done: Array.isArray(roleProfile?.portfolio_companies) && roleProfile.portfolio_companies.length > 0,
       onClick: () => navigate("/settings#section-investor"),
     },
     {

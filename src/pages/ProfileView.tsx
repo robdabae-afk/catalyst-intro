@@ -51,6 +51,13 @@ interface ProfileData {
     investor_type: string | null;
     investment_count: number | null;
     notable_portfolio: string | null;
+    portfolio_companies?: { name: string; logo_url: string | null }[] | null;
+    response_rate?: number | null;
+    avg_reply_time?: string | null;
+    responsiveness_status?: string | null;
+    deals_last_12mo?: number | null;
+    total_invested?: string | null;
+    notable_exits?: number | null;
   };
 }
 
@@ -484,14 +491,53 @@ function InvestorView({
           </SectionCard>
         )}
 
-        {/* Portfolio */}
-        {(ip?.investment_count || ip?.notable_portfolio || ip?.portfolio_link) && (
+        {/* Responsiveness */}
+        {(ip?.response_rate != null || ip?.avg_reply_time || ip?.responsiveness_status) && (
+          <SectionCard label="Responsiveness">
+            <div>
+              {ip?.response_rate != null && <FundingRow label="Response rate" value={`${ip.response_rate}%`} />}
+              {ip?.avg_reply_time && <FundingRow label="Avg. reply time" value={ip.avg_reply_time} />}
+              {ip?.responsiveness_status && (
+                <div className="flex items-center justify-between py-2">
+                  <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
+                  <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip.responsiveness_status}</span>
+                </div>
+              )}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Portfolio companies */}
+        {ip?.portfolio_companies && ip.portfolio_companies.length > 0 && (
+          <SectionCard label="Portfolio Companies">
+            <div className="flex flex-wrap gap-3">
+              {ip.portfolio_companies.map((c, i) => (
+                <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                  {c.logo_url ? (
+                    <img src={c.logo_url} alt={c.name} className="w-7 h-7 rounded-full object-cover" />
+                  ) : (
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(198,160,44,0.15)", border: "1px solid #C6A02C" }}
+                    >
+                      <span style={{ color: "#C6A02C", fontSize: 11, fontWeight: 700 }}>{c.name.charAt(0).toUpperCase()}</span>
+                    </div>
+                  )}
+                  <span style={{ color: "#F6F5F2", fontSize: 13 }}>{c.name}</span>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Portfolio stats */}
+        {(ip?.investment_count || ip?.notable_portfolio || ip?.portfolio_link || ip?.deals_last_12mo != null || ip?.total_invested || ip?.notable_exits != null) && (
           <SectionCard label="Portfolio">
-            {ip?.investment_count && (
-              <div className="flex justify-between py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                <span style={{ color: "#94908A", fontSize: 13.5 }}>Total deals</span>
-                <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600 }}>{ip.investment_count}</span>
-              </div>
+            {ip?.deals_last_12mo != null && <FundingRow label="Deals (12 mo)" value={String(ip.deals_last_12mo)} />}
+            {ip?.total_invested && <FundingRow label="Total invested" value={ip.total_invested} />}
+            {ip?.notable_exits != null && <FundingRow label="Notable exits" value={String(ip.notable_exits)} />}
+            {ip?.investment_count != null && ip?.deals_last_12mo == null && (
+              <FundingRow label="Total deals" value={String(ip.investment_count)} />
             )}
             {ip?.notable_portfolio && (
               <div className="flex justify-between py-2">

@@ -107,6 +107,14 @@ const Settings = () => {
     const [sectorsOfInterest, setSectorsOfInterest] = useState<string[]>([]);
     const [typicalCheckSize, setTypicalCheckSize] = useState("");
     const [investmentThesis, setInvestmentThesis] = useState("");
+    const [portfolioCompanies, setPortfolioCompanies] = useState<{ name: string; logo_url: string | null }[]>([]);
+    const [responseRate, setResponseRate] = useState("");
+    const [avgReplyTime, setAvgReplyTime] = useState("");
+    const [responsivenessStatus, setResponsivenessStatus] = useState("");
+    const [dealsLast12mo, setDealsLast12mo] = useState("");
+    const [totalInvested, setTotalInvested] = useState("");
+    const [notableExits, setNotableExits] = useState("");
+    const [uploadingLogoIndex, setUploadingLogoIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const loadUserData = async () => {
@@ -182,6 +190,13 @@ const Settings = () => {
                     setSectorsOfInterest(investorProfile.sectors_of_interest || []);
                     setTypicalCheckSize(investorProfile.typical_check_size || "");
                     setInvestmentThesis(investorProfile.investment_thesis || "");
+                    setPortfolioCompanies((investorProfile as any).portfolio_companies || []);
+                    setResponseRate((investorProfile as any).response_rate?.toString() || "");
+                    setAvgReplyTime((investorProfile as any).avg_reply_time || "");
+                    setResponsivenessStatus((investorProfile as any).responsiveness_status || "");
+                    setDealsLast12mo((investorProfile as any).deals_last_12mo?.toString() || "");
+                    setTotalInvested((investorProfile as any).total_invested || "");
+                    setNotableExits((investorProfile as any).notable_exits?.toString() || "");
                 }
             }
 
@@ -234,6 +249,33 @@ const Settings = () => {
             toast({ variant: "destructive", title: "Upload failed", description: error.message });
         } finally {
             setUploadingAvatar(false);
+        }
+    };
+
+    const handlePortfolioLogoUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !userId) return;
+
+        setUploadingLogoIndex(index);
+        try {
+            const fileExt = file.name.split('.').pop();
+            const filePath = `${userId}/portfolio-${index}-${Date.now()}.${fileExt}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file, { upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            setPortfolioCompanies((prev) => prev.map((c, idx) => idx === index ? { ...c, logo_url: publicUrl } : c));
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Logo upload failed", description: error.message });
+        } finally {
+            setUploadingLogoIndex(null);
         }
     };
 
@@ -379,8 +421,15 @@ const Settings = () => {
                         notable_portfolio: notablePortfolio || null,
                         sectors_of_interest: sectorsOfInterest,
                         typical_check_size: typicalCheckSize || null,
-                        investment_thesis: investmentThesis || null
-                    })
+                        investment_thesis: investmentThesis || null,
+                        portfolio_companies: portfolioCompanies.filter((c) => c.name.trim()) as any,
+                        response_rate: responseRate ? parseInt(responseRate) : null,
+                        avg_reply_time: avgReplyTime || null,
+                        responsiveness_status: responsivenessStatus || null,
+                        deals_last_12mo: dealsLast12mo ? parseInt(dealsLast12mo) : null,
+                        total_invested: totalInvested || null,
+                        notable_exits: notableExits ? parseInt(notableExits) : null
+                    } as any)
                     .eq('profile_id', userId);
 
                 if (investorError) throw investorError;
@@ -1119,6 +1168,137 @@ const Settings = () => {
                                     placeholder="What you back, and why."
                                     rows={3}
                                 />
+                            </div>
+
+                            {/* Responsiveness */}
+                            <div className="space-y-4 pt-4 border-t">
+                                <h3 className="font-medium">Responsiveness</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="responseRate">Response rate (%)</Label>
+                                        <Input
+                                            id="responseRate"
+                                            type="number"
+                                            min={0}
+                                            max={100}
+                                            value={responseRate}
+                                            onChange={(e) => setResponseRate(e.target.value)}
+                                            placeholder="e.g. 98"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="avgReplyTime">Avg. reply time</Label>
+                                        <Input
+                                            id="avgReplyTime"
+                                            value={avgReplyTime}
+                                            onChange={(e) => setAvgReplyTime(e.target.value)}
+                                            placeholder="e.g. 2 hours"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="responsivenessStatus">Active status</Label>
+                                    <Input
+                                        id="responsivenessStatus"
+                                        value={responsivenessStatus}
+                                        onChange={(e) => setResponsivenessStatus(e.target.value)}
+                                        placeholder="e.g. This week"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Portfolio Stats */}
+                            <div className="space-y-4 pt-4 border-t">
+                                <h3 className="font-medium">Portfolio Stats</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="dealsLast12mo">Deals (12 mo)</Label>
+                                        <Input
+                                            id="dealsLast12mo"
+                                            type="number"
+                                            value={dealsLast12mo}
+                                            onChange={(e) => setDealsLast12mo(e.target.value)}
+                                            placeholder="e.g. 12"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="totalInvested">Total invested</Label>
+                                        <Input
+                                            id="totalInvested"
+                                            value={totalInvested}
+                                            onChange={(e) => setTotalInvested(e.target.value)}
+                                            placeholder="e.g. $28M"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="notableExits">Notable exits</Label>
+                                        <Input
+                                            id="notableExits"
+                                            type="number"
+                                            value={notableExits}
+                                            onChange={(e) => setNotableExits(e.target.value)}
+                                            placeholder="e.g. 2"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Portfolio Companies */}
+                            <div className="space-y-4 pt-4 border-t">
+                                <h3 className="font-medium">Portfolio Companies</h3>
+                                <p className="text-sm text-muted-foreground">Shown on your full profile as recent investments.</p>
+                                {portfolioCompanies.map((company, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div
+                                            className="relative w-12 h-12 shrink-0 rounded-full bg-muted overflow-hidden cursor-pointer group border border-border"
+                                            onClick={() => document.getElementById(`portfolio-logo-upload-${i}`)?.click()}
+                                        >
+                                            {company.logo_url ? (
+                                                <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <Camera className="w-4 h-4 text-muted-foreground/50" />
+                                                </div>
+                                            )}
+                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                {uploadingLogoIndex === i ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                                                ) : (
+                                                    <Upload className="w-4 h-4 text-white" />
+                                                )}
+                                            </div>
+                                        </div>
+                                        <input
+                                            id={`portfolio-logo-upload-${i}`}
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => handlePortfolioLogoUpload(i, e)}
+                                        />
+                                        <Input
+                                            value={company.name}
+                                            onChange={(e) => setPortfolioCompanies((prev) => prev.map((c, idx) => idx === i ? { ...c, name: e.target.value } : c))}
+                                            placeholder="Company name"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            className="shrink-0 text-destructive"
+                                            onClick={() => setPortfolioCompanies((prev) => prev.filter((_, idx) => idx !== i))}
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setPortfolioCompanies((prev) => [...prev, { name: "", logo_url: null }])}
+                                >
+                                    Add portfolio company
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
