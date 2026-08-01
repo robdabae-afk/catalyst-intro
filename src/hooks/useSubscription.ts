@@ -72,7 +72,7 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
 
     // Subscribe to realtime updates for subscription changes
     const channel = supabase
-      .channel(`subscription-${userId}`)
+      .channel(`subscription-${userId}-${Math.random().toString(36).slice(2)}`)
       .on(
         'postgres_changes',
         {

@@ -47,7 +47,7 @@ export function useNewMatches() {
 
     // Subscribe to swipes changes
     const channel = supabase
-      .channel('new-matches')
+      .channel(`new-matches-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'swipes' }, fetchCount)
       .subscribe();
 

@@ -67,7 +67,7 @@ export const useActiveConversations = (
 
     // Subscribe to match changes
     const channel = supabase
-      .channel(`active-conversations-${userId}`)
+      .channel(`active-conversations-${userId}-${Math.random().toString(36).slice(2)}`)
       .on(
         'postgres_changes',
         {

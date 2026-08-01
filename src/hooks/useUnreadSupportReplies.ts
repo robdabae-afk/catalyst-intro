@@ -46,7 +46,7 @@ export function useUnreadSupportReplies() {
     fetchCount();
 
     const channel = supabase
-      .channel('support-replies')
+      .channel(`support-replies-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'support_messages' }, fetchCount)
       .subscribe();
 
