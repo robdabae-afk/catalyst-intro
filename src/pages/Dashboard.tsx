@@ -223,7 +223,10 @@ export default function Dashboard() {
       </div>
 
       {/* Card area */}
-      <div className="flex-1 flex flex-col px-4 pb-4" style={{ minHeight: 0 }}>
+      <div
+        className="flex-1 flex flex-col px-4"
+        style={{ minHeight: 0, paddingBottom: "calc(96px + env(safe-area-inset-bottom))" }}
+      >
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
@@ -476,7 +479,7 @@ export default function Dashboard() {
 
         {/* Go Pro banner */}
         {!isPro && !outOfCards && !loading && (
-          <div className="mt-1 pb-20 text-center">
+          <div className="mt-1 text-center">
             <button
               onClick={() => navigate("/settings")}
               style={{ color: "#94908A", fontSize: 11.5 }}
@@ -488,7 +491,6 @@ export default function Dashboard() {
             </button>
           </div>
         )}
-        {(outOfCards || loading) && <div style={{ paddingBottom: 80 }} />}
       </div>
 
       {/* Pass reason prompt */}
