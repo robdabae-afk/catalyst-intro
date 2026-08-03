@@ -22,6 +22,7 @@ import Investments from "./pages/Investments";
 import InvestorPortfolio from "./pages/InvestorPortfolio";
 import Admin from "./pages/Admin";
 import FounderAnalytics from "./pages/FounderAnalytics";
+import InvestorMarketPulse from "./pages/InvestorMarketPulse";
 
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
@@ -109,6 +110,8 @@ const App = () => (
           <Route path="/app/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
           <Route path="/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
           <Route path="/app/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
+          <Route path="/market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />
+          <Route path="/app/market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />
           <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />

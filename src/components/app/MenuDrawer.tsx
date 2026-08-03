@@ -21,6 +21,7 @@ import {
   LogOut,
   Star,
   BarChart3,
+  TrendingUp,
 } from "lucide-react";
 
 interface MenuDrawerProps {
@@ -110,11 +111,18 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
               />
             </>
           ) : (
-            <MenuItem
-              icon={<FileText size={17} color={GOLD} />}
-              label="Cap Table"
-              onClick={() => go("/portfolio")}
-            />
+            <>
+              <MenuItem
+                icon={<FileText size={17} color={GOLD} />}
+                label="Cap Table"
+                onClick={() => go("/portfolio")}
+              />
+              <MenuItem
+                icon={<TrendingUp size={17} color={GOLD} />}
+                label="Market Pulse"
+                onClick={() => go("/market-pulse")}
+              />
+            </>
           )}
           <MenuItem
             icon={<Headphones size={17} color={GOLD} />}

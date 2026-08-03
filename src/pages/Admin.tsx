@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper, LogOut, IdCard, TrendingUp } from "lucide-react";
+import { Shield, UserCheck, UserX, Crown, ArrowLeft, MessageCircle, Megaphone, Sparkles, Eye, Edit, XCircle, Mail, Gift, EyeOff, Star, DollarSign, Heart, Download, CheckCircle2, Circle, BarChart3, Flag, Zap, CalendarDays, Newspaper, LogOut, IdCard, TrendingUp, Database as DatabaseIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -36,6 +36,7 @@ import { AdminMatchAnalyticsPanel } from "@/components/AdminMatchAnalyticsPanel"
 import { AdminFeedPanel } from "@/components/AdminFeedPanel";
 import { AdminIdentityVerificationPanel } from "@/components/AdminIdentityVerificationPanel";
 import { AdminMarketIntelPanel } from "@/components/AdminMarketIntelPanel";
+import { AdminDataExplorerPanel } from "@/components/AdminDataExplorerPanel";
 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -650,6 +651,10 @@ const Admin = () => {
               <TrendingUp className="w-4 h-4" />
               Market Intel
             </TabsTrigger>
+            <TabsTrigger value="data-explorer" className="flex items-center gap-2">
+              <DatabaseIcon className="w-4 h-4" />
+              Data Explorer
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="event-attendees">
@@ -666,6 +671,10 @@ const Admin = () => {
 
           <TabsContent value="market-intel">
             <AdminMarketIntelPanel />
+          </TabsContent>
+
+          <TabsContent value="data-explorer">
+            <AdminDataExplorerPanel />
           </TabsContent>
 
           <TabsContent value="analytics">
