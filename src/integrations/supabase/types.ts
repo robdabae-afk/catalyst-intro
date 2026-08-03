@@ -118,6 +118,41 @@ export type Database = {
           },
         ]
       }
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cap_table_entries: {
         Row: {
           created_at: string | null
@@ -186,7 +221,12 @@ export type Database = {
           id: string
           investor_id: string
           meeting_location: string | null
+          next_step: string | null
           notes: string | null
+          outcome: string | null
+          outcome_notes: string | null
+          outcome_recorded_at: string | null
+          outcome_recorded_by: string | null
           proposed_date: string | null
           sender_id: string | null
           status: string | null
@@ -198,7 +238,12 @@ export type Database = {
           id?: string
           investor_id: string
           meeting_location?: string | null
+          next_step?: string | null
           notes?: string | null
+          outcome?: string | null
+          outcome_notes?: string | null
+          outcome_recorded_at?: string | null
+          outcome_recorded_by?: string | null
           proposed_date?: string | null
           sender_id?: string | null
           status?: string | null
@@ -210,7 +255,12 @@ export type Database = {
           id?: string
           investor_id?: string
           meeting_location?: string | null
+          next_step?: string | null
           notes?: string | null
+          outcome?: string | null
+          outcome_notes?: string | null
+          outcome_recorded_at?: string | null
+          outcome_recorded_by?: string | null
           proposed_date?: string | null
           sender_id?: string | null
           status?: string | null
@@ -227,6 +277,13 @@ export type Database = {
           {
             foreignKeyName: "coffee_chats_investor_id_fkey"
             columns: ["investor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coffee_chats_outcome_recorded_by_fkey"
+            columns: ["outcome_recorded_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -469,6 +526,7 @@ export type Database = {
           ein_number: string | null
           financial_statement_urls: string[] | null
           funding_amount: string | null
+          fundraising_status: string
           headcount: number | null
           id: string
           incorporation_doc_url: string | null
@@ -480,10 +538,16 @@ export type Database = {
           pitch_deck_visibility: string
           preferred_city: string | null
           profile_id: string
+          raise_amount: number | null
+          raise_type: string | null
           stage: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
+          status_changed_at: string | null
+          status_note: string | null
+          target_close_date: string | null
           team_members: Json
           traction: string | null
+          valuation_cap_target: number | null
           video_url: string | null
         }
         Insert: {
@@ -496,6 +560,7 @@ export type Database = {
           ein_number?: string | null
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
+          fundraising_status?: string
           headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
@@ -507,10 +572,16 @@ export type Database = {
           pitch_deck_visibility?: string
           preferred_city?: string | null
           profile_id: string
+          raise_amount?: number | null
+          raise_type?: string | null
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name: string
+          status_changed_at?: string | null
+          status_note?: string | null
+          target_close_date?: string | null
           team_members?: Json
           traction?: string | null
+          valuation_cap_target?: number | null
           video_url?: string | null
         }
         Update: {
@@ -523,6 +594,7 @@ export type Database = {
           ein_number?: string | null
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
+          fundraising_status?: string
           headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
@@ -534,16 +606,63 @@ export type Database = {
           pitch_deck_visibility?: string
           preferred_city?: string | null
           profile_id?: string
+          raise_amount?: number | null
+          raise_type?: string | null
           stage?: Database["public"]["Enums"]["funding_stage"] | null
           startup_name?: string
+          status_changed_at?: string | null
+          status_note?: string | null
+          target_close_date?: string | null
           team_members?: Json
           traction?: string | null
+          valuation_cap_target?: number | null
           video_url?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "founder_profiles_profile_id_fkey"
             columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      google_oauth_tokens: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string
+          google_email: string | null
+          refresh_token: string
+          scope: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at: string
+          google_email?: string | null
+          refresh_token: string
+          scope?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string
+          google_email?: string | null
+          refresh_token?: string
+          scope?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_oauth_tokens_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1359,6 +1478,7 @@ export type Database = {
           first_message_at: string | null
           first_message_sender_id: string | null
           id: string
+          investor_stage: string | null
           marked_successful_at: string | null
           marked_successful_by: string | null
           status: Database["public"]["Enums"]["match_status"]
@@ -1373,6 +1493,7 @@ export type Database = {
           first_message_at?: string | null
           first_message_sender_id?: string | null
           id?: string
+          investor_stage?: string | null
           marked_successful_at?: string | null
           marked_successful_by?: string | null
           status?: Database["public"]["Enums"]["match_status"]
@@ -1387,6 +1508,7 @@ export type Database = {
           first_message_at?: string | null
           first_message_sender_id?: string | null
           id?: string
+          investor_stage?: string | null
           marked_successful_at?: string | null
           marked_successful_by?: string | null
           status?: Database["public"]["Enums"]["match_status"]
@@ -1425,13 +1547,60 @@ export type Database = {
         }
         Relationships: []
       }
+      mrr_snapshots: {
+        Row: {
+          created_at: string
+          founder_id: string
+          headcount: number | null
+          id: string
+          mrr_numeric: number | null
+          mrr_value: string | null
+          runway_months: number | null
+          snapshot_month: string
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          founder_id: string
+          headcount?: number | null
+          id?: string
+          mrr_numeric?: number | null
+          mrr_value?: string | null
+          runway_months?: number | null
+          snapshot_month: string
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          founder_id?: string
+          headcount?: number | null
+          id?: string
+          mrr_numeric?: number | null
+          mrr_value?: string | null
+          runway_months?: number | null
+          snapshot_month?: string
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mrr_snapshots_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           admin_edit_message: string | null
           admin_edit_suggestion: string | null
+          aggregated_data_consent: boolean
           approved: boolean
           avatar_url: string | null
           bonus_swipes: number
+          ccpa_do_not_sell: boolean
+          ccpa_updated_at: string | null
           created_at: string | null
           early_access: boolean
           early_access_paid_at: string | null
@@ -1482,9 +1651,12 @@ export type Database = {
         Insert: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
+          aggregated_data_consent?: boolean
           approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
+          ccpa_do_not_sell?: boolean
+          ccpa_updated_at?: string | null
           created_at?: string | null
           early_access?: boolean
           early_access_paid_at?: string | null
@@ -1535,9 +1707,12 @@ export type Database = {
         Update: {
           admin_edit_message?: string | null
           admin_edit_suggestion?: string | null
+          aggregated_data_consent?: boolean
           approved?: boolean
           avatar_url?: string | null
           bonus_swipes?: number
+          ccpa_do_not_sell?: boolean
+          ccpa_updated_at?: string | null
           created_at?: string | null
           early_access?: boolean
           early_access_paid_at?: string | null
@@ -1697,24 +1872,30 @@ export type Database = {
           body: string | null
           created_at: string
           founder_id: string
+          headcount_snapshot: number | null
           id: string
           link: string | null
+          mrr_snapshot: string | null
           title: string
         }
         Insert: {
           body?: string | null
           created_at?: string
           founder_id: string
+          headcount_snapshot?: number | null
           id?: string
           link?: string | null
+          mrr_snapshot?: string | null
           title: string
         }
         Update: {
           body?: string | null
           created_at?: string
           founder_id?: string
+          headcount_snapshot?: number | null
           id?: string
           link?: string | null
+          mrr_snapshot?: string | null
           title?: string
         }
         Relationships: [
@@ -1788,6 +1969,7 @@ export type Database = {
           action: string
           created_at: string
           id: string
+          pass_reason: string | null
           swiped_id: string
           swiper_id: string
         }
@@ -1795,6 +1977,7 @@ export type Database = {
           action: string
           created_at?: string
           id?: string
+          pass_reason?: string | null
           swiped_id: string
           swiper_id: string
         }
@@ -1802,6 +1985,7 @@ export type Database = {
           action?: string
           created_at?: string
           id?: string
+          pass_reason?: string | null
           swiped_id?: string
           swiper_id?: string
         }
@@ -1902,7 +2086,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_deal_terms: {
+        Row: {
+          avg_check_size: number | null
+          cap_avg: number | null
+          cap_median: number | null
+          cap_p25: number | null
+          cap_p75: number | null
+          discount_avg: number | null
+          discount_median: number | null
+          total_safes: number | null
+          with_cap: number | null
+          with_discount: number | null
+        }
+        Relationships: []
+      }
+      v_investor_responsiveness: {
+        Row: {
+          investor_id: string | null
+          median_reply_hours: number | null
+          response_rate_pct: number | null
+          total_threads: number | null
+        }
+        Relationships: []
+      }
+      v_pass_reasons: {
+        Row: {
+          count: number | null
+          pass_reason: string | null
+          pct: number | null
+        }
+        Relationships: []
+      }
+      v_platform_funnel: {
+        Row: {
+          accepted_meetings: number | null
+          deck_opens: number | null
+          matches_messaged: number | null
+          profile_views: number | null
+          total_likes: number | null
+          total_matches: number | null
+          total_meetings: number | null
+          total_passes: number | null
+          total_safes: number | null
+          total_swipes: number | null
+        }
+        Relationships: []
+      }
+      v_sector_demand: {
+        Row: {
+          like_rate_pct: number | null
+          likes: number | null
+          passes: number | null
+          sector: string | null
+          total_swipes: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
@@ -1938,6 +2178,10 @@ export type Database = {
       get_approved_investor_referral_count: {
         Args: { user_id: string }
         Returns: number
+      }
+      get_founder_cohort_stats: {
+        Args: { p_exclude_id: string; p_industries: string[]; p_stage: string }
+        Returns: Json
       }
       get_founder_profile_with_access: {
         Args: { founder_profile_id: string }
@@ -2006,6 +2250,7 @@ export type Database = {
         Args: { _a: string; _b: string }
         Returns: boolean
       }
+      responsiveness_label: { Args: { hours: number }; Returns: string }
     }
     Enums: {
       ad_profile_type: "startup" | "investment_fund" | "external"

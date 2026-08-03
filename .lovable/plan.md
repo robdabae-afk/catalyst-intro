@@ -1,43 +1,24 @@
-Goal: Reduce the vertical length of `/app/home` (mobile homepage) so users do not need to scroll on a typical phone viewport, while keeping all existing content and being conservative with sizing changes.
+# Fix: swipe action buttons hidden behind bottom nav
 
-Current state (from `src/pages/Home.tsx`):
-- Header: `pt-14 pb-2` plus 24px title
-- Priority Match card: `px-6 py-8`
-- Section headers: `pt-3`
-- Latest Events: renders up to 3 `EventCard`s
-- `EventCard`: `px-4 py-3.5` plus 52px date badge
-- Latest Updates horizontal strip: cards have `minHeight: 160` and `padding: 19px 17px 17px`
-- Scroll container: `pb-24` to clear bottom nav
+## What happened
 
-Planned conservative changes:
-1. Header
-   - Reduce top padding from `pt-14` to `pt-10`.
-   - Keep welcome text and settings button.
+The Discover screen (`src/pages/Dashboard.tsx`) was rebuilt in the recent mobile UI work ("Rebuild mobile UI: swipe view…" / "Rebuild bottom tab bar per nav spec"). In that rebuild the three action buttons became normal in-flow elements at the bottom of the card column, while the tab bar is a floating overlay (`fixed bottom-4`, 66px tall).
 
-2. Priority Match card
-   - Reduce vertical padding from `py-8` to `py-5`.
-   - Slightly reduce the large "0 new" number font size from 32px to 28px.
-   - Keep the arrow button and label text unchanged.
+The only thing reserving space under the buttons is the "Go Pro" banner, which renders with `pb-20` **only when the user is not Pro**. So:
 
-3. Section headers
-   - Reduce top padding from `pt-3` to `pt-1`.
+- Non-Pro user: 80px of padding happens to clear the nav.
+- Pro user (and the loading/out-of-cards paths use a separate 80px spacer): no reserved space at all, so the buttons sit directly under the floating nav and get covered.
 
-4. Latest Events
-   - Cap displayed events at 2 instead of 3 (`events.slice(0, 2)`).
-   - Reduce `EventCard` vertical padding from `py-3.5` to `py-2.5`.
-   - Reduce date badge vertical padding slightly.
+The overlap in the screenshot matches a Pro/admin test account — no Go Pro banner is visible.
 
-5. Latest Updates
-   - Reduce news card `minHeight` from 160px to 130px.
-   - Reduce card padding from `19px 17px 17px` to `14px 14px 12px`.
-   - Reduce body line clamp from 2 to 1 to save height.
+## Fix
 
-6. Scroll container
-   - Reduce bottom padding from `pb-24` to `pb-20` since the bottom nav is 66px tall and floating with margin.
+In `src/pages/Dashboard.tsx`:
 
-7. Verification
-   - Switch the preview to mobile viewport.
-   - Take a screenshot to confirm the full homepage is visible without scrolling.
-   - If still scrolling, make one additional conservative pass on padding/spacing before considering content removal.
+1. Add a single unconditional bottom reserve on the card-area container instead of relying on the banner: bottom padding of nav height + gap + safe-area (`calc(96px + env(safe-area-inset-bottom))`).
+2. Remove the ad-hoc `pb-20` on the Go Pro banner and the conditional `paddingBottom: 80` spacer, so spacing no longer depends on subscription state.
+3. Keep the buttons in flow (no layout redesign), so the card simply shrinks slightly and the buttons always clear the nav.
 
-No content will be removed; only spacing, font sizing, and the event cap will be adjusted.
+## Verification
+
+Render `/dashboard` at 394x690 with Playwright as a Pro/admin account and confirm the bounding box of the action buttons sits above the nav bar's top edge, then re-check the non-Pro path with the banner visible.
