@@ -479,7 +479,7 @@ export default function Dashboard() {
 
         {/* Go Pro banner */}
         {!isPro && !outOfCards && !loading && (
-          <div className="mt-1 pb-20 text-center">
+          <div className="mt-1 text-center">
             <button
               onClick={() => navigate("/settings")}
               style={{ color: "#94908A", fontSize: 11.5 }}
@@ -491,7 +491,6 @@ export default function Dashboard() {
             </button>
           </div>
         )}
-        {(outOfCards || loading) && <div style={{ paddingBottom: 80 }} />}
       </div>
 
       {/* Pass reason prompt */}
