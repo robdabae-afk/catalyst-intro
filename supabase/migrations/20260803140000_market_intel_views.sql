@@ -43,12 +43,12 @@ SELECT
   COUNT(*) FILTER (WHERE valuation_cap IS NOT NULL)     AS with_cap,
   COUNT(*) FILTER (WHERE discount_rate  IS NOT NULL)    AS with_discount,
   ROUND(AVG(amount))                                    AS avg_check_size,
-  ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY valuation_cap)) AS cap_p25,
-  ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY valuation_cap)) AS cap_median,
-  ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY valuation_cap)) AS cap_p75,
-  ROUND(AVG(valuation_cap))                             AS cap_avg,
-  ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY discount_rate), 1) AS discount_median,
-  ROUND(AVG(discount_rate), 1)                          AS discount_avg
+  ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY valuation_cap)::numeric) AS cap_p25,
+  ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY valuation_cap)::numeric) AS cap_median,
+  ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY valuation_cap)::numeric) AS cap_p75,
+  ROUND(AVG(valuation_cap)::numeric)                    AS cap_avg,
+  ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY discount_rate)::numeric, 1) AS discount_median,
+  ROUND(AVG(discount_rate)::numeric, 1)                 AS discount_avg
 FROM public.safes
 WHERE status IS DISTINCT FROM 'voided';
 
