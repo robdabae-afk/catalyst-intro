@@ -94,6 +94,7 @@ interface Match {
     id: string;
     status: string;
     first_message_sender_id: string | null;
+    investor_stage: string | null;
   };
   lastMessage?: { content: string; created_at: string; sender_id: string } | null;
   unreadCount: number;
@@ -210,6 +211,40 @@ export default function Matches() {
   const [docRequestType, setDocRequestType] = useState<{ value: string; label: string } | null>(null);
   const [docRequestMessage, setDocRequestMessage] = useState("");
   const [docRequestSending, setDocRequestSending] = useState(false);
+
+  // Investor pipeline stage
+  const [stageSaving, setStageSaving] = useState(false);
+
+  const PIPELINE_STAGES = [
+    { value: "screening",       label: "🔍 Screening" },
+    { value: "diligence",       label: "🔬 Diligence" },
+    { value: "partner_meeting", label: "🤝 Partner Meeting" },
+    { value: "term_sheet",      label: "📝 Term Sheet" },
+    { value: "passed",          label: "❌ Passed" },
+  ];
+
+  const updateStage = async (stage: string) => {
+    if (!selectedMatch?.matchRecord?.id) return;
+    setStageSaving(true);
+    try {
+      await supabase
+        .from("matches")
+        .update({ investor_stage: stage } as any)
+        .eq("id", selectedMatch.matchRecord.id);
+      setMatches((prev) =>
+        prev.map((m) =>
+          m.matchRecord?.id === selectedMatch.matchRecord?.id
+            ? { ...m, matchRecord: { ...m.matchRecord!, investor_stage: stage } }
+            : m
+        )
+      );
+      setSelectedMatch((prev) =>
+        prev ? { ...prev, matchRecord: { ...prev.matchRecord!, investor_stage: stage } } : prev
+      );
+    } finally {
+      setStageSaving(false);
+    }
+  };
 
   // Meeting proposal dialog
   const [meetingOpen, setMeetingOpen] = useState(false);
@@ -417,6 +452,7 @@ export default function Matches() {
               id: matchRecord.id,
               status: matchRecord.status,
               first_message_sender_id: matchRecord.first_message_sender_id,
+              investor_stage: (matchRecord as any).investor_stage ?? null,
             } : undefined,
             lastMessage,
             unreadCount,
@@ -707,9 +743,19 @@ export default function Matches() {
                 <p className="truncate" style={{ color: TEXT, fontSize: 16, fontWeight: 700 }}>
                   {getDisplayName(selectedMatch)}
                 </p>
-                <p style={{ color: presence === "online" ? GREEN : TEXT_DIM, fontSize: 11 }}>
-                  {presence === "online" ? "Online" : presence === "recent" ? "Active recently" : "Offline"}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p style={{ color: presence === "online" ? GREEN : TEXT_DIM, fontSize: 11 }}>
+                    {presence === "online" ? "Online" : presence === "recent" ? "Active recently" : "Offline"}
+                  </p>
+                  {currentUserType === "investor" && selectedMatch.matchRecord?.investor_stage && (
+                    <span
+                      className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                      style={{ background: "rgba(198,160,44,0.15)", color: GOLD_LIGHT, border: "1px solid rgba(198,160,44,0.3)" }}
+                    >
+                      {PIPELINE_STAGES.find((s) => s.value === selectedMatch.matchRecord?.investor_stage)?.label ?? selectedMatch.matchRecord.investor_stage}
+                    </span>
+                  )}
+                </div>
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -758,6 +804,27 @@ export default function Matches() {
                     <Calendar className="mr-2 h-4 w-4" style={{ color: GOLD }} />
                     Propose a meeting
                   </DropdownMenuItem>
+                  {currentUserType === "investor" && (
+                    <>
+                      <DropdownMenuSeparator className="bg-white/10" />
+                      {PIPELINE_STAGES.map((s) => (
+                        <DropdownMenuItem
+                          key={s.value}
+                          className={menuItemCls}
+                          disabled={stageSaving}
+                          onClick={() => updateStage(s.value)}
+                          style={
+                            selectedMatch.matchRecord?.investor_stage === s.value
+                              ? { color: GOLD }
+                              : undefined
+                          }
+                        >
+                          <span className="mr-2 text-xs">{selectedMatch.matchRecord?.investor_stage === s.value ? "✓" : " "}</span>
+                          {s.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </>
+                  )}
                   {currentUserType === 'investor' && isPro && matchStatus === 'active' && (
                     <DropdownMenuItem className={menuItemCls} onClick={() => setShowSuccessConfirm(true)}>
                       <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
@@ -1034,6 +1101,14 @@ export default function Matches() {
                 {m.profile.name}
               </span>
               {isPriority(m) && <Star size={13} color={GOLD} fill={GOLD} className="shrink-0" />}
+              {currentUserType === "investor" && m.matchRecord?.investor_stage && (
+                <span
+                  className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
+                  style={{ background: "rgba(198,160,44,0.12)", color: GOLD_LIGHT }}
+                >
+                  {PIPELINE_STAGES.find((s) => s.value === m.matchRecord?.investor_stage)?.label.split(" ").slice(1).join(" ") ?? m.matchRecord.investor_stage}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
               <span style={{ color: TEXT_DIM, fontSize: 11 }}>

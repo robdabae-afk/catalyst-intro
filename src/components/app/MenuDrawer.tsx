@@ -20,6 +20,7 @@ import {
   Shield,
   LogOut,
   Star,
+  BarChart3,
 } from "lucide-react";
 
 interface MenuDrawerProps {
@@ -96,11 +97,18 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
             onClick={() => go("/matches")}
           />
           {userType === "founder" ? (
-            <MenuItem
-              icon={<FileText size={17} color={GOLD} />}
-              label="Cap Table"
-              onClick={() => go("/captable")}
-            />
+            <>
+              <MenuItem
+                icon={<FileText size={17} color={GOLD} />}
+                label="Cap Table"
+                onClick={() => go("/captable")}
+              />
+              <MenuItem
+                icon={<BarChart3 size={17} color={GOLD} />}
+                label="Profile Analytics"
+                onClick={() => go("/founder-analytics")}
+              />
+            </>
           ) : (
             <MenuItem
               icon={<FileText size={17} color={GOLD} />}

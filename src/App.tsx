@@ -21,6 +21,7 @@ import CapTable from "./pages/CapTable";
 import Investments from "./pages/Investments";
 import InvestorPortfolio from "./pages/InvestorPortfolio";
 import Admin from "./pages/Admin";
+import FounderAnalytics from "./pages/FounderAnalytics";
 
 import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
@@ -106,6 +107,8 @@ const App = () => (
           <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
           <Route path="/app/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
+          <Route path="/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
+          <Route path="/app/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
           <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
