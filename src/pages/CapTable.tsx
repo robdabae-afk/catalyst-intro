@@ -88,7 +88,7 @@ const CapTable = () => {
   });
   const [savingRound, setSavingRound] = useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
-  const [updateForm, setUpdateForm] = useState({ title: "", body: "", link: "" });
+  const [updateForm, setUpdateForm] = useState({ title: "", body: "", link: "", mrr_snapshot: "", headcount_snapshot: "" });
   const [postingUpdate, setPostingUpdate] = useState(false);
 
   useEffect(() => {
@@ -156,19 +156,42 @@ const CapTable = () => {
       return;
     }
     setPostingUpdate(true);
+    const headcountNum = updateForm.headcount_snapshot ? parseInt(updateForm.headcount_snapshot) : null;
     const { error } = await (supabase as any).from("startup_updates").insert({
       founder_id: currentUserId,
       title: updateForm.title.trim(),
       body: updateForm.body.trim() || null,
       link: updateForm.link.trim() || null,
+      mrr_snapshot: updateForm.mrr_snapshot.trim() || null,
+      headcount_snapshot: headcountNum,
     });
     setPostingUpdate(false);
     if (error) {
       toast({ variant: "destructive", title: "Failed to post update", description: error.message });
       return;
     }
+
+    // Fire-and-forget: snapshot the vitals to time-series
+    if (updateForm.mrr_snapshot || headcountNum) {
+      const firstOfMonth = new Date();
+      firstOfMonth.setDate(1);
+      firstOfMonth.setHours(0, 0, 0, 0);
+      (async () => {
+        await (supabase as any).from("mrr_snapshots").upsert(
+          {
+            founder_id: currentUserId,
+            mrr_value: updateForm.mrr_snapshot || null,
+            headcount: headcountNum,
+            snapshot_month: firstOfMonth.toISOString().slice(0, 10),
+            source: "manual_update",
+          },
+          { onConflict: "founder_id,snapshot_month,source" }
+        );
+      })();
+    }
+
     toast({ title: "Update posted", description: "Your investors will see this on their portfolio page." });
-    setUpdateForm({ title: "", body: "", link: "" });
+    setUpdateForm({ title: "", body: "", link: "", mrr_snapshot: "", headcount_snapshot: "" });
     setShowUpdateDialog(false);
     loadUpdates(currentUserId);
   };
@@ -822,6 +845,30 @@ const CapTable = () => {
                 placeholder="https://..."
               />
             </div>
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border">
+              <div className="space-y-2">
+                <Label htmlFor="update_mrr">Current MRR (optional)</Label>
+                <Input
+                  id="update_mrr"
+                  value={updateForm.mrr_snapshot}
+                  onChange={(e) => setUpdateForm({ ...updateForm, mrr_snapshot: e.target.value })}
+                  placeholder="e.g. $12k"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="update_headcount">Headcount (optional)</Label>
+                <Input
+                  id="update_headcount"
+                  type="number"
+                  value={updateForm.headcount_snapshot}
+                  onChange={(e) => setUpdateForm({ ...updateForm, headcount_snapshot: e.target.value })}
+                  placeholder="e.g. 7"
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Adding vitals builds a private growth curve for you and helps benchmark our aggregated market data.
+            </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowUpdateDialog(false)}>

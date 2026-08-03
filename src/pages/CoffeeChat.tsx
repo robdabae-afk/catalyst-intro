@@ -25,9 +25,29 @@ interface CoffeeChatInvite {
   notes: string | null;
   status: string | null;
   created_at: string | null;
+  outcome?: string | null;
+  next_step?: string | null;
+  outcome_notes?: string | null;
+  outcome_recorded_at?: string | null;
   sender_profile?: any;
   receiver_profile?: any;
 }
+
+const OUTCOME_CHIPS: { value: string; label: string; emoji: string }[] = [
+  { value: "occurred",    label: "It happened", emoji: "✅" },
+  { value: "no_show",     label: "No-show",     emoji: "❌" },
+  { value: "cancelled",   label: "Cancelled",   emoji: "🚫" },
+  { value: "rescheduled", label: "Rescheduled", emoji: "🔄" },
+];
+
+const NEXT_STEP_OPTIONS: { value: string; label: string }[] = [
+  { value: "follow_up",  label: "Another meeting / follow-up" },
+  { value: "diligence",  label: "Due diligence in progress" },
+  { value: "term_sheet", label: "Term sheet on the table" },
+  { value: "invested",   label: "Invested / closed" },
+  { value: "passed",     label: "Passed" },
+  { value: "none",       label: "No next step" },
+];
 
 interface Match {
   id: string;
@@ -56,6 +76,11 @@ const CoffeeChat = () => {
     meetingLocation: "",
     notes: ""
   });
+  const [outcomeTarget, setOutcomeTarget] = useState<CoffeeChatInvite | null>(null);
+  const [outcomeChoice, setOutcomeChoice] = useState<string>("");
+  const [nextStepChoice, setNextStepChoice] = useState<string>("");
+  const [outcomeNotesText, setOutcomeNotesText] = useState("");
+  const [savingOutcome, setSavingOutcome] = useState(false);
 
   useEffect(() => {
     init();
@@ -246,6 +271,61 @@ const CoffeeChat = () => {
     }
   };
 
+  const submitOutcome = async () => {
+    if (!outcomeTarget || !outcomeChoice) return;
+    setSavingOutcome(true);
+    try {
+      const { error } = await supabase
+        .from("coffee_chats")
+        .update({
+          outcome: outcomeChoice,
+          next_step: nextStepChoice || null,
+          outcome_notes: outcomeNotesText || null,
+          outcome_recorded_at: new Date().toISOString(),
+          outcome_recorded_by: currentUserId,
+        } as any)
+        .eq("id", outcomeTarget.id);
+
+      if (error) throw error;
+
+      // If the outcome was "invested", mark the match as successful too
+      if (nextStepChoice === "invested") {
+        await (supabase as any)
+          .from("matches")
+          .update({
+            marked_successful_at: new Date().toISOString(),
+            marked_successful_by: currentUserId,
+          })
+          .or(
+            `and(user_1_id.eq.${outcomeTarget.founder_id},user_2_id.eq.${outcomeTarget.investor_id}),` +
+            `and(user_1_id.eq.${outcomeTarget.investor_id},user_2_id.eq.${outcomeTarget.founder_id})`
+          );
+      }
+
+      toast({ title: "Outcome recorded", description: "Thanks — this helps us build better matches." });
+      setOutcomeTarget(null);
+      setOutcomeChoice("");
+      setNextStepChoice("");
+      setOutcomeNotesText("");
+      if (currentUserId && currentUserType) {
+        await fetchInvites(currentUserId, currentUserType);
+      }
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Failed to save", description: err.message });
+    } finally {
+      setSavingOutcome(false);
+    }
+  };
+
+  const needsOutcome = (invite: CoffeeChatInvite): boolean => {
+    if (invite.status !== "accepted") return false;
+    if (invite.outcome) return false;
+    if (!invite.proposed_date) return false;
+    // Prompt appears 12h after the proposed time
+    const t = new Date(invite.proposed_date).getTime();
+    return Date.now() - t > 12 * 60 * 60 * 1000;
+  };
+
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case 'accepted':
@@ -431,15 +511,15 @@ const CoffeeChat = () => {
 
                           {invite.status === 'pending' && (
                             <div className="flex gap-2 mt-4">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 onClick={() => handleRespond(invite.id, 'accepted')}
                               >
                                 <Check className="w-4 h-4 mr-1" />
                                 Accept
                               </Button>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 onClick={() => handleRespond(invite.id, 'declined')}
                               >
@@ -447,6 +527,23 @@ const CoffeeChat = () => {
                                 Decline
                               </Button>
                             </div>
+                          )}
+                          {needsOutcome(invite) && (
+                            <div className="mt-4 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5">
+                              <p className="text-sm mb-2">
+                                <Clock className="w-4 h-4 inline mr-1 text-amber-500" />
+                                Did your meeting happen? Log the outcome to help us build better matches.
+                              </p>
+                              <Button size="sm" variant="outline" onClick={() => setOutcomeTarget(invite)}>
+                                Record outcome
+                              </Button>
+                            </div>
+                          )}
+                          {invite.outcome && (
+                            <p className="text-xs text-muted-foreground mt-2 italic">
+                              Outcome: {OUTCOME_CHIPS.find(o => o.value === invite.outcome)?.label ?? invite.outcome}
+                              {invite.next_step ? ` · Next: ${NEXT_STEP_OPTIONS.find(o => o.value === invite.next_step)?.label ?? invite.next_step}` : ""}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -507,6 +604,23 @@ const CoffeeChat = () => {
                               Sent {format(new Date(invite.created_at), "MMM d, yyyy")}
                             </p>
                           )}
+                          {needsOutcome(invite) && (
+                            <div className="mt-4 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5">
+                              <p className="text-sm mb-2">
+                                <Clock className="w-4 h-4 inline mr-1 text-amber-500" />
+                                Did your meeting happen?
+                              </p>
+                              <Button size="sm" variant="outline" onClick={() => setOutcomeTarget(invite)}>
+                                Record outcome
+                              </Button>
+                            </div>
+                          )}
+                          {invite.outcome && (
+                            <p className="text-xs text-muted-foreground mt-2 italic">
+                              Outcome: {OUTCOME_CHIPS.find(o => o.value === invite.outcome)?.label ?? invite.outcome}
+                              {invite.next_step ? ` · Next: ${NEXT_STEP_OPTIONS.find(o => o.value === invite.next_step)?.label ?? invite.next_step}` : ""}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -517,6 +631,70 @@ const CoffeeChat = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Outcome dialog */}
+      <Dialog open={!!outcomeTarget} onOpenChange={(v) => !v && setOutcomeTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>How did the meeting go?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <Label className="mb-2 block text-sm">Outcome</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {OUTCOME_CHIPS.map((chip) => (
+                  <button
+                    key={chip.value}
+                    type="button"
+                    onClick={() => setOutcomeChoice(chip.value)}
+                    className={`px-3 py-2 rounded-lg border text-sm text-left transition-colors ${
+                      outcomeChoice === chip.value
+                        ? "border-amber-500 bg-amber-500/10 text-amber-600"
+                        : "border-border hover:border-amber-500/50"
+                    }`}
+                  >
+                    <span className="mr-1.5">{chip.emoji}</span>
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {outcomeChoice === "occurred" && (
+              <div>
+                <Label className="mb-2 block text-sm">What's next?</Label>
+                <Select value={nextStepChoice} onValueChange={setNextStepChoice}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose next step (optional)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NEXT_STEP_OPTIONS.map((o) => (
+                      <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div>
+              <Label className="mb-2 block text-sm">Notes (private, optional)</Label>
+              <Textarea
+                value={outcomeNotesText}
+                onChange={(e) => setOutcomeNotesText(e.target.value)}
+                placeholder="Anything worth remembering — terms discussed, red flags, follow-ups…"
+                rows={3}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setOutcomeTarget(null)}>Cancel</Button>
+              <Button onClick={submitOutcome} disabled={!outcomeChoice || savingOutcome}>
+                {savingOutcome ? "Saving…" : "Save outcome"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

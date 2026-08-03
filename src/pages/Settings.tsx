@@ -165,6 +165,13 @@ const Settings = () => {
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<"public" | "private">("public");
   const [videoUrl, setVideoUrl] = useState("");
   const [fundingAmount, setFundingAmount] = useState("");
+  // Phase D: structured raise ask
+  const [raiseAmount, setRaiseAmount] = useState("");
+  const [raiseType, setRaiseType] = useState("");
+  const [targetCloseDate, setTargetCloseDate] = useState("");
+  const [valuationCapTarget, setValuationCapTarget] = useState("");
+  const [fundraisingStatus, setFundraisingStatus] = useState("actively_raising");
+  const [statusNote, setStatusNote] = useState("");
   const [mrr, setMrr] = useState("");
   const [backedBy, setBackedBy] = useState("");
   const [einNumber, setEinNumber] = useState("");
@@ -172,6 +179,9 @@ const Settings = () => {
   const [stage, setStage] = useState("");
   const [teamMembers, setTeamMembers] = useState<{ name: string; title: string }[]>([]);
   const [headcount, setHeadcount] = useState("");
+
+  // Phase D: privacy (CCPA opt-out) — applies to both roles
+  const [ccpaDoNotSell, setCcpaDoNotSell] = useState(false);
 
   // Investor fields
   const [firmName, setFirmName] = useState("");
@@ -216,6 +226,7 @@ const Settings = () => {
       setPhone((profile as any).phone || "");
       setAvatarUrl(profile.avatar_url || "");
       setLinkedinUrl(profile.linkedin_url || "");
+      setCcpaDoNotSell(Boolean((profile as any).ccpa_do_not_sell));
 
       if (profile.user_type === "founder") {
         const { data: founderProfile } = await supabase
@@ -245,6 +256,13 @@ const Settings = () => {
           setStage(founderProfile.stage || "");
           setTeamMembers((founderProfile as any).team_members || []);
           setHeadcount((founderProfile as any).headcount?.toString() || "");
+          // Phase D
+          setRaiseAmount((founderProfile as any).raise_amount?.toString() || "");
+          setRaiseType((founderProfile as any).raise_type || "");
+          setTargetCloseDate((founderProfile as any).target_close_date || "");
+          setValuationCapTarget((founderProfile as any).valuation_cap_target?.toString() || "");
+          setFundraisingStatus((founderProfile as any).fundraising_status || "actively_raising");
+          setStatusNote((founderProfile as any).status_note || "");
         }
       } else {
         const { data: investorProfile } = await supabase
@@ -418,6 +436,8 @@ const Settings = () => {
           phone: phone || null,
           has_pending_update: true,
           last_profile_update_at: new Date().toISOString(),
+          ccpa_do_not_sell: ccpaDoNotSell,
+          ccpa_updated_at: new Date().toISOString(),
         } as any)
         .eq("id", userId);
 
@@ -448,10 +468,38 @@ const Settings = () => {
             stage: (stage || null) as any,
             team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
             headcount: headcount ? parseInt(headcount) : null,
-          })
+            // Phase D
+            raise_amount: raiseAmount ? parseFloat(raiseAmount) : null,
+            raise_type: raiseType || null,
+            target_close_date: targetCloseDate || null,
+            valuation_cap_target: valuationCapTarget ? parseFloat(valuationCapTarget) : null,
+            fundraising_status: fundraisingStatus || "actively_raising",
+            status_note: statusNote || null,
+          } as any)
           .eq("profile_id", userId);
 
         if (founderError) throw founderError;
+
+        // Phase D: auto-snapshot vitals monthly
+        if (mrr || headcount) {
+          const firstOfMonth = new Date();
+          firstOfMonth.setDate(1);
+          firstOfMonth.setHours(0, 0, 0, 0);
+          const snapshotMonth = firstOfMonth.toISOString().slice(0, 10);
+          // Fire-and-forget, upsert-style via unique constraint
+          (async () => {
+            await (supabase as any).from("mrr_snapshots").upsert(
+              {
+                founder_id: userId,
+                mrr_value: mrr || null,
+                headcount: headcount ? parseInt(headcount) : null,
+                snapshot_month: snapshotMonth,
+                source: "profile_save",
+              },
+              { onConflict: "founder_id,snapshot_month,source" }
+            );
+          })();
+        }
       } else {
         const { error: investorError } = await supabase
           .from("investor_profiles")
@@ -811,10 +859,122 @@ const Settings = () => {
                 </button>
               )}
               <TextField label="Video URL" value={videoUrl} onChange={setVideoUrl} placeholder="https://… (mp4, webm or hosted link)" />
-              <TextField label="Funding amount sought" value={fundingAmount} onChange={setFundingAmount} placeholder="$2M" />
-              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>This is displayed on your video profile card.</p>
+              <TextField label="Funding tagline (display)" value={fundingAmount} onChange={setFundingAmount} placeholder="e.g. Raising $2M" />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>Shown on your video card. For structured details use the Fundraising section below.</p>
             </Section>
           )}
+
+          {/* Phase D: Structured fundraising ask + status */}
+          {userType === "founder" && (
+            <Section id="section-fundraising" title="Fundraising">
+              <SelectField
+                label="Status"
+                value={fundraisingStatus}
+                onChange={setFundraisingStatus}
+                placeholder="Select status"
+                options={[
+                  { value: "actively_raising", label: "🟢 Actively raising" },
+                  { value: "paused",           label: "⏸ Paused (temporarily off market)" },
+                  { value: "closed_round",     label: "✅ Just closed a round" },
+                  { value: "stealth",          label: "🕶 In stealth / not fundraising" },
+                  { value: "pivoted",          label: "🔄 Pivoting" },
+                  { value: "shutdown",         label: "🛑 Shut down" },
+                ]}
+              />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>
+                If not "Actively raising," your profile will be hidden from investor discovery until you set it back.
+              </p>
+              {fundraisingStatus !== "actively_raising" && (
+                <TextField
+                  label="Status note (optional, for context)"
+                  value={statusNote}
+                  onChange={setStatusNote}
+                  placeholder={
+                    fundraisingStatus === "paused" ? "e.g. Waiting for Q1 close"
+                    : fundraisingStatus === "closed_round" ? "e.g. $3M seed led by Foo Ventures"
+                    : "Anything worth remembering"
+                  }
+                />
+              )}
+              {fundraisingStatus === "actively_raising" && (
+                <>
+                  <Divider />
+                  <SubTitle>Round ask</SubTitle>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <TextField
+                      label="Amount raising (USD)"
+                      value={raiseAmount}
+                      onChange={setRaiseAmount}
+                      placeholder="2000000"
+                      type="number"
+                    />
+                    <SelectField
+                      label="Instrument"
+                      value={raiseType}
+                      onChange={setRaiseType}
+                      placeholder="Select"
+                      options={[
+                        { value: "SAFE",              label: "SAFE" },
+                        { value: "equity",            label: "Priced equity" },
+                        { value: "convertible_note",  label: "Convertible note" },
+                        { value: "revenue_based",     label: "Revenue-based" },
+                      ]}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <TextField
+                      label="Valuation cap (USD)"
+                      value={valuationCapTarget}
+                      onChange={setValuationCapTarget}
+                      placeholder="10000000"
+                      type="number"
+                    />
+                    <TextField
+                      label="Target close date"
+                      value={targetCloseDate}
+                      onChange={setTargetCloseDate}
+                      placeholder="YYYY-MM-DD"
+                      type="date"
+                    />
+                  </div>
+                  <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>
+                    Structured fields let investors filter by size, instrument, and timeline.
+                  </p>
+                </>
+              )}
+            </Section>
+          )}
+
+          {/* Phase D: Privacy — CCPA opt-out */}
+          <Section id="section-privacy" title="Privacy">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <p style={{ color: TEXT_VALUE, fontSize: 13.5, fontWeight: 500 }}>
+                  Do Not Sell or Share My Personal Information
+                </p>
+                <p style={{ color: TEXT_DIM, fontSize: 12, marginTop: 4 }}>
+                  Catalyst may include anonymized, aggregated statistics from platform activity in
+                  market intelligence reports. Toggling this on excludes your data from all such
+                  reports, feeds, and third-party disclosures. Your platform experience is
+                  unchanged.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCcpaDoNotSell((v) => !v)}
+                className="shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
+                style={{
+                  background: ccpaDoNotSell ? GOLD : "rgba(255,255,255,0.15)",
+                }}
+                aria-pressed={ccpaDoNotSell}
+              >
+                <span
+                  className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform"
+                  style={{ transform: ccpaDoNotSell ? "translateX(24px)" : "translateX(4px)" }}
+                />
+              </button>
+            </div>
+          </Section>
 
           {/* Investor-specific */}
           {userType === "investor" && (

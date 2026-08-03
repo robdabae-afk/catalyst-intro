@@ -118,6 +118,16 @@ export function useDiscoverFeed(
       // Client-side filters that need the joined detail rows
       rows = rows.filter((p) => !excludedIds.has(p.id));
 
+      // Phase D: hide founders who paused, closed, shut down, or are in stealth from discovery
+      if (targetType === "founder") {
+        rows = rows.filter((p) => {
+          const d = Array.isArray(p.founder_profiles) ? p.founder_profiles[0] : p.founder_profiles;
+          const status = (d as any)?.fundraising_status;
+          // Null status (legacy rows) treated as actively_raising
+          return !status || status === "actively_raising";
+        });
+      }
+
       const detail = (p: DiscoverProfile) =>
         targetType === "founder"
           ? Array.isArray(p.founder_profiles)

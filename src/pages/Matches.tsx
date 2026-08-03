@@ -223,6 +223,21 @@ export default function Matches() {
     { value: "passed",          label: "❌ Passed" },
   ];
 
+  const startGoogleOAuth = async () => {
+    if (!currentUserId) return;
+    setGoogleConnecting(true);
+    try {
+      const returnTo = window.location.href;
+      const oauthUrl = new URL("https://<your-ref>.supabase.co/functions/v1/google-calendar-oauth");
+      oauthUrl.searchParams.set("user_id", currentUserId);
+      oauthUrl.searchParams.set("return_to", returnTo);
+      window.open(oauthUrl.toString(), "google-auth", "width=500,height=600");
+      setGoogleConnected(true); // optimistic; refresh on success callback from popup
+    } finally {
+      setGoogleConnecting(false);
+    }
+  };
+
   const updateStage = async (stage: string) => {
     if (!selectedMatch?.matchRecord?.id) return;
     setStageSaving(true);
@@ -252,6 +267,8 @@ export default function Matches() {
   const [meetingTime, setMeetingTime] = useState("");
   const [meetingLocation, setMeetingLocation] = useState("");
   const [meetingSending, setMeetingSending] = useState(false);
+  const [googleConnected, setGoogleConnected] = useState(false);
+  const [googleConnecting, setGoogleConnecting] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const pendingRequests = usePendingRequests();
@@ -1020,6 +1037,24 @@ export default function Matches() {
                   value={meetingLocation}
                   onChange={(e) => setMeetingLocation(e.target.value)}
                 />
+                {currentUserType === "investor" && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={startGoogleOAuth}
+                      disabled={googleConnecting || googleConnected}
+                      className="mt-2 w-full"
+                    >
+                      {googleConnected ? "✓ Google Calendar connected" : "🔗 Connect Google Calendar"}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      {googleConnected
+                        ? "A Google Meet link will be auto-generated when you propose."
+                        : "Phase D (pending): Google Calendar integration requires your OAuth setup."}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <DialogFooter>
