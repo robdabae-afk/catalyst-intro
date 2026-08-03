@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
   const [swipesRemaining, setSwipesRemaining] = useState<number | null>(null);
   const [dragX, setDragX] = useState(0);
+  const [passReasonTarget, setPassReasonTarget] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
   const dragMoved = useRef(0);
@@ -51,6 +52,13 @@ export default function Dashboard() {
       setSwipesRemaining(Math.max(0, 5 - (count ?? 0)));
     })();
   }, [user?.id]);
+
+  // Auto-dismiss the pass-reason prompt if ignored
+  useEffect(() => {
+    if (!passReasonTarget) return;
+    const t = setTimeout(() => setPassReasonTarget(null), 6000);
+    return () => clearTimeout(t);
+  }, [passReasonTarget]);
 
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
   const inboxBadge = unread + pending;
@@ -80,8 +88,30 @@ export default function Dashboard() {
     advance();
   };
 
-  const handlePass = () => {
+  const handlePass = async () => {
+    if (!currentProfile || !user) {
+      advance();
+      return;
+    }
+    const passedId = currentProfile.id;
     advance();
+    // Record the pass so the 14-day cooldown applies and demand data is complete
+    await supabase
+      .from("swipes")
+      .insert({ swiper_id: user.id, swiped_id: passedId, action: "pass" });
+    setPassReasonTarget(passedId);
+  };
+
+  const submitPassReason = async (reason: string) => {
+    const target = passReasonTarget;
+    setPassReasonTarget(null);
+    if (!target || !user) return;
+    await (supabase as any)
+      .from("swipes")
+      .update({ pass_reason: reason })
+      .eq("swiper_id", user.id)
+      .eq("swiped_id", target)
+      .eq("action", "pass");
   };
 
   const handleSend = () => {
@@ -460,6 +490,47 @@ export default function Dashboard() {
         )}
         {(outOfCards || loading) && <div style={{ paddingBottom: 80 }} />}
       </div>
+
+      {/* Pass reason prompt */}
+      {passReasonTarget && (
+        <div
+          className="fixed left-1/2 -translate-x-1/2 z-40 px-4 py-3 rounded-2xl"
+          style={{
+            bottom: 96,
+            width: "calc(100% - 32px)",
+            maxWidth: 358,
+            background: "rgba(20,19,16,0.96)",
+            outline: "1px solid rgba(255,255,255,0.12)",
+            backdropFilter: "blur(10px)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span style={{ color: "#CFCCC5", fontSize: 12, fontWeight: 600 }}>
+              Why did you pass?
+            </span>
+            <button onClick={() => setPassReasonTarget(null)} aria-label="Dismiss">
+              <X size={14} color="#94908A" />
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {["Valuation", "Too early", "Sector fit", "Traction", "Team", "Location"].map((r) => (
+              <button
+                key={r}
+                onClick={() => submitPassReason(r.toLowerCase().replace(" ", "_"))}
+                className="px-3 py-1.5 rounded-full"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  outline: "1px solid rgba(255,255,255,0.12)",
+                  color: "#CFCCC5",
+                  fontSize: 11.5,
+                }}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Bottom Nav */}
       <BottomNav userType={userType} inboxBadge={inboxBadge} />

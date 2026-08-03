@@ -23,6 +23,15 @@ interface CapTableEntry {
   firm_name: string | null;
 }
 
+interface FundingRound {
+  id: string;
+  round_type: string;
+  amount: number | null;
+  valuation: number | null;
+  date: string | null;
+  investors: string[] | null;
+}
+
 interface StartupUpdate {
   id: string;
   title: string;
@@ -68,6 +77,16 @@ const CapTable = () => {
     preMoneyValuation: 10000000,
   });
   const [updates, setUpdates] = useState<StartupUpdate[]>([]);
+  const [rounds, setRounds] = useState<FundingRound[]>([]);
+  const [showRoundDialog, setShowRoundDialog] = useState(false);
+  const [roundForm, setRoundForm] = useState({
+    round_type: "Pre-seed",
+    amount: "",
+    valuation: "",
+    date: "",
+    investors: "",
+  });
+  const [savingRound, setSavingRound] = useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = useState(false);
   const [updateForm, setUpdateForm] = useState({ title: "", body: "", link: "" });
   const [postingUpdate, setPostingUpdate] = useState(false);
@@ -77,8 +96,50 @@ const CapTable = () => {
   }, []);
 
   useEffect(() => {
-    if (currentUserId) loadUpdates(currentUserId);
+    if (currentUserId) {
+      loadUpdates(currentUserId);
+      loadRounds(currentUserId);
+    }
   }, [currentUserId]);
+
+  const loadRounds = async (userId: string) => {
+    const { data } = await (supabase as any)
+      .from("funding_rounds")
+      .select("id, round_type, amount, valuation, date, investors")
+      .eq("founder_id", userId)
+      .order("date", { ascending: false });
+    setRounds((data ?? []) as FundingRound[]);
+  };
+
+  const handleSaveRound = async () => {
+    if (!currentUserId || !roundForm.round_type) return;
+    setSavingRound(true);
+    const { error } = await (supabase as any).from("funding_rounds").insert({
+      founder_id: currentUserId,
+      round_type: roundForm.round_type,
+      amount: roundForm.amount ? parseFloat(roundForm.amount) : null,
+      valuation: roundForm.valuation ? parseFloat(roundForm.valuation) : null,
+      date: roundForm.date || null,
+      investors: roundForm.investors.trim()
+        ? roundForm.investors.split(",").map((s) => s.trim()).filter(Boolean)
+        : null,
+    });
+    setSavingRound(false);
+    if (error) {
+      toast({ variant: "destructive", title: "Failed to record round", description: error.message });
+      return;
+    }
+    toast({ title: "Round recorded", description: "Your closed round has been saved." });
+    setShowRoundDialog(false);
+    setRoundForm({ round_type: "Pre-seed", amount: "", valuation: "", date: "", investors: "" });
+    loadRounds(currentUserId);
+  };
+
+  const handleDeleteRound = async (id: string) => {
+    if (!currentUserId) return;
+    await (supabase as any).from("funding_rounds").delete().eq("id", id);
+    loadRounds(currentUserId);
+  };
 
   const loadUpdates = async (userId: string) => {
     const { data } = await (supabase as any)
@@ -546,6 +607,56 @@ const CapTable = () => {
             )}
           </CardContent>
         </Card>
+        {/* Closed rounds */}
+        <Card className="shadow-lg">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Closed Rounds</CardTitle>
+                <CardDescription>Record rounds you've closed to keep your history accurate.</CardDescription>
+              </div>
+              <Button variant="outline" onClick={() => setShowRoundDialog(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Record Round
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {rounds.length === 0 ? (
+              <p className="text-muted-foreground text-center py-6">No closed rounds recorded yet</p>
+            ) : (
+              <div className="space-y-3">
+                {rounds.map((r) => (
+                  <div key={r.id} className="flex items-start gap-3 rounded-lg border p-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium">{r.round_type}</p>
+                        {r.amount != null && <span className="text-sm">{formatCurrency(r.amount)}</span>}
+                        {r.valuation != null && (
+                          <span className="text-sm text-muted-foreground">at {formatCurrency(r.valuation)} valuation</span>
+                        )}
+                        {r.date && (
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(r.date).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {r.investors && r.investors.length > 0 && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Investors: {r.investors.join(", ")}
+                        </p>
+                      )}
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => handleDeleteRound(r.id)}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Investor updates */}
         <Card className="shadow-lg">
           <CardHeader>
@@ -602,6 +713,76 @@ const CapTable = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Record Round Dialog */}
+      <Dialog open={showRoundDialog} onOpenChange={setShowRoundDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Record a Closed Round</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="round_type">Round type *</Label>
+              <select
+                id="round_type"
+                value={roundForm.round_type}
+                onChange={(e) => setRoundForm({ ...roundForm, round_type: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {["Pre-seed", "Seed", "Series A", "Series B", "Bridge / SAFE", "Angel", "Other"].map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="round_amount">Amount raised ($)</Label>
+                <Input
+                  id="round_amount"
+                  type="number"
+                  value={roundForm.amount}
+                  onChange={(e) => setRoundForm({ ...roundForm, amount: e.target.value })}
+                  placeholder="e.g., 500000"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="round_valuation">Valuation ($)</Label>
+                <Input
+                  id="round_valuation"
+                  type="number"
+                  value={roundForm.valuation}
+                  onChange={(e) => setRoundForm({ ...roundForm, valuation: e.target.value })}
+                  placeholder="e.g., 5000000"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="round_date">Close date</Label>
+              <Input
+                id="round_date"
+                type="date"
+                value={roundForm.date}
+                onChange={(e) => setRoundForm({ ...roundForm, date: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="round_investors">Investors (comma-separated)</Label>
+              <Input
+                id="round_investors"
+                value={roundForm.investors}
+                onChange={(e) => setRoundForm({ ...roundForm, investors: e.target.value })}
+                placeholder="e.g., Meridian Ventures, Jane Smith"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRoundDialog(false)}>Cancel</Button>
+            <Button onClick={handleSaveRound} disabled={savingRound}>
+              {savingRound ? "Saving..." : "Record Round"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Post Update Dialog */}
       <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>

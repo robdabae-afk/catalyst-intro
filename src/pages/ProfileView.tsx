@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { logEvent } from "@/lib/analytics";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -93,6 +94,8 @@ export default function ProfileView() {
         navigate("/dashboard");
         return;
       }
+
+      if (authUser.id !== id) logEvent("profile_view", id);
 
       let founderProfile = null;
       let investorProfile = null;
@@ -345,6 +348,7 @@ function FounderView({
             href={fp.pitch_deck_url}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => logEvent("deck_open", profile?.id)}
             className="flex items-center justify-between px-4 py-4 rounded-2xl"
             style={{
               background: "rgba(255,255,255,0.05)",
