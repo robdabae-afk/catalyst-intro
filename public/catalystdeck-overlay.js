@@ -11,7 +11,7 @@
 
   // Selectors of things editable inside each .scene, in order of tagging.
   const EDITABLE_SELECTORS = [
-    ".cover-title",
+    ".cover-logo",
     ".cover-tagline",
     ".cover-footer",
     ".section-eyebrow",
