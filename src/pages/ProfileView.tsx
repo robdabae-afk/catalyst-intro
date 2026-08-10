@@ -297,8 +297,8 @@ function FounderView({
             </span>
           </p>
         </div>
-        </div>
       </div>
+
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
