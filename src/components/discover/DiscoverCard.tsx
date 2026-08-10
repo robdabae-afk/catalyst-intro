@@ -243,19 +243,35 @@ function FounderCard({
               {subtitle || "—"}
             </p>
           </div>
+            <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5">
+              {subtitle || (
+                <span className="italic text-muted-foreground/60">No one-liner yet</span>
+              )}
+            </p>
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1 mt-auto">
-          {stage && (
+          {stage ? (
             <Badge variant="secondary" className="text-[9px] h-4 px-1 uppercase tracking-wide">
               {stage}
             </Badge>
-          )}
-          {tags.slice(0, 1).map((t) => (
-            <Badge key={t} variant="outline" className="text-[9px] h-4 px-1">
-              {t}
+          ) : (
+            <Badge variant="outline" className="text-[9px] h-4 px-1 uppercase tracking-wide italic text-muted-foreground/60">
+              Stage n/a
             </Badge>
-          ))}
+          )}
+          {tags.length > 0 ? (
+            tags.slice(0, 1).map((t) => (
+              <Badge key={t} variant="outline" className="text-[9px] h-4 px-1">
+                {t}
+              </Badge>
+            ))
+          ) : (
+            <Badge variant="outline" className="text-[9px] h-4 px-1 italic text-muted-foreground/60">
+              Industry n/a
+            </Badge>
+          )}
           {tags.length > 1 && (
             <span className="text-[9px] text-muted-foreground self-center">
               +{tags.length - 1}
