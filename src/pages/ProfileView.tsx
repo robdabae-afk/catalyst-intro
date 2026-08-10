@@ -302,9 +302,21 @@ function FounderView({
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {isOwn && !val(fp?.one_liner) && (
+          <a
+            href="/onboarding"
+            className="block px-4 py-3 rounded-2xl"
+            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+          >
+            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+              Complete your profile →
+            </span>
+          </a>
+        )}
+
         {/* One-liner */}
-        {fp?.one_liner && (
-          <div>
+        <div>
+          {val(fp?.one_liner) ? (
             <p
               style={{
                 fontFamily: "Fraunces, serif",
@@ -314,64 +326,80 @@ function FounderView({
                 lineHeight: 1.3,
               }}
             >
-              {fp.one_liner}
+              {fp?.one_liner}
             </p>
-          </div>
-        )}
-        {fp?.traction && (
-          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp.traction}</p>
+          ) : (
+            <p
+              style={{
+                fontFamily: "Fraunces, serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#6E6B66",
+                lineHeight: 1.3,
+                fontStyle: "italic",
+              }}
+            >
+              No one-liner yet
+            </p>
+          )}
+        </div>
+
+        {val(fp?.traction) ? (
+          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
+        ) : (
+          <PlaceholderText>No traction shared yet</PlaceholderText>
         )}
 
         {/* Traction Card */}
-        {(fp?.mrr || fp?.backed_by || fp?.funding_amount) && (
-          <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
-            <div className="grid grid-cols-2 gap-3">
-              {fp?.mrr && <TractionStat label="MRR" value={fp.mrr} />}
-              {fp?.backed_by && <TractionStat label="Backed by" value={fp.backed_by} />}
-              {fp?.funding_amount && <TractionStat label="Raised" value={fp.funding_amount} />}
-              {fp?.stage && <TractionStat label="Stage" value={fp.stage} />}
-            </div>
-          </SectionCard>
-        )}
+        <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
+          <div className="grid grid-cols-2 gap-3">
+            <TractionStat label="MRR" value={val(fp?.mrr)} />
+            <TractionStat label="Backed by" value={val(fp?.backed_by)} />
+            <TractionStat label="Raised" value={val(fp?.funding_amount)} />
+            <TractionStat label="Stage" value={val(fp?.stage)} />
+          </div>
+        </SectionCard>
 
         {/* Funding Card */}
-        {(fp?.funding_amount || fp?.backed_by) && (
-          <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
-            <div>
-              {fp?.stage && <FundingRow label="Round" value={fp.stage} />}
-              {fp?.funding_amount && <FundingRow label="Amount" value={fp.funding_amount} />}
-              {fp?.backed_by && <FundingRow label="Lead" value={fp.backed_by} last />}
-            </div>
-          </SectionCard>
-        )}
+        <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
+          <div>
+            <FundingRow label="Round" value={val(fp?.stage)} />
+            <FundingRow label="Amount" value={val(fp?.funding_amount)} />
+            <FundingRow label="Lead" value={val(fp?.backed_by)} last />
+          </div>
+        </SectionCard>
 
         {/* Industries */}
-        {fp?.industry && fp.industry.length > 0 && (
-          <SectionCard label="Industries">
+        <SectionCard label="Industries">
+          {fp?.industry && fp.industry.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {fp.industry.map((t) => (
                 <Tag key={t}>{t}</Tag>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Team */}
-        {(teamMembers.length > 0 || fp?.headcount) && (
-          <SectionCard label="Team">
+        <SectionCard label="Team">
+          {teamMembers.length > 0 || fp?.headcount != null ? (
             <div>
               {teamMembers.map((m, i) => (
-                <FundingRow key={i} label={m.name} value={m.title} last={i === teamMembers.length - 1 && !fp?.headcount} />
+                <FundingRow key={i} label={m.name} value={val(m.title)} last={i === teamMembers.length - 1 && fp?.headcount == null} />
               ))}
               {fp?.headcount != null && <FundingRow label="Headcount" value={String(fp.headcount)} last />}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Pitch Deck */}
-        {fp?.pitch_deck_url && (
+        {val(fp?.pitch_deck_url) ? (
           <a
-            href={fp.pitch_deck_url}
+            href={fp?.pitch_deck_url ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => logEvent("deck_open", profile?.id)}
@@ -384,8 +412,21 @@ function FounderView({
             <span style={{ color: "#E9E7E1", fontSize: 14 }}>View Pitch Deck</span>
             <ArrowLeft size={16} color="#94908A" style={{ transform: "rotate(180deg)" }} />
           </a>
+        ) : (
+          <div
+            className="flex items-center justify-between px-4 py-4 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px dashed rgba(255,255,255,0.12)",
+            }}
+          >
+            <span style={{ color: "#6E6B66", fontSize: 14, fontStyle: "italic" }}>
+              No pitch deck yet
+            </span>
+          </div>
         )}
       </div>
+
 
       {/* Sticky action bar */}
       <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
