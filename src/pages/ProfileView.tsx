@@ -64,6 +64,28 @@ interface ProfileData {
 
 const OG_IMAGE_URL = "/favicon.jpg";
 
+/** Normalizes empty-ish values (null, "", placeholder "Untitled") to undefined. */
+const val = (v?: string | number | null): string | undefined => {
+  if (v === null || v === undefined) return undefined;
+  const s = String(v).trim();
+  if (!s || s.toLowerCase() === "untitled" || s === "-" || s === "—") return undefined;
+  return s;
+};
+
+function PlaceholderText({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ color: "#6E6B66", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
+      {children}
+    </p>
+  );
+}
+
+function EmptyLine({ children = "Not added yet" }: { children?: React.ReactNode }) {
+  return (
+    <span style={{ color: "#6E6B66", fontSize: 13.5, fontStyle: "italic" }}>{children}</span>
+  );
+}
+
 export default function ProfileView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -180,9 +202,9 @@ export default function ProfileView() {
       </Helmet>
 
       {isFounder ? (
-        <FounderView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
+        <FounderView profile={profile} isOwn={user?.id === profile.id} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       ) : (
-        <InvestorView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
+        <InvestorView profile={profile} isOwn={user?.id === profile.id} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       )}
     </div>
   );
@@ -192,23 +214,25 @@ export default function ProfileView() {
 
 function FounderView({
   profile,
+  isOwn,
   onBack,
   onShare,
   onLike,
   onPass,
 }: {
   profile: ProfileData;
+  isOwn?: boolean;
   onBack: () => void;
   onShare: () => void;
   onLike: () => void;
   onPass: () => void;
 }) {
   const fp = profile.founder_profile;
-  const companyName = fp?.startup_name ?? fp?.company_name ?? "";
-  const location = fp?.preferred_city ?? "";
-  const isPostRevenue = !!fp?.mrr && fp.mrr !== "Pre-revenue";
-  const hasRaised = !!fp?.funding_amount;
-  const teamMembers = fp?.team_members ?? [];
+  const companyName = val(fp?.startup_name) ?? val(fp?.company_name);
+  const location = val(fp?.preferred_city);
+  const isPostRevenue = !!val(fp?.mrr) && fp?.mrr !== "Pre-revenue";
+  const hasRaised = !!val(fp?.funding_amount);
+  const teamMembers = (fp?.team_members ?? []).filter((m) => val(m?.name));
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -246,13 +270,11 @@ function FounderView({
 
         {/* Chips */}
         <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
-          {fp?.stage && <InfoChip>{fp.stage}</InfoChip>}
-          {location && (
-            <InfoChip>
-              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-              {location}
-            </InfoChip>
-          )}
+          <InfoChip muted={!val(fp?.stage)}>{val(fp?.stage) ?? "Stage not set"}</InfoChip>
+          <InfoChip muted={!location}>
+            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+            {location ?? "Location not set"}
+          </InfoChip>
         </div>
 
         {/* Name + subtitle */}
@@ -269,16 +291,32 @@ function FounderView({
             {profile.name}
           </h1>
           <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
-            Founder{companyName ? ` · ${companyName}` : ""}
+            Founder ·{" "}
+            <span style={companyName ? undefined : { color: "#8E8B84", fontStyle: "italic" }}>
+              {companyName ?? "Startup not added"}
+            </span>
           </p>
         </div>
       </div>
 
+
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {isOwn && !val(fp?.one_liner) && (
+          <a
+            href="/onboarding"
+            className="block px-4 py-3 rounded-2xl"
+            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+          >
+            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+              Complete your profile →
+            </span>
+          </a>
+        )}
+
         {/* One-liner */}
-        {fp?.one_liner && (
-          <div>
+        <div>
+          {val(fp?.one_liner) ? (
             <p
               style={{
                 fontFamily: "Fraunces, serif",
@@ -288,64 +326,80 @@ function FounderView({
                 lineHeight: 1.3,
               }}
             >
-              {fp.one_liner}
+              {fp?.one_liner}
             </p>
-          </div>
-        )}
-        {fp?.traction && (
-          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp.traction}</p>
+          ) : (
+            <p
+              style={{
+                fontFamily: "Fraunces, serif",
+                fontSize: 22,
+                fontWeight: 600,
+                color: "#6E6B66",
+                lineHeight: 1.3,
+                fontStyle: "italic",
+              }}
+            >
+              No one-liner yet
+            </p>
+          )}
+        </div>
+
+        {val(fp?.traction) ? (
+          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
+        ) : (
+          <PlaceholderText>No traction shared yet</PlaceholderText>
         )}
 
         {/* Traction Card */}
-        {(fp?.mrr || fp?.backed_by || fp?.funding_amount) && (
-          <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
-            <div className="grid grid-cols-2 gap-3">
-              {fp?.mrr && <TractionStat label="MRR" value={fp.mrr} />}
-              {fp?.backed_by && <TractionStat label="Backed by" value={fp.backed_by} />}
-              {fp?.funding_amount && <TractionStat label="Raised" value={fp.funding_amount} />}
-              {fp?.stage && <TractionStat label="Stage" value={fp.stage} />}
-            </div>
-          </SectionCard>
-        )}
+        <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
+          <div className="grid grid-cols-2 gap-3">
+            <TractionStat label="MRR" value={val(fp?.mrr)} />
+            <TractionStat label="Backed by" value={val(fp?.backed_by)} />
+            <TractionStat label="Raised" value={val(fp?.funding_amount)} />
+            <TractionStat label="Stage" value={val(fp?.stage)} />
+          </div>
+        </SectionCard>
 
         {/* Funding Card */}
-        {(fp?.funding_amount || fp?.backed_by) && (
-          <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
-            <div>
-              {fp?.stage && <FundingRow label="Round" value={fp.stage} />}
-              {fp?.funding_amount && <FundingRow label="Amount" value={fp.funding_amount} />}
-              {fp?.backed_by && <FundingRow label="Lead" value={fp.backed_by} last />}
-            </div>
-          </SectionCard>
-        )}
+        <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
+          <div>
+            <FundingRow label="Round" value={val(fp?.stage)} />
+            <FundingRow label="Amount" value={val(fp?.funding_amount)} />
+            <FundingRow label="Lead" value={val(fp?.backed_by)} last />
+          </div>
+        </SectionCard>
 
         {/* Industries */}
-        {fp?.industry && fp.industry.length > 0 && (
-          <SectionCard label="Industries">
+        <SectionCard label="Industries">
+          {fp?.industry && fp.industry.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {fp.industry.map((t) => (
                 <Tag key={t}>{t}</Tag>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Team */}
-        {(teamMembers.length > 0 || fp?.headcount) && (
-          <SectionCard label="Team">
+        <SectionCard label="Team">
+          {teamMembers.length > 0 || fp?.headcount != null ? (
             <div>
               {teamMembers.map((m, i) => (
-                <FundingRow key={i} label={m.name} value={m.title} last={i === teamMembers.length - 1 && !fp?.headcount} />
+                <FundingRow key={i} label={m.name} value={val(m.title)} last={i === teamMembers.length - 1 && fp?.headcount == null} />
               ))}
               {fp?.headcount != null && <FundingRow label="Headcount" value={String(fp.headcount)} last />}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Pitch Deck */}
-        {fp?.pitch_deck_url && (
+        {val(fp?.pitch_deck_url) ? (
           <a
-            href={fp.pitch_deck_url}
+            href={fp?.pitch_deck_url ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => logEvent("deck_open", profile?.id)}
@@ -358,8 +412,21 @@ function FounderView({
             <span style={{ color: "#E9E7E1", fontSize: 14 }}>View Pitch Deck</span>
             <ArrowLeft size={16} color="#94908A" style={{ transform: "rotate(180deg)" }} />
           </a>
+        ) : (
+          <div
+            className="flex items-center justify-between px-4 py-4 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px dashed rgba(255,255,255,0.12)",
+            }}
+          >
+            <span style={{ color: "#6E6B66", fontSize: 14, fontStyle: "italic" }}>
+              No pitch deck yet
+            </span>
+          </div>
         )}
       </div>
+
 
       {/* Sticky action bar */}
       <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
@@ -371,20 +438,22 @@ function FounderView({
 
 function InvestorView({
   profile,
+  isOwn,
   onBack,
   onShare,
   onLike,
   onPass,
 }: {
   profile: ProfileData;
+  isOwn?: boolean;
   onBack: () => void;
   onShare: () => void;
   onLike: () => void;
   onPass: () => void;
 }) {
   const ip = profile.investor_profile;
-  const location = ip?.location ?? "";
-  const subtitle = [ip?.position, ip?.firm_name].filter(Boolean).join(" · ");
+  const location = val(ip?.location);
+  const subtitle = [val(ip?.position), val(ip?.firm_name)].filter(Boolean).join(" · ");
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -425,12 +494,10 @@ function InvestorView({
               Verified investor
             </InfoChip>
           )}
-          {location && (
-            <InfoChip>
-              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-              {location}
-            </InfoChip>
-          )}
+          <InfoChip muted={!location}>
+            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+            {location ?? "Location not set"}
+          </InfoChip>
         </div>
 
         {/* Name + subtitle */}
@@ -446,30 +513,38 @@ function InvestorView({
           >
             {profile.name}
           </h1>
-          {subtitle && (
-            <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>{subtitle}</p>
-          )}
+          <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
+            {subtitle || (
+              <span style={{ color: "#8E8B84", fontStyle: "italic" }}>Firm not added</span>
+            )}
+          </p>
         </div>
       </div>
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {isOwn && !val(ip?.investment_thesis) && (
+          <a
+            href="/onboarding"
+            className="block px-4 py-3 rounded-2xl"
+            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+          >
+            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+              Complete your profile →
+            </span>
+          </a>
+        )}
+
         {/* Stat chips row */}
         <div className="flex gap-2 flex-wrap">
-          {ip?.typical_check_size && (
-            <BigStatChip label="Check" value={ip.typical_check_size} />
-          )}
-          {ip?.preferred_stage && (
-            <BigStatChip label="Focus" value={String(ip.preferred_stage)} />
-          )}
-          {ip?.investor_type && (
-            <BigStatChip label="Leads" value={ip.investor_type} gold />
-          )}
+          <BigStatChip label="Check" value={val(ip?.typical_check_size)} />
+          <BigStatChip label="Focus" value={val(ip?.preferred_stage)} />
+          <BigStatChip label="Leads" value={val(ip?.investor_type)} gold />
         </div>
 
         {/* Investment thesis */}
-        {ip?.investment_thesis && (
-          <SectionCard label="Investment Thesis">
+        <SectionCard label="Investment Thesis">
+          {val(ip?.investment_thesis) ? (
             <p
               style={{
                 fontFamily: "Fraunces, serif",
@@ -479,41 +554,48 @@ function InvestorView({
                 lineHeight: 1.6,
               }}
             >
-              "{ip.investment_thesis}"
+              "{ip?.investment_thesis}"
             </p>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine>No thesis shared yet</EmptyLine>
+          )}
+        </SectionCard>
 
         {/* Sectors */}
-        {ip?.sectors_of_interest && ip.sectors_of_interest.length > 0 && (
-          <SectionCard label="Sectors of Interest">
+        <SectionCard label="Sectors of Interest">
+          {ip?.sectors_of_interest && ip.sectors_of_interest.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {ip.sectors_of_interest.map((s) => (
                 <Tag key={s}>{s}</Tag>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Responsiveness */}
-        {(ip?.response_rate != null || ip?.avg_reply_time || ip?.responsiveness_status) && (
-          <SectionCard label="Responsiveness">
-            <div>
-              {ip?.response_rate != null && <FundingRow label="Response rate" value={`${ip.response_rate}%`} />}
-              {ip?.avg_reply_time && <FundingRow label="Avg. reply time" value={ip.avg_reply_time} />}
-              {ip?.responsiveness_status && (
-                <div className="flex items-center justify-between py-2">
-                  <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
-                  <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip.responsiveness_status}</span>
-                </div>
+        <SectionCard label="Responsiveness">
+          <div>
+            <FundingRow
+              label="Response rate"
+              value={ip?.response_rate != null ? `${ip.response_rate}%` : undefined}
+            />
+            <FundingRow label="Avg. reply time" value={val(ip?.avg_reply_time)} />
+            <div className="flex items-center justify-between py-2">
+              <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
+              {val(ip?.responsiveness_status) ? (
+                <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip?.responsiveness_status}</span>
+              ) : (
+                <EmptyLine>—</EmptyLine>
               )}
             </div>
-          </SectionCard>
-        )}
+          </div>
+        </SectionCard>
 
         {/* Portfolio companies */}
-        {ip?.portfolio_companies && ip.portfolio_companies.length > 0 && (
-          <SectionCard label="Portfolio Companies">
+        <SectionCard label="Portfolio Companies">
+          {ip?.portfolio_companies && ip.portfolio_companies.length > 0 ? (
             <div className="flex flex-wrap gap-3">
               {ip.portfolio_companies.map((c, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -531,41 +613,47 @@ function InvestorView({
                 </div>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Portfolio stats */}
-        {(ip?.investment_count || ip?.notable_portfolio || ip?.portfolio_link || ip?.deals_last_12mo != null || ip?.total_invested || ip?.notable_exits != null) && (
-          <SectionCard label="Portfolio">
-            {ip?.deals_last_12mo != null && <FundingRow label="Deals (12 mo)" value={String(ip.deals_last_12mo)} />}
-            {ip?.total_invested && <FundingRow label="Total invested" value={ip.total_invested} />}
-            {ip?.notable_exits != null && <FundingRow label="Notable exits" value={String(ip.notable_exits)} />}
-            {ip?.investment_count != null && ip?.deals_last_12mo == null && (
-              <FundingRow label="Total deals" value={String(ip.investment_count)} />
+        <SectionCard label="Portfolio">
+          <FundingRow
+            label="Deals (12 mo)"
+            value={ip?.deals_last_12mo != null ? String(ip.deals_last_12mo) : undefined}
+          />
+          <FundingRow label="Total invested" value={val(ip?.total_invested)} />
+          <FundingRow
+            label="Notable exits"
+            value={ip?.notable_exits != null ? String(ip.notable_exits) : undefined}
+          />
+          <div className="flex justify-between py-2">
+            <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
+            {val(ip?.notable_portfolio) ? (
+              <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
+                {ip?.notable_portfolio}
+              </span>
+            ) : (
+              <EmptyLine>—</EmptyLine>
             )}
-            {ip?.notable_portfolio && (
-              <div className="flex justify-between py-2">
-                <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
-                <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
-                  {ip.notable_portfolio}
-                </span>
-              </div>
-            )}
-            {ip?.portfolio_link && (
-              <a
-                href={ip.portfolio_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between mt-2 pt-3"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-              >
-                <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
-                <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
-              </a>
-            )}
-          </SectionCard>
-        )}
+          </div>
+          {val(ip?.portfolio_link) && (
+            <a
+              href={ip?.portfolio_link ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between mt-2 pt-3"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
+              <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
+            </a>
+          )}
+        </SectionCard>
       </div>
+
 
       {/* Sticky action bar */}
       <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
@@ -643,9 +731,11 @@ function ActionBar({
 function InfoChip({
   children,
   gold,
+  muted,
 }: {
   children: React.ReactNode;
   gold?: boolean;
+  muted?: boolean;
 }) {
   return (
     <span
@@ -653,6 +743,14 @@ function InfoChip({
       style={
         gold
           ? { background: "#C6A02C", color: "#2A2005" }
+          : muted
+          ? {
+              background: "rgba(255,255,255,0.05)",
+              color: "#8E8B84",
+              border: "1px dashed rgba(255,255,255,0.18)",
+              fontStyle: "italic",
+              backdropFilter: "blur(8px)",
+            }
           : {
               background: "rgba(255,255,255,0.14)",
               color: "#E9E7E1",
@@ -716,28 +814,43 @@ function SectionCard({
   );
 }
 
-function FundingRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+function FundingRow({ label, value, last }: { label: string; value?: string | null; last?: boolean }) {
+  const v = val(value);
   return (
     <div
       className="flex items-center justify-between py-2"
       style={last ? undefined : { borderBottom: "1px solid rgba(255,255,255,0.07)" }}
     >
       <span style={{ color: "#94908A", fontSize: 13.5 }}>{label}</span>
-      <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }}>{value}</span>
+      <span
+        style={
+          v
+            ? { color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }
+            : { color: "#6E6B66", fontSize: 13.5, fontWeight: 500 }
+        }
+      >
+        {v ?? "—"}
+      </span>
     </div>
   );
 }
 
-function TractionStat({ label, value }: { label: string; value: string }) {
+function TractionStat({ label, value }: { label: string; value?: string | null }) {
+  const v = val(value);
   return (
     <div
       className="flex flex-col px-3 py-3 rounded-xl"
-      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+      style={{
+        background: v ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
+        border: v ? "1px solid rgba(255,255,255,0.08)" : "1px dashed rgba(255,255,255,0.12)",
+      }}
     >
       <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px" }}>
         {label}
       </span>
-      <span style={{ color: "#F6F5F2", fontSize: 18, fontWeight: 700, marginTop: 2 }}>{value}</span>
+      <span style={{ color: v ? "#F6F5F2" : "#6E6B66", fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+        {v ?? "—"}
+      </span>
     </div>
   );
 }
@@ -748,22 +861,38 @@ function BigStatChip({
   gold,
 }: {
   label: string;
-  value: string;
+  value?: string | null;
   gold?: boolean;
 }) {
+  const v = val(value);
   return (
     <div
       className="inline-flex flex-col px-4 py-3 rounded-2xl"
       style={{
-        background: gold ? "rgba(198,160,44,0.12)" : "rgba(255,255,255,0.06)",
-        border: gold ? "1px solid rgba(198,160,44,0.3)" : "1px solid rgba(255,255,255,0.12)",
+        background: !v
+          ? "rgba(255,255,255,0.03)"
+          : gold
+          ? "rgba(198,160,44,0.12)"
+          : "rgba(255,255,255,0.06)",
+        border: !v
+          ? "1px dashed rgba(255,255,255,0.12)"
+          : gold
+          ? "1px solid rgba(198,160,44,0.3)"
+          : "1px solid rgba(255,255,255,0.12)",
       }}
     >
       <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.7px" }}>
         {label}
       </span>
-      <span style={{ color: gold ? "#E7CB7E" : "#F6F5F2", fontSize: 17, fontWeight: 700, marginTop: 2 }}>
-        {value}
+      <span
+        style={{
+          color: !v ? "#6E6B66" : gold ? "#E7CB7E" : "#F6F5F2",
+          fontSize: 17,
+          fontWeight: 700,
+          marginTop: 2,
+        }}
+      >
+        {v ?? "—"}
       </span>
     </div>
   );
