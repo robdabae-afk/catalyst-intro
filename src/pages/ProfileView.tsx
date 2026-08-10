@@ -270,13 +270,11 @@ function FounderView({
 
         {/* Chips */}
         <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
-          {fp?.stage && <InfoChip>{fp.stage}</InfoChip>}
-          {location && (
-            <InfoChip>
-              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-              {location}
-            </InfoChip>
-          )}
+          <InfoChip muted={!val(fp?.stage)}>{val(fp?.stage) ?? "Stage not set"}</InfoChip>
+          <InfoChip muted={!location}>
+            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+            {location ?? "Location not set"}
+          </InfoChip>
         </div>
 
         {/* Name + subtitle */}
@@ -293,8 +291,12 @@ function FounderView({
             {profile.name}
           </h1>
           <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
-            Founder{companyName ? ` · ${companyName}` : ""}
+            Founder ·{" "}
+            <span style={companyName ? undefined : { color: "#8E8B84", fontStyle: "italic" }}>
+              {companyName ?? "Startup not added"}
+            </span>
           </p>
+        </div>
         </div>
       </div>
 
