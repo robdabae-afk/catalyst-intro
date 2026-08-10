@@ -202,9 +202,9 @@ export default function ProfileView() {
       </Helmet>
 
       {isFounder ? (
-        <FounderView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
+        <FounderView profile={profile} isOwn={user?.id === profile.id} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       ) : (
-        <InvestorView profile={profile} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
+        <InvestorView profile={profile} isOwn={user?.id === profile.id} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       )}
     </div>
   );
