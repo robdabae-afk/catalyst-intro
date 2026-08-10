@@ -187,10 +187,14 @@ function FounderCard({
     ? profile.founder_profiles[0]
     : profile.founder_profiles;
 
-  const title = detail?.company_name || detail?.startup_name || profile.name;
-  const subtitle = detail?.one_liner;
+  const clean = (v?: string | null) => {
+    const s = (v ?? "").trim();
+    return !s || s.toLowerCase() === "untitled" ? undefined : s;
+  };
+  const title = clean(detail?.company_name) || clean(detail?.startup_name) || profile.name;
+  const subtitle = clean(detail?.one_liner);
   const tags: string[] = detail?.industry ?? [];
-  const stage = detail?.stage;
+  const stage = clean(detail?.stage);
   const metricLabel = detail?.mrr
     ? `MRR ${detail.mrr}`
     : detail?.traction
