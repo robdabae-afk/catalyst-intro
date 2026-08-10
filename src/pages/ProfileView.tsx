@@ -64,6 +64,28 @@ interface ProfileData {
 
 const OG_IMAGE_URL = "/favicon.jpg";
 
+/** Normalizes empty-ish values (null, "", placeholder "Untitled") to undefined. */
+const val = (v?: string | number | null): string | undefined => {
+  if (v === null || v === undefined) return undefined;
+  const s = String(v).trim();
+  if (!s || s.toLowerCase() === "untitled" || s === "-" || s === "—") return undefined;
+  return s;
+};
+
+function PlaceholderText({ children }: { children: React.ReactNode }) {
+  return (
+    <p style={{ color: "#6E6B66", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
+      {children}
+    </p>
+  );
+}
+
+function EmptyLine({ children = "Not added yet" }: { children?: React.ReactNode }) {
+  return (
+    <span style={{ color: "#6E6B66", fontSize: 13.5, fontStyle: "italic" }}>{children}</span>
+  );
+}
+
 export default function ProfileView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
