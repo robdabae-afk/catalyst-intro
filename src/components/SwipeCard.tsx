@@ -183,7 +183,11 @@ export const SwipeCard = ({
   }, [profileId, currentUserId, userType, isPro, isPopular, isAd]);
 
   const displayImage = avatarUrl || bannerUrl;
-  const companyName = founderProfile?.company_name || founderProfile?.startup_name;
+  const cleanVal = (v?: string | null) => {
+    const s = (v ?? "").trim();
+    return !s || s.toLowerCase() === "untitled" ? undefined : s;
+  };
+  const companyName = cleanVal(founderProfile?.company_name) || cleanVal(founderProfile?.startup_name) || "Startup not added";
   const location = founderProfile?.preferred_city || investorProfile?.location;
 
   // Endorsements
