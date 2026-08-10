@@ -438,20 +438,22 @@ function FounderView({
 
 function InvestorView({
   profile,
+  isOwn,
   onBack,
   onShare,
   onLike,
   onPass,
 }: {
   profile: ProfileData;
+  isOwn?: boolean;
   onBack: () => void;
   onShare: () => void;
   onLike: () => void;
   onPass: () => void;
 }) {
   const ip = profile.investor_profile;
-  const location = ip?.location ?? "";
-  const subtitle = [ip?.position, ip?.firm_name].filter(Boolean).join(" · ");
+  const location = val(ip?.location);
+  const subtitle = [val(ip?.position), val(ip?.firm_name)].filter(Boolean).join(" · ");
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
