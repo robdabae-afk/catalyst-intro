@@ -494,12 +494,10 @@ function InvestorView({
               Verified investor
             </InfoChip>
           )}
-          {location && (
-            <InfoChip>
-              <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-              {location}
-            </InfoChip>
-          )}
+          <InfoChip muted={!location}>
+            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+            {location ?? "Location not set"}
+          </InfoChip>
         </div>
 
         {/* Name + subtitle */}
@@ -515,30 +513,38 @@ function InvestorView({
           >
             {profile.name}
           </h1>
-          {subtitle && (
-            <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>{subtitle}</p>
-          )}
+          <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
+            {subtitle || (
+              <span style={{ color: "#8E8B84", fontStyle: "italic" }}>Firm not added</span>
+            )}
+          </p>
         </div>
       </div>
 
       {/* Scrollable body */}
       <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+        {isOwn && !val(ip?.investment_thesis) && (
+          <a
+            href="/onboarding"
+            className="block px-4 py-3 rounded-2xl"
+            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+          >
+            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+              Complete your profile →
+            </span>
+          </a>
+        )}
+
         {/* Stat chips row */}
         <div className="flex gap-2 flex-wrap">
-          {ip?.typical_check_size && (
-            <BigStatChip label="Check" value={ip.typical_check_size} />
-          )}
-          {ip?.preferred_stage && (
-            <BigStatChip label="Focus" value={String(ip.preferred_stage)} />
-          )}
-          {ip?.investor_type && (
-            <BigStatChip label="Leads" value={ip.investor_type} gold />
-          )}
+          <BigStatChip label="Check" value={val(ip?.typical_check_size)} />
+          <BigStatChip label="Focus" value={val(ip?.preferred_stage)} />
+          <BigStatChip label="Leads" value={val(ip?.investor_type)} gold />
         </div>
 
         {/* Investment thesis */}
-        {ip?.investment_thesis && (
-          <SectionCard label="Investment Thesis">
+        <SectionCard label="Investment Thesis">
+          {val(ip?.investment_thesis) ? (
             <p
               style={{
                 fontFamily: "Fraunces, serif",
@@ -548,41 +554,48 @@ function InvestorView({
                 lineHeight: 1.6,
               }}
             >
-              "{ip.investment_thesis}"
+              "{ip?.investment_thesis}"
             </p>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine>No thesis shared yet</EmptyLine>
+          )}
+        </SectionCard>
 
         {/* Sectors */}
-        {ip?.sectors_of_interest && ip.sectors_of_interest.length > 0 && (
-          <SectionCard label="Sectors of Interest">
+        <SectionCard label="Sectors of Interest">
+          {ip?.sectors_of_interest && ip.sectors_of_interest.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {ip.sectors_of_interest.map((s) => (
                 <Tag key={s}>{s}</Tag>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Responsiveness */}
-        {(ip?.response_rate != null || ip?.avg_reply_time || ip?.responsiveness_status) && (
-          <SectionCard label="Responsiveness">
-            <div>
-              {ip?.response_rate != null && <FundingRow label="Response rate" value={`${ip.response_rate}%`} />}
-              {ip?.avg_reply_time && <FundingRow label="Avg. reply time" value={ip.avg_reply_time} />}
-              {ip?.responsiveness_status && (
-                <div className="flex items-center justify-between py-2">
-                  <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
-                  <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip.responsiveness_status}</span>
-                </div>
+        <SectionCard label="Responsiveness">
+          <div>
+            <FundingRow
+              label="Response rate"
+              value={ip?.response_rate != null ? `${ip.response_rate}%` : undefined}
+            />
+            <FundingRow label="Avg. reply time" value={val(ip?.avg_reply_time)} />
+            <div className="flex items-center justify-between py-2">
+              <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
+              {val(ip?.responsiveness_status) ? (
+                <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip?.responsiveness_status}</span>
+              ) : (
+                <EmptyLine>—</EmptyLine>
               )}
             </div>
-          </SectionCard>
-        )}
+          </div>
+        </SectionCard>
 
         {/* Portfolio companies */}
-        {ip?.portfolio_companies && ip.portfolio_companies.length > 0 && (
-          <SectionCard label="Portfolio Companies">
+        <SectionCard label="Portfolio Companies">
+          {ip?.portfolio_companies && ip.portfolio_companies.length > 0 ? (
             <div className="flex flex-wrap gap-3">
               {ip.portfolio_companies.map((c, i) => (
                 <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
@@ -600,41 +613,47 @@ function InvestorView({
                 </div>
               ))}
             </div>
-          </SectionCard>
-        )}
+          ) : (
+            <EmptyLine />
+          )}
+        </SectionCard>
 
         {/* Portfolio stats */}
-        {(ip?.investment_count || ip?.notable_portfolio || ip?.portfolio_link || ip?.deals_last_12mo != null || ip?.total_invested || ip?.notable_exits != null) && (
-          <SectionCard label="Portfolio">
-            {ip?.deals_last_12mo != null && <FundingRow label="Deals (12 mo)" value={String(ip.deals_last_12mo)} />}
-            {ip?.total_invested && <FundingRow label="Total invested" value={ip.total_invested} />}
-            {ip?.notable_exits != null && <FundingRow label="Notable exits" value={String(ip.notable_exits)} />}
-            {ip?.investment_count != null && ip?.deals_last_12mo == null && (
-              <FundingRow label="Total deals" value={String(ip.investment_count)} />
+        <SectionCard label="Portfolio">
+          <FundingRow
+            label="Deals (12 mo)"
+            value={ip?.deals_last_12mo != null ? String(ip.deals_last_12mo) : undefined}
+          />
+          <FundingRow label="Total invested" value={val(ip?.total_invested)} />
+          <FundingRow
+            label="Notable exits"
+            value={ip?.notable_exits != null ? String(ip.notable_exits) : undefined}
+          />
+          <div className="flex justify-between py-2">
+            <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
+            {val(ip?.notable_portfolio) ? (
+              <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
+                {ip?.notable_portfolio}
+              </span>
+            ) : (
+              <EmptyLine>—</EmptyLine>
             )}
-            {ip?.notable_portfolio && (
-              <div className="flex justify-between py-2">
-                <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
-                <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
-                  {ip.notable_portfolio}
-                </span>
-              </div>
-            )}
-            {ip?.portfolio_link && (
-              <a
-                href={ip.portfolio_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between mt-2 pt-3"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-              >
-                <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
-                <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
-              </a>
-            )}
-          </SectionCard>
-        )}
+          </div>
+          {val(ip?.portfolio_link) && (
+            <a
+              href={ip?.portfolio_link ?? "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between mt-2 pt-3"
+              style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
+              <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
+            </a>
+          )}
+        </SectionCard>
       </div>
+
 
       {/* Sticky action bar */}
       <ActionBar onPass={onPass} onSend={() => {}} onLike={onLike} />
