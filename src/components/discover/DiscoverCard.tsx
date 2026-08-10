@@ -240,10 +240,6 @@ function FounderCard({
               )}
             </div>
             <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5">
-              {subtitle || "—"}
-            </p>
-          </div>
-            <p className="text-[11px] text-muted-foreground line-clamp-1 leading-snug mt-0.5">
               {subtitle || (
                 <span className="italic text-muted-foreground/60">No one-liner yet</span>
               )}
