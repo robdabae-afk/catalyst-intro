@@ -731,9 +731,11 @@ function ActionBar({
 function InfoChip({
   children,
   gold,
+  muted,
 }: {
   children: React.ReactNode;
   gold?: boolean;
+  muted?: boolean;
 }) {
   return (
     <span
@@ -741,6 +743,14 @@ function InfoChip({
       style={
         gold
           ? { background: "#C6A02C", color: "#2A2005" }
+          : muted
+          ? {
+              background: "rgba(255,255,255,0.05)",
+              color: "#8E8B84",
+              border: "1px dashed rgba(255,255,255,0.18)",
+              fontStyle: "italic",
+              backdropFilter: "blur(8px)",
+            }
           : {
               background: "rgba(255,255,255,0.14)",
               color: "#E9E7E1",
