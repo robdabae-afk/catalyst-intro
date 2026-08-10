@@ -814,28 +814,43 @@ function SectionCard({
   );
 }
 
-function FundingRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
+function FundingRow({ label, value, last }: { label: string; value?: string | null; last?: boolean }) {
+  const v = val(value);
   return (
     <div
       className="flex items-center justify-between py-2"
       style={last ? undefined : { borderBottom: "1px solid rgba(255,255,255,0.07)" }}
     >
       <span style={{ color: "#94908A", fontSize: 13.5 }}>{label}</span>
-      <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }}>{value}</span>
+      <span
+        style={
+          v
+            ? { color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }
+            : { color: "#6E6B66", fontSize: 13.5, fontWeight: 500 }
+        }
+      >
+        {v ?? "—"}
+      </span>
     </div>
   );
 }
 
-function TractionStat({ label, value }: { label: string; value: string }) {
+function TractionStat({ label, value }: { label: string; value?: string | null }) {
+  const v = val(value);
   return (
     <div
       className="flex flex-col px-3 py-3 rounded-xl"
-      style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+      style={{
+        background: v ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
+        border: v ? "1px solid rgba(255,255,255,0.08)" : "1px dashed rgba(255,255,255,0.12)",
+      }}
     >
       <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px" }}>
         {label}
       </span>
-      <span style={{ color: "#F6F5F2", fontSize: 18, fontWeight: 700, marginTop: 2 }}>{value}</span>
+      <span style={{ color: v ? "#F6F5F2" : "#6E6B66", fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+        {v ?? "—"}
+      </span>
     </div>
   );
 }
@@ -846,22 +861,38 @@ function BigStatChip({
   gold,
 }: {
   label: string;
-  value: string;
+  value?: string | null;
   gold?: boolean;
 }) {
+  const v = val(value);
   return (
     <div
       className="inline-flex flex-col px-4 py-3 rounded-2xl"
       style={{
-        background: gold ? "rgba(198,160,44,0.12)" : "rgba(255,255,255,0.06)",
-        border: gold ? "1px solid rgba(198,160,44,0.3)" : "1px solid rgba(255,255,255,0.12)",
+        background: !v
+          ? "rgba(255,255,255,0.03)"
+          : gold
+          ? "rgba(198,160,44,0.12)"
+          : "rgba(255,255,255,0.06)",
+        border: !v
+          ? "1px dashed rgba(255,255,255,0.12)"
+          : gold
+          ? "1px solid rgba(198,160,44,0.3)"
+          : "1px solid rgba(255,255,255,0.12)",
       }}
     >
       <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.7px" }}>
         {label}
       </span>
-      <span style={{ color: gold ? "#E7CB7E" : "#F6F5F2", fontSize: 17, fontWeight: 700, marginTop: 2 }}>
-        {value}
+      <span
+        style={{
+          color: !v ? "#6E6B66" : gold ? "#E7CB7E" : "#F6F5F2",
+          fontSize: 17,
+          fontWeight: 700,
+          marginTop: 2,
+        }}
+      >
+        {v ?? "—"}
       </span>
     </div>
   );
