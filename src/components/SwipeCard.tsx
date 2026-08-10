@@ -393,15 +393,19 @@ export const SwipeCard = ({
             <div className="px-4 py-4 space-y-4">
 
               {/* Industry Tags - Using Islands logic or simple horizontal scroll */}
-              {founderProfile.industry && founderProfile.industry.length > 0 && (
-                <div className="flex flex-wrap gap-2 pb-2">
-                  {founderProfile.industry.map((ind: string) => (
+              <div className="flex flex-wrap gap-2 pb-2">
+                {founderProfile.industry && founderProfile.industry.length > 0 ? (
+                  founderProfile.industry.map((ind: string) => (
                     <Badge key={ind} variant="outline" className="bg-zinc-900/50 text-zinc-300 border-zinc-700 px-3 py-1.5 text-xs tracking-wide">
                       {ind}
                     </Badge>
-                  ))}
-                </div>
-              )}
+                  ))
+                ) : (
+                  <Badge variant="outline" className="bg-zinc-900/30 text-zinc-500 border-zinc-800 border-dashed px-3 py-1.5 text-xs tracking-wide italic">
+                    Industry not added
+                  </Badge>
+                )}
+              </div>
 
               {/* Vitals Islands - MRR and Backed By */}
               <div className="grid grid-cols-2 gap-3">
@@ -410,7 +414,7 @@ export const SwipeCard = ({
                     <span className="text-[10px] font-bold uppercase tracking-widest">MRR</span>
                   </div>
                   <div className="z-10">
-                    <p className="text-xl sm:text-2xl font-serif font-medium text-white tracking-tight">{founderProfile.mrr || '-'}</p>
+                    <p className="text-xl sm:text-2xl font-serif font-medium text-white tracking-tight">{founderProfile.mrr || '—'}</p>
                     <div className="w-8 h-0.5 bg-[#C5A059]/50 mt-2 rounded-full"></div>
                   </div>
                   <TrendingUp className="absolute top-4 right-4 w-12 h-12 text-zinc-800/50 group-hover:text-zinc-800 transition-colors" />
@@ -421,7 +425,7 @@ export const SwipeCard = ({
                     <span className="text-[10px] font-bold uppercase tracking-widest">Backed By</span>
                   </div>
                   <div className="z-10">
-                    <p className="text-lg sm:text-xl font-serif font-medium text-white truncate">{founderProfile.backed_by || '-'}</p>
+                    <p className="text-lg sm:text-xl font-serif font-medium text-white truncate">{founderProfile.backed_by || '—'}</p>
                     <div className="w-8 h-0.5 bg-[#C5A059]/50 mt-2 rounded-full"></div>
                   </div>
                   <Rocket className="absolute top-4 right-4 w-12 h-12 text-zinc-800/50 group-hover:text-zinc-800 transition-colors" />
@@ -429,26 +433,33 @@ export const SwipeCard = ({
               </div>
 
               {/* One Liner Island */}
-              {founderProfile.one_liner && (
-                <Island>
-                  <div className="flex items-center gap-2 text-zinc-500 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Superpower</span>
-                  </div>
+              <Island>
+                <div className="flex items-center gap-2 text-zinc-500 mb-3">
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Superpower</span>
+                </div>
+                {founderProfile.one_liner ? (
                   <p className="text-lg sm:text-xl font-serif text-white leading-relaxed">
                     {founderProfile.one_liner}
                   </p>
-                </Island>
-              )}
+                ) : (
+                  <p className="text-lg sm:text-xl font-serif text-zinc-500 italic leading-relaxed">
+                    No one-liner yet
+                  </p>
+                )}
+              </Island>
 
               {/* Traction / Looking For Island */}
-              {founderProfile.traction && (
-                <Island>
-                  <div className="flex items-center gap-2 text-zinc-500 mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Traction</span>
-                  </div>
+              <Island>
+                <div className="flex items-center gap-2 text-zinc-500 mb-3">
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Traction</span>
+                </div>
+                {founderProfile.traction ? (
                   <p className="text-base text-zinc-300 leading-relaxed font-light">{founderProfile.traction}</p>
-                </Island>
-              )}
+                ) : (
+                  <p className="text-base text-zinc-500 italic leading-relaxed font-light">No traction shared yet</p>
+                )}
+              </Island>
+
 
               {/* Pitch Deck Link Island */}
               {founderProfile.pitch_deck_url && founderProfile.pitch_deck_visibility === 'public' && (
