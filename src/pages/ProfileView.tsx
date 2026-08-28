@@ -345,18 +345,6 @@ function FounderView({
         <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
           <div className="space-y-3">
             <div>
-              <p
-                style={{
-                  color: "#94908A",
-                  fontSize: 10.5,
-                  textTransform: "uppercase",
-                  letterSpacing: "1px",
-                  fontWeight: 500,
-                  marginBottom: 6,
-                }}
-              >
-                Traction details
-              </p>
               {val(fp?.traction) ? (
                 <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
               ) : (
