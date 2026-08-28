@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useHomeFeed } from "@/hooks/useHomeFeed";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { useNewMatches } from "@/hooks/useNewMatches";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomNav } from "@/components/app/BottomNav";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
