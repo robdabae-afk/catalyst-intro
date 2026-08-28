@@ -417,20 +417,20 @@ export default function Dashboard() {
 
         {/* Action buttons */}
         {!outOfCards && !loading && (
-          <div className="flex items-center justify-center gap-5 pt-5 pb-2">
+          <div className="flex items-center justify-center gap-4 pt-3 pb-1">
             {/* Pass */}
             <button
               onClick={handlePass}
               className="flex items-center justify-center rounded-full"
               style={{
-                width: 60,
-                height: 60,
+                width: 52,
+                height: 52,
                 background: "rgba(255,255,255,0.07)",
                 border: "1.5px solid rgba(255,255,255,0.18)",
               }}
               aria-label="Pass"
             >
-              <X size={24} color="#8E8B84" strokeWidth={2} />
+              <X size={22} color="#8E8B84" strokeWidth={2} />
             </button>
 
             {/* Send / Connect */}
@@ -438,14 +438,14 @@ export default function Dashboard() {
               onClick={handleSend}
               className="flex items-center justify-center rounded-full"
               style={{
-                width: 74,
-                height: 74,
+                width: 64,
+                height: 64,
                 background: "#FFFFFF",
                 boxShadow: "0 8px 24px rgba(255,255,255,0.2)",
               }}
               aria-label="Connect"
             >
-              <Send size={26} color="#0A0A0C" strokeWidth={2} />
+              <Send size={22} color="#0A0A0C" strokeWidth={2} />
             </button>
 
             {/* Like */}
@@ -453,14 +453,14 @@ export default function Dashboard() {
               onClick={handleLike}
               className="flex items-center justify-center rounded-full"
               style={{
-                width: 60,
-                height: 60,
+                width: 52,
+                height: 52,
                 background: "#C6A02C",
                 boxShadow: "0 8px 20px rgba(198,160,44,0.4)",
               }}
               aria-label="Like"
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 21C12 21 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 13.5 14 21 12 21Z"
                   fill="#2A2005"
