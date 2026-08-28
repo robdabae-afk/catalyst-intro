@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useHomeFeed } from "@/hooks/useHomeFeed";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { useNewMatches } from "@/hooks/useNewMatches";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomNav } from "@/components/app/BottomNav";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
@@ -18,7 +19,7 @@ export default function Home() {
   const [firstName, setFirstName] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [introTarget, setIntroTarget] = useState<IntroTarget | null>(null);
-  const [newMatchCount, setNewMatchCount] = useState(0);
+  const newMatchCount = useNewMatches();
   const unread = useUnreadMessages();
   const pending = usePendingRequests();
 
@@ -39,19 +40,6 @@ export default function Home() {
     const name = user.name ?? "";
     setFirstName(name.split(" ")[0] || "");
   }, [user]);
-
-  // Fetch new mutual matches (swipes where both parties liked)
-  useEffect(() => {
-    if (!user?.id) return;
-    (async () => {
-      const { count } = await supabase
-        .from("swipes")
-        .select("*", { count: "exact", head: true })
-        .eq("swiped_id", user.id)
-        .eq("action", "like");
-      setNewMatchCount(count ?? 0);
-    })();
-  }, [user?.id]);
 
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
   const { events, news: _news, loading } = useHomeFeed(user?.id ?? null, userType);
