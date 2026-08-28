@@ -8,6 +8,13 @@
       "when": 1787931767585,
       "tag": "0000_add_founder_traction_metrics",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787932570309,
+      "tag": "0001_add_pre_revenue_traction_fields",
+      "breakpoints": true
     }
   ]
 }
