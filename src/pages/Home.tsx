@@ -172,7 +172,7 @@ export default function Home() {
           <>
             <SectionHeader
               label="Latest updates"
-              onViewAll={() => navigate("/app/home")}
+              onViewAll={() => navigate("/app/updates")}
             />
             <div
               className="flex gap-3 overflow-x-auto no-scrollbar pb-1"
