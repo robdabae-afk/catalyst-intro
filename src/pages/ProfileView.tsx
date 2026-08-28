@@ -270,7 +270,6 @@ function FounderView({
 
         {/* Chips */}
         <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
-          <InfoChip muted={!val(fp?.stage)}>{val(fp?.stage) ?? "Stage not set"}</InfoChip>
           <InfoChip muted={!location}>
             <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
             {location ?? "Location not set"}

@@ -156,7 +156,6 @@ export default function Dashboard() {
   const name = currentProfile?.name ?? "";
 
   // Founder card data
-  const founderStage = detail?.stage ?? null;
   const founderLocation = detail?.preferred_city ?? detail?.location ?? null;
   const founderCompany = detail?.startup_name ?? detail?.company_name ?? null;
   const founderIndustries: string[] = detail?.industry ?? [];
@@ -295,7 +294,6 @@ export default function Dashboard() {
                     Verified investor
                   </Chip>
                 )}
-                {isFounderCard && founderStage && <Chip>{founderStage}</Chip>}
                 {isFounderCard && founderLocation && (
                   <Chip>
                     <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
