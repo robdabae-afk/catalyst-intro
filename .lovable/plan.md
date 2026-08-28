@@ -39,3 +39,12 @@ The free-text traction narrative and the Pre-revenue / Post-revenue and Full-tim
 - `src/pages/Settings.tsx`: new state, load, save, and inputs; tile picker enforces the 4-tile cap and disables revenue tiles when pre-revenue.
 - `src/pages/app/AppSignupForm.tsx`: new founder fields written into signup metadata.
 - Regenerate database types after the migration.
+
+## Value colors
+Applies to the metric value only, never the tile label:
+
+- **Growth (MoM)** — revenue growth and user growth both show the number in green `#5EC98E` when growth is above 10%; otherwise the default value color.
+- **Months in Operation** — green `#5EC98E` when greater than 6 months; otherwise default.
+- **Active Users** — always green `#5EC98E`.
+
+Growth values are parsed from the entered text (leading `+`/`-` and `%` tolerated) to compare against 10%; unparseable values stay the default color.
