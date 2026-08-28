@@ -383,14 +383,6 @@ export const SwipeCard = ({
                 </div>
               </div>
 
-              {/* Stage Badge on Image */}
-              {founderProfile?.stage && (
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-transparent text-white border border-white/10 px-3 py-1 text-xs tracking-wider uppercase font-inter font-semibold">
-                    {formatStage(founderProfile.stage)}
-                  </Badge>
-                </div>
-              )}
             </div>
 
             {/* Content Section */}
