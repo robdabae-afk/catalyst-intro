@@ -247,7 +247,7 @@ export default function Dashboard() {
         ) : (
           <div
             ref={cardRef}
-            className="relative flex-1 rounded-3xl overflow-hidden select-none cursor-grab active:cursor-grabbing"
+            className="relative flex-1 flex flex-col rounded-3xl overflow-hidden select-none cursor-grab active:cursor-grabbing"
             style={{
               transform: `translateX(${dragX}px) rotate(${dragX * 0.02}deg)`,
               transition: isDragging ? "none" : "transform 0.2s ease",
@@ -286,7 +286,7 @@ export default function Dashboard() {
             )}
 
             {/* Card content */}
-            <div className="relative z-10 flex flex-col h-full px-5 pb-7 pt-5">
+            <div className="relative z-10 flex flex-col flex-1 px-5 pb-7 pt-5">
               {/* Top chips */}
               <div className="flex items-start gap-2 flex-wrap">
                 {isInvestorCard && isVerified && (
