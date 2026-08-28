@@ -42,6 +42,12 @@ interface ProfileData {
     paying_customers?: number | null;
     operations_start_date?: string | null;
     team_full_time?: boolean | null;
+    waitlist_signups?: number | null;
+    active_users?: string | null;
+    pilots_lois?: number | null;
+    product_status?: string | null;
+    user_growth_mom?: string | null;
+    traction_tiles?: string[] | null;
   };
   investor_profile?: {
     firm_name: string | null;
