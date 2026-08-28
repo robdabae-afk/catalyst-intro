@@ -15,6 +15,13 @@
       "when": 1787932570309,
       "tag": "0001_add_pre_revenue_traction_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787932602055,
+      "tag": "0002_handle_new_user_pre_revenue_fields",
+      "breakpoints": true
     }
   ]
 }
