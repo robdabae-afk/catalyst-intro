@@ -394,6 +394,26 @@ const Settings = () => {
     }
   };
 
+  const handleCompanyLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
+    setUploadingCompanyLogo(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/company-logo.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      setCompanyLogoUrl(`${publicUrl}?v=${Date.now()}`);
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingCompanyLogo(false);
+    }
+  };
+
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
