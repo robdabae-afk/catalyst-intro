@@ -341,19 +341,34 @@ function FounderView({
           )}
         </div>
 
-        {val(fp?.traction) ? (
-          <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
-        ) : (
-          <PlaceholderText>No traction shared yet</PlaceholderText>
-        )}
-
         {/* Traction Card */}
         <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
-          <div className="grid grid-cols-2 gap-3">
-            <TractionStat label="MRR" value={val(fp?.mrr)} />
-            <TractionStat label="Backed by" value={val(fp?.backed_by)} />
-            <TractionStat label="Raised" value={val(fp?.funding_amount)} />
-            <TractionStat label="Stage" value={val(fp?.stage)} />
+          <div className="space-y-3">
+            <div>
+              <p
+                style={{
+                  color: "#94908A",
+                  fontSize: 10.5,
+                  textTransform: "uppercase",
+                  letterSpacing: "1px",
+                  fontWeight: 500,
+                  marginBottom: 6,
+                }}
+              >
+                Traction details
+              </p>
+              {val(fp?.traction) ? (
+                <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
+              ) : (
+                <PlaceholderText>No traction details yet</PlaceholderText>
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <TractionStat label="MRR" value={val(fp?.mrr)} />
+              <TractionStat label="Backed by" value={val(fp?.backed_by)} />
+              <TractionStat label="Raised" value={val(fp?.funding_amount)} />
+              <TractionStat label="Stage" value={val(fp?.stage)} />
+            </div>
           </div>
         </SectionCard>
 
