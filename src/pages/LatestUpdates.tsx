@@ -171,6 +171,41 @@ export default function LatestUpdates() {
     ),
   ).size;
 
+  const isFounder = userType === "founder";
+  const FILTERS = isFounder ? FOUNDER_FILTERS : INVESTOR_FILTERS;
+
+  const submitPost = async () => {
+    if (!user?.id || !postTitle.trim()) return;
+    setPosting(true);
+    const { data, error } = await supabase
+      .from("startup_updates")
+      .insert({
+        founder_id: user.id,
+        title: postTitle.trim(),
+        body: postBody.trim() || null,
+      })
+      .select("id, founder_id, title, body, link, mrr_snapshot, headcount_snapshot, created_at")
+      .single();
+    setPosting(false);
+    if (error || !data) return;
+    setItems((prev) => [
+      {
+        ...(data as any),
+        founderName: user.name ?? "You",
+        avatarUrl: (user as any).avatar_url ?? null,
+        startupName: null,
+        stage: null,
+        growthMom: null,
+        watchlisted: false,
+      },
+      ...prev,
+    ]);
+    setPostTitle("");
+    setPostBody("");
+    setComposerOpen(false);
+  };
+
+
   return (
     <div
       className="relative min-h-[100dvh] overflow-hidden flex flex-col"
