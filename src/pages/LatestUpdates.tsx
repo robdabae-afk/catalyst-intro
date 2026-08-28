@@ -31,13 +31,19 @@ interface UpdateItem {
   watchlisted: boolean;
 }
 
-const FILTERS = [
+const INVESTOR_FILTERS = [
   { key: "all", label: "All" },
   { key: "raises", label: "Raises" },
   { key: "milestones", label: "Milestones" },
   { key: "watchlist", label: "Watchlist" },
 ] as const;
-type FilterKey = (typeof FILTERS)[number]["key"];
+const FOUNDER_FILTERS = [
+  { key: "all", label: "All" },
+  { key: "milestones", label: "Milestones" },
+  { key: "raises", label: "Raises" },
+  { key: "hiring", label: "Hiring" },
+] as const;
+type FilterKey = "all" | "raises" | "milestones" | "watchlist" | "hiring";
 
 const CATEGORY_META: Record<Category, { label: string; Icon: typeof Rocket }> = {
   raise: { label: "Raise", Icon: TrendingUp },
