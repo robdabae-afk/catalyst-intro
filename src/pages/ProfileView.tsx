@@ -14,6 +14,14 @@ import {
   Send,
   X,
 } from "lucide-react";
+import {
+  MAX_TRACTION_TILES,
+  POST_REVENUE_DEFAULT_TILES,
+  PRE_REVENUE_METRIC_KEYS,
+  TractionTileKey,
+  isStrongGrowth,
+  tileDef,
+} from "@/lib/traction-tiles";
 
 interface ProfileData {
   id: string;
