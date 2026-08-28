@@ -295,19 +295,6 @@ export default function Dashboard() {
                     Verified investor
                   </Chip>
                 )}
-                {isFounderCard && founderStage && <Chip>{founderStage}</Chip>}
-                {isFounderCard && founderLocation && (
-                  <Chip>
-                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-                    {founderLocation}
-                  </Chip>
-                )}
-                {isInvestorCard && investorLocation && (
-                  <Chip>
-                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-                    {investorLocation}
-                  </Chip>
-                )}
               </div>
 
               {/* Spacer pushes content to bottom */}
@@ -326,11 +313,30 @@ export default function Dashboard() {
               >
                 {name}
               </h2>
-              <p style={{ color: "#CFCCC5", fontSize: 13.5, marginBottom: 12 }}>
-                {isFounderCard
-                  ? `Founder${founderCompany ? ` · ${founderCompany}` : ""}`
-                  : `${investorPosition ? investorPosition : ""}${investorFirm ? (investorPosition ? " · " : "") + investorFirm : ""}${investorLocation ? (investorFirm || investorPosition ? " · " : "") + investorLocation : ""}`}
-              </p>
+              <div
+                className="flex items-center gap-2 flex-wrap"
+                style={{ color: "#CFCCC5", fontSize: 13.5, marginBottom: 12 }}
+              >
+                <span>
+                  {isFounderCard
+                    ? `Founder${founderCompany ? ` · ${founderCompany}` : ""}`
+                    : `${investorPosition ? investorPosition : ""}${investorFirm ? (investorPosition ? " · " : "") + investorFirm : ""}`}
+                </span>
+                {isFounderCard && founderStage && <Chip>{founderStage}</Chip>}
+                {isFounderCard && founderLocation && (
+                  <Chip>
+                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
+                    {founderLocation}
+                  </Chip>
+                )}
+                {isInvestorCard && investorStage && <Chip>{investorStage}</Chip>}
+                {isInvestorCard && investorLocation && (
+                  <Chip>
+                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
+                    {investorLocation}
+                  </Chip>
+                )}
+              </div>
 
               {/* Tags */}
               <div className="flex flex-wrap gap-1.5 mb-3">
