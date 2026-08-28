@@ -330,6 +330,7 @@ function FounderView({
   const companyName = val(fp?.startup_name) ?? val(fp?.company_name);
   const location = val(fp?.preferred_city);
   const isPostRevenue = !!val(fp?.mrr) && fp?.mrr !== "Pre-revenue";
+  const tractionTiles = resolveTractionTiles(fp, isPostRevenue);
   const hasRaised = !!val(fp?.funding_amount);
   const teamMembers = (fp?.team_members ?? []).filter((m) => val(m?.name));
 
