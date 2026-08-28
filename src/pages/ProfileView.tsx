@@ -456,19 +456,19 @@ function FounderView({
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <TractionStat label="MRR" value={val(fp?.mrr)} sub="monthly" />
-              <TractionStat
-                label="Growth"
-                value={val(fp?.growth_mom)}
-                sub="MoM"
-                positive={!!val(fp?.growth_mom)?.startsWith("+")}
-              />
-              <TractionStat label="Customers" value={val(fp?.paying_customers)} sub="paying" />
-              <TractionStat
-                label="Months in Operation"
-                value={monthsInOperation(fp?.operations_start_date)}
-                sub="since launch"
-              />
+              {tractionTiles.map((key) => {
+                const def = tileDef(key)!;
+                const { value, positive } = tileValue(key, fp);
+                return (
+                  <TractionStat
+                    key={key}
+                    label={def.label}
+                    value={value}
+                    sub={def.sub}
+                    positive={positive}
+                  />
+                );
+              })}
             </div>
           </div>
         </SectionCard>
