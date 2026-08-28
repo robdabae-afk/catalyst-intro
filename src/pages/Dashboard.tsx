@@ -286,7 +286,7 @@ export default function Dashboard() {
             )}
 
             {/* Card content */}
-            <div className="relative z-10 flex flex-col h-full px-5 pb-7 pt-5">
+            <div className="relative z-10 flex flex-col flex-1 px-5 pb-7 pt-5">
               {/* Top chips */}
               <div className="flex items-start gap-2 flex-wrap">
                 {isInvestorCard && isVerified && (
