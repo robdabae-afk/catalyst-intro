@@ -339,7 +339,7 @@ function FounderView({
       {/* Hero Header */}
       <div
         className="relative shrink-0 overflow-hidden"
-        style={{ height: 280 }}
+        style={{ height: 330 }}
       >
         {profile.avatar_url ? (
           <img
@@ -369,7 +369,7 @@ function FounderView({
         </div>
 
         {/* Name + subtitle + location */}
-        <div className="absolute left-5 right-5 bottom-2">
+        <div className="absolute left-5 right-5 bottom-3">
           <h1
             style={{
               fontFamily: "Fraunces, serif",
