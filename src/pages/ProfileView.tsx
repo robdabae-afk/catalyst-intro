@@ -867,25 +867,47 @@ function FundingRow({ label, value, last }: { label: string; value?: string | nu
   );
 }
 
-function TractionStat({ label, value }: { label: string; value?: string | null }) {
+function TractionStat({
+  label,
+  value,
+  sub,
+  positive,
+}: {
+  label: string;
+  value?: string | number | null;
+  sub?: string;
+  positive?: boolean;
+}) {
   const v = val(value);
   return (
     <div
-      className="flex flex-col px-3 py-3 rounded-xl"
+      className="flex flex-col items-center px-3 py-3 rounded-xl"
       style={{
         background: v ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
         border: v ? "1px solid rgba(255,255,255,0.08)" : "1px dashed rgba(255,255,255,0.12)",
       }}
     >
-      <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px" }}>
+      <span
+        className="text-center"
+        style={{ color: "#94908A", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
+      >
         {label}
       </span>
-      <span style={{ color: v ? "#F6F5F2" : "#6E6B66", fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+      <span
+        style={{
+          color: !v ? "#6E6B66" : positive ? "#5EC98E" : "#F6F5F2",
+          fontSize: 18,
+          fontWeight: 700,
+          marginTop: 2,
+        }}
+      >
         {v ?? "—"}
       </span>
+      {sub && <span style={{ color: "#7D7972", fontSize: 9.5, marginTop: 1 }}>{sub}</span>}
     </div>
   );
 }
+
 
 function BigStatChip({
   label,
