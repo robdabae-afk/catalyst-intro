@@ -26,11 +26,12 @@ Investor-only
 
 For every step the script records: final URL, whether expected content rendered, console errors, network 4xx/5xx (with the endpoint), and whether the click changed state. Each becomes PASS / FAIL / BLOCKED with the evidence attached.
 
-## Known blockers to resolve first
+## Access handling for the sweep
 
-- `AuthGuard` currently redirects non-admin users to `/settings`, so a plain founder or investor account can only reach Settings. The sweep needs either admin-flagged test accounts or a temporary bypass; without one, most role screens report BLOCKED rather than tested.
-- Most `%test%` accounts have `approved = false` and many are `is_hidden = true`, which changes discovery and gating behavior. I'll pick one founder and one investor test account that are approved and unhidden, or note the gate as the finding.
+- Temporarily disable the `AuthGuard` gate (add a single test-mode bypass flag in `src/components/AuthGuard.tsx` that lets any signed-in user through instead of redirecting non-admins to `/settings`), run the full sweep, then restore the original gating in the same session. Nothing is published while the bypass is active, and the bypass removal is verified by re-reading the file and confirming a clean build at the end.
+- Most `%test%` accounts have `approved = false` and many are `is_hidden = true`, which changes discovery and gating behavior. I'll use one founder and one investor test account and note approval/hidden gates as findings rather than changing that data.
 - Anything requiring real Stripe payment, real email/SMS delivery, or Google Calendar OAuth will be exercised up to the external handoff and then marked "external — not executed".
+
 
 ## Technical approach
 
