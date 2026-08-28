@@ -368,12 +368,6 @@ export const SwipeCard = ({
 
               {/* Location & Name Information Overlay */}
               <div className="absolute bottom-0 left-0 right-0 p-5 pt-12 bg-gradient-to-t from-black to-transparent">
-                {location && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 text-zinc-300 text-sm mb-2 font-inter font-semibold uppercase">
-                    <MapPin className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{location}</span>
-                  </div>
-                )}
                 <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
