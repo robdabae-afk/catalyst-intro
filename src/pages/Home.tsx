@@ -52,19 +52,8 @@ export default function Home() {
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
   const { events, news: _news, loading } = useHomeFeed(user?.id ?? null, userType);
 
-  // News is fetched separately as multiple items for the feed
-  const [newsItems, setNewsItems] = useState<any[]>([]);
-  useEffect(() => {
-    if (!userType) return;
-    (async () => {
-      const { data } = await supabase
-        .from("home_news")
-        .select("id, news_date, title, body, link, image_url")
-        .order("news_date", { ascending: false })
-        .limit(10);
-      setNewsItems(data ?? []);
-    })();
-  }, [userType]);
+  // Founder updates feed powers the "Latest updates" previews
+  const { items: updates } = useStartupUpdates(user?.id ?? null, 10);
 
   const inboxBadge = unread + pending;
 
