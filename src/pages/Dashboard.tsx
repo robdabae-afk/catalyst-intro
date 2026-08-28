@@ -224,8 +224,8 @@ export default function Dashboard() {
 
       {/* Card area */}
       <div
-        className="flex-1 flex flex-col px-4"
-        style={{ minHeight: 0, paddingBottom: "calc(96px + env(safe-area-inset-bottom))" }}
+        className="flex-1 flex flex-col px-3"
+        style={{ minHeight: 0, paddingBottom: "calc(84px + env(safe-area-inset-bottom))" }}
       >
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
