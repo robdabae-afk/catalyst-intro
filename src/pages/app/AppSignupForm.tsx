@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { INDUSTRIES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
+import { PRODUCT_STATUS_OPTIONS } from "@/lib/traction-tiles";
 import {
   ArrowLeft,
   Rocket,
