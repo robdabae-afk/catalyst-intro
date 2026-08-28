@@ -376,6 +376,11 @@ export default function AppSignupForm() {
           preferred_city: hqLocation || null,
           operations_start_date: operationsStartDate || null,
           team_full_time: teamFullTime,
+          waitlist_signups: waitlistSignups || null,
+          active_users: activeUsers || null,
+          pilots_lois: pilotsLois || null,
+          product_status: productStatus || null,
+          user_growth_mom: userGrowthMom || null,
         });
       } else {
         Object.assign(metadata, {
