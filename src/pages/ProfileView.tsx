@@ -103,6 +103,74 @@ const monthsInOperation = (startDate?: string | null): string | undefined => {
   return String(months);
 };
 
+type FounderProfile = NonNullable<ProfileData["founder_profile"]>;
+
+/** Raw value + green-highlight rule for one traction tile. */
+const tileValue = (
+  key: TractionTileKey,
+  fp?: FounderProfile,
+): { value?: string; positive?: boolean } => {
+  switch (key) {
+    case "mrr":
+      return { value: val(fp?.mrr) };
+    case "growth_mom":
+      return { value: val(fp?.growth_mom), positive: isStrongGrowth(fp?.growth_mom) };
+    case "paying_customers":
+      return { value: val(fp?.paying_customers) };
+    case "user_growth_mom":
+      return { value: val(fp?.user_growth_mom), positive: isStrongGrowth(fp?.user_growth_mom) };
+    case "waitlist_signups":
+      return { value: val(fp?.waitlist_signups) };
+    case "active_users":
+      return { value: val(fp?.active_users), positive: true };
+    case "pilots_lois":
+      return { value: val(fp?.pilots_lois) };
+    case "product_status":
+      return { value: val(fp?.product_status) };
+    case "months_in_operation": {
+      const months = monthsInOperation(fp?.operations_start_date);
+      return { value: months, positive: months !== undefined && Number(months) > 6 };
+    }
+    case "headcount":
+      return { value: val(fp?.headcount) };
+    case "stage":
+      return { value: val(fp?.stage) };
+    default:
+      return {};
+  }
+};
+
+/** The four tile keys to render, honouring the founder's picks and revenue mode. */
+const resolveTractionTiles = (fp: FounderProfile | undefined, isPostRevenue: boolean): TractionTileKey[] => {
+  if (isPostRevenue) {
+    const picked = (fp?.traction_tiles ?? []).filter((k) => tileDef(k)) as TractionTileKey[];
+    const tiles = picked.length ? picked : POST_REVENUE_DEFAULT_TILES;
+    return tiles.slice(0, MAX_TRACTION_TILES);
+  }
+
+  const picked = (fp?.traction_tiles ?? []).filter((k) => {
+    const def = tileDef(k);
+    return def && !def.revenueOnly;
+  }) as TractionTileKey[];
+
+  const tiles = [...picked];
+  const push = (k: TractionTileKey) => {
+    if (!tiles.includes(k) && tiles.length < MAX_TRACTION_TILES) tiles.push(k);
+  };
+
+  // Fill remaining slots: metrics that actually have values, then the defaults.
+  PRE_REVENUE_METRIC_KEYS.forEach((k) => {
+    if (tileValue(k, fp).value) push(k);
+  });
+  push("user_growth_mom");
+  push("months_in_operation");
+  PRE_REVENUE_METRIC_KEYS.forEach(push);
+
+  return tiles.slice(0, MAX_TRACTION_TILES);
+};
+
+
+
 function PlaceholderText({ children }: { children: React.ReactNode }) {
   return (
     <p style={{ color: "#6E6B66", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
