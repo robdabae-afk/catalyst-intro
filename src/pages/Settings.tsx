@@ -476,6 +476,10 @@ const Settings = () => {
             stage: (stage || null) as any,
             team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
             headcount: headcount ? parseInt(headcount) : null,
+            growth_mom: growthMom || null,
+            paying_customers: payingCustomers ? parseInt(payingCustomers) : null,
+            operations_start_date: operationsStartDate || null,
+            team_full_time: teamFullTime,
             // Phase D
             raise_amount: raiseAmount ? parseFloat(raiseAmount) : null,
             raise_type: raiseType || null,
