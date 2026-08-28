@@ -346,7 +346,12 @@ function FounderView({
         </div>
 
         {/* Traction Card */}
-        <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
+        <SectionCard
+          label="Traction"
+          badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"}
+          badgeActive={isPostRevenue}
+          extraBadge={fp?.team_full_time ? "Full-time team" : undefined}
+        >
           <div className="space-y-3">
             <div>
               {val(fp?.traction) ? (
@@ -356,13 +361,23 @@ function FounderView({
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <TractionStat label="MRR" value={val(fp?.mrr)} />
-              <TractionStat label="Backed by" value={val(fp?.backed_by)} />
-              <TractionStat label="Raised" value={val(fp?.funding_amount)} />
-              <TractionStat label="Stage" value={val(fp?.stage)} />
+              <TractionStat label="MRR" value={val(fp?.mrr)} sub="monthly" />
+              <TractionStat
+                label="Growth"
+                value={val(fp?.growth_mom)}
+                sub="MoM"
+                positive={!!val(fp?.growth_mom)?.startsWith("+")}
+              />
+              <TractionStat label="Customers" value={val(fp?.paying_customers)} sub="paying" />
+              <TractionStat
+                label="Months in Operation"
+                value={monthsInOperation(fp?.operations_start_date)}
+                sub="since launch"
+              />
             </div>
           </div>
         </SectionCard>
+
 
         {/* Funding Card */}
         <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
