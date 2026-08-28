@@ -268,15 +268,7 @@ function FounderView({
           </button>
         </div>
 
-        {/* Chips */}
-        <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
-          <InfoChip muted={!location}>
-            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
-            {location ?? "Location not set"}
-          </InfoChip>
-        </div>
-
-        {/* Name + subtitle */}
+        {/* Name + subtitle + location */}
         <div className="absolute left-5 right-5 bottom-5">
           <h1
             style={{
@@ -295,6 +287,12 @@ function FounderView({
               {companyName ?? "Startup not added"}
             </span>
           </p>
+          <div className="flex gap-2 flex-wrap mt-2">
+            <InfoChip muted={!location}>
+              <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+              {location ?? "Location not set"}
+            </InfoChip>
+          </div>
         </div>
       </div>
 
