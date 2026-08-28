@@ -489,6 +489,8 @@ const Settings = () => {
             company_state: companyState,
             company_address: companyAddress,
             banner_url: founderBannerUrl,
+            logo_url: companyLogoUrl || null,
+            update_image_source: updateImageSource,
             pitch_deck_url: pitchDeckUrl,
             pitch_deck_visibility: pitchDeckVisibility,
             video_url: videoUrl || null,
