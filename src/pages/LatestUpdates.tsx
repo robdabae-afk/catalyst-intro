@@ -15,6 +15,7 @@ import {
   glass,
   type UpdateCategory,
 } from "@/components/app/StartupUpdateCard";
+import { RequestIntroBanner, type IntroTarget } from "@/components/app/RequestIntroBanner";
 
 const GOLD = "#C6A02C";
 const TEXT = "#F6F5F2";
@@ -46,6 +47,7 @@ export default function LatestUpdates() {
   const [postBody, setPostBody] = useState("");
   const [postCategory, setPostCategory] = useState<UpdateCategory>("milestone");
   const [posting, setPosting] = useState(false);
+  const [introTarget, setIntroTarget] = useState<IntroTarget | null>(null);
 
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
   const isFounder = userType === "founder";
@@ -291,7 +293,7 @@ export default function LatestUpdates() {
                     key={item.id}
                     item={item}
                     actionLabel="Request intro"
-                    onAction={isFounder ? undefined : () => cardAction(item.founder_id)}
+                    onAction={isFounder ? undefined : () => cardAction(item)}
                   />
                 ))}
               </>
@@ -304,7 +306,7 @@ export default function LatestUpdates() {
                     key={item.id}
                     item={item}
                     actionLabel="Request intro"
-                    onAction={isFounder ? undefined : () => cardAction(item.founder_id)}
+                    onAction={isFounder ? undefined : () => cardAction(item)}
                   />
                 ))}
               </>
@@ -312,6 +314,14 @@ export default function LatestUpdates() {
           </>
         )}
       </div>
+
+      {introTarget && (
+        <RequestIntroBanner
+          target={introTarget}
+          investorId={user?.id}
+          onClose={() => setIntroTarget(null)}
+        />
+      )}
 
       <BottomNav userType={userType} inboxBadge={unread + pending} />
     </div>
