@@ -807,6 +807,93 @@ const Settings = () => {
                   Our team is full-time — show a "Full-time team" tag on my profile
                 </span>
               </label>
+
+              {/* Pre-revenue traction metrics */}
+              <div className="pt-1">
+                <FieldLabel>Pre-revenue traction</FieldLabel>
+                <p style={{ color: TEXT_DISABLED, fontSize: 11, marginTop: 4 }}>
+                  {isPostRevenue
+                    ? "Kept on file — shown if you switch back to pre-revenue."
+                    : "Fill in what applies. Your profile shows four traction tiles."}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField
+                  label="Waitlist / signups"
+                  value={waitlistSignups}
+                  onChange={setWaitlistSignups}
+                  placeholder="e.g. 1200"
+                  type="number"
+                />
+                <TextField
+                  label="Active users"
+                  value={activeUsers}
+                  onChange={setActiveUsers}
+                  placeholder="e.g. 450 WAU"
+                />
+                <TextField
+                  label="Pilots / LOIs"
+                  value={pilotsLois}
+                  onChange={setPilotsLois}
+                  placeholder="e.g. 3"
+                  type="number"
+                />
+                <TextField
+                  label="User growth (MoM)"
+                  value={userGrowthMom}
+                  onChange={setUserGrowthMom}
+                  placeholder="e.g. +18%"
+                />
+              </div>
+              <SelectField
+                label="Product status"
+                value={productStatus}
+                onChange={setProductStatus}
+                placeholder="Select status"
+                options={PRODUCT_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
+              />
+
+              {/* Traction tile picker */}
+              <div>
+                <FieldLabel>Traction tiles shown on your profile</FieldLabel>
+                <p style={{ color: TEXT_DISABLED, fontSize: 11, marginTop: 4, marginBottom: 8 }}>
+                  Pick up to {MAX_TRACTION_TILES}. Leave empty and we choose for you.
+                  {!isPostRevenue && " Revenue tiles unlock once you report revenue."}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {selectableTiles(isPostRevenue).map((t) => {
+                    const selected = tractionTiles.includes(t.key);
+                    const atCap = !selected && tractionTiles.length >= MAX_TRACTION_TILES;
+                    return (
+                      <button
+                        key={t.key}
+                        type="button"
+                        disabled={atCap}
+                        onClick={() =>
+                          setTractionTiles((prev) =>
+                            prev.includes(t.key)
+                              ? prev.filter((k) => k !== t.key)
+                              : prev.length >= MAX_TRACTION_TILES
+                                ? prev
+                                : [...prev, t.key],
+                          )
+                        }
+                        className="px-3 py-1.5 rounded-full transition-colors"
+                        style={{
+                          fontSize: 12,
+                          border: `1px solid ${selected ? "#C6A02C" : "rgba(255,255,255,0.12)"}`,
+                          background: selected ? "rgba(198,160,44,0.12)" : "transparent",
+                          color: selected ? "#C6A02C" : atCap ? TEXT_DISABLED : TEXT_VALUE,
+                          opacity: atCap ? 0.5 : 1,
+                          cursor: atCap ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <SelectField
                 label="Company stage"
                 value={stage}
