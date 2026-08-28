@@ -518,11 +518,16 @@ function UpdateCard({
       )}
 
       <button
-        onClick={onIntro}
-        className="mt-3 h-9 rounded-full w-full"
-        style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+        onClick={onAction}
+        className="mt-3 h-9 rounded-full w-full inline-flex items-center justify-center gap-1.5"
+        style={
+          isFounder
+            ? { ...glass, color: TEXT, fontSize: 12.5, fontWeight: 600 }
+            : { background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }
+        }
       >
-        Request intro
+        {isFounder && <MessageCircle size={14} strokeWidth={1.8} />}
+        {isFounder ? "Reply" : "Request intro"}
       </button>
     </div>
   );
