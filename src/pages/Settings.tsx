@@ -264,6 +264,10 @@ const Settings = () => {
           setCompanyState(founderProfile.company_state || "");
           setCompanyAddress(founderProfile.company_address || "");
           setFounderBannerUrl(founderProfile.banner_url || "");
+          setCompanyLogoUrl((founderProfile as any).logo_url || "");
+          setUpdateImageSource(
+            ((founderProfile as any).update_image_source as "avatar" | "logo") || "avatar",
+          );
           setPitchDeckUrl(founderProfile.pitch_deck_url || "");
           setPitchDeckVisibility((founderProfile.pitch_deck_visibility as "public" | "private") || "public");
           setVideoUrl(founderProfile.video_url || "");
