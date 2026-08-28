@@ -760,6 +760,35 @@ const Settings = () => {
                 />
                 <TextField label="Backed by" value={backedBy} onChange={setBackedBy} placeholder="e.g. YC S23" />
               </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Growth (MoM)" value={growthMom} onChange={setGrowthMom} placeholder="e.g. +12%" />
+                <TextField
+                  label="Paying customers"
+                  value={payingCustomers}
+                  onChange={setPayingCustomers}
+                  placeholder="e.g. 34"
+                  type="number"
+                />
+              </div>
+              <TextField
+                label="Company start date"
+                value={operationsStartDate}
+                onChange={setOperationsStartDate}
+                type="date"
+              />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>
+                Used to show months in operation on your profile, updated automatically.
+              </p>
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <Checkbox
+                  checked={teamFullTime}
+                  onCheckedChange={(v) => setTeamFullTime(Boolean(v))}
+                  className="w-[16px] h-[16px]"
+                />
+                <span style={{ color: TEXT_VALUE, fontSize: 13 }}>
+                  Our team is full-time — show a "Full-time team" tag on my profile
+                </span>
+              </label>
               <SelectField
                 label="Company stage"
                 value={stage}
