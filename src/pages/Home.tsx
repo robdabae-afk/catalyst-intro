@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/app/BottomNav";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
 import { StartupUpdateCard } from "@/components/app/StartupUpdateCard";
 import { useStartupUpdates } from "@/hooks/useStartupUpdates";
+import { RequestIntroBanner, type IntroTarget } from "@/components/app/RequestIntroBanner";
 import { Settings } from "lucide-react";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
   const { user, isPro } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [introTarget, setIntroTarget] = useState<IntroTarget | null>(null);
   const [newMatchCount, setNewMatchCount] = useState(0);
   const unread = useUnreadMessages();
   const pending = usePendingRequests();
@@ -178,7 +180,13 @@ export default function Home() {
                     onAction={
                       userType === "founder"
                         ? undefined
-                        : () => navigate(`/app/profile/${item.founder_id}`)
+                        : () =>
+                            setIntroTarget({
+                              founderId: item.founder_id,
+                              founderName: item.founderName,
+                              startupName: item.startupName,
+                              updateTitle: item.title,
+                            })
                     }
                   />
                 </div>
