@@ -71,7 +71,7 @@ export function RequestIntroBanner({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[70] flex items-end" role="dialog" aria-modal="true">
       <button
         aria-label="Close"
         onClick={onClose}

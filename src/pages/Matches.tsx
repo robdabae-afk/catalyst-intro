@@ -12,7 +12,6 @@ import { usePendingRequests } from "@/hooks/usePendingRequests";
 import { usePresence, presenceOf, PresenceState } from "@/hooks/usePresence";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
 import { BottomNav } from "@/components/app/BottomNav";
-import { EndorseUserDialog } from "@/components/EndorseUserDialog";
 import {
   ArrowLeft,
   Search,
@@ -202,7 +201,6 @@ export default function Matches() {
   const [showChatLimitModal, setShowChatLimitModal] = useState(false);
   const [showUnmatchConfirm, setShowUnmatchConfirm] = useState(false);
   const [showSuccessConfirm, setShowSuccessConfirm] = useState(false);
-  const [showEndorseDialog, setShowEndorseDialog] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [chip, setChip] = useState<"all" | "unread" | "priority" | "extra">("all");
@@ -797,10 +795,6 @@ export default function Matches() {
                     <Eye className="mr-2 h-4 w-4" style={{ color: GOLD }} />
                     View profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem className={menuItemCls} onClick={() => setShowEndorseDialog(true)}>
-                    <Quote className="mr-2 h-4 w-4" style={{ color: GOLD }} />
-                    Endorse
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-white/10" />
                   {docRequestTypes.map((t) => (
                     <DropdownMenuItem
@@ -1100,13 +1094,6 @@ export default function Matches() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-
-        <EndorseUserDialog
-          isOpen={showEndorseDialog}
-          onClose={() => setShowEndorseDialog(false)}
-          targetUserId={selectedMatch.profile.id}
-          targetUserName={getDisplayName(selectedMatch)}
-        />
       </div>
     );
   }

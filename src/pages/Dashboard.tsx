@@ -95,11 +95,11 @@ export default function Dashboard() {
     }
     const passedId = currentProfile.id;
     advance();
+    setPassReasonTarget(passedId);
     // Record the pass so the 14-day cooldown applies and demand data is complete
     await supabase
       .from("swipes")
       .insert({ swiper_id: user.id, swiped_id: passedId, action: "pass" });
-    setPassReasonTarget(passedId);
   };
 
   const submitPassReason = async (reason: string) => {
@@ -489,7 +489,7 @@ export default function Dashboard() {
       {/* Pass reason prompt */}
       {passReasonTarget && (
         <div
-          className="fixed left-1/2 -translate-x-1/2 z-40 px-4 py-3 rounded-2xl"
+          className="fixed left-1/2 -translate-x-1/2 z-[60] px-4 py-3 rounded-2xl"
           style={{
             bottom: 96,
             width: "calc(100% - 32px)",

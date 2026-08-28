@@ -204,14 +204,7 @@ export function StartupUpdateCard({
         className="flex items-center gap-[18px] pt-3"
         style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
       >
-        <span className="inline-flex items-center gap-1.5" style={{ color: GOLD_SOFT, fontSize: 12 }}>
-          <Heart size={15} strokeWidth={1.2} color={GOLD_SOFT} />
-          Endorse
-        </span>
-        <span className="inline-flex items-center gap-1.5" style={{ color: MUTED, fontSize: 12 }}>
-          <MessageSquare size={15} strokeWidth={1.2} color={MUTED} />
-          Comment
-        </span>
+
         {onAction && (
           <button
             onClick={onAction}

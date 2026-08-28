@@ -210,26 +210,6 @@ export const FeaturedCard = ({
     //     fetchPortfolio();
     // }, [details?.id, organicProfile?.user_type]);
 
-    // Endorsements State
-    interface Endorsement {
-        id: string;
-        text: string;
-        endorser: {
-            name: string;
-            avatar_url: string | null;
-            user_type: string;
-            // potential detail: firm/company name
-            founder_profile?: { startup_name: string };
-            investor_profile?: { firm_name: string };
-        };
-    }
-    const [endorsements, setEndorsements] = useState<Endorsement[]>([]);
-
-    useEffect(() => {
-        // Real endorsements fetching would go here. For now, empty to show "No endorsements yet"
-        setEndorsements([]);
-    }, [profile]);
-
     return (
         <div className={`flex flex-col ${organicProfile?.user_type === 'founder' ? 'gap-2' : 'gap-8'} pb-32 pt-2 relative`}>
             {/* ... Featured Badge ... */}
@@ -551,48 +531,6 @@ export const FeaturedCard = ({
                     </div>
                 )}
             </section>
-
-            {/* Endorsements Section */}
-            <section className="px-6 mt-8">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-white text-sm font-bold uppercase tracking-widest">ENDORSEMENTS</h3>
-                    {endorsements.length > 0 && (
-                        <button className="text-[10px] font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">
-                            VIEW ALL
-                        </button>
-                    )}
-                </div>
-
-                {endorsements.length > 0 ? (
-                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-                        {endorsements.map((e) => (
-                            <div key={e.id} className="min-w-[280px] bg-[#111] p-6 rounded-3xl border border-white/5 relative flex flex-col justify-between">
-                                <div>
-                                    <Quote className="text-zinc-700 mb-4 rotate-180" size={24} />
-                                    <p className="text-gray-300 text-sm italic leading-relaxed mb-6">
-                                        "{e.text}"
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-3 mt-auto border-t border-white/5 pt-4">
-                                    <div
-                                        className="w-8 h-8 rounded-full bg-cover bg-center"
-                                        style={{ backgroundImage: `url(${e.endorser?.avatar_url || 'https://github.com/shadcn.png'})` }}
-                                    ></div>
-                                    <div>
-                                        <p className="text-white text-xs font-bold">{e.endorser?.name || 'Anonymous'}</p>
-                                        <p className="text-gray-500 text-[10px] uppercase tracking-wider">{e.endorser?.user_type || 'Member'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center py-8 border border-dashed border-white/10 rounded-2xl bg-white/5">
-                        <p className="text-gray-500 text-sm italic">No endorsements yet</p>
-                    </div>
-                )}
-            </section>
-
 
             <div className="h-24"></div>
 
