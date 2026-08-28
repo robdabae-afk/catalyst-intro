@@ -183,6 +183,12 @@ const Settings = () => {
   const [payingCustomers, setPayingCustomers] = useState("");
   const [operationsStartDate, setOperationsStartDate] = useState("");
   const [teamFullTime, setTeamFullTime] = useState(false);
+  const [waitlistSignups, setWaitlistSignups] = useState("");
+  const [activeUsers, setActiveUsers] = useState("");
+  const [pilotsLois, setPilotsLois] = useState("");
+  const [productStatus, setProductStatus] = useState("");
+  const [userGrowthMom, setUserGrowthMom] = useState("");
+  const [tractionTiles, setTractionTiles] = useState<string[]>([]);
 
   // Phase D: privacy (CCPA opt-out) — applies to both roles
   const [ccpaDoNotSell, setCcpaDoNotSell] = useState(false);
