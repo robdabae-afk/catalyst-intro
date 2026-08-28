@@ -196,6 +196,14 @@ export default function Home() {
         )}
       </div>
 
+      {introTarget && (
+        <RequestIntroBanner
+          target={introTarget}
+          investorId={user?.id}
+          onClose={() => setIntroTarget(null)}
+        />
+      )}
+
       {/* Bottom Nav */}
       <BottomNav userType={userType} inboxBadge={inboxBadge} />
 
