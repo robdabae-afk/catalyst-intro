@@ -105,8 +105,13 @@ export default function LatestUpdates() {
     setComposerOpen(false);
   };
 
-  const cardAction = (founderId: string) =>
-    isFounder ? navigate(`/app/messages?user=${founderId}`) : navigate(`/app/profile/${founderId}`);
+  const cardAction = (item: (typeof items)[number]) =>
+    setIntroTarget({
+      founderId: item.founder_id,
+      founderName: item.founderName,
+      startupName: item.startupName,
+      updateTitle: item.title,
+    });
 
   return (
     <div
