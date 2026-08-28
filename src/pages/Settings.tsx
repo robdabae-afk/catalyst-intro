@@ -270,6 +270,12 @@ const Settings = () => {
           setPayingCustomers((founderProfile as any).paying_customers?.toString() || "");
           setOperationsStartDate((founderProfile as any).operations_start_date || "");
           setTeamFullTime(Boolean((founderProfile as any).team_full_time));
+          setWaitlistSignups((founderProfile as any).waitlist_signups?.toString() || "");
+          setActiveUsers((founderProfile as any).active_users || "");
+          setPilotsLois((founderProfile as any).pilots_lois?.toString() || "");
+          setProductStatus((founderProfile as any).product_status || "");
+          setUserGrowthMom((founderProfile as any).user_growth_mom || "");
+          setTractionTiles(((founderProfile as any).traction_tiles as string[]) || []);
           // Phase D
           setRaiseAmount((founderProfile as any).raise_amount?.toString() || "");
           setRaiseType((founderProfile as any).raise_type || "");
