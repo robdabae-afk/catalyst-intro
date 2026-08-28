@@ -339,13 +339,13 @@ function FounderView({
       {/* Hero Header */}
       <div
         className="relative shrink-0 overflow-hidden"
-        style={{ height: 330 }}
+        style={{ height: 390 }}
       >
         {profile.avatar_url ? (
           <img
             src={profile.avatar_url}
             alt={profile.name}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-top"
           />
         ) : (
           <div className="absolute inset-0" style={{ background: "#1A1916" }} />
@@ -398,7 +398,7 @@ function FounderView({
 
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-3 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-1 space-y-4 no-scrollbar">
         {isOwn && !val(fp?.one_liner) && (
           <a
             href="/onboarding"
