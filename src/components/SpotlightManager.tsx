@@ -94,7 +94,8 @@ export const SpotlightManager = ({ userId, userType }: SpotlightManagerProps) =>
         .eq('linked_profile_id', userId)
         .eq('is_active', true)
         .gt('spotlight_end_date', new Date().toISOString())
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (data?.spotlight_end_date) {
         setSpotlightActive(true);
