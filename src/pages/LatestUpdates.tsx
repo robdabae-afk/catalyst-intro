@@ -155,6 +155,7 @@ export default function LatestUpdates() {
   const filtered = useMemo(() => {
     if (filter === "watchlist") return items.filter((i) => i.watchlisted);
     if (filter === "raises") return items.filter((i) => categorize(i.title, i.body) === "raise");
+    if (filter === "hiring") return items.filter((i) => categorize(i.title, i.body) === "hiring");
     if (filter === "milestones")
       return items.filter((i) => categorize(i.title, i.body) === "milestone");
     return items;
