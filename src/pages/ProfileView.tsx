@@ -346,7 +346,7 @@ function FounderView({
           <div className="space-y-3">
             <div>
               {val(fp?.traction) ? (
-                <p style={{ color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
+                <p style={{ fontFamily: "Fraunces, serif", color: "#94908A", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
               ) : (
                 <PlaceholderText>No traction details yet</PlaceholderText>
               )}
