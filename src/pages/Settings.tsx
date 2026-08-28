@@ -34,6 +34,11 @@ import {
   Check,
 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
+import {
+  MAX_TRACTION_TILES,
+  PRODUCT_STATUS_OPTIONS,
+  selectableTiles,
+} from "@/lib/traction-tiles";
 import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
