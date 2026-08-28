@@ -272,6 +272,8 @@ export default function AppSignupForm() {
   const [hqLocation, setHqLocation] = useState("");
   const [oneLiner, setOneLiner] = useState("");
   const [stage, setStage] = useState("Pre-seed");
+  const [operationsStartDate, setOperationsStartDate] = useState("");
+  const [teamFullTime, setTeamFullTime] = useState(false);
 
   // Investor fields
   const [firmName, setFirmName] = useState("");
