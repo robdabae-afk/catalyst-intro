@@ -14,6 +14,14 @@ import {
   Send,
   X,
 } from "lucide-react";
+import {
+  MAX_TRACTION_TILES,
+  POST_REVENUE_DEFAULT_TILES,
+  PRE_REVENUE_METRIC_KEYS,
+  TractionTileKey,
+  isStrongGrowth,
+  tileDef,
+} from "@/lib/traction-tiles";
 
 interface ProfileData {
   id: string;
@@ -42,6 +50,12 @@ interface ProfileData {
     paying_customers?: number | null;
     operations_start_date?: string | null;
     team_full_time?: boolean | null;
+    waitlist_signups?: number | null;
+    active_users?: string | null;
+    pilots_lois?: number | null;
+    product_status?: string | null;
+    user_growth_mom?: string | null;
+    traction_tiles?: string[] | null;
   };
   investor_profile?: {
     firm_name: string | null;
@@ -88,6 +102,74 @@ const monthsInOperation = (startDate?: string | null): string | undefined => {
   if (months < 0) return undefined;
   return String(months);
 };
+
+type FounderProfile = NonNullable<ProfileData["founder_profile"]>;
+
+/** Raw value + green-highlight rule for one traction tile. */
+const tileValue = (
+  key: TractionTileKey,
+  fp?: FounderProfile,
+): { value?: string; positive?: boolean } => {
+  switch (key) {
+    case "mrr":
+      return { value: val(fp?.mrr) };
+    case "growth_mom":
+      return { value: val(fp?.growth_mom), positive: isStrongGrowth(fp?.growth_mom) };
+    case "paying_customers":
+      return { value: val(fp?.paying_customers) };
+    case "user_growth_mom":
+      return { value: val(fp?.user_growth_mom), positive: isStrongGrowth(fp?.user_growth_mom) };
+    case "waitlist_signups":
+      return { value: val(fp?.waitlist_signups) };
+    case "active_users":
+      return { value: val(fp?.active_users), positive: true };
+    case "pilots_lois":
+      return { value: val(fp?.pilots_lois) };
+    case "product_status":
+      return { value: val(fp?.product_status) };
+    case "months_in_operation": {
+      const months = monthsInOperation(fp?.operations_start_date);
+      return { value: months, positive: months !== undefined && Number(months) > 6 };
+    }
+    case "headcount":
+      return { value: val(fp?.headcount) };
+    case "stage":
+      return { value: val(fp?.stage) };
+    default:
+      return {};
+  }
+};
+
+/** The four tile keys to render, honouring the founder's picks and revenue mode. */
+const resolveTractionTiles = (fp: FounderProfile | undefined, isPostRevenue: boolean): TractionTileKey[] => {
+  if (isPostRevenue) {
+    const picked = (fp?.traction_tiles ?? []).filter((k) => tileDef(k)) as TractionTileKey[];
+    const tiles = picked.length ? picked : POST_REVENUE_DEFAULT_TILES;
+    return tiles.slice(0, MAX_TRACTION_TILES);
+  }
+
+  const picked = (fp?.traction_tiles ?? []).filter((k) => {
+    const def = tileDef(k);
+    return def && !def.revenueOnly;
+  }) as TractionTileKey[];
+
+  const tiles = [...picked];
+  const push = (k: TractionTileKey) => {
+    if (!tiles.includes(k) && tiles.length < MAX_TRACTION_TILES) tiles.push(k);
+  };
+
+  // Fill remaining slots: metrics that actually have values, then the defaults.
+  PRE_REVENUE_METRIC_KEYS.forEach((k) => {
+    if (tileValue(k, fp).value) push(k);
+  });
+  push("user_growth_mom");
+  push("months_in_operation");
+  PRE_REVENUE_METRIC_KEYS.forEach(push);
+
+  return tiles.slice(0, MAX_TRACTION_TILES);
+};
+
+
 
 function PlaceholderText({ children }: { children: React.ReactNode }) {
   return (
@@ -248,6 +330,7 @@ function FounderView({
   const companyName = val(fp?.startup_name) ?? val(fp?.company_name);
   const location = val(fp?.preferred_city);
   const isPostRevenue = !!val(fp?.mrr) && fp?.mrr !== "Pre-revenue";
+  const tractionTiles = resolveTractionTiles(fp, isPostRevenue);
   const hasRaised = !!val(fp?.funding_amount);
   const teamMembers = (fp?.team_members ?? []).filter((m) => val(m?.name));
 
@@ -374,19 +457,19 @@ function FounderView({
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <TractionStat label="MRR" value={val(fp?.mrr)} sub="monthly" />
-              <TractionStat
-                label="Growth"
-                value={val(fp?.growth_mom)}
-                sub="MoM"
-                positive={!!val(fp?.growth_mom)?.startsWith("+")}
-              />
-              <TractionStat label="Customers" value={val(fp?.paying_customers)} sub="paying" />
-              <TractionStat
-                label="Months in Operation"
-                value={monthsInOperation(fp?.operations_start_date)}
-                sub="since launch"
-              />
+              {tractionTiles.map((key) => {
+                const def = tileDef(key)!;
+                const { value, positive } = tileValue(key, fp);
+                return (
+                  <TractionStat
+                    key={key}
+                    label={def.label}
+                    value={value}
+                    sub={def.sub}
+                    positive={positive}
+                  />
+                );
+              })}
             </div>
           </div>
         </SectionCard>

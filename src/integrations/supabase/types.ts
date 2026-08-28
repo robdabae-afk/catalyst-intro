@@ -517,6 +517,7 @@ export type Database = {
       }
       founder_profiles: {
         Row: {
+          active_users: string | null
           backed_by: string | null
           banner_url: string | null
           company_address: string | null
@@ -537,9 +538,11 @@ export type Database = {
           one_liner: string
           operations_start_date: string | null
           paying_customers: number | null
+          pilots_lois: number | null
           pitch_deck_url: string | null
           pitch_deck_visibility: string
           preferred_city: string | null
+          product_status: string | null
           profile_id: string
           raise_amount: number | null
           raise_type: string | null
@@ -551,10 +554,14 @@ export type Database = {
           team_full_time: boolean
           team_members: Json
           traction: string | null
+          traction_tiles: string[]
+          user_growth_mom: string | null
           valuation_cap_target: number | null
           video_url: string | null
+          waitlist_signups: number | null
         }
         Insert: {
+          active_users?: string | null
           backed_by?: string | null
           banner_url?: string | null
           company_address?: string | null
@@ -575,9 +582,11 @@ export type Database = {
           one_liner: string
           operations_start_date?: string | null
           paying_customers?: number | null
+          pilots_lois?: number | null
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
           preferred_city?: string | null
+          product_status?: string | null
           profile_id: string
           raise_amount?: number | null
           raise_type?: string | null
@@ -589,10 +598,14 @@ export type Database = {
           team_full_time?: boolean
           team_members?: Json
           traction?: string | null
+          traction_tiles?: string[]
+          user_growth_mom?: string | null
           valuation_cap_target?: number | null
           video_url?: string | null
+          waitlist_signups?: number | null
         }
         Update: {
+          active_users?: string | null
           backed_by?: string | null
           banner_url?: string | null
           company_address?: string | null
@@ -613,9 +626,11 @@ export type Database = {
           one_liner?: string
           operations_start_date?: string | null
           paying_customers?: number | null
+          pilots_lois?: number | null
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
           preferred_city?: string | null
+          product_status?: string | null
           profile_id?: string
           raise_amount?: number | null
           raise_type?: string | null
@@ -627,8 +642,11 @@ export type Database = {
           team_full_time?: boolean
           team_members?: Json
           traction?: string | null
+          traction_tiles?: string[]
+          user_growth_mom?: string | null
           valuation_cap_target?: number | null
           video_url?: string | null
+          waitlist_signups?: number | null
         }
         Relationships: [
           {

@@ -34,6 +34,11 @@ import {
   Check,
 } from "lucide-react";
 import { INDUSTRIES, FUNDING_STAGES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
+import {
+  MAX_TRACTION_TILES,
+  PRODUCT_STATUS_OPTIONS,
+  selectableTiles,
+} from "@/lib/traction-tiles";
 import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
@@ -183,6 +188,13 @@ const Settings = () => {
   const [payingCustomers, setPayingCustomers] = useState("");
   const [operationsStartDate, setOperationsStartDate] = useState("");
   const [teamFullTime, setTeamFullTime] = useState(false);
+  const [waitlistSignups, setWaitlistSignups] = useState("");
+  const [activeUsers, setActiveUsers] = useState("");
+  const [pilotsLois, setPilotsLois] = useState("");
+  const [productStatus, setProductStatus] = useState("");
+  const [userGrowthMom, setUserGrowthMom] = useState("");
+  const [tractionTiles, setTractionTiles] = useState<string[]>([]);
+  const isPostRevenue = !!mrr && mrr !== "Pre-revenue";
 
   // Phase D: privacy (CCPA opt-out) — applies to both roles
   const [ccpaDoNotSell, setCcpaDoNotSell] = useState(false);
@@ -264,6 +276,12 @@ const Settings = () => {
           setPayingCustomers((founderProfile as any).paying_customers?.toString() || "");
           setOperationsStartDate((founderProfile as any).operations_start_date || "");
           setTeamFullTime(Boolean((founderProfile as any).team_full_time));
+          setWaitlistSignups((founderProfile as any).waitlist_signups?.toString() || "");
+          setActiveUsers((founderProfile as any).active_users || "");
+          setPilotsLois((founderProfile as any).pilots_lois?.toString() || "");
+          setProductStatus((founderProfile as any).product_status || "");
+          setUserGrowthMom((founderProfile as any).user_growth_mom || "");
+          setTractionTiles(((founderProfile as any).traction_tiles as string[]) || []);
           // Phase D
           setRaiseAmount((founderProfile as any).raise_amount?.toString() || "");
           setRaiseType((founderProfile as any).raise_type || "");
@@ -480,6 +498,12 @@ const Settings = () => {
             paying_customers: payingCustomers ? parseInt(payingCustomers) : null,
             operations_start_date: operationsStartDate || null,
             team_full_time: teamFullTime,
+            waitlist_signups: waitlistSignups ? parseInt(waitlistSignups) : null,
+            active_users: activeUsers || null,
+            pilots_lois: pilotsLois ? parseInt(pilotsLois) : null,
+            product_status: productStatus || null,
+            user_growth_mom: userGrowthMom || null,
+            traction_tiles: tractionTiles,
             // Phase D
             raise_amount: raiseAmount ? parseFloat(raiseAmount) : null,
             raise_type: raiseType || null,
@@ -789,6 +813,93 @@ const Settings = () => {
                   Our team is full-time — show a "Full-time team" tag on my profile
                 </span>
               </label>
+
+              {/* Pre-revenue traction metrics */}
+              <div className="pt-1">
+                <FieldLabel>Pre-revenue traction</FieldLabel>
+                <p style={{ color: TEXT_DISABLED, fontSize: 11, marginTop: 4 }}>
+                  {isPostRevenue
+                    ? "Kept on file — shown if you switch back to pre-revenue."
+                    : "Fill in what applies. Your profile shows four traction tiles."}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField
+                  label="Waitlist / signups"
+                  value={waitlistSignups}
+                  onChange={setWaitlistSignups}
+                  placeholder="e.g. 1200"
+                  type="number"
+                />
+                <TextField
+                  label="Active users"
+                  value={activeUsers}
+                  onChange={setActiveUsers}
+                  placeholder="e.g. 450 WAU"
+                />
+                <TextField
+                  label="Pilots / LOIs"
+                  value={pilotsLois}
+                  onChange={setPilotsLois}
+                  placeholder="e.g. 3"
+                  type="number"
+                />
+                <TextField
+                  label="User growth (MoM)"
+                  value={userGrowthMom}
+                  onChange={setUserGrowthMom}
+                  placeholder="e.g. +18%"
+                />
+              </div>
+              <SelectField
+                label="Product status"
+                value={productStatus}
+                onChange={setProductStatus}
+                placeholder="Select status"
+                options={PRODUCT_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
+              />
+
+              {/* Traction tile picker */}
+              <div>
+                <FieldLabel>Traction tiles shown on your profile</FieldLabel>
+                <p style={{ color: TEXT_DISABLED, fontSize: 11, marginTop: 4, marginBottom: 8 }}>
+                  Pick up to {MAX_TRACTION_TILES}. Leave empty and we choose for you.
+                  {!isPostRevenue && " Revenue tiles unlock once you report revenue."}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {selectableTiles(isPostRevenue).map((t) => {
+                    const selected = tractionTiles.includes(t.key);
+                    const atCap = !selected && tractionTiles.length >= MAX_TRACTION_TILES;
+                    return (
+                      <button
+                        key={t.key}
+                        type="button"
+                        disabled={atCap}
+                        onClick={() =>
+                          setTractionTiles((prev) =>
+                            prev.includes(t.key)
+                              ? prev.filter((k) => k !== t.key)
+                              : prev.length >= MAX_TRACTION_TILES
+                                ? prev
+                                : [...prev, t.key],
+                          )
+                        }
+                        className="px-3 py-1.5 rounded-full transition-colors"
+                        style={{
+                          fontSize: 12,
+                          border: `1px solid ${selected ? "#C6A02C" : "rgba(255,255,255,0.12)"}`,
+                          background: selected ? "rgba(198,160,44,0.12)" : "transparent",
+                          color: selected ? "#C6A02C" : atCap ? TEXT_DISABLED : TEXT_VALUE,
+                          opacity: atCap ? 0.5 : 1,
+                          cursor: atCap ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               <SelectField
                 label="Company stage"
                 value={stage}

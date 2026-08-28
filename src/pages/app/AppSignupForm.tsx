@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { INDUSTRIES, CHECK_SIZE_OPTIONS } from "@/lib/constants";
+import { PRODUCT_STATUS_OPTIONS } from "@/lib/traction-tiles";
 import {
   ArrowLeft,
   Rocket,
@@ -274,6 +275,11 @@ export default function AppSignupForm() {
   const [stage, setStage] = useState("Pre-seed");
   const [operationsStartDate, setOperationsStartDate] = useState("");
   const [teamFullTime, setTeamFullTime] = useState(false);
+  const [waitlistSignups, setWaitlistSignups] = useState("");
+  const [activeUsers, setActiveUsers] = useState("");
+  const [pilotsLois, setPilotsLois] = useState("");
+  const [productStatus, setProductStatus] = useState("");
+  const [userGrowthMom, setUserGrowthMom] = useState("");
 
   // Investor fields
   const [firmName, setFirmName] = useState("");
@@ -371,6 +377,11 @@ export default function AppSignupForm() {
           preferred_city: hqLocation || null,
           operations_start_date: operationsStartDate || null,
           team_full_time: teamFullTime,
+          waitlist_signups: waitlistSignups || null,
+          active_users: activeUsers || null,
+          pilots_lois: pilotsLois || null,
+          product_status: productStatus || null,
+          user_growth_mom: userGrowthMom || null,
         });
       } else {
         Object.assign(metadata, {
@@ -601,6 +612,55 @@ export default function AppSignupForm() {
                 <Chip selected={teamFullTime} onClick={() => setTeamFullTime((v) => !v)}>
                   Our team is full-time
                 </Chip>
+              </Field>
+              <Field label="Traction (optional)">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Waitlist / signups"
+                      inputMode="numeric"
+                      value={waitlistSignups}
+                      onChange={(e) => setWaitlistSignups(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Active users"
+                      value={activeUsers}
+                      onChange={(e) => setActiveUsers(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Pilots / LOIs"
+                      inputMode="numeric"
+                      value={pilotsLois}
+                      onChange={(e) => setPilotsLois(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="User growth MoM"
+                      value={userGrowthMom}
+                      onChange={(e) => setUserGrowthMom(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  {PRODUCT_STATUS_OPTIONS.map((s) => (
+                    <Chip
+                      key={s}
+                      selected={productStatus === s}
+                      onClick={() => setProductStatus((v) => (v === s ? "" : s))}
+                    >
+                      {s}
+                    </Chip>
+                  ))}
+                </div>
               </Field>
               <Field label="Industries" required>
                 <div className="flex flex-wrap gap-2">
