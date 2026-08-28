@@ -369,6 +369,8 @@ export default function AppSignupForm() {
           industry: industries,
           stage: stageToValue[stage] || null,
           preferred_city: hqLocation || null,
+          operations_start_date: operationsStartDate || null,
+          team_full_time: teamFullTime,
         });
       } else {
         Object.assign(metadata, {
