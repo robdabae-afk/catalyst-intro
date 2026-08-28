@@ -295,19 +295,6 @@ export default function Dashboard() {
                     Verified investor
                   </Chip>
                 )}
-                {isFounderCard && founderStage && <Chip>{founderStage}</Chip>}
-                {isFounderCard && founderLocation && (
-                  <Chip>
-                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-                    {founderLocation}
-                  </Chip>
-                )}
-                {isInvestorCard && investorLocation && (
-                  <Chip>
-                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
-                    {investorLocation}
-                  </Chip>
-                )}
               </div>
 
               {/* Spacer pushes content to bottom */}
