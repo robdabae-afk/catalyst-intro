@@ -612,6 +612,55 @@ export default function AppSignupForm() {
                   Our team is full-time
                 </Chip>
               </Field>
+              <Field label="Traction (optional)">
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Waitlist / signups"
+                      inputMode="numeric"
+                      value={waitlistSignups}
+                      onChange={(e) => setWaitlistSignups(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Active users"
+                      value={activeUsers}
+                      onChange={(e) => setActiveUsers(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="Pilots / LOIs"
+                      inputMode="numeric"
+                      value={pilotsLois}
+                      onChange={(e) => setPilotsLois(e.target.value)}
+                    />
+                  </div>
+                  <div className={inputWrapCls}>
+                    <input
+                      className={inputCls}
+                      placeholder="User growth MoM"
+                      value={userGrowthMom}
+                      onChange={(e) => setUserGrowthMom(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2.5">
+                  {PRODUCT_STATUS_OPTIONS.map((s) => (
+                    <Chip
+                      key={s}
+                      selected={productStatus === s}
+                      onClick={() => setProductStatus((v) => (v === s ? "" : s))}
+                    >
+                      {s}
+                    </Chip>
+                  ))}
+                </div>
+              </Field>
               <Field label="Industries" required>
                 <div className="flex flex-wrap gap-2">
                   {INDUSTRIES.map((i) => (
