@@ -426,7 +426,15 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function UpdateCard({ item, onIntro }: { item: UpdateItem; onIntro: () => void }) {
+function UpdateCard({
+  item,
+  onAction,
+  isFounder,
+}: {
+  item: UpdateItem;
+  onAction: () => void;
+  isFounder: boolean;
+}) {
   const category = categorize(item.title, item.body);
   const { label, Icon } = CATEGORY_META[category];
 
