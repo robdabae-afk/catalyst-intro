@@ -190,14 +190,15 @@ export default function Dashboard() {
       <div className="flex items-center justify-between px-6 pt-14 pb-3">
         <span
           style={{
-            fontFamily: "Fraunces, serif",
-            fontSize: 22,
+            fontSize: 17,
             fontWeight: 700,
-            color: "#E7CB7E",
-            letterSpacing: "2px",
+            letterSpacing: "2.38px",
+            fontFamily: "Inter, sans-serif",
           }}
         >
-          CATALYST
+          <span style={{ color: "#F6F5F2" }}>CAT</span>
+          <span style={{ color: "#C6A02C" }}>A</span>
+          <span style={{ color: "#F6F5F2" }}>LYST</span>
         </span>
         <div className="flex items-center gap-3">
           {swipesRemaining !== null && !isPro && (
