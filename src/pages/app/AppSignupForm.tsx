@@ -584,6 +584,24 @@ export default function AppSignupForm() {
                   ))}
                 </div>
               </Field>
+              <Field label="Company start date">
+                <div className={inputWrapCls}>
+                  <input
+                    type="date"
+                    className={inputCls}
+                    value={operationsStartDate}
+                    onChange={(e) => setOperationsStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="text-[12px] text-[#6F6B63] mt-1.5">
+                  We use this to show months in operation on your profile.
+                </div>
+              </Field>
+              <Field label="Team commitment">
+                <Chip selected={teamFullTime} onClick={() => setTeamFullTime((v) => !v)}>
+                  Our team is full-time
+                </Chip>
+              </Field>
               <Field label="Industries" required>
                 <div className="flex flex-wrap gap-2">
                   {INDUSTRIES.map((i) => (
