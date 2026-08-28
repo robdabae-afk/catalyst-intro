@@ -166,6 +166,9 @@ const Settings = () => {
   const [companyState, setCompanyState] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [founderBannerUrl, setFounderBannerUrl] = useState("");
+  const [companyLogoUrl, setCompanyLogoUrl] = useState("");
+  const [updateImageSource, setUpdateImageSource] = useState<"avatar" | "logo">("avatar");
+  const [uploadingCompanyLogo, setUploadingCompanyLogo] = useState(false);
   const [pitchDeckUrl, setPitchDeckUrl] = useState("");
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<"public" | "private">("public");
   const [videoUrl, setVideoUrl] = useState("");
