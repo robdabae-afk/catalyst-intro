@@ -91,6 +91,10 @@ export default function LatestUpdates() {
   const [items, setItems] = useState<UpdateItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterKey>("all");
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [postTitle, setPostTitle] = useState("");
+  const [postBody, setPostBody] = useState("");
+  const [posting, setPosting] = useState(false);
 
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
 
