@@ -527,6 +527,7 @@ export type Database = {
           financial_statement_urls: string[] | null
           funding_amount: string | null
           fundraising_status: string
+          growth_mom: string | null
           headcount: number | null
           id: string
           incorporation_doc_url: string | null
@@ -534,6 +535,8 @@ export type Database = {
           location: string | null
           mrr: string | null
           one_liner: string
+          operations_start_date: string | null
+          paying_customers: number | null
           pitch_deck_url: string | null
           pitch_deck_visibility: string
           preferred_city: string | null
@@ -545,6 +548,7 @@ export type Database = {
           status_changed_at: string | null
           status_note: string | null
           target_close_date: string | null
+          team_full_time: boolean
           team_members: Json
           traction: string | null
           valuation_cap_target: number | null
@@ -561,6 +565,7 @@ export type Database = {
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
           fundraising_status?: string
+          growth_mom?: string | null
           headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
@@ -568,6 +573,8 @@ export type Database = {
           location?: string | null
           mrr?: string | null
           one_liner: string
+          operations_start_date?: string | null
+          paying_customers?: number | null
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
           preferred_city?: string | null
@@ -579,6 +586,7 @@ export type Database = {
           status_changed_at?: string | null
           status_note?: string | null
           target_close_date?: string | null
+          team_full_time?: boolean
           team_members?: Json
           traction?: string | null
           valuation_cap_target?: number | null
@@ -595,6 +603,7 @@ export type Database = {
           financial_statement_urls?: string[] | null
           funding_amount?: string | null
           fundraising_status?: string
+          growth_mom?: string | null
           headcount?: number | null
           id?: string
           incorporation_doc_url?: string | null
@@ -602,6 +611,8 @@ export type Database = {
           location?: string | null
           mrr?: string | null
           one_liner?: string
+          operations_start_date?: string | null
+          paying_customers?: number | null
           pitch_deck_url?: string | null
           pitch_deck_visibility?: string
           preferred_city?: string | null
@@ -613,6 +624,7 @@ export type Database = {
           status_changed_at?: string | null
           status_note?: string | null
           target_close_date?: string | null
+          team_full_time?: boolean
           team_members?: Json
           traction?: string | null
           valuation_cap_target?: number | null

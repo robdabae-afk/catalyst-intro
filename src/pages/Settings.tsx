@@ -179,6 +179,10 @@ const Settings = () => {
   const [stage, setStage] = useState("");
   const [teamMembers, setTeamMembers] = useState<{ name: string; title: string }[]>([]);
   const [headcount, setHeadcount] = useState("");
+  const [growthMom, setGrowthMom] = useState("");
+  const [payingCustomers, setPayingCustomers] = useState("");
+  const [operationsStartDate, setOperationsStartDate] = useState("");
+  const [teamFullTime, setTeamFullTime] = useState(false);
 
   // Phase D: privacy (CCPA opt-out) — applies to both roles
   const [ccpaDoNotSell, setCcpaDoNotSell] = useState(false);
@@ -256,6 +260,10 @@ const Settings = () => {
           setStage(founderProfile.stage || "");
           setTeamMembers((founderProfile as any).team_members || []);
           setHeadcount((founderProfile as any).headcount?.toString() || "");
+          setGrowthMom((founderProfile as any).growth_mom || "");
+          setPayingCustomers((founderProfile as any).paying_customers?.toString() || "");
+          setOperationsStartDate((founderProfile as any).operations_start_date || "");
+          setTeamFullTime(Boolean((founderProfile as any).team_full_time));
           // Phase D
           setRaiseAmount((founderProfile as any).raise_amount?.toString() || "");
           setRaiseType((founderProfile as any).raise_type || "");
@@ -468,6 +476,10 @@ const Settings = () => {
             stage: (stage || null) as any,
             team_members: teamMembers.filter((m) => m.name.trim() || m.title.trim()) as any,
             headcount: headcount ? parseInt(headcount) : null,
+            growth_mom: growthMom || null,
+            paying_customers: payingCustomers ? parseInt(payingCustomers) : null,
+            operations_start_date: operationsStartDate || null,
+            team_full_time: teamFullTime,
             // Phase D
             raise_amount: raiseAmount ? parseFloat(raiseAmount) : null,
             raise_type: raiseType || null,
@@ -748,6 +760,35 @@ const Settings = () => {
                 />
                 <TextField label="Backed by" value={backedBy} onChange={setBackedBy} placeholder="e.g. YC S23" />
               </div>
+              <div className="grid grid-cols-2 gap-2.5">
+                <TextField label="Growth (MoM)" value={growthMom} onChange={setGrowthMom} placeholder="e.g. +12%" />
+                <TextField
+                  label="Paying customers"
+                  value={payingCustomers}
+                  onChange={setPayingCustomers}
+                  placeholder="e.g. 34"
+                  type="number"
+                />
+              </div>
+              <TextField
+                label="Company start date"
+                value={operationsStartDate}
+                onChange={setOperationsStartDate}
+                type="date"
+              />
+              <p style={{ color: TEXT_DISABLED, fontSize: 11 }}>
+                Used to show months in operation on your profile, updated automatically.
+              </p>
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <Checkbox
+                  checked={teamFullTime}
+                  onCheckedChange={(v) => setTeamFullTime(Boolean(v))}
+                  className="w-[16px] h-[16px]"
+                />
+                <span style={{ color: TEXT_VALUE, fontSize: 13 }}>
+                  Our team is full-time — show a "Full-time team" tag on my profile
+                </span>
+              </label>
               <SelectField
                 label="Company stage"
                 value={stage}

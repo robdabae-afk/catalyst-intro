@@ -38,6 +38,10 @@ interface ProfileData {
     banner_url: string | null;
     team_members?: { name: string; title: string }[] | null;
     headcount?: number | null;
+    growth_mom?: string | null;
+    paying_customers?: number | null;
+    operations_start_date?: string | null;
+    team_full_time?: boolean | null;
   };
   investor_profile?: {
     firm_name: string | null;
@@ -70,6 +74,19 @@ const val = (v?: string | number | null): string | undefined => {
   const s = String(v).trim();
   if (!s || s.toLowerCase() === "untitled" || s === "-" || s === "—") return undefined;
   return s;
+};
+
+/** Live months-in-operation count from a company start date. */
+const monthsInOperation = (startDate?: string | null): string | undefined => {
+  if (!startDate) return undefined;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return undefined;
+  const now = new Date();
+  let months =
+    (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (now.getDate() < start.getDate()) months -= 1;
+  if (months < 0) return undefined;
+  return String(months);
 };
 
 function PlaceholderText({ children }: { children: React.ReactNode }) {
@@ -342,7 +359,12 @@ function FounderView({
         </div>
 
         {/* Traction Card */}
-        <SectionCard label="Traction" badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"} badgeActive={isPostRevenue}>
+        <SectionCard
+          label="Traction"
+          badge={isPostRevenue ? "Post-revenue" : "Pre-revenue"}
+          badgeActive={isPostRevenue}
+          extraBadge={fp?.team_full_time ? "Full-time team" : undefined}
+        >
           <div className="space-y-3">
             <div>
               {val(fp?.traction) ? (
@@ -352,13 +374,23 @@ function FounderView({
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <TractionStat label="MRR" value={val(fp?.mrr)} />
-              <TractionStat label="Backed by" value={val(fp?.backed_by)} />
-              <TractionStat label="Raised" value={val(fp?.funding_amount)} />
-              <TractionStat label="Stage" value={val(fp?.stage)} />
+              <TractionStat label="MRR" value={val(fp?.mrr)} sub="monthly" />
+              <TractionStat
+                label="Growth"
+                value={val(fp?.growth_mom)}
+                sub="MoM"
+                positive={!!val(fp?.growth_mom)?.startsWith("+")}
+              />
+              <TractionStat label="Customers" value={val(fp?.paying_customers)} sub="paying" />
+              <TractionStat
+                label="Months in Operation"
+                value={monthsInOperation(fp?.operations_start_date)}
+                sub="since launch"
+              />
             </div>
           </div>
         </SectionCard>
+
 
         {/* Funding Card */}
         <SectionCard label="Funding" badge={hasRaised ? "Raised" : "Not raised"} badgeActive={hasRaised}>
@@ -768,11 +800,13 @@ function SectionCard({
   label,
   badge,
   badgeActive = true,
+  extraBadge,
   children,
 }: {
   label: string;
   badge?: string;
   badgeActive?: boolean;
+  extraBadge?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -784,7 +818,7 @@ function SectionCard({
         border: "1px solid rgba(255,255,255,0.1)",
       }}
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between gap-2 mb-3">
         <p
           style={{
             color: "#94908A",
@@ -796,19 +830,30 @@ function SectionCard({
         >
           {label}
         </p>
-        {badge && (
-          <span
-            className="px-2.5 py-1 rounded-full text-[10px] font-semibold"
-            style={
-              badgeActive
-                ? { background: "#C6A02C", color: "#2A2005" }
-                : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
-            }
-          >
-            {badge}
-          </span>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {extraBadge && (
+            <span
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
+              style={{ border: "1px solid rgba(198,160,44,0.45)", color: "#C6A02C" }}
+            >
+              {extraBadge}
+            </span>
+          )}
+          {badge && (
+            <span
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
+              style={
+                badgeActive
+                  ? { background: "#C6A02C", color: "#2A2005" }
+                  : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
+              }
+            >
+              {badge}
+            </span>
+          )}
+        </div>
       </div>
+
       {children}
     </div>
   );
@@ -835,25 +880,47 @@ function FundingRow({ label, value, last }: { label: string; value?: string | nu
   );
 }
 
-function TractionStat({ label, value }: { label: string; value?: string | null }) {
+function TractionStat({
+  label,
+  value,
+  sub,
+  positive,
+}: {
+  label: string;
+  value?: string | number | null;
+  sub?: string;
+  positive?: boolean;
+}) {
   const v = val(value);
   return (
     <div
-      className="flex flex-col px-3 py-3 rounded-xl"
+      className="flex flex-col items-center px-3 py-3 rounded-xl"
       style={{
         background: v ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
         border: v ? "1px solid rgba(255,255,255,0.08)" : "1px dashed rgba(255,255,255,0.12)",
       }}
     >
-      <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.6px" }}>
+      <span
+        className="text-center"
+        style={{ color: "#94908A", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
+      >
         {label}
       </span>
-      <span style={{ color: v ? "#F6F5F2" : "#6E6B66", fontSize: 18, fontWeight: 700, marginTop: 2 }}>
+      <span
+        style={{
+          color: !v ? "#6E6B66" : positive ? "#5EC98E" : "#F6F5F2",
+          fontSize: 18,
+          fontWeight: 700,
+          marginTop: 2,
+        }}
+      >
         {v ?? "—"}
       </span>
+      {sub && <span style={{ color: "#7D7972", fontSize: 9.5, marginTop: 1 }}>{sub}</span>}
     </div>
   );
 }
+
 
 function BigStatChip({
   label,
