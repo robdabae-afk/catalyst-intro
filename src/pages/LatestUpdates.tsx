@@ -239,8 +239,22 @@ export default function LatestUpdates() {
           >
             Latest updates
           </h1>
-          <p style={{ color: MUTED, fontSize: 12 }}>From founders you follow and match with</p>
+          <p style={{ color: MUTED, fontSize: 12 }}>
+            {isFounder
+              ? "What the community shipped this week"
+              : "From founders you follow and match with"}
+          </p>
         </div>
+        {isFounder && (
+          <button
+            onClick={() => setComposerOpen((v) => !v)}
+            className="mt-1 h-8 px-4 rounded-full shrink-0 inline-flex items-center gap-1.5"
+            style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+          >
+            <Plus size={14} strokeWidth={2.2} />
+            Post
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -266,25 +280,83 @@ export default function LatestUpdates() {
 
       {/* Scrollable content */}
       <div className="flex-1 min-h-0 overflow-y-auto px-4 pb-24 pt-3 space-y-3">
-        {/* Watchlist callout */}
-        <div className="flex items-center gap-3 rounded-[20px] px-3.5 pt-[21px] pb-3.5" style={glass}>
-          <div
-            className="flex items-center justify-center shrink-0"
-            style={{ ...glass, width: 40, height: 40, borderRadius: 20, outline: `1px solid ${GOLD}` }}
-          >
-            <Bookmark size={19} color={GOLD} strokeWidth={1.5} />
+        {isFounder ? (
+          composerOpen ? (
+            <div className="rounded-[20px] p-4 flex flex-col gap-2.5" style={glass}>
+              <input
+                value={postTitle}
+                onChange={(e) => setPostTitle(e.target.value)}
+                placeholder="Headline (e.g. We crossed $50k MRR)"
+                className="w-full rounded-[12px] px-3 py-2 bg-transparent outline-none"
+                style={{ color: TEXT, fontSize: 13.5, border: "1px solid rgba(255,255,255,0.12)" }}
+              />
+              <textarea
+                value={postBody}
+                onChange={(e) => setPostBody(e.target.value)}
+                placeholder="Add the details investors should know…"
+                rows={4}
+                className="w-full rounded-[12px] px-3 py-2 bg-transparent outline-none resize-none"
+                style={{ color: TEXT, fontSize: 12.5, border: "1px solid rgba(255,255,255,0.12)" }}
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setComposerOpen(false)}
+                  className="h-9 flex-1 rounded-full"
+                  style={{ ...glass, color: MUTED, fontSize: 12.5 }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={submitPost}
+                  disabled={posting || !postTitle.trim()}
+                  className="h-9 flex-1 rounded-full disabled:opacity-50"
+                  style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+                >
+                  {posting ? "Posting…" : "Post update"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setComposerOpen(true)}
+              className="w-full text-left flex items-center gap-3 rounded-[20px] px-3.5 pt-[21px] pb-3.5"
+              style={glass}
+            >
+              <div
+                className="flex items-center justify-center shrink-0"
+                style={{ ...glass, width: 40, height: 40, borderRadius: 20, outline: `1px solid ${GOLD}` }}
+              >
+                <Megaphone size={19} color={GOLD} strokeWidth={1.5} />
+              </div>
+              <div className="flex-1">
+                <p style={{ color: TEXT, fontSize: 13.5, fontWeight: 600 }}>Share an update</p>
+                <p style={{ color: MUTED, fontSize: 11.5, lineHeight: "16.1px" }}>
+                  Founders who post monthly get seen by 3× more investors.
+                </p>
+              </div>
+            </button>
+          )
+        ) : (
+          /* Watchlist callout */
+          <div className="flex items-center gap-3 rounded-[20px] px-3.5 pt-[21px] pb-3.5" style={glass}>
+            <div
+              className="flex items-center justify-center shrink-0"
+              style={{ ...glass, width: 40, height: 40, borderRadius: 20, outline: `1px solid ${GOLD}` }}
+            >
+              <Bookmark size={19} color={GOLD} strokeWidth={1.5} />
+            </div>
+            <div className="flex-1">
+              <p style={{ color: TEXT, fontSize: 13.5, fontWeight: 600 }}>
+                {watchlistCount > 0
+                  ? `${watchlistCount} ${watchlistCount === 1 ? "company" : "companies"} you saved posted this week`
+                  : "No watchlist updates this week"}
+              </p>
+              <p style={{ color: MUTED, fontSize: 11.5, lineHeight: "16.1px" }}>
+                Updates from your watchlist appear here first.
+              </p>
+            </div>
           </div>
-          <div className="flex-1">
-            <p style={{ color: TEXT, fontSize: 13.5, fontWeight: 600 }}>
-              {watchlistCount > 0
-                ? `${watchlistCount} ${watchlistCount === 1 ? "company" : "companies"} you saved posted this week`
-                : "No watchlist updates this week"}
-            </p>
-            <p style={{ color: MUTED, fontSize: 11.5, lineHeight: "16.1px" }}>
-              Updates from your watchlist appear here first.
-            </p>
-          </div>
-        </div>
+        )}
 
         {loading ? (
           <p style={{ color: MUTED, fontSize: 13, textAlign: "center", padding: 16 }}>Loading…</p>
@@ -298,7 +370,16 @@ export default function LatestUpdates() {
               <>
                 <SectionLabel>This week</SectionLabel>
                 {thisWeek.map((item) => (
-                  <UpdateCard key={item.id} item={item} onIntro={() => navigate(`/app/profile/${item.founder_id}`)} />
+                  <UpdateCard
+                    key={item.id}
+                    item={item}
+                    isFounder={isFounder}
+                    onAction={() =>
+                      isFounder
+                        ? navigate(`/app/messages?user=${item.founder_id}`)
+                        : navigate(`/app/profile/${item.founder_id}`)
+                    }
+                  />
                 ))}
               </>
             )}
@@ -306,7 +387,16 @@ export default function LatestUpdates() {
               <>
                 <SectionLabel>Earlier</SectionLabel>
                 {earlier.map((item) => (
-                  <UpdateCard key={item.id} item={item} onIntro={() => navigate(`/app/profile/${item.founder_id}`)} />
+                  <UpdateCard
+                    key={item.id}
+                    item={item}
+                    isFounder={isFounder}
+                    onAction={() =>
+                      isFounder
+                        ? navigate(`/app/messages?user=${item.founder_id}`)
+                        : navigate(`/app/profile/${item.founder_id}`)
+                    }
+                  />
                 ))}
               </>
             )}
