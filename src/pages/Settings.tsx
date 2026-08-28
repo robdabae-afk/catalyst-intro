@@ -492,6 +492,12 @@ const Settings = () => {
             paying_customers: payingCustomers ? parseInt(payingCustomers) : null,
             operations_start_date: operationsStartDate || null,
             team_full_time: teamFullTime,
+            waitlist_signups: waitlistSignups ? parseInt(waitlistSignups) : null,
+            active_users: activeUsers || null,
+            pilots_lois: pilotsLois ? parseInt(pilotsLois) : null,
+            product_status: productStatus || null,
+            user_growth_mom: userGrowthMom || null,
+            traction_tiles: tractionTiles,
             // Phase D
             raise_amount: raiseAmount ? parseFloat(raiseAmount) : null,
             raise_type: raiseType || null,
