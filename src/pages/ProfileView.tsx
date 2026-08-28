@@ -339,7 +339,7 @@ function FounderView({
       {/* Hero Header */}
       <div
         className="relative shrink-0 overflow-hidden"
-        style={{ height: 330 }}
+        style={{ height: 280 }}
       >
         {profile.avatar_url ? (
           <img
@@ -354,7 +354,7 @@ function FounderView({
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%)",
+              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.85) 70%, rgba(6,6,6,1) 100%)",
           }}
         />
 
@@ -369,7 +369,7 @@ function FounderView({
         </div>
 
         {/* Name + subtitle + location */}
-        <div className="absolute left-5 right-5 bottom-5">
+        <div className="absolute left-5 right-5 bottom-2">
           <h1
             style={{
               fontFamily: "Fraunces, serif",
@@ -398,7 +398,7 @@ function FounderView({
 
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-3 space-y-4 no-scrollbar">
         {isOwn && !val(fp?.one_liner) && (
           <a
             href="/onboarding"
