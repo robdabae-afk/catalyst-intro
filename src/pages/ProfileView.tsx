@@ -398,7 +398,7 @@ function FounderView({
 
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-3 space-y-4 no-scrollbar">
         {isOwn && !val(fp?.one_liner) && (
           <a
             href="/onboarding"
