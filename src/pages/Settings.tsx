@@ -194,6 +194,7 @@ const Settings = () => {
   const [productStatus, setProductStatus] = useState("");
   const [userGrowthMom, setUserGrowthMom] = useState("");
   const [tractionTiles, setTractionTiles] = useState<string[]>([]);
+  const isPostRevenue = !!mrr && mrr !== "Pre-revenue";
 
   // Phase D: privacy (CCPA opt-out) — applies to both roles
   const [ccpaDoNotSell, setCcpaDoNotSell] = useState(false);
