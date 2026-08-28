@@ -342,11 +342,19 @@ function FounderView({
         style={{ height: 330 }}
       >
         {profile.avatar_url ? (
-          <img
-            src={profile.avatar_url}
-            alt={profile.name}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <>
+            <img
+              src={profile.avatar_url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-40"
+            />
+            <img
+              src={profile.avatar_url}
+              alt={profile.name}
+              className="absolute inset-0 w-full h-full object-contain"
+            />
+          </>
         ) : (
           <div className="absolute inset-0" style={{ background: "#1A1916" }} />
         )}
@@ -575,11 +583,19 @@ function InvestorView({
       {/* Hero Header */}
       <div className="relative shrink-0 overflow-hidden" style={{ height: 330 }}>
         {profile.avatar_url ? (
-          <img
-            src={profile.avatar_url}
-            alt={profile.name}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <>
+            <img
+              src={profile.avatar_url}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-40"
+            />
+            <img
+              src={profile.avatar_url}
+              alt={profile.name}
+              className="absolute inset-0 w-full h-full object-contain"
+            />
+          </>
         ) : (
           <div className="absolute inset-0" style={{ background: "#1A1916" }} />
         )}
