@@ -285,8 +285,8 @@ export default function LatestUpdates() {
                   <StartupUpdateCard
                     key={item.id}
                     item={item}
-                    actionLabel={isFounder ? "Reply" : "Request intro"}
-                    onAction={() => cardAction(item.founder_id)}
+                    actionLabel="Request intro"
+                    onAction={isFounder ? undefined : () => cardAction(item.founder_id)}
                   />
                 ))}
               </>
@@ -298,8 +298,8 @@ export default function LatestUpdates() {
                   <StartupUpdateCard
                     key={item.id}
                     item={item}
-                    actionLabel={isFounder ? "Reply" : "Request intro"}
-                    onAction={() => cardAction(item.founder_id)}
+                    actionLabel="Request intro"
+                    onAction={isFounder ? undefined : () => cardAction(item.founder_id)}
                   />
                 ))}
               </>

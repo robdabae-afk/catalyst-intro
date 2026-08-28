@@ -174,11 +174,11 @@ export default function Home() {
                   <StartupUpdateCard
                     item={item}
                     compact
-                    actionLabel={userType === "founder" ? "Reply" : "Request intro"}
-                    onAction={() =>
+                    actionLabel="Request intro"
+                    onAction={
                       userType === "founder"
-                        ? navigate(`/app/messages?user=${item.founder_id}`)
-                        : navigate(`/app/profile/${item.founder_id}`)
+                        ? undefined
+                        : () => navigate(`/app/profile/${item.founder_id}`)
                     }
                   />
                 </div>
