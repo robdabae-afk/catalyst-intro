@@ -22,7 +22,12 @@ export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) =
         return;
       }
 
-      if (!allowNonAdmin) {
+      // TEMPORARY QA BYPASS — remove after the simulated user test sweep
+      const qaBypass =
+        typeof window !== "undefined" &&
+        window.localStorage.getItem("qa_bypass_admin_gate") === "1";
+
+      if (!allowNonAdmin && !qaBypass) {
         const { data: roles } = await supabase
           .from("user_roles")
           .select("role")
