@@ -76,6 +76,19 @@ const val = (v?: string | number | null): string | undefined => {
   return s;
 };
 
+/** Live months-in-operation count from a company start date. */
+const monthsInOperation = (startDate?: string | null): string | undefined => {
+  if (!startDate) return undefined;
+  const start = new Date(startDate);
+  if (Number.isNaN(start.getTime())) return undefined;
+  const now = new Date();
+  let months =
+    (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (now.getDate() < start.getDate()) months -= 1;
+  if (months < 0) return undefined;
+  return String(months);
+};
+
 function PlaceholderText({ children }: { children: React.ReactNode }) {
   return (
     <p style={{ color: "#6E6B66", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
