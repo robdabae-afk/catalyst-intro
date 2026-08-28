@@ -260,6 +260,10 @@ const Settings = () => {
           setStage(founderProfile.stage || "");
           setTeamMembers((founderProfile as any).team_members || []);
           setHeadcount((founderProfile as any).headcount?.toString() || "");
+          setGrowthMom((founderProfile as any).growth_mom || "");
+          setPayingCustomers((founderProfile as any).paying_customers?.toString() || "");
+          setOperationsStartDate((founderProfile as any).operations_start_date || "");
+          setTeamFullTime(Boolean((founderProfile as any).team_full_time));
           // Phase D
           setRaiseAmount((founderProfile as any).raise_amount?.toString() || "");
           setRaiseType((founderProfile as any).raise_type || "");
