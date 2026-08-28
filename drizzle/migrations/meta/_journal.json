@@ -36,6 +36,13 @@
       "when": 1787952707927,
       "tag": "0004_fix_intro_requests_and_funding_rounds",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787952737531,
+      "tag": "0005_grant_identity_verifications_access",
+      "breakpoints": true
     }
   ]
 }
