@@ -664,6 +664,50 @@ export type Database = {
           },
         ]
       }
+      funding_rounds: {
+        Row: {
+          amount: number | null
+          created_at: string
+          date: string | null
+          founder_id: string
+          id: string
+          investors: string[] | null
+          round_type: string
+          updated_at: string
+          valuation: number | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          date?: string | null
+          founder_id: string
+          id?: string
+          investors?: string[] | null
+          round_type: string
+          updated_at?: string
+          valuation?: number | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          date?: string | null
+          founder_id?: string
+          id?: string
+          investors?: string[] | null
+          round_type?: string
+          updated_at?: string
+          valuation?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_rounds_founder_id_fkey"
+            columns: ["founder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       google_oauth_tokens: {
         Row: {
           access_token: string

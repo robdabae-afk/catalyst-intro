@@ -29,6 +29,13 @@
       "when": 1787933435728,
       "tag": "0003_add_update_branding_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787952707927,
+      "tag": "0004_fix_intro_requests_and_funding_rounds",
+      "breakpoints": true
     }
   ]
 }
