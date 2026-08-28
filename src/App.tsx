@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
+import LatestUpdates from "./pages/LatestUpdates";
 import Matches from "./pages/Matches";
 import Connections from "./pages/Connections";
 import CoffeeChat from "./pages/CoffeeChat";
@@ -92,6 +93,8 @@ const App = () => (
           <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/home" element={<AppSignup />} />
           <Route path="/app/home" element={<AuthGuard><Home /></AuthGuard>} />
+          <Route path="/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
+          <Route path="/app/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
           <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
