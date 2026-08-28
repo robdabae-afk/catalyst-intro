@@ -168,18 +168,29 @@ export default function Home() {
         )}
 
         {/* Latest Updates */}
-        {newsItems.length > 0 && (
+        {updates.length > 0 && (
           <>
             <SectionHeader
               label="Latest updates"
               onViewAll={() => navigate("/app/updates")}
             />
             <div
-              className="flex gap-3 overflow-x-auto no-scrollbar pb-1"
+              className="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x snap-mandatory"
               style={{ marginLeft: -24, marginRight: -24, paddingLeft: 24, paddingRight: 24 }}
             >
-              {newsItems.map((item) => (
-                <NewsCard key={item.id} item={item} />
+              {updates.slice(0, 6).map((item) => (
+                <div key={item.id} className="shrink-0 snap-start" style={{ width: 320 }}>
+                  <StartupUpdateCard
+                    item={item}
+                    compact
+                    actionLabel={userType === "founder" ? "Reply" : "Request intro"}
+                    onAction={() =>
+                      userType === "founder"
+                        ? navigate(`/app/messages?user=${item.founder_id}`)
+                        : navigate(`/app/profile/${item.founder_id}`)
+                    }
+                  />
+                </div>
               ))}
             </div>
           </>
