@@ -7,6 +7,8 @@ import { usePendingRequests } from "@/hooks/usePendingRequests";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomNav } from "@/components/app/BottomNav";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
+import { StartupUpdateCard } from "@/components/app/StartupUpdateCard";
+import { useStartupUpdates } from "@/hooks/useStartupUpdates";
 import { Settings } from "lucide-react";
 
 export default function Home() {
