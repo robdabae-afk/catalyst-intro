@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
+import LatestUpdates from "./pages/LatestUpdates";
 import Matches from "./pages/Matches";
 import Connections from "./pages/Connections";
 import CoffeeChat from "./pages/CoffeeChat";
