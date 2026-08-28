@@ -38,6 +38,10 @@ interface ProfileData {
     banner_url: string | null;
     team_members?: { name: string; title: string }[] | null;
     headcount?: number | null;
+    growth_mom?: string | null;
+    paying_customers?: number | null;
+    operations_start_date?: string | null;
+    team_full_time?: boolean | null;
   };
   investor_profile?: {
     firm_name: string | null;
