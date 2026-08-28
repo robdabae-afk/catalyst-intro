@@ -800,11 +800,13 @@ function SectionCard({
   label,
   badge,
   badgeActive = true,
+  extraBadge,
   children,
 }: {
   label: string;
   badge?: string;
   badgeActive?: boolean;
+  extraBadge?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -816,7 +818,7 @@ function SectionCard({
         border: "1px solid rgba(255,255,255,0.1)",
       }}
     >
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between gap-2 mb-3">
         <p
           style={{
             color: "#94908A",
@@ -828,19 +830,30 @@ function SectionCard({
         >
           {label}
         </p>
-        {badge && (
-          <span
-            className="px-2.5 py-1 rounded-full text-[10px] font-semibold"
-            style={
-              badgeActive
-                ? { background: "#C6A02C", color: "#2A2005" }
-                : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
-            }
-          >
-            {badge}
-          </span>
-        )}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {extraBadge && (
+            <span
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
+              style={{ border: "1px solid rgba(198,160,44,0.45)", color: "#C6A02C" }}
+            >
+              {extraBadge}
+            </span>
+          )}
+          {badge && (
+            <span
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
+              style={
+                badgeActive
+                  ? { background: "#C6A02C", color: "#2A2005" }
+                  : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
+              }
+            >
+              {badge}
+            </span>
+          )}
+        </div>
       </div>
+
       {children}
     </div>
   );
