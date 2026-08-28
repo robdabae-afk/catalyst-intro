@@ -166,6 +166,9 @@ const Settings = () => {
   const [companyState, setCompanyState] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [founderBannerUrl, setFounderBannerUrl] = useState("");
+  const [companyLogoUrl, setCompanyLogoUrl] = useState("");
+  const [updateImageSource, setUpdateImageSource] = useState<"avatar" | "logo">("avatar");
+  const [uploadingCompanyLogo, setUploadingCompanyLogo] = useState(false);
   const [pitchDeckUrl, setPitchDeckUrl] = useState("");
   const [pitchDeckVisibility, setPitchDeckVisibility] = useState<"public" | "private">("public");
   const [videoUrl, setVideoUrl] = useState("");
@@ -261,6 +264,10 @@ const Settings = () => {
           setCompanyState(founderProfile.company_state || "");
           setCompanyAddress(founderProfile.company_address || "");
           setFounderBannerUrl(founderProfile.banner_url || "");
+          setCompanyLogoUrl((founderProfile as any).logo_url || "");
+          setUpdateImageSource(
+            ((founderProfile as any).update_image_source as "avatar" | "logo") || "avatar",
+          );
           setPitchDeckUrl(founderProfile.pitch_deck_url || "");
           setPitchDeckVisibility((founderProfile.pitch_deck_visibility as "public" | "private") || "public");
           setVideoUrl(founderProfile.video_url || "");
@@ -387,6 +394,26 @@ const Settings = () => {
     }
   };
 
+  const handleCompanyLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userId) return;
+    setUploadingCompanyLogo(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${userId}/company-logo.${fileExt}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      setCompanyLogoUrl(`${publicUrl}?v=${Date.now()}`);
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: error.message });
+    } finally {
+      setUploadingCompanyLogo(false);
+    }
+  };
+
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
@@ -482,6 +509,8 @@ const Settings = () => {
             company_state: companyState,
             company_address: companyAddress,
             banner_url: founderBannerUrl,
+            logo_url: companyLogoUrl || null,
+            update_image_source: updateImageSource,
             pitch_deck_url: pitchDeckUrl,
             pitch_deck_visibility: pitchDeckVisibility,
             video_url: videoUrl || null,
@@ -659,6 +688,66 @@ const Settings = () => {
               </div>
             </div>
             <input id="banner-upload" type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
+
+            {userType === "founder" && (
+              <>
+                <FieldLabel>Company logo (optional)</FieldLabel>
+                <div className="flex items-center gap-3.5">
+                  <div
+                    className={`relative w-16 h-16 shrink-0 rounded-[14px] cursor-pointer group overflow-hidden flex items-center justify-center ${glass}`}
+                    style={{ outline: `1px solid ${GOLD}`, outlineOffset: -1 }}
+                    onClick={() => document.getElementById("company-logo-upload")?.click()}
+                  >
+                    {companyLogoUrl ? (
+                      <img src={companyLogoUrl} alt="Company logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <Upload size={18} color={GOLD} strokeWidth={1.6} />
+                    )}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      {uploadingCompanyLogo ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      ) : (
+                        <Upload className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p style={{ color: TEXT_DIM, fontSize: 12.5 }}>
+                      Shown on your posts when you choose the logo option.
+                    </p>
+                  </div>
+                </div>
+                <input
+                  id="company-logo-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleCompanyLogoUpload}
+                />
+
+                <FieldLabel>Image shown on your updates</FieldLabel>
+                <div className="flex gap-2">
+                  {(["avatar", "logo"] as const).map((opt) => {
+                    const active = updateImageSource === opt;
+                    return (
+                      <button
+                        key={opt}
+                        type="button"
+                        onClick={() => setUpdateImageSource(opt)}
+                        className={`h-9 px-4 rounded-full ${active ? "" : glass}`}
+                        style={
+                          active
+                            ? { background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }
+                            : { color: TEXT_DIM, fontSize: 12.5 }
+                        }
+                      >
+                        {opt === "avatar" ? "Profile photo" : "Company logo"}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
             <FieldLabel>Profile photo</FieldLabel>
             <div className="flex items-center gap-3.5">

@@ -1,35 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Rocket, TrendingUp, Users, Bookmark, Megaphone, Plus, MessageCircle } from "lucide-react";
+import { ArrowLeft, Bookmark, Megaphone, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUnreadMessages } from "@/hooks/useUnreadMessages";
 import { usePendingRequests } from "@/hooks/usePendingRequests";
+import { useStartupUpdates } from "@/hooks/useStartupUpdates";
 import { BottomNav } from "@/components/app/BottomNav";
+import {
+  CATEGORY_META,
+  CATEGORY_OPTIONS,
+  StartupUpdateCard,
+  categorize,
+  glass,
+  type UpdateCategory,
+} from "@/components/app/StartupUpdateCard";
 
 const GOLD = "#C6A02C";
 const TEXT = "#F6F5F2";
 const MUTED = "#94908A";
-const DIM = "#5F5C57";
-
-type Category = "raise" | "milestone" | "launch" | "hiring" | "update";
-
-interface UpdateItem {
-  id: string;
-  founder_id: string;
-  title: string;
-  body: string | null;
-  link: string | null;
-  mrr_snapshot: string | null;
-  headcount_snapshot: number | null;
-  created_at: string;
-  founderName: string;
-  avatarUrl: string | null;
-  startupName: string | null;
-  stage: string | null;
-  growthMom: string | null;
-  watchlisted: boolean;
-}
 
 const INVESTOR_FILTERS = [
   { key: "all", label: "All" },
@@ -45,123 +34,30 @@ const FOUNDER_FILTERS = [
 ] as const;
 type FilterKey = "all" | "raises" | "milestones" | "watchlist" | "hiring";
 
-const CATEGORY_META: Record<Category, { label: string; Icon: typeof Rocket }> = {
-  raise: { label: "Raise", Icon: TrendingUp },
-  milestone: { label: "Milestone", Icon: TrendingUp },
-  launch: { label: "Launch", Icon: Rocket },
-  hiring: { label: "Hiring", Icon: Users },
-  update: { label: "Update", Icon: Megaphone },
-};
-
-function categorize(title: string, body?: string | null): Category {
-  const t = `${title} ${body ?? ""}`.toLowerCase();
-  if (/(raise|raised|seed round|series [a-d]|funding|closes \$|round)/.test(t)) return "raise";
-  if (/(hiring|hire|join(ing)? (our|the) team|recruit)/.test(t)) return "hiring";
-  if (/(launch|beta|shipped|live|release)/.test(t)) return "launch";
-  if (/(mrr|arr|revenue|customers|users|growth|milestone|crossed|crosses)/.test(t))
-    return "milestone";
-  return "update";
-}
-
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  if (mins < 60) return `${Math.max(mins, 1)}m`;
-  const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d`;
-  return `${Math.floor(days / 7)}w`;
-}
-
-const glass = {
-  background:
-    "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-  boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-  outline: "1px solid rgba(255,255,255,0.10)",
-  outlineOffset: "-1px",
-  backdropFilter: "blur(10px)",
-};
-
 export default function LatestUpdates() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const unread = useUnreadMessages();
   const pending = usePendingRequests();
-  const [items, setItems] = useState<UpdateItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items, setItems, loading } = useStartupUpdates(user?.id ?? null);
   const [filter, setFilter] = useState<FilterKey>("all");
   const [composerOpen, setComposerOpen] = useState(false);
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
+  const [postCategory, setPostCategory] = useState<UpdateCategory>("milestone");
   const [posting, setPosting] = useState(false);
 
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      setLoading(true);
-
-      const [{ data: updates }, { data: watch }] = await Promise.all([
-        supabase
-          .from("startup_updates")
-          .select("id, founder_id, title, body, link, mrr_snapshot, headcount_snapshot, created_at")
-          .order("created_at", { ascending: false })
-          .limit(60),
-        user?.id
-          ? supabase.from("watchlist").select("target_id").eq("user_id", user.id)
-          : Promise.resolve({ data: [] as { target_id: string }[] }),
-      ]);
-
-      const rows = updates ?? [];
-      const founderIds = [...new Set(rows.map((r) => r.founder_id))];
-
-      const [{ data: profiles }, { data: founderProfiles }] = await Promise.all([
-        founderIds.length
-          ? supabase.from("profiles").select("id, name, avatar_url").in("id", founderIds)
-          : Promise.resolve({ data: [] as any[] }),
-        founderIds.length
-          ? supabase
-              .from("founder_profiles")
-              .select("profile_id, startup_name, company_name, stage, growth_mom")
-              .in("profile_id", founderIds)
-          : Promise.resolve({ data: [] as any[] }),
-      ]);
-
-      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
-      const fpMap = new Map((founderProfiles ?? []).map((p: any) => [p.profile_id, p]));
-      const watchSet = new Set(((watch as any[]) ?? []).map((w) => w.target_id));
-
-      const mapped: UpdateItem[] = rows.map((r) => {
-        const p = profileMap.get(r.founder_id);
-        const fp: any = fpMap.get(r.founder_id);
-        return {
-          ...r,
-          founderName: p?.name ?? "Founder",
-          avatarUrl: p?.avatar_url ?? null,
-          startupName: fp?.startup_name ?? fp?.company_name ?? null,
-          stage: fp?.stage ?? null,
-          growthMom: fp?.growth_mom ?? null,
-          watchlisted: watchSet.has(r.founder_id),
-        };
-      });
-
-      if (!active) return;
-      setItems(mapped);
-      setLoading(false);
-    })();
-    return () => {
-      active = false;
-    };
-  }, [user?.id]);
+  const isFounder = userType === "founder";
+  const FILTERS = isFounder ? FOUNDER_FILTERS : INVESTOR_FILTERS;
 
   const filtered = useMemo(() => {
+    const cat = (i: (typeof items)[number]) =>
+      (i.category as UpdateCategory) || categorize(i.title, i.body);
     if (filter === "watchlist") return items.filter((i) => i.watchlisted);
-    if (filter === "raises") return items.filter((i) => categorize(i.title, i.body) === "raise");
-    if (filter === "hiring") return items.filter((i) => categorize(i.title, i.body) === "hiring");
-    if (filter === "milestones")
-      return items.filter((i) => categorize(i.title, i.body) === "milestone");
+    if (filter === "raises") return items.filter((i) => cat(i) === "raise");
+    if (filter === "hiring") return items.filter((i) => cat(i) === "hiring");
+    if (filter === "milestones") return items.filter((i) => cat(i) === "milestone");
     return items;
   }, [items, filter]);
 
@@ -170,13 +66,10 @@ export default function LatestUpdates() {
   const earlier = filtered.filter((i) => new Date(i.created_at).getTime() < weekAgo);
 
   const watchlistCount = new Set(
-    items.filter((i) => i.watchlisted && new Date(i.created_at).getTime() >= weekAgo).map(
-      (i) => i.founder_id,
-    ),
+    items
+      .filter((i) => i.watchlisted && new Date(i.created_at).getTime() >= weekAgo)
+      .map((i) => i.founder_id),
   ).size;
-
-  const isFounder = userType === "founder";
-  const FILTERS = isFounder ? FOUNDER_FILTERS : INVESTOR_FILTERS;
 
   const submitPost = async () => {
     if (!user?.id || !postTitle.trim()) return;
@@ -187,8 +80,11 @@ export default function LatestUpdates() {
         founder_id: user.id,
         title: postTitle.trim(),
         body: postBody.trim() || null,
+        category: postCategory,
       })
-      .select("id, founder_id, title, body, link, mrr_snapshot, headcount_snapshot, created_at")
+      .select(
+        "id, founder_id, title, body, link, category, mrr_snapshot, headcount_snapshot, growth_snapshot, runway_snapshot, created_at",
+      )
       .single();
     setPosting(false);
     if (error || !data) return;
@@ -196,7 +92,7 @@ export default function LatestUpdates() {
       {
         ...(data as any),
         founderName: user.name ?? "You",
-        avatarUrl: (user as any).avatar_url ?? null,
+        imageUrl: (user as any).avatar_url ?? null,
         startupName: null,
         stage: null,
         growthMom: null,
@@ -209,6 +105,8 @@ export default function LatestUpdates() {
     setComposerOpen(false);
   };
 
+  const cardAction = (founderId: string) =>
+    isFounder ? navigate(`/app/messages?user=${founderId}`) : navigate(`/app/profile/${founderId}`);
 
   return (
     <div
@@ -220,11 +118,7 @@ export default function LatestUpdates() {
     >
       {/* Header */}
       <div className="flex items-start gap-3 px-4 pt-12 pb-1">
-        <button
-          onClick={() => navigate("/app/home")}
-          aria-label="Back"
-          className="mt-1 shrink-0"
-        >
+        <button onClick={() => navigate("/app/home")} aria-label="Back" className="mt-1 shrink-0">
           <ArrowLeft size={22} color={TEXT} strokeWidth={1.6} />
         </button>
         <div className="flex-1">
@@ -283,6 +177,25 @@ export default function LatestUpdates() {
         {isFounder ? (
           composerOpen ? (
             <div className="rounded-[20px] p-4 flex flex-col gap-2.5" style={glass}>
+              <div className="flex gap-1.5 flex-wrap">
+                {CATEGORY_OPTIONS.map((c) => {
+                  const active = postCategory === c;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setPostCategory(c)}
+                      className="h-7 px-3 rounded-full"
+                      style={
+                        active
+                          ? { background: GOLD, color: "#2A2005", fontSize: 11, fontWeight: 600 }
+                          : { ...glass, color: MUTED, fontSize: 11 }
+                      }
+                    >
+                      {CATEGORY_META[c].label}
+                    </button>
+                  );
+                })}
+              </div>
               <input
                 value={postTitle}
                 onChange={(e) => setPostTitle(e.target.value)}
@@ -337,7 +250,6 @@ export default function LatestUpdates() {
             </button>
           )
         ) : (
-          /* Watchlist callout */
           <div className="flex items-center gap-3 rounded-[20px] px-3.5 pt-[21px] pb-3.5" style={glass}>
             <div
               className="flex items-center justify-center shrink-0"
@@ -370,15 +282,11 @@ export default function LatestUpdates() {
               <>
                 <SectionLabel>This week</SectionLabel>
                 {thisWeek.map((item) => (
-                  <UpdateCard
+                  <StartupUpdateCard
                     key={item.id}
                     item={item}
-                    isFounder={isFounder}
-                    onAction={() =>
-                      isFounder
-                        ? navigate(`/app/messages?user=${item.founder_id}`)
-                        : navigate(`/app/profile/${item.founder_id}`)
-                    }
+                    actionLabel={isFounder ? "Reply" : "Request intro"}
+                    onAction={() => cardAction(item.founder_id)}
                   />
                 ))}
               </>
@@ -387,15 +295,11 @@ export default function LatestUpdates() {
               <>
                 <SectionLabel>Earlier</SectionLabel>
                 {earlier.map((item) => (
-                  <UpdateCard
+                  <StartupUpdateCard
                     key={item.id}
                     item={item}
-                    isFounder={isFounder}
-                    onAction={() =>
-                      isFounder
-                        ? navigate(`/app/messages?user=${item.founder_id}`)
-                        : navigate(`/app/profile/${item.founder_id}`)
-                    }
+                    actionLabel={isFounder ? "Reply" : "Request intro"}
+                    onAction={() => cardAction(item.founder_id)}
                   />
                 ))}
               </>
@@ -423,112 +327,5 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     >
       {children}
     </p>
-  );
-}
-
-function UpdateCard({
-  item,
-  onAction,
-  isFounder,
-}: {
-  item: UpdateItem;
-  onAction: () => void;
-  isFounder: boolean;
-}) {
-  const category = categorize(item.title, item.body);
-  const { label, Icon } = CATEGORY_META[category];
-
-  const stats: { label: string; value: string }[] = [];
-  if (item.mrr_snapshot) stats.push({ label: "MRR", value: item.mrr_snapshot });
-  if (item.growthMom) stats.push({ label: "Growth", value: item.growthMom });
-  if (item.headcount_snapshot) stats.push({ label: "Team", value: String(item.headcount_snapshot) });
-  if (item.stage) stats.push({ label: "Stage", value: item.stage });
-
-  return (
-    <div className="rounded-[20px] p-[15px] flex flex-col gap-1.5" style={glass}>
-      {/* Header row */}
-      <div className="flex items-center gap-[11px] pb-[7px]">
-        <div
-          className="flex items-center justify-center shrink-0 overflow-hidden"
-          style={{ ...glass, width: 38, height: 38, borderRadius: 19, outline: `1px solid ${GOLD}` }}
-        >
-          {item.avatarUrl ? (
-            <img src={item.avatarUrl} alt={item.founderName} className="w-full h-full object-cover" />
-          ) : (
-            <Icon size={18} color={GOLD} strokeWidth={1.5} />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p style={{ color: TEXT, fontSize: 14, fontWeight: 600, lineHeight: "17.5px" }}>
-            {item.founderName}
-          </p>
-          <p style={{ color: MUTED, fontSize: 11.5 }} className="truncate">
-            {[item.startupName, item.stage].filter(Boolean).join(" · ") || "Founder"}
-          </p>
-        </div>
-        <span style={{ color: DIM, fontSize: 11 }}>{timeAgo(item.created_at)}</span>
-      </div>
-
-      {/* Category pill */}
-      <span
-        className="inline-flex self-start rounded-full"
-        style={{
-          background: GOLD,
-          color: "#2A2005",
-          fontSize: 11,
-          fontWeight: 500,
-          padding: "5px 11px",
-        }}
-      >
-        {label}
-      </span>
-
-      <p style={{ color: TEXT, fontSize: 15, fontWeight: 600, lineHeight: "20px", marginTop: 4 }}>
-        {item.title}
-      </p>
-      {item.body && (
-        <p style={{ color: MUTED, fontSize: 12.5, lineHeight: "18px" }}>{item.body}</p>
-      )}
-      {item.link && (
-        <a
-          href={item.link}
-          target="_blank"
-          rel="noreferrer"
-          style={{ color: "#E7CB7E", fontSize: 12 }}
-        >
-          View link
-        </a>
-      )}
-
-      {stats.length > 0 && (
-        <div className="flex gap-2 mt-2">
-          {stats.slice(0, 3).map((s) => (
-            <div
-              key={s.label}
-              className="flex-1 rounded-[14px] px-2.5 py-2"
-              style={{ background: "rgba(255,255,255,0.04)", outline: "1px solid rgba(255,255,255,0.08)" }}
-            >
-              <p style={{ color: MUTED, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.8px" }}>
-                {s.label}
-              </p>
-              <p style={{ color: TEXT, fontSize: 14, fontWeight: 600 }}>{s.value}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <button
-        onClick={onAction}
-        className="mt-3 h-9 rounded-full w-full inline-flex items-center justify-center gap-1.5"
-        style={
-          isFounder
-            ? { ...glass, color: TEXT, fontSize: 12.5, fontWeight: 600 }
-            : { background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }
-        }
-      >
-        {isFounder && <MessageCircle size={14} strokeWidth={1.8} />}
-        {isFounder ? "Reply" : "Request intro"}
-      </button>
-    </div>
   );
 }

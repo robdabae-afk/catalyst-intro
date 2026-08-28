@@ -534,6 +534,7 @@ export type Database = {
           incorporation_doc_url: string | null
           industry: string[] | null
           location: string | null
+          logo_url: string | null
           mrr: string | null
           one_liner: string
           operations_start_date: string | null
@@ -555,6 +556,7 @@ export type Database = {
           team_members: Json
           traction: string | null
           traction_tiles: string[]
+          update_image_source: string
           user_growth_mom: string | null
           valuation_cap_target: number | null
           video_url: string | null
@@ -578,6 +580,7 @@ export type Database = {
           incorporation_doc_url?: string | null
           industry?: string[] | null
           location?: string | null
+          logo_url?: string | null
           mrr?: string | null
           one_liner: string
           operations_start_date?: string | null
@@ -599,6 +602,7 @@ export type Database = {
           team_members?: Json
           traction?: string | null
           traction_tiles?: string[]
+          update_image_source?: string
           user_growth_mom?: string | null
           valuation_cap_target?: number | null
           video_url?: string | null
@@ -622,6 +626,7 @@ export type Database = {
           incorporation_doc_url?: string | null
           industry?: string[] | null
           location?: string | null
+          logo_url?: string | null
           mrr?: string | null
           one_liner?: string
           operations_start_date?: string | null
@@ -643,6 +648,7 @@ export type Database = {
           team_members?: Json
           traction?: string | null
           traction_tiles?: string[]
+          update_image_source?: string
           user_growth_mom?: string | null
           valuation_cap_target?: number | null
           video_url?: string | null
@@ -1900,32 +1906,41 @@ export type Database = {
       startup_updates: {
         Row: {
           body: string | null
+          category: string | null
           created_at: string
           founder_id: string
+          growth_snapshot: string | null
           headcount_snapshot: number | null
           id: string
           link: string | null
           mrr_snapshot: string | null
+          runway_snapshot: number | null
           title: string
         }
         Insert: {
           body?: string | null
+          category?: string | null
           created_at?: string
           founder_id: string
+          growth_snapshot?: string | null
           headcount_snapshot?: number | null
           id?: string
           link?: string | null
           mrr_snapshot?: string | null
+          runway_snapshot?: number | null
           title: string
         }
         Update: {
           body?: string | null
+          category?: string | null
           created_at?: string
           founder_id?: string
+          growth_snapshot?: string | null
           headcount_snapshot?: number | null
           id?: string
           link?: string | null
           mrr_snapshot?: string | null
+          runway_snapshot?: number | null
           title?: string
         }
         Relationships: [

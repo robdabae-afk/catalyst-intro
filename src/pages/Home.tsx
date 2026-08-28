@@ -7,6 +7,8 @@ import { usePendingRequests } from "@/hooks/usePendingRequests";
 import { useAuth } from "@/hooks/useAuth";
 import { BottomNav } from "@/components/app/BottomNav";
 import { MenuDrawer } from "@/components/app/MenuDrawer";
+import { StartupUpdateCard } from "@/components/app/StartupUpdateCard";
+import { useStartupUpdates } from "@/hooks/useStartupUpdates";
 import { Settings } from "lucide-react";
 
 export default function Home() {
@@ -52,19 +54,8 @@ export default function Home() {
   const userType = (user?.user_type ?? null) as "founder" | "investor" | null;
   const { events, news: _news, loading } = useHomeFeed(user?.id ?? null, userType);
 
-  // News is fetched separately as multiple items for the feed
-  const [newsItems, setNewsItems] = useState<any[]>([]);
-  useEffect(() => {
-    if (!userType) return;
-    (async () => {
-      const { data } = await supabase
-        .from("home_news")
-        .select("id, news_date, title, body, link, image_url")
-        .order("news_date", { ascending: false })
-        .limit(10);
-      setNewsItems(data ?? []);
-    })();
-  }, [userType]);
+  // Founder updates feed powers the "Latest updates" previews
+  const { items: updates } = useStartupUpdates(user?.id ?? null, 10);
 
   const inboxBadge = unread + pending;
 
@@ -168,18 +159,29 @@ export default function Home() {
         )}
 
         {/* Latest Updates */}
-        {newsItems.length > 0 && (
+        {updates.length > 0 && (
           <>
             <SectionHeader
               label="Latest updates"
               onViewAll={() => navigate("/app/updates")}
             />
             <div
-              className="flex gap-3 overflow-x-auto no-scrollbar pb-1"
+              className="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x snap-mandatory"
               style={{ marginLeft: -24, marginRight: -24, paddingLeft: 24, paddingRight: 24 }}
             >
-              {newsItems.map((item) => (
-                <NewsCard key={item.id} item={item} />
+              {updates.slice(0, 6).map((item) => (
+                <div key={item.id} className="shrink-0 snap-start" style={{ width: 320 }}>
+                  <StartupUpdateCard
+                    item={item}
+                    compact
+                    actionLabel={userType === "founder" ? "Reply" : "Request intro"}
+                    onAction={() =>
+                      userType === "founder"
+                        ? navigate(`/app/messages?user=${item.founder_id}`)
+                        : navigate(`/app/profile/${item.founder_id}`)
+                    }
+                  />
+                </div>
               ))}
             </div>
           </>
@@ -310,55 +312,3 @@ function EventCard({ event }: { event: any }) {
   );
 }
 
-function NewsCard({ item }: { item: any }) {
-  const tag = (item.update_type as string | undefined) ?? "Update";
-
-  return (
-    <div
-      className="shrink-0 relative flex flex-col"
-      style={{
-        width: 236,
-        minHeight: 116,
-        background:
-          "linear-gradient(162deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-        borderRadius: 18,
-        outline: "1px solid rgba(255,255,255,0.12)",
-        backdropFilter: "blur(10px)",
-        padding: "14px 14px 12px",
-      }}
-    >
-      <span
-        className="inline-block self-start px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-[0.7px] mb-2"
-        style={{ background: "#C6A02C", color: "#2A2005" }}
-      >
-        {tag}
-      </span>
-      <p style={{ color: "#F6F5F2", fontSize: 14.5, fontWeight: 600, lineHeight: "1.3", flex: 1 }}>
-        {item.title}
-      </p>
-      {item.body && (
-        <p
-          style={{
-            color: "#94908A",
-            fontSize: 12,
-            lineHeight: "1.45",
-            marginTop: 4,
-            display: "-webkit-box",
-            WebkitLineClamp: 1,
-            WebkitBoxOrient: "vertical" as any,
-            overflow: "hidden",
-          }}
-        >
-          {item.body}
-        </p>
-      )}
-      {item.author_name && (
-        <p style={{ color: "#CFCCC5", fontSize: 11.5, marginTop: 10 }}>
-          {item.author_name}
-          {item.author_company ? ` · ${item.author_company}` : ""}
-        </p>
-      )}
-    </div>
-  );
-}

@@ -22,6 +22,13 @@
       "when": 1787932602055,
       "tag": "0002_handle_new_user_pre_revenue_fields",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787933435728,
+      "tag": "0003_add_update_branding_fields",
+      "breakpoints": true
     }
   ]
 }
