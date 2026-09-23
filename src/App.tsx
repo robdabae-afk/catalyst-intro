@@ -46,6 +46,11 @@ import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import Unsubscribe from "./pages/Unsubscribe";
 import Onboarding from "./pages/Onboarding";
 import Waitlist from "./pages/Waitlist";
+import ExitFundHome from "./exitfund/ExitFundHome";
+import ExitFundMission from "./exitfund/ExitFundMission";
+import ExitFundAbout from "./exitfund/ExitFundAbout";
+import ExitFundTeam from "./exitfund/ExitFundTeam";
+import ExitFundContact from "./exitfund/ExitFundContact";
 import { AuthGuard } from "./components/AuthGuard";
 
 
