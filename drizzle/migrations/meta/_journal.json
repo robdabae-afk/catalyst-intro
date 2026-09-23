@@ -43,6 +43,13 @@
       "when": 1787952737531,
       "tag": "0005_grant_identity_verifications_access",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790181241563,
+      "tag": "0006_create_exit_fund_contact_submissions",
+      "breakpoints": true
     }
   ]
 }

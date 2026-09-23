@@ -131,3 +131,109 @@ All colors MUST be HSL.
     }
   }
 }
+/* ------------------------------------------------------------------
+   The Exit Fund (/exitfund) — self-contained light editorial theme.
+   Scoped to .ef-root so the Catalyst dark app theme is untouched.
+   ------------------------------------------------------------------ */
+.ef-root {
+  --ef-bg: #FAFBFC;
+  --ef-fg: #1C2230;
+  --ef-muted: #5B6575;
+  --ef-border: #DCE1E8;
+  --ef-primary: #2B5AA8;
+  --ef-primary-strong: #1E4380;
+  --ef-accent: #EBF1FA;
+  --ef-surface: #FFFFFF;
+  --ef-dark: #1C2230;
+  --ef-dark-fg: #F6F8FB;
+  --ef-dark-muted: #A4AEBD;
+  --ef-dark-border: #333B4B;
+
+  font-family: "Manrope", "Inter", sans-serif;
+  letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
+}
+
+.ef-container {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+}
+
+.ef-eyebrow {
+  color: var(--ef-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ef-nav-link {
+  color: var(--ef-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: color 160ms ease;
+}
+.ef-nav-link:hover { color: var(--ef-fg); }
+.ef-nav-link-active { color: var(--ef-primary); }
+
+.ef-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--ef-primary);
+  color: #FFFFFF;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.25rem;
+  transition: background 160ms ease;
+}
+.ef-btn:hover { background: var(--ef-primary-strong); }
+.ef-btn-sm { font-size: 0.8125rem; padding: 0.5rem 0.875rem; }
+
+.ef-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.25rem;
+  color: var(--ef-fg);
+}
+.ef-icon-btn:hover { background: var(--ef-accent); }
+
+.ef-root :is(input, select, textarea) {
+  width: 100%;
+  background: var(--ef-surface);
+  border: 1px solid var(--ef-border);
+  border-radius: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--ef-fg);
+}
+.ef-root :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--ef-primary);
+  outline-offset: 1px;
+}
+
+.ef-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: "Manrope", "Inter", sans-serif;
+  color: var(--ef-fg);
+}
+.ef-wordmark-the {
+  font-size: 0.625em;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--ef-primary);
+}
+.ef-wordmark-main {
+  font-size: 1.25em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.ef-wordmark-inverse { color: var(--ef-dark-fg); }
+.ef-wordmark-inverse .ef-wordmark-the { color: #8FB3E8; }

@@ -46,6 +46,11 @@ import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import Unsubscribe from "./pages/Unsubscribe";
 import Onboarding from "./pages/Onboarding";
 import Waitlist from "./pages/Waitlist";
+import ExitFundHome from "./exitfund/ExitFundHome";
+import ExitFundMission from "./exitfund/ExitFundMission";
+import ExitFundAbout from "./exitfund/ExitFundAbout";
+import ExitFundTeam from "./exitfund/ExitFundTeam";
+import ExitFundContact from "./exitfund/ExitFundContact";
 import { AuthGuard } from "./components/AuthGuard";
 
 
@@ -142,6 +147,15 @@ const App = () => (
           <Route path="/match/inbox" element={<MatchInbox />} />
           <Route path="/match/thread/:id" element={<MatchThread />} />
           <Route path="/match/admin" element={<MatchAdminEvents />} />
+
+          {/* /exitfund — The Exit Fund, by Catalyst (public marketing site) */}
+          <Route path="/exitfund" element={<ExitFundHome />} />
+          <Route path="/exitfund/home" element={<ExitFundHome />} />
+          <Route path="/exitfund/mission" element={<ExitFundMission />} />
+          <Route path="/exitfund/about" element={<ExitFundAbout />} />
+          <Route path="/exitfund/aboutus" element={<ExitFundAbout />} />
+          <Route path="/exitfund/team" element={<ExitFundTeam />} />
+          <Route path="/exitfund/contact" element={<ExitFundContact />} />
 
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/waitlist" element={<Waitlist />} />
