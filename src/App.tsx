@@ -148,6 +148,15 @@ const App = () => (
           <Route path="/match/thread/:id" element={<MatchThread />} />
           <Route path="/match/admin" element={<MatchAdminEvents />} />
 
+          {/* /exitfund — The Exit Fund, by Catalyst (public marketing site) */}
+          <Route path="/exitfund" element={<ExitFundHome />} />
+          <Route path="/exitfund/home" element={<ExitFundHome />} />
+          <Route path="/exitfund/mission" element={<ExitFundMission />} />
+          <Route path="/exitfund/about" element={<ExitFundAbout />} />
+          <Route path="/exitfund/aboutus" element={<ExitFundAbout />} />
+          <Route path="/exitfund/team" element={<ExitFundTeam />} />
+          <Route path="/exitfund/contact" element={<ExitFundContact />} />
+
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/waitlist" element={<Waitlist />} />
           <Route path="/app/waitlist" element={<Waitlist />} />
