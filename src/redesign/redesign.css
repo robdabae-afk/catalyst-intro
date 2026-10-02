@@ -104,3 +104,4 @@
 .rd .show-cap b{color:var(--ink)}
 @media(max-width:640px){.rd .show-phone{--w:clamp(180px,56vw,240px)}.rd .show-stage{height:540px}.rd .show-phone{transform:translate(-50%,-50%) translateX(calc(var(--o) * var(--w) * .5 + var(--dx))) translateZ(calc(var(--a) * -180px)) rotateY(calc(var(--o) * -32deg))}}
 @media(prefers-reduced-motion:reduce){.rd .show-ring,.rd .show-phone,.rd .show-dots button{transition:none}.rd .show-ring{transform:none}}
+@media(max-width:640px){.rd .show{overflow-x:clip;margin-inline:-20px;padding-inline:20px}}
