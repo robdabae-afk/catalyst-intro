@@ -362,7 +362,7 @@ export default function Onboarding() {
                 marginBottom: 28,
               }}
             >
-              Our launch is planned for <span style={{ color: "#CFCCC5", fontWeight: 500 }}>August 31st</span>. Your account is pending approval — you can finish setting up your profile in the meantime.
+              Your account is pending approval — you can finish setting up your profile in the meantime.
             </p>
 
             <button

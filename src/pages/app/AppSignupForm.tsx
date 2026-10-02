@@ -256,12 +256,13 @@ export default function AppSignupForm() {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
-  const [role, setRole] = useState<Role>("founder");
-  const [step, setStep] = useState(1);
+  const initialRole = searchParams.get("role");
+  const [role, setRole] = useState<Role>(initialRole === "investor" ? "investor" : "founder");
+  const [step, setStep] = useState(initialRole === "founder" || initialRole === "investor" ? 2 : 1);
   const [submitting, setSubmitting] = useState(false);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [name, setName] = useState(searchParams.get("name") || "");
+  const [email, setEmail] = useState(searchParams.get("email") || "");
   const [password, setPassword] = useState("");
   const [referralCode, setReferralCode] = useState(searchParams.get("ref") || "");
 
