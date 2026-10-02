@@ -29,7 +29,6 @@ import ProfileView from "./pages/ProfileView";
 import Settings from "./pages/Settings";
 import FilterPreferences from "./pages/FilterPreferences";
 import ReferralDashboard from "./pages/ReferralDashboard";
-import NotFound from "./pages/NotFound";
 import CatalystDeck from "./pages/CatalystDeck";
 import CatalystDeckEditor from "./pages/CatalystDeckEditor";
 import InvestorPortal from "./pages/InvestorPortal";
@@ -46,6 +45,8 @@ import MatchAdminEvents from "./pages/match/MatchAdminEvents";
 import Unsubscribe from "./pages/Unsubscribe";
 import Onboarding from "./pages/Onboarding";
 import Waitlist from "./pages/Waitlist";
+import Landing from "./redesign/Landing";
+import { About, Privacy, Terms, RdNotFound } from "./redesign/Pages";
 import ExitFundHome from "./exitfund/ExitFundHome";
 import ExitFundMission from "./exitfund/ExitFundMission";
 import ExitFundAbout from "./exitfund/ExitFundAbout";
@@ -64,7 +65,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           {/* Platform marketing/landing — homepage */}
-          <Route path="/" element={<AppSignup />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
           <Route path="/app" element={<AppLanding />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
@@ -164,7 +168,7 @@ const App = () => (
           <Route path="/app/onboarding" element={<Onboarding />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<RdNotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
