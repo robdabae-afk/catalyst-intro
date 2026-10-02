@@ -88,7 +88,7 @@ export default function Landing() {
         <div>
           <div className="pill reveal">Coming soon · Join the waitlist</div>
           <h1 className="reveal d1">Startup investing, built for <em>your phone.</em></h1>
-          <p className="lede reveal d2">Catalyst is the Robinhood for early-stage startups. A fast, simple app where everyday Americans discover vetted startups and back the ones they believe in. No insider network required.</p>
+          <p className="lede reveal d2">The Robinhood for early-stage startups. Discover and back the companies you believe in, right from your phone.</p>
           <div className="ctas reveal d3">
             <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the waitlist</a>
             <a className="btn ghost" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst</a>
@@ -113,7 +113,7 @@ export default function Landing() {
       <section aria-labelledby="h-why">
         <div className="kick">Why Catalyst</div>
         <p className="big" id="h-why">Venture ownership is one of America's great wealth generators. Yet only <b>320,000</b> people backed a startup last year, while <b>24.3M</b> qualify as accredited, and under Reg CF you don't even need to be.</p>
-        <p className="lede" style={{ marginTop: 24 }}>The question isn't who can invest. It's where people go to discover opportunities. Today's crowdfunding sites are niche, clunky and hard to trust. We're building the place you'll actually open.</p>
+        <p className="lede" style={{ marginTop: 24 }}>Today's crowdfunding sites are clunky and hard to trust. We're building the one you'll actually open.</p>
       </section>
 
       <section id="how" aria-labelledby="h-how">
@@ -125,8 +125,8 @@ export default function Landing() {
           <div className="card"><span className="n">03</span><h3>Back what you believe in</h3><p>When we launch, invest small amounts from your phone through a registered funding portal.</p></div>
         </div>
         <div className="vs">
-          <div className="card"><h3><small>Crowdfunding sites</small>Match.com</h3><p>Long forms, endless listings, desktop-first. Built for people who already know what they're looking for.</p></div>
-          <div className="card gold"><h3><small>Catalyst</small>Tinder</h3><p>Mobile-native, fast and curated. Built for the 9-to-5 professional who has never been in the room.</p></div>
+          <div className="card"><h3><small>Crowdfunding sites</small>Match.com</h3><p>Long forms, endless listings, desktop-first.</p></div>
+          <div className="card"><h3><small>Catalyst</small>Tinder</h3><p>Mobile, fast and curated. Built for the 9-to-5 professional.</p></div>
         </div>
       </section>
 
@@ -136,13 +136,12 @@ export default function Landing() {
           <div>
             <div className="kick">For founders</div>
             <h2 id="h-f">Raise from your community, <em>and everyone else.</em></h2>
-            <p className="lede">Turn customers, fans and your own network into backers, then reach everyday investors who never had a way to find you.</p>
+            <p className="lede">Turn your customers, fans and network into backers.</p>
             <ul className="check" style={{ margin: "20px 0 28px" }}>
               <li>Tell your story in a profile built for phones</li>
               <li>Bring your community in with one link</li>
-              <li>Get in front of a growing audience of curious investors</li>
             </ul>
-            <a className="btn" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst, get early access</a>
+            <a className="btn" href="#join" onClick={() => setRole("founder")}>Get early access</a>
           </div>
         </div>
       </section>
@@ -152,7 +151,7 @@ export default function Landing() {
           <div>
             <div className="kick">Our growth engine</div>
             <h2 id="proof">Built on a real New York community.</h2>
-            <p className="lede">Before the app, we built the rooms. 20k people reached in 4 months and 30+ founder and investor events across NYC.</p>
+            <p className="lede">20k people reached in 4 months. 30+ founder and investor events across NYC.</p>
           </div>
           <div><Link className="btn ghost" to="/community">Explore the community</Link></div>
         </div>
@@ -161,7 +160,7 @@ export default function Landing() {
       <section id="join" aria-labelledby="h-join">
         <div className="join">
           <h2 id="h-join">Get in <em>early.</em></h2>
-          <p>Catalyst is coming soon. Tell us which side of the table you're on.</p>
+          <p>Which side of the table are you on?</p>
           <div role="tablist" aria-label="Signup type" onKeyDown={onKey}>
             {(["investor", "founder"] as Role[]).map((r) => (
               <button key={r} ref={tabs[r]} role="tab" id={`t-${r[0]}`} aria-controls={`p-${r[0]}`} aria-selected={role === r} tabIndex={role === r ? 0 : -1} onClick={() => setRole(r)}>
@@ -176,10 +175,10 @@ export default function Landing() {
 
       <section aria-labelledby="h-faq">
         <h2 id="h-faq">Questions</h2>
-        <details><summary>Can I invest through Catalyst today?</summary><p>Not yet. Our funding portal registration is pending. Until it's approved, Catalyst does not offer, sell or facilitate investments of any kind. The waitlist is for product updates only.</p></details>
+        <details><summary>Can I invest through Catalyst today?</summary><p>Not yet. Our funding portal registration is pending, and Catalyst does not offer or facilitate investments today.</p></details>
         <details><summary>Do I need to be accredited?</summary><p>Regulation Crowdfunding lets non-accredited investors participate, within annual limits. We'll share the details at launch.</p></details>
         <details><summary>Is startup investing risky?</summary><p>Yes. Most startups fail, and these investments are hard to sell. You could lose everything you put in.</p></details>
-        <details><summary>Who's building Catalyst?</summary><p>Rob Guthy (CEO, former Army infantry officer) and Stephen Michael (co-founder, NYU finance, built the community). <Link to="/about">More about us</Link>.</p></details>
+        <details><summary>Who's building Catalyst?</summary><p>Rob Guthy (CEO) and Stephen Michael (co-founder). <Link to="/about">More about us</Link>.</p></details>
       </section>
     </Shell>
   );
