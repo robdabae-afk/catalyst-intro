@@ -107,7 +107,7 @@ export default function Landing() {
         <h2 id="h-app">Take a <em>look around.</em></h2>
         <p className="lede">Drag, swipe or use the arrows to flip through screens from the Catalyst app.</p>
         <Showcase screens={SCREENS} />
-        <p className="fine" style={{ textAlign: "center" }}>Illustrative preview of an app in development. Sample profiles and figures, not live offerings.</p>
+        <p className="fine" style={{ textAlign: "center" }}>Illustrative preview of an app in development. Sample profiles, not live offerings.</p>
       </section>
 
       <section aria-labelledby="h-why">
