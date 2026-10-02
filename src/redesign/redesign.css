@@ -84,3 +84,4 @@
 @media(prefers-reduced-motion:reduce){.rd .reveal{animation:none}}
 @media(max-width:860px){.rd .hero,.rd .split,.rd .cols,.rd .vs{grid-template-columns:1fr}.rd .stats,.rd .three{grid-template-columns:1fr}.rd .hero{padding:24px 0 64px;gap:56px}.rd section{padding:64px 0}.rd .join{padding:28px 20px}.rd .phone .back{display:none}.rd .phone.tilt{transform:none}}
 .rd .past figure{margin:0;padding:0;overflow:hidden}.rd .past img{display:block;width:100%;aspect-ratio:1;object-fit:cover}.rd .past figcaption{padding:22px 24px}
+.rd .ticket{border-color:rgba(212,175,55,.45);background:linear-gradient(160deg,#1d1a10,#121212)}.rd .ticket dl{display:grid;grid-template-columns:auto 1fr;gap:8px 18px;margin:16px 0 0}.rd .ticket dt{color:var(--gold);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.rd .ticket dd{margin:0;color:#cfcac0}
