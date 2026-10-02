@@ -83,3 +83,4 @@
 @keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.rd .reveal{animation:none}}
 @media(max-width:860px){.rd .hero,.rd .split,.rd .cols,.rd .vs{grid-template-columns:1fr}.rd .stats,.rd .three{grid-template-columns:1fr}.rd .hero{padding:24px 0 64px;gap:56px}.rd section{padding:64px 0}.rd .join{padding:28px 20px}.rd .phone .back{display:none}.rd .phone.tilt{transform:none}}
+.rd .past figure{margin:0;padding:0;overflow:hidden}.rd .past img{display:block;width:100%;aspect-ratio:1;object-fit:cover}.rd .past figcaption{padding:22px 24px}
