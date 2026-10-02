@@ -24,7 +24,7 @@ export default function Shell({ children, legal = false }: { children: ReactNode
           <nav aria-label="Main">
             <ul>
               <li><a href="/#how">How it works</a></li>
-              <li><a href="/#community">Community</a></li>
+              <li><Link to="/community">Community</Link></li>
               <li><Link to="/about">About</Link></li>
               <li><Link to="/auth">Log in</Link></li>
               <li><a className="btn sm" href="/#join">Join the waitlist</a></li>
@@ -37,7 +37,7 @@ export default function Shell({ children, legal = false }: { children: ReactNode
         <div className="wrap row">
           <span>© 2026 Catalyst · New York, NY</span>
           <span>
-            <Link to="/about">About</Link> · <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <a href={LUMA}>Events on Luma</a>
+            <Link to="/about">About</Link> · <Link to="/community">Community</Link> · <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <a href={LUMA}>Events on Luma</a>
           </span>
           </div>
         <div className="wrap"><p className="disclose">Catalyst is not yet a registered funding portal; registration is pending. No offers or sales of securities are being made through this site. Investing in startups is risky; you could lose your entire investment.</p></div>

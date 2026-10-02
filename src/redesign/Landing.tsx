@@ -130,16 +130,14 @@ export default function Landing() {
       </section>
 
       <section id="community" aria-labelledby="proof">
-        <div className="kick">Our growth engine</div>
-        <h2 id="proof">Built on a real New York community.</h2>
-        <p className="lede" style={{ marginBottom: 32 }}>Before the app, we built the rooms. Mixers, pitch nights and founder dinners where founders and investors actually meet.</p>
-        <div className="stats">
-          <div className="stat"><b>20k</b>people reached in 4 months<br /><small>Across events, socials and lists. Not app users.</small></div>
-          <div className="stat"><b>30+</b>rooms hosted in NYC<br /><small>Mixers, pitch nights, founder dinners</small></div>
-          <div className="stat"><b>$1.8M</b>raised by founders in our network<br /><small>From investors they met in our rooms. Catalyst did not raise, hold or route these funds.</small></div>
+        <div className="split" style={{ gridTemplateColumns: "1.2fr .8fr" }}>
+          <div>
+            <div className="kick">Our growth engine</div>
+            <h2 id="proof">Built on a real New York community.</h2>
+            <p className="lede">Before the app, we built the rooms. 20k people reached in 4 months and 30+ founder and investor events across NYC.</p>
+          </div>
+          <div><Link className="btn ghost" to="/community">Explore the community</Link></div>
         </div>
-        <div className="partners"><span>Wayo Club</span><span>The Tavern</span><span>a.cafe</span><span>JellyJelly</span></div>
-        <p style={{ marginTop: 28 }}><a className="btn ghost sm" href={LUMA}>See upcoming rooms on Luma</a></p>
       </section>
 
       <section id="join" aria-labelledby="h-join">
