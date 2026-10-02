@@ -6,16 +6,16 @@ export function About() {
   return (
     <Shell legal>
       <div className="kick">About</div>
-      <h1 style={{ fontSize: 56 }}>We fill rooms.</h1>
+      <h1 style={{ fontSize: 56 }}>Startup investing for everyone.</h1>
       <CounselBanner />
-      <p className="lede">Catalyst started as Stephen Michael's New York community of founders, investors and operators. Thousands of people later, we're turning those rooms into a product.</p>
+      <p className="lede">Catalyst started as Stephen Michael's New York community of founders, investors and operators. Thousands of people later, we're building the mobile app that lets everyday Americans discover and back early-stage startups.</p>
       <h2>Rob Guthy · CEO &amp; Founder</h2>
       <p>Former Army infantry officer. Built high-ticket sales and marketing for creators and coaches.</p>
       <h2>Stephen Michael · Co-founder, Community &amp; Partnerships</h2>
       <p>NYU finance, then finance and venture. Built the NYC community Catalyst grew out of. <a href="https://www.linkedin.com/in/stephennmichael">LinkedIn</a></p>
       <h2>Where we're headed</h2>
       <p>We want everyday Americans to be able to back the startups they believe in. That product is pending funding portal registration and is not available today.</p>
-      <p><a className="btn" href="/#join">Join the community</a></p>
+      <p><a className="btn" href="/#join">Join the waitlist</a></p>
     </Shell>
   );
 }
