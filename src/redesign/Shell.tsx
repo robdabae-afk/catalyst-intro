@@ -16,7 +16,7 @@ export default function Shell({ children, legal = false }: { children: ReactNode
     <div className="rd">
       <a className="skip" href="#main">Skip to content</a>
       <div className="status" role="note">
-        <b>●</b> The Catalyst app is coming soon. Funding portal registration is pending; no investments are available.
+        The Catalyst app is coming soon. <a href="/#join">Register to join the platform</a>
       </div>
       <div className="wrap">
         <header className="nav">
