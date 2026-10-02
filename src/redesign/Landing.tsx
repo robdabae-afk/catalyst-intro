@@ -132,7 +132,7 @@ export default function Landing() {
 
       <section aria-labelledby="h-f">
         <div className="split">
-          <div className="phone reveal"><img src="/redesign/app-detail.jpg" alt="Catalyst app preview: a startup profile" loading="lazy" /></div>
+          <div className="phone reveal"><img src="/redesign/app-detail.jpg" alt="Catalyst app preview: a startup profile" /></div>
           <div>
             <div className="kick">For founders</div>
             <h2 id="h-f">Raise from your community, <em>and everyone else.</em></h2>
@@ -148,7 +148,7 @@ export default function Landing() {
       </section>
 
       <section id="community" aria-labelledby="proof">
-        <div className="split" style={{ gridTemplateColumns: "1.2fr .8fr" }}>
+        <div className="split split-teaser">
           <div>
             <div className="kick">Our growth engine</div>
             <h2 id="proof">Built on a real New York community.</h2>
