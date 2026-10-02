@@ -16,7 +16,7 @@ export default function Shell({ children, legal = false }: { children: ReactNode
     <div className="rd">
       <a className="skip" href="#main">Skip to content</a>
       <div className="status" role="note">
-        <b>●</b> Live now: NYC rooms and founder–investor intros. In-app investing is <b>not available</b>. Funding portal registration is in process.
+        <b>●</b> The Catalyst app is coming soon. Funding portal registration is pending; no investments are available.
       </div>
       <div className="wrap">
         <header className="nav">
@@ -24,10 +24,10 @@ export default function Shell({ children, legal = false }: { children: ReactNode
           <nav aria-label="Main">
             <ul>
               <li><a href="/#how">How it works</a></li>
-              <li><a href="/#events">Events</a></li>
+              <li><a href="/#community">Community</a></li>
               <li><Link to="/about">About</Link></li>
               <li><Link to="/auth">Log in</Link></li>
-              <li><a className="btn sm" href="/#join">Join</a></li>
+              <li><a className="btn sm" href="/#join">Join the waitlist</a></li>
             </ul>
           </nav>
         </header>
@@ -39,8 +39,8 @@ export default function Shell({ children, legal = false }: { children: ReactNode
           <span>
             <Link to="/about">About</Link> · <Link to="/privacy">Privacy</Link> · <Link to="/terms">Terms</Link> · <a href={LUMA}>Events on Luma</a>
           </span>
-          <span>Catalyst is not a broker-dealer or funding portal and does not offer securities.</span>
-        </div>
+          </div>
+        <div className="wrap"><p className="disclose">Catalyst is not yet a registered funding portal; registration is pending. No offers or sales of securities are being made through this site. Investing in startups is risky; you could lose your entire investment.</p></div>
       </footer>
     </div>
   );
