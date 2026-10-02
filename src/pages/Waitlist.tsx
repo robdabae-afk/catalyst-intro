@@ -7,7 +7,7 @@ export default function Waitlist() {
   useEffect(() => {
     document.title = "Waitlist — Catalyst";
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", "Catalyst launches August 31st. Join the waitlist for early access.");
+    if (meta) meta.setAttribute("content", "Join the Catalyst waitlist for product updates. In-app investing is not available; funding portal registration is in process.");
   }, []);
 
   return (
@@ -16,7 +16,7 @@ export default function Waitlist() {
         <div className="space-y-4">
           <p className="text-xs uppercase tracking-[0.3em] text-[#888]">Catalyst</p>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-            Welcome — we launch August 31st!
+            Welcome, you're on the list!
           </h1>
           <p className="text-[15px] text-[#999] leading-relaxed">
             We're reviewing applications now for early access.
