@@ -1,5 +1,6 @@
 import { FormEvent, KeyboardEvent, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Showcase from "./Showcase";
 import Shell, { LUMA, useMeta } from "./Shell";
 
 type Role = "founder" | "investor";
@@ -57,6 +58,15 @@ function JoinForm({ role }: { role: Role }) {
   );
 }
 
+const SCREENS = [
+  { src: "/redesign/screen-2529.webp", label: "Featured founders", alt: "Catalyst app: featured founder card with pass, priority and connect buttons" },
+  { src: "/redesign/screen-2528.webp", label: "Investor profile", alt: "Catalyst app: investor profile with check size, focus and thesis" },
+  { src: "/redesign/screen-2526.webp", label: "Community feed", alt: "Catalyst app: community feed with featured founders and posts" },
+  { src: "/redesign/screen-2527.webp", label: "Investor activity", alt: "Catalyst app: investor profile with activity and endorsements" },
+  { src: "/redesign/screen-2530.webp", label: "Founder funding details", alt: "Catalyst app: founder funding details editor with sample figures" },
+  { src: "/redesign/screen-2532.webp", label: "Investor thesis setup", alt: "Catalyst app: investor preferences for industries, stage and check size" },
+];
+
 export default function Landing() {
   useMeta(
     "Catalyst · Startup investing, built for your phone",
@@ -91,6 +101,14 @@ export default function Landing() {
           <p className="fine" style={{ position: "absolute", bottom: -34, left: 0, right: 0, textAlign: "center", margin: 0 }}>Illustrative preview. Sample profiles, not live offerings.</p>
         </div>
       </div>
+
+      <section id="app" aria-labelledby="h-app">
+        <div className="kick">Inside the app</div>
+        <h2 id="h-app">Take a <em>look around.</em></h2>
+        <p className="lede">Drag, swipe or use the arrows to flip through screens from the Catalyst app.</p>
+        <Showcase screens={SCREENS} />
+        <p className="fine" style={{ textAlign: "center" }}>Illustrative preview of an app in development. Sample profiles and figures, not live offerings.</p>
+      </section>
 
       <section aria-labelledby="h-why">
         <div className="kick">Why Catalyst</div>
