@@ -109,3 +109,44 @@
 
 .rd .status a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;margin-left:6px}
 .rd .cta-gap{margin-top:40px}
+/* round 4: comparison chart, events gallery */
+.rd .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rd .cmp-wrap{margin:32px 0 16px;border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.rd .cmp{width:100%;border-collapse:collapse;font-size:15px}
+.rd .cmp th,.rd .cmp td{padding:18px 22px;text-align:left;vertical-align:top;border-top:1px solid var(--line)}
+.rd .cmp thead th{border-top:0;font:700 12px var(--s);letter-spacing:.14em;text-transform:uppercase;color:var(--mut);background:var(--card)}
+.rd .cmp thead th.us{color:#fff;background:#0a0a0a}
+.rd .cmp tbody th{font:700 18px/1.25 var(--f);width:30%}
+.rd .cmp td{color:var(--mut)}
+.rd .cmp td.us{color:var(--ink);font-weight:600;background:#fafaf9;width:35%}
+@media(max-width:700px){
+.rd .cmp thead{display:none}
+.rd .cmp tr{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line)}
+.rd .cmp tr:first-child{border-top:0}
+.rd .cmp tbody th{grid-column:1/-1;width:auto;border:0;padding:16px 16px 6px}
+.rd .cmp td{border:0;padding:6px 16px 16px;font-size:14px;width:auto}
+.rd .cmp td.us{background:none;width:auto;min-width:0}
+.rd .cmp tbody td{display:block}
+.rd .cmp td:before{display:block;font:700 10px var(--s);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;color:var(--mut)}
+.rd .cmp td.us:before{content:"Catalyst";color:var(--ink)}
+.rd .cmp td:not(.us):before{content:"Others"}
+}
+.rd .evg{margin-top:32px}
+.rd .evg-track{list-style:none;margin:0;padding:0 0 8px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,31%);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.rd .evg-track::-webkit-scrollbar{display:none}
+.rd .evg-track:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
+.rd .evg-card{scroll-snap-align:start}
+.rd .evg-media{aspect-ratio:4/5;border-radius:22px;overflow:hidden;border:1px solid var(--line);margin-bottom:16px;background:var(--card)}
+.rd .evg-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.rd .evg-card:hover .evg-media img{transform:scale(1.03)}
+.rd .evg-ph{height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:22px;background:repeating-linear-gradient(135deg,#f6f6f5 0 14px,#efefee 14px 15px)}
+.rd .evg-ph span{font:500 italic 56px/1 var(--f);color:#0a0a0a}
+.rd .evg-ph small{font:700 11px var(--s);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
+.rd .evg-card h3{font-size:22px;margin-bottom:6px}
+.rd .evg-card p{color:var(--mut);margin:0;font-size:15px}
+.rd .evg-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.rd .evg-btn{width:46px;height:46px;border-radius:50%;border:1px solid #cfcfcd;background:#fff;font-size:18px;cursor:pointer;color:var(--ink)}
+.rd .evg-btn:hover{border-color:#0a0a0a}
+@media(max-width:700px){.rd .evg-track{grid-auto-columns:78%}}
+.rd .cta-end{border-top:1px solid var(--line);padding:56px 0 96px;text-align:center}
+@media(prefers-reduced-motion:reduce){.rd .evg-media img{transition:none}}

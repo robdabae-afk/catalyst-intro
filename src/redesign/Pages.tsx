@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import EventGallery from "./EventGallery";
 import Shell, { CounselBanner, LUMA, useMeta } from "./Shell";
 
 export function About() {
@@ -12,7 +13,7 @@ export function About() {
       <p>We started by building rooms in New York where founders and investors actually meet. Now we're building the app that opens those rooms to everyone.</p>
       <h2>Where we're headed</h2>
       <p>We want everyday Americans to be able to back the startups they believe in. That product is pending funding portal registration and is not available today.</p>
-      <p className="cta-gap"><a className="btn" href="/#join">Join the waitlist</a></p>
+      <p className="cta-gap"><a className="btn" href="/#join">Join the closed beta</a></p>
     </Shell>
   );
 }
@@ -66,7 +67,7 @@ export function Community() {
           <div className="kick reveal">Community · New York</div>
           <h1 className="reveal d1">Startups are built in <em>rooms.</em></h1>
           <p className="lede reveal d2">Mixers, pitch nights and dinners where founders and investors actually meet.</p>
-          <div className="ctas reveal d3"><a className="btn" href={LUMA}>RSVP on Luma</a><a className="btn ghost" href="/#join">Join the app waitlist</a></div>
+          <div className="ctas reveal d3"><a className="btn" href={LUMA}>RSVP on Luma</a><a className="btn ghost" href="/#join">Join the closed beta</a></div>
         </div>
         <aside className="card ticket reveal d3" aria-label="Recurring event">
           <div className="kick">Admit one</div>
@@ -82,21 +83,18 @@ export function Community() {
       <section aria-labelledby="h-st">
         <h2 id="h-st" className="kick">The community so far</h2>
         <div className="stats">
-          <div className="stat"><b>20k</b>people reached in 4 months<br /><small>Not app users.</small></div>
+          <div className="stat"><b>28k</b>community members<br /><small>Not app users.</small></div>
           <div className="stat"><b>30+</b>rooms hosted in NYC<br /></div>
           <div className="stat"><b>$1.8M</b>raised by founders in our network<br /><small>Catalyst did not raise, hold or route these funds.</small></div>
         </div>
       </section>
-      <section aria-labelledby="h-live">
-        <div className="kick">Live now</div>
-        <h2 id="h-live">Rooms &amp; intros.</h2>
-        <div className="three" style={{ marginTop: 28 }}>
-          <div className="card"><h3>Mixers &amp; pitch nights</h3><p>Weekly NYC mixers and pitch nights.</p></div>
-          <div className="card"><h3>Curated intros</h3><p>Founder–investor introductions based on stage and sector.</p></div>
-          <div className="card"><h3>Spotlights</h3><p>Founder interviews and community spotlights.</p></div>
-        </div>
+      <section aria-labelledby="h-ev">
+        <div className="kick">Events</div>
+        <h2 id="h-ev">What we've <em>hosted.</em></h2>
+        <p className="lede">Rooms where founders and investors meet in person, all across New York.</p>
+        <EventGallery />
       </section>
-      <p className="cta-gap"><a className="btn ghost" href={LUMA}>See upcoming events on Luma</a></p>
+      <div className="cta-end"><a className="btn ghost" href={LUMA}>See upcoming events on Luma</a></div>
     </Shell>
   );
 }
