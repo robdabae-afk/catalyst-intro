@@ -98,7 +98,7 @@ export default function Landing() {
         <div className="phone tilt reveal d2">
           <div className="back"><img src="/redesign/app-detail.jpg" alt="" loading="lazy" /></div>
           <img src="/redesign/app-discover.jpg" alt="Catalyst app preview: browsing early-stage startups" />
-          <p className="fine" style={{ position: "absolute", bottom: -34, left: 0, right: 0, textAlign: "center", margin: 0 }}>Illustrative preview. Sample profiles, not live offerings.</p>
+          <p className="fine" style={{ position: "absolute", bottom: -52, left: 0, right: 0, textAlign: "center", margin: 0 }}>Illustrative preview. Sample profiles, not live offerings.</p>
         </div>
       </div>
 
