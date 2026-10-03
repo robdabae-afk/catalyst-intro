@@ -46,13 +46,13 @@ function JoinForm({ role }: { role: Role }) {
         <span>
           {role === "founder"
             ? "I agree to receive early-access and product updates from Catalyst. Unsubscribe any time. See the "
-            : "I agree to receive waitlist and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
+            : "I agree to receive closed beta and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
           <Link to="/privacy">privacy notice</Link>.
         </span>
       </label>
       <div className="err" aria-live="polite">{errs.consent}</div>
       <button className="btn" type="submit" style={{ justifySelf: "start" }}>
-        {role === "founder" ? "Get early access" : "Join the waitlist"}
+        {role === "founder" ? "Get early access" : "Join the closed beta"}
       </button>
     </form>
   );
@@ -67,10 +67,18 @@ const SCREENS = [
   { src: "/redesign/screen-2532.webp", label: "Investor thesis setup", alt: "Catalyst app: investor preferences for industries, stage and check size" },
 ];
 
+const CMP: [string, string, string][] = [
+  ["Mobile-first", "Designed for the phone from day one", "Web platforms with companion mobile apps"],
+  ["Built for everyday investors", "Plain-language profiles for first-time investors", "Open to non-accredited investors under Reg CF"],
+  ["Community-sourced deal flow", "Founders come through our NYC events and network", "Founders apply to list on the platform"],
+  ["Simple checkout", "Planned as a few taps once registration is approved", "Live checkout today"],
+  ["Founder community and events", "30+ in-person events in New York", "Mostly online communities"],
+];
+
 export default function Landing() {
   useMeta(
     "Catalyst · Startup investing, built for your phone",
-    "Catalyst is a mobile app for everyday Americans to discover early-stage startups. Coming soon, pending funding portal registration. Join the waitlist."
+    "Catalyst is a mobile app for everyday Americans to discover early-stage startups. Coming soon, pending funding portal registration. Join the closed beta."
   );
   const [role, setRole] = useState<Role>("investor");
   const tabs = { founder: useRef<HTMLButtonElement>(null), investor: useRef<HTMLButtonElement>(null) };
@@ -86,11 +94,11 @@ export default function Landing() {
     <Shell>
       <div className="hero">
         <div>
-          <div className="pill reveal">Coming soon · Join the waitlist</div>
+          <div className="pill reveal">Closed beta · Now inviting investors</div>
           <h1 className="reveal d1">Startup investing, built for <em>your phone.</em></h1>
           <p className="lede reveal d2">The Robinhood for early-stage startups. Discover and back the companies you believe in, right from your phone.</p>
           <div className="ctas reveal d3">
-            <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the waitlist</a>
+            <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the closed beta</a>
             <a className="btn ghost" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst</a>
           </div>
           <p className="fine reveal d3" style={{ marginTop: 18 }}>Funding portal registration pending. No investments are available yet.</p>
@@ -118,16 +126,28 @@ export default function Landing() {
 
       <section id="how" aria-labelledby="h-how">
         <div className="kick">How it works</div>
-        <h2 id="h-how">Swipe-simple. <em>Founder-first.</em></h2>
+        <h2 id="h-how">Simple by design. <em>Founder-first.</em></h2>
         <div className="three" style={{ marginTop: 32 }}>
-          <div className="card"><span className="n">01</span><h3>Discover</h3><p>A feed of vetted early-stage startups, built for a five-minute coffee break, not a data room.</p></div>
-          <div className="card"><span className="n">02</span><h3>Get to know them</h3><p>Founder videos, the problem, the traction, and the team, all in one clean profile.</p></div>
-          <div className="card"><span className="n">03</span><h3>Back what you believe in</h3><p>When we launch, invest small amounts from your phone through a registered funding portal.</p></div>
+          <div className="card"><span className="n">01</span><h3>Discover</h3><p>Browse a feed of early-stage startups that our team reviews before they appear. Each one is designed to be understood in a few minutes on your phone.</p></div>
+          <div className="card"><span className="n">02</span><h3>Get to know them</h3><p>Every startup has one clear profile with a founder video, the problem they are solving, their traction so far, and the team behind it.</p></div>
+          <div className="card"><span className="n">03</span><h3>Back what you believe in</h3><p>Once our funding portal registration is approved, you will be able to invest small amounts from your phone. Investing is not available yet.</p></div>
         </div>
-        <div className="vs">
-          <div className="card"><h3><small>Crowdfunding sites</small>Match.com</h3><p>Long forms, endless listings, desktop-first.</p></div>
-          <div className="card"><h3><small>Catalyst</small>Tinder</h3><p>Mobile, fast and curated. Built for the 9-to-5 professional.</p></div>
+      </section>
+
+      <section id="compare" aria-labelledby="h-cmp">
+        <div className="kick">How we compare</div>
+        <h2 id="h-cmp">A different kind of <em>crowdfunding.</em></h2>
+        <div className="cmp-wrap">
+          <table className="cmp">
+            <thead><tr><th scope="col"><span className="sr">Feature</span></th><th scope="col" className="us">Catalyst</th><th scope="col">Wefunder, StartEngine, Republic</th></tr></thead>
+            <tbody>
+              {CMP.map(([f, us, them]) => (
+                <tr key={f}><th scope="row">{f}</th><td className="us">{us}</td><td>{them}</td></tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+        <p className="fine">Comparison reflects our product goals and publicly available information as of October 2026. Catalyst is in closed beta and does not offer investments yet. Wefunder, StartEngine and Republic are trademarks of their respective owners.</p>
       </section>
 
       <section aria-labelledby="h-f">
@@ -151,7 +171,7 @@ export default function Landing() {
           <div>
             <div className="kick">Our growth engine</div>
             <h2 id="proof">Built on a real New York community.</h2>
-            <p className="lede">20k people reached in 4 months. 30+ founder and investor events across NYC.</p>
+            <p className="lede">A community of 28,000 people and 30+ founder and investor events across NYC.</p>
           </div>
           <div><Link className="btn ghost" to="/community">Explore the community</Link></div>
         </div>
