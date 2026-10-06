@@ -7,6 +7,7 @@ import { api, errText, isSample, useAct, useP, useSession } from "@/lib/platform
 import type { PDeal } from "@/lib/platform/contract";
 import { DemoBanner } from "./Live";
 import { Ic, I, Shell, SubTop, Av, useNoindex } from "./ui";
+import { SwipeAction } from "../brand/Button";
 
 const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -132,14 +133,12 @@ export function Swipe() {
             <b style={{ display: "block", fontSize: 24, letterSpacing: "-.03em", marginTop: 8 }}>{d.name}</b>
             <p className="sub">{d.line}</p>
             <div className="num" style={{ fontSize: 12 }}>{d.sector} · {d.city} · {i + 1}/{list.length}</div>
-            <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-              <button className="btn ghost" style={{ flex: 1 }} onClick={() => setI(i + 1)} aria-label="Pass"><Ic d={I.x} size={18} /> Pass</button>
-              <Link className="btn ghost" style={{ flex: 1 }} to={`/app/deal/${d.slug || d.id}`}>Details</Link>
+            <div style={{ display: "flex", gap: 14, marginTop: 18, justifyContent: "center", alignItems: "center" }}>
+              <SwipeAction kind="pass" onClick={() => setI(i + 1)} />
+              <Link className="csw csw-info" to={`/app/deal/${d.slug || d.id}`} aria-label="Details"><Ic d={I.forward} /></Link>
               {session && (
-                <button className="btn" style={{ flex: 1 }} disabled={save.isPending}
-                  onClick={async () => { if (!set.has(d.id)) await save.mutateAsync(d.id).catch(() => {}); setI(i + 1); }}>
-                  <Ic d={I.mark} size={18} /> {set.has(d.id) ? "Saved" : "Save"}
-                </button>
+                <SwipeAction kind="save" big disabled={save.isPending} aria-label={set.has(d.id) ? "Saved" : "Save"}
+                  onClick={async () => { if (!set.has(d.id)) await save.mutateAsync(d.id).catch(() => {}); setI(i + 1); }} />
               )}
             </div>
             {save.error && <p role="alert" className="sub" style={{ fontSize: 12 }}>{errText(save.error)}</p>}

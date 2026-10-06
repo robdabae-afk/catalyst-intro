@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { COMMUNITY_PHOTO, COMMUNITY_SIZE, DEALS, Deal, EVENTS, SECTORS, money, regCfLimit, usd } from "./data";
 import { toggle, useTry } from "./store";
 import { Art, I, Ic, Mark, Progress, Shell } from "./ui";
+import { SwipeAction } from "../brand/Button";
 
 function useToast() {
   const [t, setT] = useState<string | null>(null);
@@ -105,9 +106,9 @@ export function Swipe() {
             </div>
           </div>
           <div className="acts">
-            <button className="rb" onClick={() => commit("l")} aria-label="Pass"><Ic d={I.x} /></button>
-            <button className="rb big" onClick={() => commit("u")} aria-label="Invest"><Ic d={I.up} size={26} /></button>
-            <button className="rb" onClick={() => commit("r")} aria-label="Save"><Ic d={I.mark} /></button>
+            <SwipeAction kind="pass" onClick={() => commit("l")} />
+            <button className="csw csw-save big" onClick={() => commit("u")} aria-label="Invest"><Ic d={I.invest} size={26} /></button>
+            <button className="csw csw-pass" onClick={() => commit("r")} aria-label="Save"><Ic d={I.save} /></button>
           </div>
           <div className="hint"><span>← Pass</span><span>↑ Invest</span><span>Save →</span></div>
         </>
@@ -133,7 +134,7 @@ export function Discover() {
   const list = DEALS.filter((d) => (f === "All" || d.sector === f) && (!t || `${d.name} ${d.line} ${d.sector}`.toLowerCase().includes(t)));
   const [feat, ...rest] = list;
   return (
-    <Shell title="Discover" right={<button className="ic" aria-label={q === null ? "Search" : "Close search"} onClick={() => setQ(q === null ? "" : null)}><Ic d={q === null ? I.search : I.x} size={18} /></button>}>
+    <Shell title="Discover" right={<button className="ic" aria-label={q === null ? "Search" : "Close search"} onClick={() => setQ(q === null ? "" : null)}><Ic d={q === null ? I.search : I.close} size={18} /></button>}>
       {q !== null && <div className="pad" style={{ paddingBottom: 18 }}><input className="srch" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search sample startups" aria-label="Search sample startups" /></div>}
       <div className="pad">
         <div className="h1" style={{ fontSize: 30 }}>Own a piece of what's next.</div>

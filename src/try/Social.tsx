@@ -133,7 +133,7 @@ export function Settings() {
       <SubTop title="Settings" back="/app/profile" />
       <div style={{ padding: "8px 20px" }}>
         <Row to="/app/account/identity" d={I.shield} label="Verify identity" val={s.idVerified ? "Verified" : "Not yet"} ok={s.idVerified} />
-        <Row to="/app/account/limit" d={I.chart} label="Investing limit estimate" val={money(lim)} ok />
+        <Row to="/app/account/limit" d={I.limit} label="Investing limit estimate" val={money(lim)} ok />
         <Row to="/app/account/bank" d={I.bank} label="Bank account" val={s.bankLinked ? "Linked" : "Not linked"} ok={s.bankLinked} />
         <Row to="/app/account/notifications" d={I.bell} label="Notifications" val={`${s.notifPrefs.length} on`} ok />
         <p className="sub" style={{ fontSize: 12, marginTop: 16 }}>Preview. Nothing here is sent anywhere or saved to a server.</p>
