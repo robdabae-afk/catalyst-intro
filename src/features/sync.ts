@@ -3,7 +3,7 @@
 // source of truth once the user is signed in and the migration has been applied.
 // Tables: supabase/migrations/20261006140000_app_actions.sql
 import { supabase } from "@/integrations/supabase/client";
-import { hydrate, initial, setWriter, type State } from "./store";
+import { hydrate, initial, setWriter, flushWrites, invalidatePendingWrites, type State } from "./store";
 import { isDemoMode } from "@/demo/mode";
 
 export type SyncStatus = "signed_out" | "loading" | "ok" | "tables_missing" | "error";
@@ -16,7 +16,7 @@ export const onSyncStatus = (f: (s: SyncStatus) => void) => { listeners.add(f); 
 export const isSignedIn = () => !!uid;
 export const currentUserId = () => uid;
 export function requireAccount() { if (isDemoMode() || uid) return true; window.location.assign("/signup"); return false; }
-export const flushSync = () => Promise.resolve();
+export const flushSync = flushWrites;
 export function clearAccountState() { hydrate(() => ({ ...initial, prefs: { ...initial.prefs }, watch: {}, follows: [], people: [], msgs: {}, qs: {} })); }
 
 
@@ -128,6 +128,7 @@ export function startSync() {
   started = true;
   const set = (id: string | null) => {
     if (id === uid) return;
+    invalidatePendingWrites();
     uid = id;
     clearAccountState();
     setWriter(id ? (prev, next) => (uid === id ? push(prev, next) : Promise.resolve(false)) : null);

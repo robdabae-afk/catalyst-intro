@@ -81,6 +81,9 @@ export function onWriteError(f: (m: string) => void) { errSubs.add(f); return ()
 export function reportWriteError(m = "Couldn't save. Check your connection and try again.") { errSubs.forEach((f) => f(m)); }
 
 let queue: Promise<unknown> = Promise.resolve();
+export const flushWrites = () => queue.then(() => undefined);
+let accountGeneration = 0;
+export function invalidatePendingWrites() { accountGeneration += 1; }
 function commit(next: State) {
   const prev = state;
   state = next;
@@ -91,14 +94,19 @@ function commit(next: State) {
 
 /** Resolves true once the change is saved (to the account DB when signed in). UI only changes on success. */
 export function setState(fn: (s: State) => State): Promise<boolean> {
+  const generation = accountGeneration;
   const run = async () => {
+    if (generation !== accountGeneration) return false;
     const prev = state, next = fn(prev);
     if (next === prev) return true;
     if (!writer) { commit(next); return true; }
     let ok = false;
     try { ok = await writer(prev, next); } catch { ok = false; }
+    if (generation !== accountGeneration) return false;
     if (!ok) { reportWriteError(); return false; }
-    if (state === prev) commit(next); else commit(fn(state));
+    // Never apply one account's in-flight update to a newly hydrated account.
+    if (state !== prev) return false;
+    commit(next);
     return true;
   };
   const p = queue.then(run, run);
