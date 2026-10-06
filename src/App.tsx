@@ -58,6 +58,7 @@ import { Swipe as TrySwipe, Discover as TryDiscover, Profile as TryProfile, Deal
 import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
 import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
 import { Invest as TryInvest } from "./try/Deal";
+import BrandSheet from "./brand/BrandSheet";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
@@ -178,6 +179,7 @@ const App = () => (
 
           {/* /app/* logged-in app preview (sample data, local only, noindex) */}
           <Route path="/app/login" element={<AppLogin />} />
+          <Route path="/app/brand" element={<BrandSheet />} />
           <Route path="/app/welcome" element={<TryOnboarding />} />
           <Route path="/app/welcome/:step" element={<TryOnboarding />} />
           <Route path="/app/swipe" element={<TrySwipe />} />
