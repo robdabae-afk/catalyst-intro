@@ -15,14 +15,14 @@ export default function Home() {
   const raising = COMPANIES.filter((c) => c.raising);
   return (
     <div className="st">
-      <Head title="Today" right={<span className="row mono" style={{ gap: 6 }}><span className="blink" />Sample feed</span>} />
+      <Head title="Today" />
 
       <Hud className="in" scan tag="Spotlight / 01">
-        <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 300, color: "#fff" }}>
+        <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 210, color: "#fff" }}>
           <img src={top.img} alt="" />
           <div className="ph-body" style={{ position: "absolute", left: 22, right: 22, bottom: 20 }}>
             <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={36} /><span className="mono" style={{ opacity: .8 }}>{top.sector} · {top.city}</span><span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
-            <h2 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
+            <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
             <p style={{ opacity: .8, fontSize: 14, marginTop: 4 }}>{top.tagline}</p>
             <div className="row" style={{ marginTop: 14, gap: 14 }}>
               <span className="mono"><CountUp to={top.progress} suffix="%" /> of goal</span>
@@ -56,7 +56,7 @@ export default function Home() {
           </div>
           <IArrow />
         </Link>
-        <Link to={path("ticket")} className="ph hud hov" style={{ minHeight: 120, display: "block" }}>
+        <Link to={path("ticket")} className="ph hud hov" style={{ minHeight: 96, display: "block" }}>
           <img src="/x/ev-2.jpg" alt="" />
           <div className="ph-body" style={{ position: "absolute", left: 16, right: 16, bottom: 14 }}>
             <div className="row"><Icon name="ticket" size={20} /><b className="grow">Your pass</b><IArrow size={14} /></div>
@@ -70,7 +70,7 @@ export default function Home() {
       <div className="sec"><h2><span className="ix">02</span>Raising now</h2><Link to={path("search")} className="mono dim">See all</Link></div>
       <div className="chips" style={{ gap: 12 }}>
         {raising.map((c) => (
-          <Link key={c.id} to={path(`company/${c.id}`)} className="ph" style={{ width: 200, height: 240, flex: "none" }}>
+          <Link key={c.id} to={path(`company/${c.id}`)} className="ph" style={{ width: 150, height: 180, flex: "none" }}>
             <img src={c.img} alt="" loading="lazy" />
             <div className="ph-body" style={{ position: "absolute", left: 12, right: 12, bottom: 12 }}>
               <Duo c={c} size={30} />

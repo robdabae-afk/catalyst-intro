@@ -49,7 +49,7 @@ export default function Learn() {
               <span className="big">0{i + 1}</span>
             </div>
             <div className="lc-in">
-            <h2 style={{ fontSize: 26, fontWeight: 800, letterSpacing: "-.03em", lineHeight: 1.1 }}>{c.title}</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.1 }}>{c.title}</h2>
             <p style={{ fontSize: 15, lineHeight: 1.55 }}>{c.body}</p>
             <div style={{ marginTop: "auto" }}>
               <p className="mono" style={{ marginBottom: 10 }}>Quick check · {c.q}</p>

@@ -56,7 +56,7 @@ export default function Ticket() {
           <span className="pass-seal" aria-hidden>CATALYST<br />· ADMIT ·<br />ONE</span>
           <div className="ph-body">
             <div className="row" style={{ gap: 8 }}><span className="chip-d"><Icon name="ticket" size={12} />Pass</span><span className="sample inv">Sample</span></div>
-            <h2 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.035em", marginTop: 10, lineHeight: 1 }}>{EVENT.title}</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.035em", marginTop: 10, lineHeight: 1 }}>{EVENT.title}</h2>
           </div>
         </div>
         <div className="pass-body">

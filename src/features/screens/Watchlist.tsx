@@ -28,7 +28,7 @@ export default function Watchlist() {
             const c = byId(id)!; const w = s.watch[id];
             return (
               <article className="card hud hov" key={id} style={{ padding: 0, overflow: "hidden" }}>
-                <div className="ph" style={{ height: 120, borderRadius: 0 }}><img src={c.img} alt="" loading="lazy" />
+                <div className="ph" style={{ height: 88, borderRadius: 0 }}><img src={c.img} alt="" loading="lazy" />
                   <div className="ph-body" style={{ position: "absolute", left: 14, right: 14, bottom: 10 }} >
                     <div className="row" style={{ gap: 6 }}>{c.raising ? <span className="chip-d"><span className="blink" />Raising</span> : <span className="chip-d">Not raising</span>}<span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
                   </div></div>

@@ -44,7 +44,7 @@ export function Head({ title, right, back }: { title: string; right?: React.Reac
   return (
     <>
       {back && <button className="cf-back" onClick={() => nav(-1)}><IBack size={16} />Back</button>}
-      <header className="cf-head"><h1>{title}</h1>{right}</header>
+      <header className="cf-head"><h1>{title}</h1><div className="row" style={{ gap: 10 }}>{right}<span className="cf-smp">Sample</span></div></header>
     </>
   );
 }

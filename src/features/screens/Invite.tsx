@@ -30,7 +30,7 @@ export default function Invite() {
         <p className="note" style={{ marginBottom: 12 }}>Catalyst community events. Founder photo is a sample.</p>
         <div className="card hud" style={{ padding: 20 }}>
           <div className="row"><span className="faces"><img className="face" src="/x/founder-tally.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><img className="face" src="/x/founder-gridline.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><span className="ghost-face">+</span></span>
-            <div className="grow"><b style={{ fontSize: 26 }}><CountUp to={joined} /></b> <span className="dim">friends joined</span></div><span className="sample">Sample</span></div>
+            <div className="grow"><b style={{ fontSize: 20 }}><CountUp to={joined} /></b> <span className="dim">friends joined</span></div><span className="sample">Sample</span></div>
           <div className="ladder" aria-hidden>{TIERS.map((x) => <div key={x.n} className={joined >= x.n ? "on" : ""} />)}</div>
           <p style={{ fontSize: 13.5, marginTop: 12 }}>{next ? <><b>{next.n - joined} more</b> to unlock {next.t.toLowerCase()}.</> : "Every perk unlocked."}</p>
           <div className="link" style={{ marginTop: 18 }}><span className="grow ell">{link}</span><button className="btn sm" onClick={copy}><Icon name="check" size={13} />Copy</button></div>

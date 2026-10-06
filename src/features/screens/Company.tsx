@@ -19,14 +19,14 @@ export default function Company() {
     <div>
       <Head title="" back />
       <Hud className="in" scan tag={`${c.sector} / ${c.stage}`}>
-        <div className="ph kb" style={{ minHeight: 320 }}>
+        <div className="ph kb" style={{ minHeight: 230 }}>
           {c.pitch ? <video src={c.pitch} poster={c.img} muted loop playsInline autoPlay preload="metadata" /> : <img src={c.img} alt="" />}
           <div className="ph-body" style={{ position: "absolute", left: 22, right: 22, bottom: 20 }}>
             <div className="row" style={{ alignItems: "flex-end", gap: 14 }}>
               <Logo c={c} size={60} />
               <div className="grow" style={{ minWidth: 0 }}>
                 <div className="row" style={{ gap: 8 }}><span className="sample inv">Sample</span>{c.pitch && <span className="chip-d"><Icon name="play" size={11} />Pitch · 1:30</span>}</div>
-                <h1 style={{ fontSize: "clamp(26px,6vw,36px)", fontWeight: 800, letterSpacing: "-.035em", lineHeight: 1.05, marginTop: 8 }}>{c.name}</h1>
+                <h1 style={{ fontSize: "clamp(22px,5vw,28px)", fontWeight: 700, letterSpacing: "-.035em", lineHeight: 1.05, marginTop: 8 }}>{c.name}</h1>
                 <p style={{ opacity: .82, marginTop: 4 }}>{c.tagline}</p>
               </div>
             </div>
@@ -53,7 +53,7 @@ export default function Company() {
         <aside className="card hud" style={{ marginTop: 22, alignSelf: "start" }}>
           <div className="row"><Face c={c} size={48} /><div className="grow"><b>{c.founder}</b><div className="mono dim">Founder · {c.city}</div></div></div>
           {c.raising ? (<>
-            <div className="row" style={{ marginTop: 18, alignItems: "baseline" }}><span style={{ fontSize: 34, letterSpacing: "-.03em" }}><CountUp to={c.progress} suffix="%" /></span><span className="mono dim grow" style={{ marginLeft: 8 }}>of sample goal</span></div>
+            <div className="row" style={{ marginTop: 18, alignItems: "baseline" }}><span style={{ fontSize: 26, letterSpacing: "-.03em" }}><CountUp to={c.progress} suffix="%" /></span><span className="mono dim grow" style={{ marginLeft: 8 }}>of sample goal</span></div>
             <div style={{ marginTop: 10 }}><Meter pct={c.progress} /></div>
             <div className="row mono dim" style={{ marginTop: 10, justifyContent: "space-between" }}><span><CountUp to={c.backers} /> backers</span><span>{c.daysLeft}d left</span></div>
           </>) : <p className="mono dim" style={{ marginTop: 16 }}>Not raising</p>}

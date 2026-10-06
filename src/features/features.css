@@ -296,3 +296,44 @@ a.hud:hover .hb.bl,.hud.hov:hover .hb.bl{transform:translate(-3px,3px)}a.hud:hov
 .ph.kb>video+.ph-body,.ph>video~.ph-body{text-shadow:0 1px 12px rgba(0,0,0,.6)}
 .ph:has(>video)::after{background:linear-gradient(180deg,rgba(0,0,0,.1) 20%,rgba(0,0,0,.92) 85%)}
 .cf a.ph,.cf .ph{color:#fff}
+
+/* ===== refine pass r1: quiet labels, smaller scale ===== */
+.cf{--r:14px;font-size:14px}
+.cf .hb,.cf .hud-tag,.cf .hud-scan,.cf .ix,.cf .sample,.cf .blink{display:none !important}
+.cf .mono{font-family:inherit;text-transform:none;letter-spacing:0;font-size:12px;font-weight:500}
+.cf .chip-d{height:20px;padding:0 7px;font:500 10.5px 'Schibsted Grotesk',sans-serif;letter-spacing:0;text-transform:none}
+.cf-smp{font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:4px;padding:3px 5px}
+.cf-head h1{font-size:24px;letter-spacing:-.03em}
+@media (min-width:960px){.cf-head h1{font-size:30px}.cf-main{max-width:920px;padding:32px 40px 56px}}
+.cf .btn{height:36px;padding:0 14px;font-size:13px;font-weight:600}
+.cf .btn.sm{height:28px;padding:0 10px;font-size:12px}
+.cf .chip{height:28px;padding:0 11px;font-size:12.5px;font-weight:500;border-width:1px}
+.card{padding:13px}
+.sec h2{font-size:15px;font-weight:650}
+.mark{width:32px;height:32px;border-radius:9px;font-size:13px}
+.nt{padding:11px 2px;gap:11px}
+.nt b{font-size:13.5px;font-weight:600}
+.nt p{font-size:12.5px}
+.nt-ic{width:32px;height:32px;border-radius:9px}
+.nt-thumb{width:48px;height:60px;border-radius:9px}
+.ib{width:34px;height:34px}
+.sbox{height:40px;border-radius:11px;border-width:1px}
+.banner{padding:12px 14px;gap:11px}
+.set,.step{padding:10px 0;font-size:13.5px}
+.tick{width:20px;height:20px;border-radius:6px;border-width:1px}
+.cf-ring{width:60px;height:60px}.cf-ring span{width:48px;height:48px;font-size:14px}
+.qr{max-width:170px;padding:10px;border-radius:12px}
+.pass{max-width:340px}
+.pass-top{height:140px}
+.lcard{border-width:1px;border-radius:18px}
+.deck{height:470px;max-width:440px}
+@media (max-width:959px){.deck{height:480px}}
+.lc-art{height:110px}
+.inv-hero{height:110px}
+.cf .opt{padding:10px 12px;font-size:13px;border-width:1px;border-radius:11px}
+.rc{grid-template-columns:64px minmax(0,1fr);padding:8px;gap:11px}
+.rc .ph{height:64px;border-radius:9px}
+.toggle-row{padding:10px 12px;border-width:1px;border-radius:12px}
+.link{border-width:1px;font-size:12.5px}
+.sw{width:38px;height:22px}.sw::after{width:16px;height:16px}
+.cf-tab{font-size:10px}
