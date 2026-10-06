@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Catalyst Swipe</title><link rel="stylesheet" href="style.css"><style>
+.deck{position:relative;margin:4px 20px 0;height:510px}
+.cd{position:absolute;inset:0;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 18px 40px -18px rgba(0,0,0,.35)}
+.cd.b2{transform:translateY(22px) scale(.92);opacity:.5}
+.cd.b1{transform:translateY(11px) scale(.96);opacity:.85}
+.cd.f{transform:translateX(6px) rotate(3deg);transform-origin:50% 50%}
+.cd .ph{height:240px}
+.stamp{position:absolute;top:26px;padding:6px 12px;border:2.5px solid;font-weight:800;font-size:22px;letter-spacing:.06em;text-transform:uppercase;border-radius:8px}
+.save{left:20px;transform:rotate(-14deg);background:#fff;color:var(--ink);border-color:var(--ink)}
+.pass{right:18px;top:56px;color:#fff;border-color:#fff;opacity:.25;transform:rotate(12deg)}
+.bd{padding:16px 18px 0}
+.terms{grid-template-columns:repeat(4,1fr);margin-top:14px}
+.terms>div:not(:nth-child(3n+1)){padding-left:0;border-left:0}
+.terms>div+div{padding-left:10px!important;border-left:1px solid var(--line)!important}
+.terms b{font-size:15px}
+.acts{display:flex;justify-content:center;align-items:center;gap:22px;margin-top:26px}
+.rb{border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:#fff}
+.rb svg{fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hint{display:flex;justify-content:space-between;padding:0 28px;margin-top:8px;font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.ph-sole{background:radial-gradient(ellipse 60% 22% at 50% 72%,#2c2c2c,transparent 70%),radial-gradient(ellipse 34% 14% at 50% 52%,#e9e9e6 0 60%,transparent 62%),linear-gradient(#151515,#0b0b0b)}
+</style></head><body><div class="phone" style="height:844px"><div class="status"><span>9:41</span><span style="display:flex;gap:6px;align-items:center"><svg width="18" height="11"><rect x="0" y="7" width="3" height="4"/><rect x="5" y="5" width="3" height="6"/><rect x="10" y="2" width="3" height="9"/><rect x="15" y="0" width="3" height="11"/></svg><svg width="25" height="12"><rect x=".5" y=".5" width="21" height="11" rx="3" fill="none" stroke="#000"/><rect x="2.5" y="2.5" width="16" height="7" rx="1.5"/><rect x="23" y="4" width="2" height="4" rx="1"/></svg></span></div><div class="top"><div class="logo">catalyst<i></i></div><div class="chip" style="padding:6px 12px;font-size:12px">For you &#9662;</div></div><div class="deck"><div class="cd b2"></div><div class="cd b1"></div>
+<div class="cd f"><div class="ph ph-sole"><div class="stamp save">Save</div><div class="stamp pass">Pass</div></div>
+<div class="bd"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:24px;letter-spacing:-.03em">Bodega Box</b><span class="sample">Sample</span></div>
+<div style="color:var(--mute);font-size:15px;margin-top:4px">Late-night groceries in 15 minutes, run by corner stores.</div>
+<div class="terms"><div><span class="lbl">Min</span><b class="num">$100</b></div><div><span class="lbl">Cap</span><b class="num">$6M</b></div><div><span class="lbl">Type</span><b>SAFE</b></div><div><span class="lbl">Left</span><b class="num">12d</b></div></div>
+<div style="margin-top:14px"><div class="bar"><span style="width:48%"></span></div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:8px"><span><b class="num" style="color:var(--ink)">$144K</b> of $300K</span><span>Food &middot; Brooklyn</span></div></div></div></div></div>
+<div class="acts"><div class="rb" style="width:58px;height:58px"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+<div class="rb" style="width:72px;height:72px;background:var(--ink);border-color:var(--ink)"><svg width="26" height="26" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 19V5M6 11l6-6 6 6"/></svg></div>
+<div class="rb" style="width:58px;height:58px"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 4h12v17l-6-4-6 4z"/></svg></div></div>
+<div class="hint"><span>&larr; Pass</span><span>&uarr; Invest</span><span>Save &rarr;</span></div><nav class="tabbar"><a href="main-swipe.html" style="color:inherit;text-decoration:none" class="on"><div class="on"><svg viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="17" rx="2.5" transform="rotate(-8 12 12)"/><path d="M3 9v8M21 7v8"/></svg>Swipe</div></a><a href="main-discover.html" style="color:inherit;text-decoration:none" class=""><div class=""><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>Discover</div></a><a href="main-portfolio.html" style="color:inherit;text-decoration:none" class=""><div class=""><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg>Portfolio</div></a><a href="main-events.html" style="color:inherit;text-decoration:none" class=""><div class=""><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Events</div></a><a href="#" style="color:inherit;text-decoration:none" class=""><div class=""><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4 20c1.5-4 4.5-5.5 8-5.5s6.5 1.5 8 5.5"/></svg>You</div></a></nav></div></body></html>
