@@ -26,7 +26,7 @@ export function DealPage() {
   const [s, set] = useTry();
   useNoindex(d?.name || "Deal");
   const [tab, setTab] = useState<"about" | "qa">(new URLSearchParams(window.location.search).get("tab") === "qa" ? "qa" : "about");
-  if (!d) return <Navigate to="/try/discover" replace />;
+  if (!d) return <Navigate to="/app/discover" replace />;
   const saved = s.saved.includes(d.id);
   const qa = sampleQA(d.name, d.team[0].role);
   const mineQ = s.questions.filter((q) => q.deal === d.id);
@@ -43,7 +43,7 @@ export function DealPage() {
         <div className="dhero">
           <Art deal={d} style={{ position: "absolute", inset: 0 }} label={false} />
           <div className="ov" />
-          <button className="ic back" onClick={() => (window.history.length > 1 ? nav(-1) : nav("/try/discover"))} aria-label="Back"><Ic d={I.back} size={18} /></button>
+          <button className="ic back" onClick={() => (window.history.length > 1 ? nav(-1) : nav("/app/discover"))} aria-label="Back"><Ic d={I.back} size={18} /></button>
           <span className="mono" style={{ position: "absolute", right: 20, top: 24, fontSize: 10, letterSpacing: ".08em", textTransform: "uppercase", color: d.art === "clinic" || d.art === "book" ? "rgba(0,0,0,.45)" : "rgba(255,255,255,.55)" }}>Sample image</span>
         </div>
         <div className="dlay">
@@ -79,7 +79,7 @@ export function DealPage() {
             <Logo />
             <Terms d={d} />
             <div style={{ padding: "14px 0 18px" }}><Progress deal={d} /><div style={{ fontSize: 12, color: "var(--mute)", marginTop: 8 }}><b className="num" style={{ color: "var(--ink)" }}>{d.backers}</b> backers · {Math.round((d.raised / d.goal) * 100)}% of goal</div></div>
-            <Link to={`/try/invest/${d.id}`} className="btn">Invest from ${d.min}</Link>
+            <Link to={`/app/invest/${d.id}`} className="btn">Invest from ${d.min}</Link>
             <div style={{ marginTop: 10 }}><SaveBtn wide /></div>
             <p className="fine">Investing opens soon through an SEC-registered funding portal.</p>
           </aside>
@@ -87,7 +87,7 @@ export function DealPage() {
       </div>
       <div className="sticky"><div className="wrap">
         <SaveBtn />
-        <Link to={`/try/invest/${d.id}`} className="btn" style={{ flex: 1 }}>Invest from ${d.min}</Link>
+        <Link to={`/app/invest/${d.id}`} className="btn" style={{ flex: 1 }}>Invest from ${d.min}</Link>
       </div></div>
     </div>
   );
@@ -126,7 +126,7 @@ export function Invest() {
   const [c, setC] = useState([false, false, false]);
   const [done, setDone] = useState(false);
   useNoindex(d ? `Invest · ${d.name}` : "Invest");
-  if (!d) return <Navigate to="/try/discover" replace />;
+  if (!d) return <Navigate to="/app/discover" replace />;
   const lim = regCfLimit(s.income, s.netWorth);
   const presets = [100, 250, 500, 1000].filter((p) => p >= d.min);
   const over = amt > lim;
@@ -169,7 +169,7 @@ export function Invest() {
             <p className="sub" style={{ marginTop: 10 }}>Catalyst will run investments through an SEC-registered funding portal. Nothing was charged and no money moved. We noted your {usd(amt)} interest in {d.name} on this device.</p>
             <div className="soon" style={{ marginTop: 18 }}>{d.name} is a sample company made up for this preview.</div>
             <Link to="/signup" className="btn" style={{ marginTop: 24 }}>Join the waitlist</Link>
-            <Link to="/try/swipe" className="btn ghost" style={{ marginTop: 10 }}>Keep exploring</Link>
+            <Link to="/app/swipe" className="btn ghost" style={{ marginTop: 10 }}>Keep exploring</Link>
           </div>
         )}
       </div>

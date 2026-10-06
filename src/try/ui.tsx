@@ -57,11 +57,11 @@ export const Mark = ({ deal, size = 44 }: { deal: Deal; size?: number }) => (
 );
 
 const TABS = [
-  { to: "/try/swipe", label: "Swipe", d: I.swipe },
-  { to: "/try/discover", label: "Discover", d: I.search },
-  { to: "/try/portfolio", label: "Portfolio", d: I.chart },
-  { to: "/try/events", label: "Events", d: I.cal },
-  { to: "/try/profile", label: "Profile", d: I.user },
+  { to: "/app/swipe", label: "Swipe", d: I.swipe },
+  { to: "/app/discover", label: "Discover", d: I.search },
+  { to: "/app/holdings", label: "Portfolio", d: I.chart },
+  { to: "/app/events", label: "Events", d: I.cal },
+  { to: "/app/profile", label: "Profile", d: I.user },
 ];
 
 export function Shell({ title, right, children }: { title: string; right?: ReactNode; children: ReactNode }) {
@@ -106,7 +106,7 @@ function InboxBtn() {
   const [s] = useTry();
   const unread = THREADS.some((t) => t.unread && !s.readThreads.includes(t.id));
   return (
-    <Link to="/try/inbox" className="ic inbox-btn" aria-label={unread ? "Messages, unread" : "Messages"}>
+    <Link to="/app/inbox" className="ic inbox-btn" aria-label={unread ? "Messages, unread" : "Messages"}>
       <Ic d={I.inbox} size={18} />{unread && <i className="dot" />}
     </Link>
   );

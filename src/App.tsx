@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
@@ -172,24 +172,24 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
 
-          {/* /try — app preview (sample data, local only, noindex) */}
-          <Route path="/try" element={<Navigate to="/try/onboarding/1" replace />} />
-          <Route path="/try/onboarding/:step" element={<TryOnboarding />} />
-          <Route path="/try/swipe" element={<TrySwipe />} />
-          <Route path="/try/discover" element={<TryDiscover />} />
-          <Route path="/try/portfolio" element={<TryPortfolio />} />
-          <Route path="/try/events" element={<TryEvents />} />
-          <Route path="/try/profile" element={<TryProfile />} />
-          <Route path="/try/deal/:id" element={<TryDeal />} />
-          <Route path="/try/invest/:id" element={<TryInvest />} />
-          <Route path="/try/inbox" element={<TryInbox />} />
-          <Route path="/try/inbox/:id" element={<TryThread />} />
-          <Route path="/try/events/:id" element={<TryEvent />} />
-          <Route path="/try/settings" element={<TrySettings />} />
-          <Route path="/try/settings/identity" element={<TrySetIdentity />} />
-          <Route path="/try/settings/limit" element={<TrySetLimit />} />
-          <Route path="/try/settings/bank" element={<TrySetBank />} />
-          <Route path="/try/settings/notifications" element={<TrySetNotifications />} />
+          {/* /app/* logged-in app preview (sample data, local only, noindex) */}
+          <Route path="/app/welcome" element={<TryOnboarding />} />
+          <Route path="/app/welcome/:step" element={<TryOnboarding />} />
+          <Route path="/app/swipe" element={<TrySwipe />} />
+          <Route path="/app/discover" element={<TryDiscover />} />
+          <Route path="/app/holdings" element={<TryPortfolio />} />
+          <Route path="/app/events" element={<TryEvents />} />
+          <Route path="/app/profile" element={<TryProfile />} />
+          <Route path="/app/deal/:id" element={<TryDeal />} />
+          <Route path="/app/invest/:id" element={<TryInvest />} />
+          <Route path="/app/inbox" element={<TryInbox />} />
+          <Route path="/app/inbox/:id" element={<TryThread />} />
+          <Route path="/app/events/:id" element={<TryEvent />} />
+          <Route path="/app/account" element={<TrySettings />} />
+          <Route path="/app/account/identity" element={<TrySetIdentity />} />
+          <Route path="/app/account/limit" element={<TrySetLimit />} />
+          <Route path="/app/account/bank" element={<TrySetBank />} />
+          <Route path="/app/account/notifications" element={<TrySetNotifications />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<RdNotFound />} />
         </Routes>

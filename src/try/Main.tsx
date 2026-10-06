@@ -53,7 +53,7 @@ export function Swipe() {
       if (dir === "l") { set((x) => ({ ...x, passed: [...x.passed, top.id] })); show(`Passed on ${top.name}`); }
       if (dir === "r") { set((x) => ({ ...x, saved: [...x.saved, top.id] })); show(`Saved ${top.name}`); }
       setFly(null); setDrag({ x: 0, y: 0, on: false });
-      if (dir === "u") nav(`/try/invest/${top.id}`);
+      if (dir === "u") nav(`/app/invest/${top.id}`);
     }, 260);
   };
 
@@ -75,7 +75,7 @@ export function Swipe() {
     if (y < -110 && Math.abs(y) > Math.abs(x)) commit("u");
     else if (x > 110) commit("r");
     else if (x < -110) commit("l");
-    else if (Math.abs(x) < 6 && Math.abs(y) < 6 && top) nav(`/try/deal/${top.id}`);
+    else if (Math.abs(x) < 6 && Math.abs(y) < 6 && top) nav(`/app/deal/${top.id}`);
     else setDrag({ x: 0, y: 0, on: false });
     if (!(y < -110 || Math.abs(x) > 110)) setDrag({ x: 0, y: 0, on: false });
   };
@@ -115,7 +115,7 @@ export function Swipe() {
         <div className="pad" style={{ maxWidth: 420, margin: "40px auto 0" }}>
           <div className="h1">You're all caught up.</div>
           <p className="sub" style={{ margin: "10px 0 22px" }}>You've seen every sample deal. Check what you saved, or start over.</p>
-          <Link to="/try/portfolio" className="btn">See saved deals</Link>
+          <Link to="/app/holdings" className="btn">See saved deals</Link>
           <button className="btn ghost" style={{ marginTop: 10 }} onClick={() => set((x) => ({ ...x, passed: [] }))}>Show passed deals again</button>
         </div>
       )}
@@ -141,7 +141,7 @@ export function Discover() {
       </div>
       <div className="pad">
         {feat ? (
-          <Link to={`/try/deal/${feat.id}`} className="feat"><Art deal={feat} style={{ position: "absolute", inset: 0 }} /><div className="ov" />
+          <Link to={`/app/deal/${feat.id}`} className="feat"><Art deal={feat} style={{ position: "absolute", inset: 0 }} /><div className="ov" />
             <div className="tx"><span className="lbl" style={{ color: "#ccc" }}>Raising now</span>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginTop: 4 }}>
                 <b style={{ fontSize: 22, letterSpacing: "-.03em" }}>{feat.name}</b>
@@ -152,8 +152,8 @@ export function Discover() {
           {rest.map((d) => (
             <div className="card" key={d.id}>
               <div className="row">
-                <Link to={`/try/deal/${d.id}`}><Mark deal={d} /></Link>
-                <Link to={`/try/deal/${d.id}`} style={{ flex: 1, minWidth: 0 }}>
+                <Link to={`/app/deal/${d.id}`}><Mark deal={d} /></Link>
+                <Link to={`/app/deal/${d.id}`} style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}><b style={{ fontSize: 17 }}>{d.name}</b><span className="sample">Sample</span></div>
                   <div className="sub" style={{ fontSize: 14 }}>{d.line}</div>
                 </Link>
@@ -192,14 +192,14 @@ export function Portfolio() {
           {tab === "saved" ? (
             saved.length ? saved.map((d) => (
               <div className="ev" key={d.id}>
-                <Link to={`/try/deal/${d.id}`}><Mark deal={d} /></Link>
-                <Link to={`/try/deal/${d.id}`} style={{ flex: 1, minWidth: 0 }}>
+                <Link to={`/app/deal/${d.id}`}><Mark deal={d} /></Link>
+                <Link to={`/app/deal/${d.id}`} style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}><b>{d.name}</b><span className="sample">Sample</span></div>
                   <div className="sub" style={{ fontSize: 13 }}>{money(d.raised)} of {money(d.goal)} · {d.daysLeft} days left</div>
                 </Link>
                 <button className="go" onClick={() => set((x) => ({ ...x, saved: x.saved.filter((i) => i !== d.id) }))}>Remove</button>
               </div>
-            )) : <div className="empty">Nothing saved yet. Swipe right on a deal, or tap the bookmark in Discover. <Link className="u" to="/try/swipe" style={{ color: "var(--ink)" }}>Start swiping</Link></div>
+            )) : <div className="empty">Nothing saved yet. Swipe right on a deal, or tap the bookmark in Discover. <Link className="u" to="/app/swipe" style={{ color: "var(--ink)" }}>Start swiping</Link></div>
           ) : (
             <>
               <div className="empty">No holdings yet. Investing opens soon through an SEC-registered funding portal. When it does, companies you back show up here with updates from the founders.</div>
@@ -234,7 +234,7 @@ export function Events() {
         <p className="sub" style={{ marginBottom: 14 }}>Meet founders in person with the Catalyst community, {COMMUNITY_SIZE} people and counting.</p>
         <div className="evgrid">
           <div>
-            <Link to={`/try/events/${hero.id}`} className="evhero photo" style={{ backgroundImage: `url(${hero.photo})`, display: "block", color: "#fff" }}><div className="ov" />
+            <Link to={`/app/events/${hero.id}`} className="evhero photo" style={{ backgroundImage: `url(${hero.photo})`, display: "block", color: "#fff" }}><div className="ov" />
               <div className="tx"><span className="dt" style={{ color: "#ddd" }}>{hero.date}</span>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 10, marginTop: 4 }}>
                   <div><b style={{ fontSize: 22, letterSpacing: "-.03em" }}>{hero.title}</b><div style={{ fontSize: 13, opacity: 0.8 }}>{hero.place} · {hero.blurb}</div></div>
@@ -248,7 +248,7 @@ export function Events() {
             {rest.map((e) => (
               <div className="ev" key={e.id}>
                 <div className="photo" style={{ backgroundImage: `url(${e.photo})` }} role="img" aria-label="Past Catalyst event" />
-                <Link to={`/try/events/${e.id}`} style={{ minWidth: 0, flex: 1 }}><div className="dt">{e.date}</div><b style={{ display: "block" }}>{e.title}</b><div className="sub" style={{ fontSize: 13 }}>{e.place}</div></Link>
+                <Link to={`/app/events/${e.id}`} style={{ minWidth: 0, flex: 1 }}><div className="dt">{e.date}</div><b style={{ display: "block" }}>{e.title}</b><div className="sub" style={{ fontSize: 13 }}>{e.place}</div></Link>
                 <Rsvp id={e.id} />
               </div>
             ))}
@@ -276,17 +276,17 @@ export function Profile() {
           <div><span className="lbl">RSVPs</span><b className="num">{s.rsvps.length}</b></div>
           <div><span className="lbl">Est. limit</span><b className="num">{money(regCfLimit(s.income, s.netWorth))}</b></div>
         </div>
-        <Link className="it" to="/try/settings">Settings<span>Identity, limit, bank, alerts →</span></Link>
-        <Link className="it" to="/try/onboarding/4">Interests<span>{s.interests.join(", ") || "None"}</span></Link>
-        <Link className="it" to="/try/onboarding/5">Money check<span className="num">{usd(regCfLimit(s.income, s.netWorth))} est.</span></Link>
+        <Link className="it" to="/app/account">Settings<span>Identity, limit, bank, alerts →</span></Link>
+        <Link className="it" to="/app/welcome/4">Interests<span>{s.interests.join(", ") || "None"}</span></Link>
+        <Link className="it" to="/app/welcome/5">Money check<span className="num">{usd(regCfLimit(s.income, s.netWorth))} est.</span></Link>
         <button className="it" onClick={() => set((x) => ({ ...x, notify: !x.notify }))} aria-pressed={s.notify}>Notifications<i className={`sw ${s.notify ? "on" : ""}`} /></button>
-        <Link className="it" to="/try/onboarding/6">How startup investing works<span>→</span></Link>
+        <Link className="it" to="/app/welcome/6">How startup investing works<span>→</span></Link>
         <Link className="it" to="/terms">Terms<span>→</span></Link>
         <Link className="it" to="/privacy">Privacy<span>→</span></Link>
         <div className="evhero photo" style={{ backgroundImage: `url(${COMMUNITY_PHOTO})`, height: 150, marginTop: 22 }}><div className="ov" />
           <div className="tx"><b style={{ fontSize: 18 }}>Join the real waitlist</b><div style={{ fontSize: 13, opacity: 0.85 }}>Be first in when investing opens.</div></div></div>
         <Link to="/signup" className="btn" style={{ marginTop: 12 }}>Join the waitlist</Link>
-        <button className="btn ghost" style={{ marginTop: 10 }} onClick={() => { localStorage.removeItem("catalyst-try-v1"); nav("/try/onboarding/1"); }}>Reset preview</button>
+        <button className="btn ghost" style={{ marginTop: 10 }} onClick={() => { localStorage.removeItem("catalyst-try-v1"); nav("/app/welcome"); }}>Reset preview</button>
       </div>
     </Shell>
   );

@@ -19,8 +19,8 @@ export default function Onboarding() {
   const [ack, setAck] = useState(false);
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
-  if (!(step >= 1 && step <= 8)) return <Navigate to="/try/onboarding/1" replace />;
-  const next = () => nav(step === 8 ? "/try/swipe" : `/try/onboarding/${step + 1}`);
+  if (!(step >= 1 && step <= 8)) return <Navigate to="/app/welcome" replace />;
+  const next = () => nav(step === 8 ? "/app/swipe" : `/app/welcome/${step + 1}`);
   const counted = step >= 2 && step <= 7;
   const n = step <= 3 ? 1 : step - 2; // 1..6 progress
 

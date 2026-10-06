@@ -15,7 +15,7 @@ export function Inbox() {
   const list = THREADS.filter((t) => f === "all" || t.kind === f);
   return (
     <div className="cx"><div className="page">
-      <SubTop title="Messages" back="/try/swipe" />
+      <SubTop title="Messages" back="/app/swipe" />
       <div className="chips" style={{ padding: "14px 20px 6px" }}>
         {([["all", "All"], ["founder", "Founders"], ["member", "People"], ["group", "Event groups"]] as const).map(([k, l]) =>
           <button key={k} className={`chip ${f === k ? "on" : ""}`} onClick={() => setF(k)}>{l}</button>)}
@@ -26,7 +26,7 @@ export function Inbox() {
         const un = t.unread && !s.readThreads.includes(t.id);
         const lastText = "who" in last && last.who ? `${last.who}: ${last.text}` : last.text;
         return (
-          <Link key={t.id} to={`/try/inbox/${t.id}`} className={`th ${un ? "un" : ""}`}>
+          <Link key={t.id} to={`/app/inbox/${t.id}`} className={`th ${un ? "un" : ""}`}>
             <Av name={t.name} group={t.kind === "group"} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="nm"><span><b>{t.name}</b> <span className="sample">Sample</span></span><span className="dt" style={{ fontSize: 11, color: "var(--mute)" }}>{last.time}</span></div>
@@ -52,7 +52,7 @@ export function ThreadPage() {
   useEffect(() => { if (t && !s.readThreads.includes(t.id)) set((x) => ({ ...x, readThreads: [...x.readThreads, t.id] })); }, [t?.id]);
   const mine = t ? s.sent[t.id] || [] : [];
   useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [mine.length]);
-  if (!t) return <Navigate to="/try/inbox" replace />;
+  if (!t) return <Navigate to="/app/inbox" replace />;
   const send = (e: React.FormEvent) => {
     e.preventDefault();
     const v = text.trim(); if (!v) return;
@@ -62,7 +62,7 @@ export function ThreadPage() {
   let prevWho = "";
   return (
     <div className="cx"><div className="page">
-      <SubTop title={t.name} back="/try/inbox" right={<Av name={t.name} size={36} group={t.kind === "group"} />} />
+      <SubTop title={t.name} back="/app/inbox" right={<Av name={t.name} size={36} group={t.kind === "group"} />} />
       <div style={{ textAlign: "center", padding: "18px 20px 0" }}>
         <div style={{ fontSize: 13, color: "var(--mute)" }}>{t.sub}{t.members ? ` · ${t.members} members` : ""} · <span className="sample">Sample</span></div>
         {t.kind === "founder" && <div className="pub" style={{ textAlign: "left", marginTop: 12 }}><Ic d={I.shield} size={16} /><span>Founders can't discuss their raise in DMs. Ask about the deal in its public Questions tab so every investor sees the answer.</span></div>}
@@ -95,13 +95,13 @@ export function EventPage() {
   const e = EVENTS.find((x) => x.id === useParams().id);
   const [s, set] = useTry();
   useNoindex(e?.title || "Event");
-  if (!e) return <Navigate to="/try/events" replace />;
+  if (!e) return <Navigate to="/app/events" replace />;
   const going = s.rsvps.includes(e.id);
   const group = THREADS.find((t) => t.kind === "group" && t.name.toLowerCase().includes(e.title.split(" ")[0].toLowerCase()));
   return (
     <div className="cx"><div className="page" style={{ paddingBottom: 110 }}>
       <div className="evhero photo" style={{ backgroundImage: `url(${e.photo})`, borderRadius: 0, height: 300 }}><div className="ov" />
-        <Link to="/try/events" className="ic" aria-label="Back" style={{ position: "absolute", top: 16, left: 16, background: "#fff" }}><Ic d={I.back} size={18} /></Link>
+        <Link to="/app/events" className="ic" aria-label="Back" style={{ position: "absolute", top: 16, left: 16, background: "#fff" }}><Ic d={I.back} size={18} /></Link>
         <div className="tx"><span className="dt" style={{ color: "#ddd" }}>{e.date}</span><b style={{ display: "block", fontSize: 28, letterSpacing: "-.03em", marginTop: 4 }}>{e.title}</b></div>
       </div>
       <div style={{ padding: "6px 20px" }}>
@@ -110,7 +110,7 @@ export function EventPage() {
         <div className="it" style={{ cursor: "default" }}>When<span>{e.date.replace(/ · /g, ", ")}</span></div>
         <div className="it" style={{ cursor: "default" }}>Cost<span>Free</span></div>
         <div className="sec"><h2>What to expect</h2><p>{e.blurb} Hosted by the Catalyst community, {COMMUNITY_SIZE} people in NYC. No pitch to you, no pressure to invest. Come to learn and meet people.</p></div>
-        {group && <Link to={`/try/inbox/${group.id}`} className="th" style={{ padding: "14px 0" }}><Av name={group.name} group /><div style={{ flex: 1 }}><b>Event group chat</b><div className="pv">{group.members} people going are chatting</div></div><span>→</span></Link>}
+        {group && <Link to={`/app/inbox/${group.id}`} className="th" style={{ padding: "14px 0" }}><Av name={group.name} group /><div style={{ flex: 1 }}><b>Event group chat</b><div className="pv">{group.members} people going are chatting</div></div><span>→</span></Link>}
         <p className="sub" style={{ fontSize: 12, marginTop: 10 }}>Preview schedule. RSVPs stay on this device.</p>
       </div>
       <div className="sticky"><div className="wrap">
@@ -130,12 +130,12 @@ export function Settings() {
   );
   return (
     <div className="cx"><div className="page">
-      <SubTop title="Settings" back="/try/profile" />
+      <SubTop title="Settings" back="/app/profile" />
       <div style={{ padding: "8px 20px" }}>
-        <Row to="/try/settings/identity" d={I.shield} label="Verify identity" val={s.idVerified ? "Verified" : "Not yet"} ok={s.idVerified} />
-        <Row to="/try/settings/limit" d={I.chart} label="Investing limit estimate" val={money(lim)} ok />
-        <Row to="/try/settings/bank" d={I.bank} label="Bank account" val={s.bankLinked ? "Linked" : "Not linked"} ok={s.bankLinked} />
-        <Row to="/try/settings/notifications" d={I.bell} label="Notifications" val={`${s.notifPrefs.length} on`} ok />
+        <Row to="/app/account/identity" d={I.shield} label="Verify identity" val={s.idVerified ? "Verified" : "Not yet"} ok={s.idVerified} />
+        <Row to="/app/account/limit" d={I.chart} label="Investing limit estimate" val={money(lim)} ok />
+        <Row to="/app/account/bank" d={I.bank} label="Bank account" val={s.bankLinked ? "Linked" : "Not linked"} ok={s.bankLinked} />
+        <Row to="/app/account/notifications" d={I.bell} label="Notifications" val={`${s.notifPrefs.length} on`} ok />
         <p className="sub" style={{ fontSize: 12, marginTop: 16 }}>Preview. Nothing here is sent anywhere or saved to a server.</p>
       </div>
     </div></div>
@@ -144,7 +144,7 @@ export function Settings() {
 
 function SetPage({ title, children }: { title: string; children: React.ReactNode }) {
   useNoindex(title);
-  return <div className="cx"><div className="page"><SubTop title={title} back="/try/settings" /><div style={{ padding: "18px 20px 40px" }}>{children}</div></div></div>;
+  return <div className="cx"><div className="page"><SubTop title={title} back="/app/account" /><div style={{ padding: "18px 20px 40px" }}>{children}</div></div></div>;
 }
 
 export function SetIdentity() {
@@ -163,7 +163,7 @@ export function SetIdentity() {
     <label className="field"><span className="lbl">Date of birth</span><input value={dob} onChange={(e) => setDob(e.target.value)} placeholder="MM / DD / YYYY" inputMode="numeric" /></label>
     <label className="field"><span className="lbl">Last 4 of SSN</span><input value={ssn} onChange={(e) => setSsn(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="••••" inputMode="numeric" /></label>
     <div className="pub"><Ic d={I.shield} size={16} /><span>Preview only. Please don't type real details. Nothing you enter leaves this page or gets saved.</span></div>
-    <button className="btn" style={{ marginTop: 16 }} disabled={!name || dob.length < 6 || ssn.length < 4} onClick={() => { set((x) => ({ ...x, idVerified: true })); nav("/try/settings"); }}>Verify</button>
+    <button className="btn" style={{ marginTop: 16 }} disabled={!name || dob.length < 6 || ssn.length < 4} onClick={() => { set((x) => ({ ...x, idVerified: true })); nav("/app/account"); }}>Verify</button>
   </SetPage>;
 }
 
