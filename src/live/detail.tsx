@@ -47,7 +47,7 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   const [qs, setQs] = useState<QRow[]>([]); const [qErr, setQErr] = useState("");
   const loadQs = () => void listQuestions(id).then((r) => { setQs(r.data ?? []); setQErr(r.ok ? "" : r.missing ? "Q&A opens soon." : r.error ?? ""); });
   useEffect(loadQs, [id]);
-  const isOwner = !!uid && (c as unknown as { ownerId?: string })?.ownerId === uid;
+  const isOwner = !!uid && c?.ownerId === uid;
   const [amt, setAmt] = useState(""); const [ack, setAck] = useState(false); const [resMsg, setResMsg] = useState("");
   const scroller = useRef<HTMLDivElement>(null); const nav = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState<SectionId>(start ?? "overview");

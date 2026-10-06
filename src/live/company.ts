@@ -16,6 +16,7 @@ export type Company = Deal & {
   model: { headline: string; price: string; points: string[] };
   docs: Doc[]; updates: Update[]; risks: string[]; eventIds: string[];
   chapters: PitchChapter[];
+  ownerId?: string | null;
 };
 
 export { DETAIL_COMPANIES as COMPANIES } from "@/features/catalog";
