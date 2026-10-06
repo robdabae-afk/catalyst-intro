@@ -3,7 +3,7 @@
 //   If that module is missing or throws missing_table, we FAIL CLOSED. No sample fallback.
 // - otherwise: local sample backend, and the UI shows a "demo, sample data" banner.
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient, type QueryKey } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { PlatformError, type PlatformApi, type Session } from "./contract";
 import { sampleApi } from "./sample";
 
@@ -57,21 +57,64 @@ export function errText(e: unknown): string {
   return (e as Error)?.message || "Something went wrong.";
 }
 
+// ---- Identity tracking (security) ----
+// Private queries (profile, inbox, RSVPs, admin data) must never outlive the identity that loaded them.
+// One module-level store is shared by every useSession mount, so the cache is cleared exactly once per change.
+type SessState = { loading: boolean; session: Session | null };
+let sess: SessState = { loading: true, session: null };
+let identity = "pending"; // "pending" | "anon" | `${userId}|${role}`
+let epoch = 0; // bumps on every auth event; stale getSession results are dropped
+const listeners = new Set<() => void>();
+const clients = new Set<QueryClient>();
+let started = false;
+
+function idOf(s: Session | null) { return s ? `${s.userId}|${s.role}` : "anon"; }
+
+function purge(qc: QueryClient) {
+  void qc.cancelQueries({ queryKey: ["p"] });
+  qc.removeQueries({ queryKey: ["p"], type: "inactive" });
+  void qc.resetQueries({ queryKey: ["p"] }); // drops data of active queries, refetches under new identity
+}
+
+function apply(s: Session | null) {
+  const next = idOf(s);
+  const changed = next !== identity;
+  identity = next;
+  sess = { loading: false, session: s };
+  if (changed) clients.forEach(purge);
+  listeners.forEach((l) => l());
+}
+
+function start() {
+  if (started) return;
+  started = true;
+  const myEpoch = epoch;
+  api.getSession()
+    .then((s) => { if (epoch === myEpoch) apply(s); })
+    .catch(() => { if (epoch === myEpoch) apply(null); });
+  api.onSession((s) => { epoch++; apply(s); });
+}
+
 export function useSession() {
-  const [state, set] = useState<{ loading: boolean; session: Session | null }>({ loading: true, session: null });
+  const qc = useQueryClient();
+  const [state, set] = useState<SessState>(sess);
   useEffect(() => {
-    let alive = true;
-    api.getSession().then((s) => alive && set({ loading: false, session: s })).catch(() => alive && set({ loading: false, session: null }));
-    const off = api.onSession((s) => set({ loading: false, session: s }));
-    return () => { alive = false; off(); };
-  }, []);
+    clients.add(qc);
+    const l = () => set(sess);
+    listeners.add(l);
+    start();
+    set(sess);
+    return () => { listeners.delete(l); };
+  }, [qc]);
   return state;
 }
 
 export function useP<T>(key: QueryKey, fn: () => Promise<T>, enabled = true) {
-  return useQuery({ queryKey: ["p", ...key], queryFn: fn, enabled, retry: (n, e) => !(e instanceof PlatformError) && n < 1 });
+  const qc = useQueryClient();
+  useEffect(() => { clients.add(qc); start(); }, [qc]);
+  return useQuery({ queryKey: ["p", identity, ...key], queryFn: fn, enabled, retry: (n, e) => !(e instanceof PlatformError) && n < 1 });
 }
 export function useAct<A, R>(fn: (a: A) => Promise<R>, invalidate: QueryKey[] = [[]]) {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: fn, onSuccess: () => invalidate.forEach((k) => qc.invalidateQueries({ queryKey: ["p", ...k] })) });
+  return useMutation({ mutationFn: fn, onSuccess: () => invalidate.forEach((k) => qc.invalidateQueries({ queryKey: k.length ? ["p", identity, ...k] : ["p"] })) });
 }
