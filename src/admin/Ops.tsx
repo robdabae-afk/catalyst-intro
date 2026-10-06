@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { Icon } from "../brand/icons";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { Audience, OrgSettings } from "@/lib/platform/contract";
 import { Err, Head, Loading, fmtDate, fmtDay, toast } from "./Layout";
@@ -28,7 +29,7 @@ export function Announcements() {
               <option value="all">All members</option><option value="admins">Admins only (test)</option>
               {(evs.data || []).filter((e) => e.status === "published").map((e) => <option key={e.id} value={e.id}>Going to {e.title}</option>)}
             </select></label>
-          <div className="ad-row"><button className="b k" disabled={send.isPending || !title.trim() || !body.trim()}>{send.isPending ? "Sending…" : "Send announcement"}</button><span className="note">In-app notification. Email delivery depends on backend setup.</span></div>
+          <div className="ad-row"><button className="b k" disabled={send.isPending || !title.trim() || !body.trim()}>{!send.isPending && <Icon name="send" size={15} />}{send.isPending ? "Sending…" : "Send announcement"}</button><span className="note">In-app notification. Email delivery depends on backend setup.</span></div>
         </form>
         <div>
           <span className="lbl">Preview</span>

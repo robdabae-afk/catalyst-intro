@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Icon } from "../brand/icons";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { EventInput, EventStatus, Rsvp, RsvpStatus } from "@/lib/platform/contract";
@@ -14,7 +15,7 @@ export function EventsList() {
   const rows = (q.data || []).filter((e) => f === "draft" ? e.status === "draft" : f === "past" ? e.startsAt < nowIso : e.startsAt >= nowIso && e.status !== "draft");
   return (
     <>
-      <Head k="Community" title="Events"><Link className="b k" to="/admin/events/new">New event</Link></Head>
+      <Head k="Community" title="Events"><Link className="b k" to="/admin/events/new"><Icon name="plus" size={15} />New event</Link></Head>
       <div className="ad-body fade">
         <div className="seg" style={{ marginBottom: 16 }}>{(["upcoming", "past", "draft"] as const).map((x) => <button key={x} className={f === x ? "on" : ""} onClick={() => setF(x)}>{x[0].toUpperCase() + x.slice(1)}</button>)}</div>
         {q.isLoading ? <Loading /> : q.error ? <Err e={q.error} /> : rows.length === 0 ? <div className="empty">Nothing here.</div> : (
@@ -80,7 +81,7 @@ export function EventForm() {
               {v.coverUrl && <button type="button" className="lnk note" onClick={() => set("coverUrl", null)}>Remove</button>}</div>
           </div>
           <div className="ad-row" style={{ borderTop: "1px solid var(--line)", paddingTop: 18 }}>
-            <button className="b k" disabled={busy} onClick={(e) => save(e, "published")}>{busy ? "Saving…" : "Publish"}</button>
+            <button className="b k" disabled={busy} onClick={(e) => save(e, "published")}>{!busy && <Icon name="publish" size={15} />}{busy ? "Saving…" : "Publish"}</button>
             <button className="b" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</button>
             {id && v.status === "published" && <button className="b q" type="button" disabled={busy} onClick={(e) => save(e, "cancelled")}>Cancel event</button>}
           </div>
@@ -122,9 +123,9 @@ export function EventDetail() {
   return (
     <>
       <Head k={fmtDate(e.startsAt)} title={e.title}>
-        <Link className="b" to={`/admin/events/${id}/edit`}>Edit</Link>
-        <button className="b q" onClick={() => csv(rs.data || [], e.title)} disabled={!rs.data?.length}>Export CSV</button>
-        <button className="b q" onClick={() => { if (confirm(`Delete "${e.title}" and all its RSVPs?`)) del.mutateAsync(undefined).then(() => nav("/admin/events")).catch((x) => toast(errText(x))); }}>Delete</button>
+        <Link className="b" to={`/admin/events/${id}/edit`}><Icon name="edit" size={15} />Edit</Link>
+        <button className="b q" onClick={() => csv(rs.data || [], e.title)} disabled={!rs.data?.length}><Icon name="export" size={15} />Export CSV</button>
+        <button className="b q" onClick={() => { if (confirm(`Delete "${e.title}" and all its RSVPs?`)) del.mutateAsync(undefined).then(() => nav("/admin/events")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</button>
       </Head>
       <div className="ad-body fade">
         <div className="stats" style={{ marginBottom: 28 }}>

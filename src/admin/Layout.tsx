@@ -1,13 +1,15 @@
 import { ReactNode, useEffect, useState } from "react";
+import { Icon, type IconName } from "../brand/icons";
+import "../brand/brand.css";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { api, errText, isSample, useP, useSession } from "@/lib/platform/client";
 import { resetSample, setSampleRole } from "@/lib/platform/sample";
 import "./admin.css";
 
-const NAV: [string, string, keyof Counts | null][] = [
-  ["/admin", "Dashboard", null], ["/admin/events", "Events", "eventsUpcoming"], ["/admin/deals", "Deals", "dealsPreview"],
-  ["/admin/questions", "Q&A", "questionsOpen"], ["/admin/members", "Members", "members"], ["/admin/announcements", "Announcements", null],
-  ["/admin/waitlist", "Waitlist", "waitlist"], ["/admin/settings", "Settings", null],
+const NAV: [string, string, keyof Counts | null, IconName][] = [
+  ["/admin", "Dashboard", null, "dashboard"], ["/admin/events", "Events", "eventsUpcoming", "events"], ["/admin/deals", "Deals", "dealsPreview", "deals"],
+  ["/admin/questions", "Q&A", "questionsOpen", "qa"], ["/admin/members", "Members", "members", "members"], ["/admin/announcements", "Announcements", null, "announce"],
+  ["/admin/waitlist", "Waitlist", "waitlist", "waitlist"], ["/admin/settings", "Settings", null, "settings"],
 ];
 type Counts = { eventsUpcoming: number; dealsPreview: number; questionsOpen: number; members: number; waitlist: number };
 
@@ -81,9 +83,9 @@ export default function AdminLayout() {
   const stats = useP(["adminStats"], () => api.adminStats());
   const { session } = useSession();
   const c = stats.data as Counts | undefined;
-  const links = (cls: string) => NAV.map(([to, label, key]) => (
+  const links = (cls: string) => NAV.map(([to, label, key, ic]) => (
     <NavLink key={to} to={to} end={to === "/admin"} className={({ isActive }) => (isActive ? "on" : "") + cls}>
-      <span>{label}</span>{key && c && <span className="num">{c[key]}</span>}
+      <span className="ad-nl"><Icon name={ic} size={18} />{label}</span>{key && c && <span className="num">{c[key]}</span>}
     </NavLink>
   ));
   return (

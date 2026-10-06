@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { Icon } from "../brand/icons";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { DealInput, DealStatus, Role } from "@/lib/platform/contract";
@@ -12,7 +13,7 @@ export function DealsList() {
   const nav = useNavigate();
   return (
     <>
-      <Head k="Listings" title="Deals"><Link className="b k" to="/admin/deals/new">New deal</Link></Head>
+      <Head k="Listings" title="Deals"><Link className="b k" to="/admin/deals/new"><Icon name="plus" size={15} />New deal</Link></Head>
       <div className="ad-body fade">
         <div className="err" style={{ marginBottom: 18 }}>{NOTICE}</div>
         {q.isLoading ? <Loading /> : q.error ? <Err e={q.error} /> : !q.data?.length ? <div className="empty">No deals yet.</div> : (
@@ -58,7 +59,7 @@ export function DealForm() {
     <>
       <Head k={id ? "Edit deal" : "New deal"} title={v.name || "New deal"}>
         {id && v.status === "preview" && <Link className="b q" to={`/app/deal/${v.slug || id}`}>View in app</Link>}
-        {id && <button className="b q" onClick={() => { if (confirm("Delete this deal?")) del.mutateAsync(undefined).then(() => nav("/admin/deals")).catch((x) => toast(errText(x))); }}>Delete</button>}
+        {id && <button className="b q" onClick={() => { if (confirm("Delete this deal?")) del.mutateAsync(undefined).then(() => nav("/admin/deals")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</button>}
       </Head>
       <div className="ad-body fade">
         <form className="f" onSubmit={(e) => save(e)}>
@@ -87,7 +88,7 @@ export function DealForm() {
           </div>
           <label className="ad-row"><input type="checkbox" checked={v.isSample} onChange={(e) => set("isSample", e.target.checked)} /><span><b>Sample / fictional company</b> <span className="note">shows a "Sample" label everywhere in the app</span></span></label>
           <div className="ad-row" style={{ borderTop: "1px solid var(--line)", paddingTop: 18 }}>
-            <button className="b k" disabled={busy} onClick={(e) => save(e, "preview")}>Show as preview</button>
+            <button className="b k" disabled={busy} onClick={(e) => save(e, "preview")}><Icon name="publish" size={15} />Show as preview</button>
             <button className="b" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</button>
             {id && <button className="b q" disabled={busy} onClick={(e) => save(e, "archived")}>Archive</button>}
           </div>

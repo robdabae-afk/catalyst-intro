@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Icon } from "../brand/icons";
 import { api, useP } from "@/lib/platform/client";
 import { Err, Head, Loading, fmtDate } from "./Layout";
 
@@ -15,7 +16,7 @@ export default function Dashboard() {
   ];
   return (
     <>
-      <Head k="Overview" title="Dashboard"><Link className="b k" to="/admin/events/new">New event</Link><Link className="b" to="/admin/announcements">Announce</Link></Head>
+      <Head k="Overview" title="Dashboard"><Link className="b k" to="/admin/events/new"><Icon name="plus" size={15} />New event</Link><Link className="b" to="/admin/announcements"><Icon name="announce" size={15} />Announce</Link></Head>
       <div className="ad-body fade">
         {s.error ? <Err e={s.error} /> : (
           <div className="stats">
