@@ -1,6 +1,7 @@
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import "./features.css";
-import { IBell, IHome, IMe, ISearch, IWatch, IBack } from "./icons";
+import { IBack } from "./icons";
+import { Icon, type IconName } from "./bicons";
 import { unreadCount, useStore } from "./store";
 import Home from "./screens/Home";
 import Search from "./screens/Search";
@@ -18,11 +19,11 @@ function Tabs({ cls }: { cls: string }) {
   const [s] = useStore();
   const n = unreadCount(s);
   const items = [
-    { to: "", label: "Home", I: IHome, end: true },
-    { to: "search", label: "Search", I: ISearch },
-    { to: "watchlist", label: "Watchlist", I: IWatch },
-    { to: "inbox", label: "Inbox", I: IBell, badge: n },
-    { to: "me", label: "Me", I: IMe },
+    { to: "", label: "Home", I: "swipe" as IconName, end: true },
+    { to: "search", label: "Search", I: "search" as IconName },
+    { to: "watchlist", label: "Watchlist", I: "save" as IconName },
+    { to: "inbox", label: "Inbox", I: "bell" as IconName, badge: n },
+    { to: "me", label: "Me", I: "profile" as IconName },
   ];
   return (
     <nav className={cls} aria-label="Main">
@@ -30,7 +31,7 @@ function Tabs({ cls }: { cls: string }) {
       {items.map(({ to, label, I, end, badge }) => (
         <NavLink key={label} to={`${BASE}/${to}`} end={end} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}
           aria-label={badge ? `${label}, ${badge} unread` : label}>
-          <I />{label}{badge ? <span className="cf-badge">{badge}</span> : null}
+          <Icon name={I} size={22} />{label}{badge ? <span className="cf-badge">{badge}</span> : null}
         </NavLink>
       ))}
       {cls === "cf-side" && <div className="cf-side-foot"><b>Investing opens soon.</b><br /><span className="dim">Portal registration pending. Everything here is sample content.</span></div>}

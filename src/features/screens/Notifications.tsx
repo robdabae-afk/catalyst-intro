@@ -1,13 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Head } from "../FeaturesApp";
-import { KIND_LABEL, NOTIFS, NotifKind } from "../data";
-import { IBell, IPitch, IUpdate, ICal, IQA, IUserPlus, IUp, IX } from "../icons";
+import { byId, KIND_LABEL, NOTIFS, NotifKind, Notif } from "../data";
+import { IX } from "../icons";
 import { setState, unreadCount, useStore } from "../store";
 import { Switch } from "../parts";
+import { Duo, Icon } from "../hud";
+import type { IconName } from "../bicons";
 
-const ICON: Record<NotifKind, typeof IBell> = { new_pitch: IPitch, founder_update: IUpdate, event_reminder: ICal, qa_answered: IQA, new_follower: IUserPlus, raise_milestone: IUp };
+const ICON: Record<NotifKind, IconName> = { new_pitch: "pitch", founder_update: "announce", event_reminder: "rsvp", qa_answered: "qa", new_follower: "mutual", raise_milestone: "traction" };
+const SHORT: Record<NotifKind, string> = { new_pitch: "New pitch", founder_update: "Update", event_reminder: "Event", qa_answered: "Q&A", new_follower: "Follower", raise_milestone: "Milestone" };
 const KINDS = Object.keys(KIND_LABEL) as NotifKind[];
+
+function Lead({ x }: { x: Notif }) {
+  const c = x.company ? byId(x.company) : undefined;
+  if (c) return <Duo c={c} size={42} />;
+  if (x.kind === "new_follower") return <span className="duo" style={{ width: 50, height: 50 }}><img className="face" src="/x/founder-tally.jpg" alt="" style={{ width: 46, height: 46 }} /></span>;
+  return <span className="ib" style={{ width: 50, height: 50 }}><Icon name={ICON[x.kind]} size={22} /></span>;
+}
+
+function Thumb({ x }: { x: Notif }) {
+  const c = x.company ? byId(x.company) : undefined;
+  if (x.thumb === "pitch" && c) return <span className="nt-thumb"><img src={c.img} alt="" /><span className="play"><Icon name="play" size={13} /></span><span className="dur">1:30</span></span>;
+  if (x.thumb === "event") return <span className="nt-thumb"><img src="/x/ev-1.jpg" alt="" /><span className="dur">OCT 13</span></span>;
+  return null;
+}
 
 export default function Notifications() {
   const [s] = useStore();
@@ -17,34 +34,41 @@ export default function Notifications() {
   const n = unreadCount(s);
   const list = NOTIFS.filter((x) => s.prefs[x.kind] && (filter === "all" || x.kind === filter));
   const days = ["Today", "Yesterday", "Earlier"] as const;
+  const go = (x: Notif) => { setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/app/x/${x.to}`); };
 
   return (
-    <div>
+    <div style={{ maxWidth: 720 }}>
       <Head title="Inbox" right={<div className="row" style={{ gap: 8 }}>
-        <button className="btn ghost sm" disabled={!n} onClick={() => setState((x) => ({ ...x, readIds: NOTIFS.map((i) => i.id) }))}>Mark all read</button>
-        <button className="btn ghost sm" onClick={() => setOpen(true)} aria-label="Notification settings">Settings</button>
+        <button className="btn ghost sm" disabled={!n} onClick={() => setState((x) => ({ ...x, readIds: NOTIFS.map((i) => i.id) }))}><Icon name="check" size={15} />Read all</button>
+        <button className="ib" onClick={() => setOpen(true)} aria-label="Notification settings"><Icon name="settings" size={18} /></button>
       </div>} />
+      <div className="eyebrow mono" style={{ marginBottom: 12 }}><span className="blink" /><span>{n} unread · sample activity</span></div>
       <div className="chips" role="tablist">
         <button className={`chip${filter === "all" ? " on" : ""}`} onClick={() => setFilter("all")}>All{n ? ` · ${n}` : ""}</button>
         {KINDS.filter((k) => s.prefs[k]).map((k) => (
-          <button key={k} className={`chip${filter === k ? " on" : ""}`} onClick={() => setFilter(k)}>{KIND_LABEL[k].replace(" from companies I follow", "").replace("My ", "")}</button>
+          <button key={k} className={`chip${filter === k ? " on" : ""}`} onClick={() => setFilter(k)}><Icon name={ICON[k]} size={15} />{SHORT[k]}</button>
         ))}
       </div>
-      {days.map((d) => {
+      {days.map((d, di) => {
         const items = list.filter((x) => x.day === d);
         if (!items.length) return null;
         return (
           <section key={d}>
-            <div className="sec"><h2>{d}</h2></div>
+            <div className="sec"><h2><span className="ix">0{di + 1}</span>{d}</h2></div>
             <div className="st">
               {items.map((x) => {
-                const I = ICON[x.kind]; const unread = !s.readIds.includes(x.id);
+                const unread = !s.readIds.includes(x.id);
                 return (
-                  <button key={x.id} className={`nt${unread ? " unread" : ""}`} onClick={() => { setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/app/x/${x.to}`); }}>
-                    <span className="nt-ic"><I size={20} /></span>
-                    <span className="grow"><b>{x.title}</b><p>{x.body}</p><span className="mono dim">{x.ago} ago</span></span>
+                  <div key={x.id} role="button" tabIndex={0} className={`nt${unread ? " unread" : ""}`} onClick={() => go(x)} onKeyDown={(e) => { if (e.key === "Enter") go(x); }}>
+                    <Lead x={x} />
+                    <span className="grow">
+                      <span className="nt-kind mono"><Icon name={ICON[x.kind]} size={13} />{SHORT[x.kind]} · {x.ago}</span>
+                      <b>{x.title}</b><p>{x.body}</p>
+                      {x.thumb === "pitch" && <span className="nt-actions"><span className="btn sm"><Icon name="play" size={12} />Watch pitch</span></span>}
+                    </span>
+                    <Thumb x={x} />
                     {unread && <span className="nt-dot" aria-label="unread" />}
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -52,18 +76,18 @@ export default function Notifications() {
         );
       })}
       {!list.length && <p className="dim" style={{ marginTop: 24 }}>Nothing here yet.</p>}
-      <p className="note" style={{ marginTop: 20 }}>Sample notifications. Raise milestones are illustrative; investing opens soon.</p>
+      <p className="note" style={{ marginTop: 20 }}>Sample notifications, people and companies. Raise milestones are illustrative; investing opens soon.</p>
 
       {open && (
         <div className="sheet-bg" onClick={() => setOpen(false)}>
           <div className="sheet" role="dialog" aria-modal="true" aria-label="Notification settings" onClick={(e) => e.stopPropagation()}>
             <div className="row" style={{ marginBottom: 8 }}><h2 className="grow" style={{ fontSize: 20, fontWeight: 800 }}>Notify me about</h2>
-              <button className="btn ghost sm" onClick={() => setOpen(false)} aria-label="Close"><IX /></button></div>
+              <button className="ib" onClick={() => setOpen(false)} aria-label="Close"><IX /></button></div>
             {KINDS.map((k) => (
-              <div className="set" key={k}><span className="grow">{KIND_LABEL[k]}</span>
+              <div className="set" key={k}><Icon name={ICON[k]} size={18} /><span className="grow">{KIND_LABEL[k]}</span>
                 <Switch label={KIND_LABEL[k]} on={s.prefs[k]} onChange={() => setState((x) => ({ ...x, prefs: { ...x.prefs, [k]: !x.prefs[k] } }))} /></div>
             ))}
-            <div className="set" style={{ borderBottom: 0 }}><span className="grow"><b>When investing opens</b><br /><span className="dim" style={{ fontSize: 12.5 }}>One alert when the funding portal goes live.</span></span>
+            <div className="set" style={{ borderBottom: 0 }}><Icon name="invest" size={18} /><span className="grow"><b>When investing opens</b><br /><span className="dim" style={{ fontSize: 12.5 }}>One alert when the funding portal goes live.</span></span>
               <Switch label="When investing opens" on={s.prefs.investing_opens} onChange={() => setState((x) => ({ ...x, prefs: { ...x.prefs, investing_opens: !x.prefs.investing_opens } }))} /></div>
           </div>
         </div>

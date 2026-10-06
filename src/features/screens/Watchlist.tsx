@@ -3,7 +3,8 @@ import { Head, path } from "../FeaturesApp";
 import { byId, COMPANIES } from "../data";
 import { IClock, IX } from "../icons";
 import { setState, useStore } from "../store";
-import { Mark, Switch } from "../parts";
+import { Switch } from "../parts";
+import { Duo, Icon, Meter, CountUp } from "../hud";
 
 type Key = "raise" | "closing" | "update";
 const ALERTS: { k: Key; label: string }[] = [
@@ -26,20 +27,25 @@ export default function Watchlist() {
           {ids.map((id) => {
             const c = byId(id)!; const w = s.watch[id];
             return (
-              <article className="card" key={id}>
+              <article className="card hud hov" key={id} style={{ padding: 0, overflow: "hidden" }}>
+                <div className="ph" style={{ height: 120, borderRadius: 0 }}><img src={c.img} alt="" loading="lazy" />
+                  <div className="ph-body" style={{ position: "absolute", left: 14, right: 14, bottom: 10 }} >
+                    <div className="row" style={{ gap: 6 }}>{c.raising ? <span className="chip-d"><span className="blink" />Raising</span> : <span className="chip-d">Not raising</span>}<span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
+                  </div></div>
+                <div style={{ padding: 16 }}>
                 <div className="row">
-                  <Link to={path(`company/${id}`)} className="row grow"><Mark c={c} />
-                    <div className="grow"><div className="row" style={{ gap: 8 }}><b className="ell">{c.name}</b><span className="sample">Sample</span></div>
-                      <div className="dim ell" style={{ fontSize: 13 }}>{c.tagline}</div></div></Link>
+                  <Link to={path(`company/${id}`)} className="row grow"><Duo c={c} size={40} />
+                    <div className="grow"><div className="row" style={{ gap: 8 }}><b>{c.name}</b></div>
+                      <div className="dim" style={{ fontSize: 13, lineHeight: 1.35 }}>{c.tagline}</div></div></Link>
                   <button className="btn ghost sm" onClick={() => remove(id)} aria-label={`Remove ${c.name}`}><IX size={14} /></button>
                 </div>
                 {c.raising && (
                   <div style={{ marginTop: 14 }}>
                     <div className="row mono" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-                      <span>{c.progress}% of sample goal</span>
+                      <span><CountUp to={c.progress} suffix="%" /> of sample goal</span>
                       {c.daysLeft !== null && <span className="row" style={{ gap: 5, fontWeight: c.daysLeft <= 7 ? 700 : 500 }}><IClock size={13} />{c.daysLeft <= 7 ? "Closing soon · " : ""}{c.daysLeft}d</span>}
                     </div>
-                    <div className="bar"><b style={{ width: `${c.progress}%` }} /></div>
+                    <Meter pct={c.progress} />
                   </div>
                 )}
                 <div style={{ marginTop: 10 }}>
@@ -47,6 +53,7 @@ export default function Watchlist() {
                     <div className="set" key={k} style={{ padding: "9px 0" }}><span className="grow" style={{ fontSize: 13.5 }}>{label}</span>
                       <Switch label={`${label} alerts for ${c.name}`} on={w[k]} onChange={() => set(id, k)} /></div>
                   ))}
+                </div>
                 </div>
               </article>
             );
@@ -56,11 +63,11 @@ export default function Watchlist() {
         <p className="note" style={{ marginTop: 16 }}>Progress figures are illustrative samples. Investing opens soon; no live raises yet.</p>
       </div>
       <aside>
-        <div className="sec" style={{ marginTop: 22 }}><h2>Raising now</h2></div>
+        <div className="sec" style={{ marginTop: 22 }}><h2><span className="ix">+</span>Raising now</h2></div>
         {suggest.map((c) => (
           <div key={c.id} className="row" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
-            <Mark c={c} sm /><div className="grow"><b className="ell" style={{ display: "block" }}>{c.name}</b><span className="dim" style={{ fontSize: 12.5 }}>{c.sector} · {c.city}</span></div>
-            <button className="btn sm" onClick={() => add(c.id)}>Watch</button>
+            <Duo c={c} size={36} /><div className="grow"><b style={{ display: "block" }}>{c.name}</b><span className="dim" style={{ fontSize: 12.5 }}>{c.sector} · {c.city}</span></div>
+            <button className="btn sm" onClick={() => add(c.id)}><Icon name="save" size={14} />Watch</button>
           </div>
         ))}
       </aside>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Head } from "../FeaturesApp";
-import { IGift } from "../icons";
+import { CountUp, Hud, Icon } from "../hud";
 import { useToast } from "../store";
 import { Toast } from "../parts";
 
@@ -26,20 +26,23 @@ export default function Invite() {
     <div className="g-side">
       <div>
         <Head title="Invite friends" back />
-        <div className="card" style={{ padding: 20 }}>
-          <div className="row"><IGift size={34} /><div className="grow"><b style={{ fontSize: 22, fontFamily: "'JetBrains Mono',monospace" }}>{joined}</b> <span className="dim">friends joined</span></div><span className="sample">Sample</span></div>
+        <Hud className="in" scan tag="Community / NYC"><div className="inv-hero"><img src="/x/ev-1.jpg" alt="" /><img src="/x/ev-2.jpg" alt="" /><img src="/x/founder-stoop.jpg" alt="" /></div></Hud>
+        <p className="note" style={{ marginBottom: 12 }}>Catalyst community events. Founder photo is a sample.</p>
+        <div className="card hud" style={{ padding: 20 }}>
+          <div className="row"><span className="faces"><img className="face" src="/x/founder-tally.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><img className="face" src="/x/founder-brightyard.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><span className="ghost-face">+</span></span>
+            <div className="grow"><b style={{ fontSize: 26 }}><CountUp to={joined} /></b> <span className="dim">friends joined</span></div><span className="sample">Sample</span></div>
           <div className="ladder" aria-hidden>{TIERS.map((x) => <div key={x.n} className={joined >= x.n ? "on" : ""} />)}</div>
           <p style={{ fontSize: 13.5, marginTop: 12 }}>{next ? <><b>{next.n - joined} more</b> to unlock {next.t.toLowerCase()}.</> : "Every perk unlocked."}</p>
-          <div className="link" style={{ marginTop: 18 }}><span className="grow ell">{link}</span><button className="btn sm" onClick={copy}>Copy</button></div>
-          <button className="btn ghost" style={{ width: "100%", marginTop: 10 }} onClick={share}>Share invite</button>
+          <div className="link" style={{ marginTop: 18 }}><span className="grow ell">{link}</span><button className="btn sm" onClick={copy}><Icon name="check" size={13} />Copy</button></div>
+          <button className="btn ghost" style={{ width: "100%", marginTop: 10 }} onClick={share}><Icon name="share" size={16} />Share invite</button>
         </div>
         <p className="note" style={{ marginTop: 14 }}>Perks are community access only. No cash, credits, or securities are given for referrals, and inviting someone isn't investment advice.</p>
       </div>
       <aside>
-        <div className="sec" style={{ marginTop: 22 }}><h2>Early member perks</h2></div>
+        <div className="sec" style={{ marginTop: 22 }}><h2><span className="ix">01</span>Early member perks</h2></div>
         {TIERS.map((x) => (
           <div key={x.n} className={`perk${joined >= x.n ? "" : " lock"}`}>
-            <span className="tick">{joined >= x.n ? "✓" : ""}</span>
+            <span className="tick" style={joined >= x.n ? { background: "var(--ink)", color: "#fff" } : undefined}>{joined >= x.n ? <Icon name="check" size={14} /> : null}</span>
             <div className="grow"><b>{x.t}</b><div className="dim" style={{ fontSize: 13 }}>{x.d}</div></div>
             <span className="mono">{x.n}</span>
           </div>

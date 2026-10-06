@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { useReducedMotion } from "../store";
 import { Head } from "../FeaturesApp";
 import { EVENT } from "../data";
 import { ICal } from "../icons";
+import { Icon } from "../hud";
 import { setState, useStore } from "../store";
 
 // Decorative QR-style matrix from a hash of the pass id. Real passes would encode a signed token server-side.
@@ -24,6 +26,16 @@ export default function Ticket() {
   const [s] = useStore();
   const { cells, n } = useMatrix(EVENT.pass);
   const start = new Date(EVENT.start);
+  const rm = useReducedMotion();
+  const card = useRef<HTMLDivElement>(null);
+  const tilt = (e: React.PointerEvent) => {
+    if (rm || !card.current) return;
+    const r = card.current.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    card.current.style.transform = `perspective(900px) rotateY(${(x - .5) * 10}deg) rotateX(${(.5 - y) * 10}deg)`;
+    card.current.style.setProperty("--hx", `${x * 100}%`); card.current.style.setProperty("--hy", `${y * 100}%`);
+  };
+  const untilt = () => { if (card.current) card.current.style.transform = ""; };
 
   const ics = () => {
     const body = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Catalyst//Sample//EN", "BEGIN:VEVENT", `UID:${EVENT.pass}@catalystintro.com`, `DTSTAMP:${utc(new Date().toISOString())}`,
@@ -37,13 +49,21 @@ export default function Ticket() {
   return (
     <div>
       <Head title="Your pass" back />
-      <div className={`pass${s.checkedIn ? " done" : ""}`}>
-        <div className="row"><span className="mono" style={{ opacity: .7 }}>Catalyst · Admit one</span><span className="sample" style={{ borderColor: "#fff", marginLeft: "auto" }}>Sample</span></div>
-        <h2 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-.03em", marginTop: 14, lineHeight: 1.05 }}>{EVENT.title}</h2>
-        <div className="row" style={{ marginTop: 16, gap: 22, flexWrap: "wrap" }}>
-          <div><div className="mono" style={{ opacity: .6 }}>Date</div><b>{start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" })}</b></div>
-          <div><div className="mono" style={{ opacity: .6 }}>Doors</div><b>{start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" })}</b></div>
-          <div className="grow"><div className="mono" style={{ opacity: .6 }}>Where</div><b>{EVENT.venue}</b></div>
+      <div ref={card} className={`pass${s.checkedIn ? " done" : ""}`} onPointerMove={tilt} onPointerLeave={untilt}>
+        <span className="holo" aria-hidden />
+        <div className="pass-top">
+          <img src="/x/ev-1.jpg" alt="" />
+          <span className="pass-seal" aria-hidden>CATALYST<br />· ADMIT ·<br />ONE</span>
+          <div className="ph-body">
+            <div className="row" style={{ gap: 8 }}><span className="chip-d"><Icon name="ticket" size={12} />Pass</span><span className="sample inv">Sample</span></div>
+            <h2 style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.035em", marginTop: 10, lineHeight: 1 }}>{EVENT.title}</h2>
+          </div>
+        </div>
+        <div className="pass-body">
+        <div className="pass-meta">
+          <div><div className="mono" style={{ opacity: .55 }}>Date</div><b>{start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" })}</b></div>
+          <div><div className="mono" style={{ opacity: .55 }}>Doors</div><b>{start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" })}</b></div>
+          <div><div className="mono" style={{ opacity: .55 }}>Where</div><b>{EVENT.venue}</b></div>
         </div>
         <div className="pass-cut" />
         <div style={{ position: "relative" }}>
@@ -53,7 +73,8 @@ export default function Ticket() {
           </svg>
           {s.checkedIn && <div className="stamp">CHECKED IN</div>}
         </div>
-        <p className="mono" style={{ textAlign: "center", marginTop: 14, opacity: .7 }}>{EVENT.pass} · {EVENT.holder}</p>
+        <div className="seat"><span>{EVENT.pass}</span><span>{EVENT.holder}</span><span>GA</span></div>
+        </div>
       </div>
       <div className="row" style={{ maxWidth: 400, margin: "16px auto 0", gap: 8, flexWrap: "wrap" }}>
         <button className="btn grow" onClick={ics}><ICal size={18} />Add to calendar</button>

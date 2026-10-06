@@ -3,7 +3,8 @@ import { Head } from "../FeaturesApp";
 import { COMPANIES, Sector, Stage } from "../data";
 import { ISearch, IX, IClock } from "../icons";
 import { setState, toggle, useStore } from "../store";
-import { CompanyRow } from "../parts";
+import { ResultCard, Switch } from "../parts";
+import { Icon, SECTOR_ICON } from "../hud";
 
 const SECTORS: Sector[] = ["Fintech", "Climate", "Food", "Health", "Consumer", "AI"];
 const STAGES: Stage[] = ["Pre-seed", "Seed", "Series A"];
@@ -37,10 +38,14 @@ export default function Search() {
         {q && <button type="button" className="btn ghost sm" onClick={() => setQ("")} aria-label="Clear"><IX size={14} /></button>}
       </form>
 
-      <div className="fl"><span className="mono dim">Sector</span><div className="chips">{SECTORS.map((x) => <button key={x} className={`chip${sec.includes(x) ? " on" : ""}`} aria-pressed={sec.includes(x)} onClick={() => setSec(toggle(sec, x))}>{x}</button>)}</div></div>
-      <div className="fl"><span className="mono dim">Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
-      <div className="fl"><span className="mono dim">City</span><div className="chips">
-        <button className={`chip${raising ? " on" : ""}`} aria-pressed={raising} onClick={() => setRaising(!raising)}>Raising now</button>
+      <div className="fl"><span className="mono dim">01 · Sector</span><div className="chips">{SECTORS.map((x) => <button key={x} className={`chip${sec.includes(x) ? " on" : ""}`} aria-pressed={sec.includes(x)} onClick={() => setSec(toggle(sec, x))}><Icon name={SECTOR_ICON[x]} size={15} />{x}</button>)}</div></div>
+      <div className="fl"><span className="mono dim">02 · Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
+      <div className={`toggle-row${raising ? " on" : ""}`}>
+        <span className="ib" style={{ width: 34, height: 34 }}><Icon name="traction" size={18} /></span>
+        <span className="grow"><b style={{ fontSize: 14.5 }}>Raising now</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies with an open sample raise</span></span>
+        <Switch label="Raising now" on={raising} onChange={() => setRaising(!raising)} />
+      </div>
+      <div className="fl"><span className="mono dim">03 · City</span><div className="chips">
         {CITIES.map((x) => <button key={x} className={`chip${city.includes(x) ? " on" : ""}`} aria-pressed={city.includes(x)} onClick={() => setCity(toggle(city, x))}>{x}</button>)}</div></div>
 
       {!active && s.recent.length > 0 && (<>
@@ -54,7 +59,7 @@ export default function Search() {
       </>)}
 
       <div className="sec"><h2>{active ? `${res.length} result${res.length === 1 ? "" : "s"}` : "All companies"}</h2>{active ? <button className="mono dim" style={{ background: "none", border: 0, cursor: "pointer" }} onClick={clear}>Reset</button> : null}</div>
-      <div className="st">{res.map((c) => <CompanyRow key={c.id} c={c} right={c.raising ? <span className="mono">Raising</span> : <span className="mono dim">Not raising</span>} />)}</div>
+      <div className="res st">{res.map((c) => <ResultCard key={c.id} c={c} />)}</div>
       {!res.length && <p className="dim">No sample companies match. Try fewer filters.</p>}
     </div>
   );

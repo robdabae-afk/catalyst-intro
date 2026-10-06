@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CountUp, Hud } from "../hud";
 import { Head, path } from "../FeaturesApp";
 import { ICheck, IArrow } from "../icons";
 import { setState, State, toggle, useStore } from "../store";
@@ -31,14 +32,19 @@ export default function Me() {
     <div className="g-side">
       <div>
         <Head title="Me" />
-        <div className="card row" style={{ gap: 18, padding: 20 }}>
-          <div className="cf-ring" style={{ ["--p" as string]: pct }}><span>{pct}%</span></div>
+        <Hud className="me-hero in" scan>
+          <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>
           <div className="grow">
             <b style={{ fontSize: 18 }}>{pct === 100 ? "You're all set" : "Finish your profile"}</b>
-            <p className="dim" style={{ fontSize: 13.5, marginTop: 4 }}>{done} of {STEPS.length} done. Complete profiles get event invites first.</p>
+            <p style={{ fontSize: 13.5, marginTop: 4, opacity: .7 }}>{done} of {STEPS.length} done. Complete profiles get event invites first.</p>
           </div>
+        </Hud>
+        <div className="stat3">
+          <div><span className="mono dim">Following</span><CountUp to={s.follows.length} /></div>
+          <div><span className="mono dim">Watching</span><CountUp to={Object.keys(s.watch).length} /></div>
+          <div><span className="mono dim">Learned</span><CountUp to={Object.keys(s.learned).length} suffix="/5" /></div>
         </div>
-        <div className="sec"><h2>Checklist</h2></div>
+        <div className="sec"><h2><span className="ix">01</span>Checklist</h2></div>
         <div className="st">
           {STEPS.map((x) => {
             const d = auto.has(x.id);
@@ -53,7 +59,7 @@ export default function Me() {
           })}
         </div>
       </div>
-      <aside className="card" style={{ marginTop: 22 }}>
+      <aside className="card hud" style={{ marginTop: 22, alignSelf: "start" }}>
         <div className="mono dim">Account</div>
         <p style={{ fontSize: 14, marginTop: 8, lineHeight: 1.5 }}>Investing opens soon. Portal registration is pending, so there's nothing to fund yet and no payment info is collected.</p>
         <Link to={path("invite")} className="btn ghost" style={{ width: "100%", marginTop: 14 }}>Invite friends</Link>
