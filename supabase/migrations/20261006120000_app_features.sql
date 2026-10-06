@@ -88,7 +88,7 @@ create index if not exists company_updates_company on public.company_updates(com
 alter table public.company_updates enable row level security;
 -- company_members does not exist yet in this repo; created here so the policy below compiles.
 create table if not exists public.company_members (
-  company_id text not null,
+  company_id uuid not null,
   user_id uuid not null references auth.users(id) on delete cascade,
   role text not null default 'founder' check (role in ('founder','member')),
   created_at timestamptz not null default now(),
