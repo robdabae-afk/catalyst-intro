@@ -3,6 +3,7 @@ import { Icon } from "../brand/icons";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { Audience, OrgSettings } from "@/lib/platform/contract";
 import { Err, Head, Loading, fmtDate, fmtDay, toast } from "./Layout";
+import { Button, ButtonLink } from "@/brand/Button";
 
 const audText = (a: Audience, evs: { id: string; title: string }[] = []) => a === "all" ? "All members" : a === "admins" ? "Admins" : `Going to ${evs.find((e) => e.id === a.eventId)?.title || "event"}`;
 
@@ -29,7 +30,7 @@ export function Announcements() {
               <option value="all">All members</option><option value="admins">Admins only (test)</option>
               {(evs.data || []).filter((e) => e.status === "published").map((e) => <option key={e.id} value={e.id}>Going to {e.title}</option>)}
             </select></label>
-          <div className="ad-row"><button className="b k" disabled={send.isPending || !title.trim() || !body.trim()}>{!send.isPending && <Icon name="send" size={15} />}{send.isPending ? "Sending…" : "Send announcement"}</button><span className="note">In-app notification. Email delivery depends on backend setup.</span></div>
+          <div className="ad-row"><Button type="submit" variant="primary" icon="send" disabled={send.isPending || !title.trim() || !body.trim()}>{send.isPending ? "Sending…" : "Send announcement"}</Button><span className="note">In-app notification. Email delivery depends on backend setup.</span></div>
         </form>
         <div>
           <span className="lbl">Preview</span>
@@ -62,7 +63,7 @@ export function Waitlist() {
               <tbody>{w.data.rows.map((r) => <tr key={r.id}><td className="mono t">{r.email}</td><td className="hm">{r.name || "–"}</td><td data-l="">{r.source ? <span className="pill">{r.source}</span> : "–"}</td><td className="mono note hm">{fmtDay(r.createdAt)}</td></tr>)}</tbody></table>
             <div className="ad-row" style={{ justifyContent: "space-between", marginTop: 14 }}>
               <span className="note mono">{page * PAGE + 1}–{Math.min(total, (page + 1) * PAGE)} of {total}</span>
-              <div className="ad-row"><button className="b sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Prev</button><button className="b sm" disabled={(page + 1) * PAGE >= total} onClick={() => setPage(page + 1)}>Next</button></div>
+              <div className="ad-row"><Button variant="secondary" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Prev</Button><Button variant="secondary" size="sm" disabled={(page + 1) * PAGE >= total} onClick={() => setPage(page + 1)}>Next</Button></div>
             </div>
           </>
         )}
@@ -89,7 +90,7 @@ export function SettingsPage() {
           </div>
           <label className="fl" style={{ maxWidth: 340 }}><span className="lbl">Default event capacity</span><input type="number" min={1} value={v.defaultCapacity} onChange={(e) => setV({ ...v, defaultCapacity: Number(e.target.value) })} /></label>
           <label className="ad-row"><input type="checkbox" checked={v.requireApproval} onChange={(e) => setV({ ...v, requireApproval: e.target.checked })} /><span><b>Require approval for RSVPs</b> <span className="note">new RSVPs start as "pending" until an admin approves</span></span></label>
-          <div><button className="b k" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save settings"}</button></div>
+          <div><Button type="submit" variant="primary" disabled={save.isPending}>{save.isPending ? "Saving…" : "Save settings"}</Button></div>
         </form>
         <div className="sec"><span className="lbl">Compliance</span>
           <div className="list"><div><span>Investment execution</span><span className="pill">Disabled · registration pending</span></div>

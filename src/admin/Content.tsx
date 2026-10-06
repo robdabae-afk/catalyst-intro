@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { DealInput, DealStatus, Role } from "@/lib/platform/contract";
 import { Err, Head, Loading, fmtDay, toast } from "./Layout";
+import { Button, ButtonLink } from "@/brand/Button";
 
 const usd = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
 const NOTICE = "Preview listings only. Catalyst is not offering investments; Reg CF funding portal registration is pending. No money can be committed.";
@@ -13,7 +14,7 @@ export function DealsList() {
   const nav = useNavigate();
   return (
     <>
-      <Head k="Listings" title="Deals"><Link className="b k" to="/admin/deals/new"><Icon name="plus" size={15} />New deal</Link></Head>
+      <Head k="Listings" title="Deals"><ButtonLink variant="primary" icon="plus" to="/admin/deals/new">New deal</ButtonLink></Head>
       <div className="ad-body fade">
         <div className="err" style={{ marginBottom: 18 }}>{NOTICE}</div>
         {q.isLoading ? <Loading /> : q.error ? <Err e={q.error} /> : !q.data?.length ? <div className="empty">No deals yet.</div> : (
@@ -58,8 +59,8 @@ export function DealForm() {
   return (
     <>
       <Head k={id ? "Edit deal" : "New deal"} title={v.name || "New deal"}>
-        {id && v.status === "preview" && <Link className="b q" to={`/app/deal/${v.slug || id}`}>View in app</Link>}
-        {id && <button className="b q" onClick={() => { if (confirm("Delete this deal?")) del.mutateAsync(undefined).then(() => nav("/admin/deals")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</button>}
+        {id && v.status === "preview" && <ButtonLink variant="ghost" iconRight="forward" to={`/app/deal/${v.slug || id}`}>View in app</ButtonLink>}
+        {id && <Button variant="danger" onClick={() => { if (confirm("Delete this deal?")) del.mutateAsync(undefined).then(() => nav("/admin/deals")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</Button>}
       </Head>
       <div className="ad-body fade">
         <form className="f" onSubmit={(e) => save(e)}>
@@ -88,9 +89,9 @@ export function DealForm() {
           </div>
           <label className="ad-row"><input type="checkbox" checked={v.isSample} onChange={(e) => set("isSample", e.target.checked)} /><span><b>Sample / fictional company</b> <span className="note">shows a "Sample" label everywhere in the app</span></span></label>
           <div className="ad-row" style={{ borderTop: "1px solid var(--line)", paddingTop: 18 }}>
-            <button className="b k" disabled={busy} onClick={(e) => save(e, "preview")}><Icon name="publish" size={15} />Show as preview</button>
-            <button className="b" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</button>
-            {id && <button className="b q" disabled={busy} onClick={(e) => save(e, "archived")}>Archive</button>}
+            <Button variant="primary" disabled={busy} onClick={(e) => save(e, "preview")}><Icon name="publish" size={15} />Show as preview</Button>
+            <Button variant="secondary" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</Button>
+            {id && <Button variant="ghost" disabled={busy} onClick={(e) => save(e, "archived")}>Archive</Button>}
           </div>
         </form>
       </div>
@@ -118,14 +119,14 @@ export function Questions() {
               <div className="ad-row" style={{ justifyContent: "space-between" }}>
                 <span className="lbl">{dealName(x.dealId)} · {x.memberName} · {fmtDay(x.createdAt)}</span>
                 <div className="ad-row" style={{ gap: 6 }}>{x.hidden && <span className="pill d">Hidden</span>}{x.answer && <span className="pill k">Answered</span>}
-                  <button className="b sm q" onClick={() => hide.mutateAsync({ id: x.id, h: !x.hidden }).then(() => toast(x.hidden ? "Visible again" : "Hidden from members")).catch((e) => toast(errText(e)))}>{x.hidden ? "Unhide" : "Hide"}</button></div>
+                  <Button variant="ghost" size="sm" onClick={() => hide.mutateAsync({ id: x.id, h: !x.hidden }).then(() => toast(x.hidden ? "Visible again" : "Hidden from members")).catch((e) => toast(errText(e)))}>{x.hidden ? "Unhide" : "Hide"}</Button></div>
               </div>
               <p style={{ fontSize: 16, fontWeight: 600, margin: "8px 0 10px", letterSpacing: "-.01em" }}>{x.body}</p>
               {x.answer && <p style={{ borderLeft: "2px solid var(--ink)", paddingLeft: 12, margin: "0 0 10px" }}>{x.answer}</p>}
               <form className="ad-row" onSubmit={(e) => { e.preventDefault(); const a = (draft[x.id] || "").trim(); if (!a) return;
                 answer.mutateAsync({ id: x.id, a }).then(() => { toast("Answer posted"); setDraft((d) => ({ ...d, [x.id]: "" })); }).catch((er) => toast(errText(er))); }}>
                 <input style={{ flex: 1, minWidth: 200 }} placeholder={x.answer ? "Edit answer" : "Write a public answer"} value={draft[x.id] || ""} onChange={(e) => setDraft((d) => ({ ...d, [x.id]: e.target.value }))} aria-label="Answer" />
-                <button className="b sm k" disabled={!(draft[x.id] || "").trim()}>Post</button>
+                <Button type="submit" variant="primary" size="sm" disabled={!(draft[x.id] || "").trim()}>Post</Button>
               </form>
             </div>))}</div>
         )}

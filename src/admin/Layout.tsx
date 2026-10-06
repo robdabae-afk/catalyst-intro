@@ -5,6 +5,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { api, errText, isSample, useP, useSession } from "@/lib/platform/client";
 import { resetSample, setSampleRole } from "@/lib/platform/sample";
 import "./admin.css";
+import { Button, ButtonLink } from "@/brand/Button";
 
 const NAV: [string, string, keyof Counts | null, IconName][] = [
   ["/admin", "Dashboard", null, "dashboard"], ["/admin/events", "Events", "eventsUpcoming", "events"], ["/admin/deals", "Deals", "dealsPreview", "deals"],
@@ -68,9 +69,9 @@ function Gate({ children }: { children: ReactNode }) {
           {session ? `${session.email} doesn't have the admin role. Ask an existing admin to grant it in Members.` : "Use your Catalyst account. Admin access is set per account by an existing admin."}
         </p>
         <div className="ad-row">
-          {!isSample && <Link className="b k" to="/app/login?next=/admin">{session ? "Switch account" : "Sign in"}</Link>}
+          {!isSample && <ButtonLink variant="primary" to="/app/login?next=/admin">{session ? "Switch account" : "Sign in"}</ButtonLink>}
           {isSample && (
-            <button className="b k" onClick={() => { setSampleRole("admin"); nav("/admin"); }}>Open local sample admin</button>
+            <Button variant="primary" onClick={() => { setSampleRole("admin"); nav("/admin"); }}>Open local sample admin</Button>
           )}
         </div>
         {isSample && <p className="note" style={{ marginTop: 14 }}>Local sample only. This switch exists only when the live backend is off and never grants access to real data.</p>}

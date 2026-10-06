@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { api, errText, useAct, useP } from "@/lib/platform/client";
 import type { EventInput, EventStatus, Rsvp, RsvpStatus } from "@/lib/platform/contract";
 import { Err, Head, Loading, fmtDate, toast } from "./Layout";
+import { Button, ButtonLink } from "@/brand/Button";
 
 const statusPill = (s: EventStatus) => s === "published" ? <span className="pill o">Published</span> : s === "draft" ? <span className="pill d">Draft</span> : <span className="pill">Cancelled</span>;
 
@@ -15,7 +16,7 @@ export function EventsList() {
   const rows = (q.data || []).filter((e) => f === "draft" ? e.status === "draft" : f === "past" ? e.startsAt < nowIso : e.startsAt >= nowIso && e.status !== "draft");
   return (
     <>
-      <Head k="Community" title="Events"><Link className="b k" to="/admin/events/new"><Icon name="plus" size={15} />New event</Link></Head>
+      <Head k="Community" title="Events"><ButtonLink variant="primary" icon="plus" to="/admin/events/new">New event</ButtonLink></Head>
       <div className="ad-body fade">
         <div className="seg" style={{ marginBottom: 16 }}>{(["upcoming", "past", "draft"] as const).map((x) => <button key={x} className={f === x ? "on" : ""} onClick={() => setF(x)}>{x[0].toUpperCase() + x.slice(1)}</button>)}</div>
         {q.isLoading ? <Loading /> : q.error ? <Err e={q.error} /> : rows.length === 0 ? <div className="empty">Nothing here.</div> : (
@@ -60,7 +61,7 @@ export function EventForm() {
   if (id && existing.error) return <><Head title="Edit event" /><div className="ad-body"><Err e={existing.error} /></div></>;
   return (
     <>
-      <Head k={id ? "Edit" : "New"} title={id ? v.title || "Edit event" : "New event"}><Link className="b q" to={id ? `/admin/events/${id}` : "/admin/events"}>Cancel</Link></Head>
+      <Head k={id ? "Edit" : "New"} title={id ? v.title || "Edit event" : "New event"}><ButtonLink variant="ghost" to={id ? `/admin/events/${id}` : "/admin/events"}>Cancel</ButtonLink></Head>
       <div className="ad-body fade">
         <form className="f" onSubmit={(e) => save(e)}>
           {err && <div className="err" role="alert">{err}</div>}
@@ -77,13 +78,13 @@ export function EventForm() {
           <div className="fl">
             <span className="lbl">Cover photo</span>
             <div className="cover" style={v.coverUrl ? { backgroundImage: `url(${v.coverUrl})`, borderStyle: "solid" } : {}}>{!v.coverUrl && (up ? "Uploading…" : "No cover yet")}</div>
-            <div className="ad-row"><label className="b sm" style={{ cursor: "pointer" }}>{up ? "Uploading…" : "Upload image"}<input type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files?.[0])} /></label>
+            <div className="ad-row"><label className="cb cb-secondary cb-sm" style={{ cursor: "pointer" }}>{up ? "Uploading…" : "Upload image"}<input type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files?.[0])} /></label>
               {v.coverUrl && <button type="button" className="lnk note" onClick={() => set("coverUrl", null)}>Remove</button>}</div>
           </div>
           <div className="ad-row" style={{ borderTop: "1px solid var(--line)", paddingTop: 18 }}>
-            <button className="b k" disabled={busy} onClick={(e) => save(e, "published")}>{!busy && <Icon name="publish" size={15} />}{busy ? "Saving…" : "Publish"}</button>
-            <button className="b" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</button>
-            {id && v.status === "published" && <button className="b q" type="button" disabled={busy} onClick={(e) => save(e, "cancelled")}>Cancel event</button>}
+            <Button variant="primary" disabled={busy} onClick={(e) => save(e, "published")}>{!busy && <Icon name="publish" size={15} />}{busy ? "Saving…" : "Publish"}</Button>
+            <Button variant="secondary" disabled={busy} onClick={(e) => save(e, "draft")}>Save draft</Button>
+            {id && v.status === "published" && <Button variant="danger" type="button" disabled={busy} onClick={(e) => save(e, "cancelled")}>Cancel event</Button>}
           </div>
         </form>
       </div>
@@ -123,9 +124,9 @@ export function EventDetail() {
   return (
     <>
       <Head k={fmtDate(e.startsAt)} title={e.title}>
-        <Link className="b" to={`/admin/events/${id}/edit`}><Icon name="edit" size={15} />Edit</Link>
-        <button className="b q" onClick={() => csv(rs.data || [], e.title)} disabled={!rs.data?.length}><Icon name="export" size={15} />Export CSV</button>
-        <button className="b q" onClick={() => { if (confirm(`Delete "${e.title}" and all its RSVPs?`)) del.mutateAsync(undefined).then(() => nav("/admin/events")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</button>
+        <ButtonLink variant="secondary" icon="edit" to={`/admin/events/${id}/edit`}>Edit</ButtonLink>
+        <Button variant="ghost" onClick={() => csv(rs.data || [], e.title)} disabled={!rs.data?.length}><Icon name="export" size={15} />Export CSV</Button>
+        <Button variant="danger" onClick={() => { if (confirm(`Delete "${e.title}" and all its RSVPs?`)) del.mutateAsync(undefined).then(() => nav("/admin/events")).catch((x) => toast(errText(x))); }}><Icon name="delete" size={15} />Delete</Button>
       </Head>
       <div className="ad-body fade">
         <div className="stats" style={{ marginBottom: 28 }}>
@@ -148,9 +149,9 @@ export function EventDetail() {
                 <td className="mono hm note">{fmtDate(r.createdAt)}</td>
                 <td><label className="ad-row" style={{ gap: 6 }}><input type="checkbox" checked={!!r.checkedInAt} disabled={r.status !== "approved"} onChange={(x) => act(check.mutateAsync({ r: r.id, on: x.target.checked }), x.target.checked ? `Checked in ${r.memberName}` : "Check-in removed")} /><span className="note">{r.checkedInAt ? "In" : ""}</span></label></td>
                 <td style={{ textAlign: "right" }}><div className="ad-row" style={{ justifyContent: "flex-end", gap: 6 }}>
-                  {r.status !== "approved" && <button className="b sm k" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "approved" }), "Approved")}>Approve</button>}
-                  {(r.status === "pending" || r.status === "approved") && <button className="b sm" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "waitlisted" }), "Moved to waitlist")}>Waitlist</button>}
-                  {r.status !== "declined" && r.status !== "cancelled" && <button className="b sm q" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "declined" }), "Declined")}>Decline</button>}
+                  {r.status !== "approved" && <Button variant="primary" size="sm" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "approved" }), "Approved")}>Approve</Button>}
+                  {(r.status === "pending" || r.status === "approved") && <Button variant="secondary" size="sm" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "waitlisted" }), "Moved to waitlist")}>Waitlist</Button>}
+                  {r.status !== "declined" && r.status !== "cancelled" && <Button variant="danger" size="sm" onClick={() => act(setStatus.mutateAsync({ r: r.id, s: "declined" }), "Declined")}>Decline</Button>}
                 </div></td>
               </tr>))}</tbody>
           </table>
