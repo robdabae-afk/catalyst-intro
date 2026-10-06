@@ -50,6 +50,13 @@
       "when": 1790181241563,
       "tag": "0006_create_exit_fund_contact_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791292964050,
+      "tag": "0007_app_actions",
+      "breakpoints": true
     }
   ]
 }
