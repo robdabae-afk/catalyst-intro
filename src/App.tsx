@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
@@ -52,6 +52,9 @@ import ExitFundMission from "./exitfund/ExitFundMission";
 import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
+import TryOnboarding from "./try/Onboarding";
+import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, Events as TryEvents, Profile as TryProfile } from "./try/Main";
+import { DealPage as TryDeal, Invest as TryInvest } from "./try/Deal";
 import { AuthGuard } from "./components/AuthGuard";
 
 
@@ -168,6 +171,16 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
 
+          {/* /try — app preview (sample data, local only, noindex) */}
+          <Route path="/try" element={<Navigate to="/try/onboarding/1" replace />} />
+          <Route path="/try/onboarding/:step" element={<TryOnboarding />} />
+          <Route path="/try/swipe" element={<TrySwipe />} />
+          <Route path="/try/discover" element={<TryDiscover />} />
+          <Route path="/try/portfolio" element={<TryPortfolio />} />
+          <Route path="/try/events" element={<TryEvents />} />
+          <Route path="/try/profile" element={<TryProfile />} />
+          <Route path="/try/deal/:id" element={<TryDeal />} />
+          <Route path="/try/invest/:id" element={<TryInvest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<RdNotFound />} />
         </Routes>
