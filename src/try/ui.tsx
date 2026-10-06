@@ -1,5 +1,5 @@
 import { useTry } from "./store";
-import { THREADS } from "./threads";
+import { api, isSample, useP, useSession } from "@/lib/platform/client";
 import { ReactNode, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Deal } from "./data";
@@ -103,8 +103,10 @@ export const Progress = ({ deal }: { deal: Deal }) => (
 );
 
 function InboxBtn() {
-  const [s] = useTry();
-  const unread = THREADS.some((t) => t.unread && !s.readThreads.includes(t.id));
+  // Real platform unread state only: no dot when signed out, backend off (sample mode) or on error.
+  const { session } = useSession();
+  const th = useP(["threads"], () => api.listThreads(), !!session && !isSample);
+  const unread = !!session && !isSample && !!th.data?.some((t) => t.unread);
   return (
     <Link to="/app/inbox" className="ic inbox-btn" aria-label={unread ? "Messages, unread" : "Messages"}>
       <Ic d={I.inbox} size={18} />{unread && <i className="dot" />}
