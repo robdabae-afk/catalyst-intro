@@ -135,7 +135,7 @@ export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) 
 
 /* ---------- NOTIFICATIONS ---------- */
 const NOTES: { ic: IconName; txt: string; t: string; fresh?: boolean }[] = [
-  { ic: "chart", txt: "Tally passed 75% of its sample goal", t: "NOW", fresh: true },
+  { ic: "chart", txt: "Tally shipped receipt scanning v2", t: "NOW", fresh: true },
   { ic: "qa", txt: "Lumen Labs answered your question", t: "2M", fresh: true },
   { ic: "events", txt: "Founder Night: 9 spots left", t: "1H" },
   { ic: "announce", txt: "Gridline posted an update", t: "1D" },

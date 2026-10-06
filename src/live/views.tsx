@@ -163,7 +163,6 @@ export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { on
   );
 }
 function Tile({ d, k, onOpen, big }: { d: LiveDeal; k: number; onOpen: (id: string) => void; big?: boolean }) {
-  const pct = Math.round((d.raised / d.goal) * 100);
   return (
     <button type="button" className={`lv-tile${big ? " big" : ""}`} style={{ transitionDelay: `${k * 70}ms` }} onClick={() => onOpen(d.id)}>
       <LiveImage src={d.img} intro={false}>
@@ -172,8 +171,7 @@ function Tile({ d, k, onOpen, big }: { d: LiveDeal; k: number; onOpen: (id: stri
           <span className="lv-mono lv-tag">{big ? `SAMPLE · ${d.cat.toUpperCase()}` : "SAMPLE"}</span>
           <div>
             <strong>{d.name}</strong>
-            <div className="lv-tile-bar"><i style={{ width: `${pct}%` }} /></div>
-            <div className="lv-mono lv-tile-m"><span>{pct}%</span><span>{d.days}D</span><Sparkline data={d.spark} go w={44} h={14} /></div>
+            <div className="lv-mono lv-tile-m"><span>OPENS SOON</span><Sparkline data={d.spark} go w={44} h={14} /></div>
           </div>
         </div>
       </LiveImage>

@@ -69,11 +69,12 @@ export function useCountUp(target: number, go: boolean, reduced: boolean, ms = 1
   const [v, set] = useState(reduced ? target : 0);
   useEffect(() => {
     if (!go) return;
+    set(0);
     if (reduced) { set(target); return; }
     let raf = 0; const t0 = performance.now();
     const step = (t: number) => {
       const p = Math.min(1, (t - t0) / ms);
-      set(target * (1 - Math.pow(1 - p, 3)));
+      set(Math.min(target, target * (1 - Math.pow(1 - p, 3))));
       if (p < 1) raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);

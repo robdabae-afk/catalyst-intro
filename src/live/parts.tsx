@@ -58,34 +58,21 @@ export function Ticker({ start, label = "INVESTORS" }: { start: number; label?: 
   );
 }
 
-/* HUD raise block: count-up, bar fill, ticker, terms, sparkline. */
+/* Raise block: no live raise numbers or ticker. Investing is not open yet. */
 export function RaiseHud({ d, dark, compact }: { d: LiveDeal; dark?: boolean; compact?: boolean }) {
-  const reduced = useReducedMotion();
-  const [ref, seen] = useInView<HTMLDivElement>();
-  const raised = useCountUp(d.raised, seen, reduced);
-  const pct = (raised / d.goal) * 100;
   return (
-    <div ref={ref} className={`lv-hud${dark ? " dk" : ""}${compact ? " cp" : ""}`}>
+    <div className={`lv-hud${dark ? " dk" : ""}${compact ? " cp" : ""}`}>
       <div className="lv-hud-top">
         <div>
-          <div className="lv-big">{usd(raised)}</div>
-          <div className="lv-mono dim">RAISED OF {usd(d.goal)} · SAMPLE</div>
+          <div className="lv-big lv-soon">Investing opens soon</div>
+          <div className="lv-mono dim">SAVE IT AND WE'LL TELL YOU · SAMPLE TERMS</div>
         </div>
-        {!compact && <div className="lv-spk"><Sparkline data={d.spark} go={seen} /><span className="lv-mono dim">MOMENTUM · 12W</span></div>}
-      </div>
-      <div className="lv-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)} aria-label="Sample raise progress">
-        <span style={{ width: `${pct}%` }} />
-        {[25, 50, 75].map((t) => <i key={t} style={{ left: `${t}%` }} />)}
-      </div>
-      <div className="lv-row lv-mono">
-        <span>{Math.round(pct)}%</span>
-        <Ticker start={d.investors} />
       </div>
       {!compact && (
         <div className="lv-terms">
           <div><em>VAL CAP</em><b>{d.cap}</b></div>
           <div><em>MIN</em><b>{d.min}</b></div>
-          <div><em>DAYS LEFT</em><b>{d.days}</b></div>
+          <div><em>INSTRUMENT</em><b>SAFE</b></div>
         </div>
       )}
     </div>

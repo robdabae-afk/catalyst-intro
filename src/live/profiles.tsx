@@ -191,18 +191,17 @@ function CoBody({ d, onOpen }: { d: LiveDeal; onOpen: (r: ProfRef) => void }) {
   const vid = useRef<HTMLVideoElement>(null); const reduced = useReducedMotion();
   const [vref, vseen] = useInView<HTMLDivElement>();
   useEffect(() => { const v = vid.current; if (!v) return; if (vseen && !reduced) v.play().catch(() => {}); else v.pause(); }, [vseen, reduced]);
-  const pct = Math.round((d.raised / d.goal) * 100);
   return <>
-    <Stats items={[["RAISED", d.raised, usd], ["INVESTORS", d.investors], ["FOLLOWERS", d.investors * 3]]} />
+    <Stats items={[["FOLLOWERS", d.investors * 3], ["SAVED", d.investors]]} />
     <div className="lv-team">
       <div className="lv-mono dim">TEAM</div>
       <div className="lv-team-row">{team(d).map((p) => <button key={p.id} type="button" className="lv-team-m" onClick={() => onOpen({ kind: "person", id: p.id })}><Avatar p={p} size={44} ring /><span>{p.name}</span></button>)}</div>
     </div>
     <Mutual n={7} events={["e1"]} />
     <SwipeTabs tabs={["About", "Pitch", "Updates", "Q&A"]}>{[
-      <div className="lv-tabp"><p>{d.line}. Sample company description for UI preview.</p><div className="lv-bar"><span style={{ width: `${pct}%` }} /></div><p className="lv-mono dim">{pct}% OF SAMPLE GOAL · {d.days}D LEFT</p></div>,
-      <div className="lv-tabp" ref={vref}><div className="lv-pitch"><video ref={vid} src={`/live/pitch-${d.id}.mp4`} muted loop playsInline preload="metadata" aria-label="Sample pitch preview, muted" /><span className="lv-pitch-tag lv-mono"><i className="lv-live" />PITCH PREVIEW · SAMPLE</span></div></div>,
-      <div className="lv-tabp">{["Shipped v2 · sample", "Hit 75% of goal · sample", "New retail partner · sample"].map((u, k) => <div key={u} className="lv-row2" style={{ animationDelay: `${k * 80}ms` }}><Icon name="announce" size={17} /><span>{u}</span><b className="lv-mono">{k + 1}W</b></div>)}<Sparkline data={d.spark} go w={260} h={34} /></div>,
+      <div className="lv-tabp"><p>{d.line}. Sample company description for UI preview.</p><p className="lv-mono dim">INVESTING OPENS SOON · SAMPLE</p></div>,
+      <div className="lv-tabp" ref={vref}><div className="lv-pitch"><video ref={vid} src={d.id === "gridline" ? undefined : `/live/pitch-${d.id}.mp4`} poster={d.img} muted loop playsInline preload="metadata" aria-label="Sample pitch preview, muted" /><span className="lv-pitch-tag lv-mono"><i className="lv-live" />PITCH PREVIEW · SAMPLE</span></div></div>,
+      <div className="lv-tabp">{["Shipped v2 · sample", "Utility pilot expanded · sample", "New retail partner · sample"].map((u, k) => <div key={u} className="lv-row2" style={{ animationDelay: `${k * 80}ms` }}><Icon name="announce" size={17} /><span>{u}</span><b className="lv-mono">{k + 1}W</b></div>)}<Sparkline data={d.spark} go w={260} h={34} /></div>,
       <div className="lv-tabp">{["How do you use the money?", "When do you expect to be profitable?"].map((q, k) => <div key={q} className="lv-row2" style={{ animationDelay: `${k * 80}ms` }}><Icon name="qa" size={17} /><span>{q}</span><b className="lv-mono"><Icon name="upvote" size={14} /> {12 - k * 5}</b></div>)}</div>,
     ]}</SwipeTabs>
   </>;

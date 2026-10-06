@@ -665,3 +665,5 @@ p.pp-sub{line-height:1.35;max-width:300px}
 .cd-big{font-variant-numeric:normal}
 .cd-person>:first-child{flex:none}
 .cd-media{scroll-padding-left:22px}
+.pp-next{left:0;right:0;justify-content:center}
+.lv-big.lv-soon{font-size:22px;letter-spacing:-.02em}
