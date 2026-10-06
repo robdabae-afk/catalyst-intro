@@ -16,7 +16,7 @@ Do not expose database credentials or a service-role key in the client. Client c
 
 ## Bootstrap the verified first admin
 
-Have the intended administrator sign up and verify their email normally. Independently verify ownership of that address, then replace the example literal below in the privileged SQL editor. Do not infer this permission from an existing legacy role, user metadata, a public form, or an unverified email. This SQL requires exactly one confirmed account and refuses to run once an admin exists.
+Use an existing confirmed account, or create and verify the intended administrator in the isolated staging Auth setup. Do not enable shared-project platform signup just to bootstrap an admin. Independently verify ownership of that address, then replace the example literal below in the privileged SQL editor. Do not infer this permission from an existing legacy role, user metadata, a public form, or an unverified email. This SQL requires exactly one confirmed account and refuses to run once an admin exists.
 
 ```sql
 DO $$
@@ -41,7 +41,7 @@ Subsequent role changes must use `platform_set_role`. It serializes changes with
 
 All SQL field names are snake_case; map to the requested camelCase in the API. Foreign keys reference `platform_profiles` so call `platform_ensure_profile()` after sign-in, before community writes. It derives email from `auth.users`, defaults role to `user`, and ignores metadata role. Only `name`, `city`, `bio`, `interests`, and `notif_prefs` can be directly updated. Email synchronization is not automatic; existing profile email remains a server-managed snapshot.
 
-`platform_rsvp(p_event_id uuid, p_cancel boolean default false)` returns an RSVP row and is the only member RSVP write path. It locks the event row, makes active repeated RSVP calls idempotent, and chooses `approved`, `pending`, or `waitlisted` from capacity and settings. Cancellation clears check-in. Seats count only approved RSVPs; pending requests do not reserve seats. There is no automatic waitlist promotion after cancellation.
+`platform_rsvp(p_event_id uuid, p_cancel boolean default false)` returns an RSVP row and is the only member RSVP write path. It locks the event row, makes active repeated RSVP calls idempotent, and chooses `approved`, `pending`, or `waitlisted` from capacity and settings. Member cancellation is denied while checked in; an admin must first undo check-in. A permitted cancellation clears any residual check-in timestamp. Declined requests cannot be reset through cancellation or a new request. Seats count only approved RSVPs; pending requests do not reserve seats. There is no automatic waitlist promotion after cancellation.
 
 `platform_admin_rsvp(p_rsvp_id uuid, p_status text default null, p_check_in boolean default null)` returns the updated RSVP. Use it for status and check-in changes; null preserves the existing field. Approval locks the event and verifies capacity, even for admins. Check-in requires approved status. Direct table RSVP writes are not granted. Event capacity decreases below approved occupancy are also rejected.
 
