@@ -45,22 +45,14 @@ export function UpdateCard({ id }: { id: string }) {
   const u = UPDATES.find((x) => x.id === id)!;
   const c = byId(u.company)!;
   return (
-    <article className="card hud hov" style={{ padding: 0, overflow: "hidden" }}>
-      <div className="ph" style={{ height: 150, borderRadius: 0 }}>
-        <img src={c.img} alt="" loading="lazy" />
-        <div className="ph-body" style={{ position: "absolute", left: 14, right: 14, bottom: 12 }}>
-          <div className="row" style={{ gap: 8 }}><span className="chip-d">{u.tag}</span><span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
-        </div>
+    <article className="card hov upd">
+      <div className="grow" style={{ minWidth: 0 }}>
+        <div className="row" style={{ gap: 8, marginBottom: 6 }}><Duo c={c} size={22} /><span style={{ fontSize: 12.5, fontWeight: 600 }}>{c.name}</span><span className="dim" style={{ fontSize: 12 }}>{u.tag} · {u.ago}</span></div>
+        <h3 style={{ fontSize: 14.5, fontWeight: 650, letterSpacing: "-.01em", lineHeight: 1.3 }}>{u.title}</h3>
+        <p className="dim" style={{ fontSize: 13, lineHeight: 1.45, marginTop: 3 }}>{u.body}</p>
+        <Link to={path(`company/${c.id}`)} className="row" style={{ marginTop: 8, gap: 4, fontSize: 12, fontWeight: 600 }}>View company <IArrow size={12} /></Link>
       </div>
-      <div style={{ padding: 16 }}>
-        <div className="row" style={{ marginBottom: 10, gap: 10 }}>
-          <Duo c={c} size={34} />
-          <div className="grow"><b style={{ fontSize: 14 }}>{c.name}</b><div className="mono dim">{c.founder} · {u.ago} ago</div></div>
-        </div>
-        <h3 style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-.01em" }}>{u.title}</h3>
-        <p className="dim" style={{ fontSize: 14, lineHeight: 1.5, marginTop: 6 }}>{u.body}</p>
-        <Link to={path(`company/${c.id}`)} className="row mono" style={{ marginTop: 12, gap: 6 }}>View company <IArrow size={14} /></Link>
-      </div>
+      <div className="ph upd-th"><img src={c.img} alt="" loading="lazy" /></div>
     </article>
   );
 }

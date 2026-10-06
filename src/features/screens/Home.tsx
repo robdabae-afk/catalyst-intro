@@ -21,7 +21,7 @@ export default function Home() {
         <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 210, color: "#fff" }}>
           <img src={top.img} alt="" />
           <div className="ph-body" style={{ position: "absolute", left: 22, right: 22, bottom: 20 }}>
-            <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={36} /><span className="mono" style={{ opacity: .8 }}>{top.sector} · {top.city}</span><span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
+            <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={26} /><span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
             <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
             <p style={{ opacity: .8, fontSize: 14, marginTop: 4 }}>{top.tagline}</p>
             <div className="row" style={{ marginTop: 14, gap: 14 }}>
@@ -35,11 +35,11 @@ export default function Home() {
       <p className="note" style={{ marginTop: 8 }}>Illustrative figures for a sample company.</p>
 
       {!s.prefs.investing_opens ? (
-        <div className="banner" style={{ marginTop: 14 }}>
-          <span className="ib" style={{ background: "transparent", borderColor: "rgba(255,255,255,.35)", color: "#fff" }}><Icon name="bell" size={20} /></span>
+        <div className="banner lite" style={{ marginTop: 14 }}>
+          <span className="ib" style={{ width: 32, height: 32 }}><Icon name="bell" size={16} /></span>
           <div className="grow">
-            <b style={{ fontSize: 16 }}>Investing opens soon</b>
-            <p style={{ fontSize: 13, opacity: .75, marginTop: 3 }}>Portal registration pending. Get one heads up when it's live.</p>
+            <b style={{ fontSize: 14 }}>Investing opens soon</b>
+            <p style={{ fontSize: 12.5, marginTop: 2 }} className="dim">Portal registration pending. Get one heads up when it's live.</p>
           </div>
           <button className="btn sm" onClick={() => setState((x) => ({ ...x, prefs: { ...x.prefs, investing_opens: true } }))}>Notify me</button>
         </div>

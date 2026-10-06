@@ -55,7 +55,7 @@ export default function Ticket() {
           <img src="/x/ev-1.jpg" alt="" />
           <span className="pass-seal" aria-hidden>CATALYST<br />· ADMIT ·<br />ONE</span>
           <div className="ph-body">
-            <div className="row" style={{ gap: 8 }}><span className="chip-d"><Icon name="ticket" size={12} />Pass</span><span className="sample inv">Sample</span></div>
+            <div className="row" style={{ gap: 8 }}><span className="sample inv">Sample</span></div>
             <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.035em", marginTop: 10, lineHeight: 1 }}>{EVENT.title}</h2>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function Ticket() {
         <div className="pass-meta">
           <div><div className="mono" style={{ opacity: .55 }}>Date</div><b>{start.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" })}</b></div>
           <div><div className="mono" style={{ opacity: .55 }}>Doors</div><b>{start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" })}</b></div>
-          <div><div className="mono" style={{ opacity: .55 }}>Where</div><b>{EVENT.venue}</b></div>
+          <div className="pm-w"><div className="mono" style={{ opacity: .55 }}>Where</div><b>{EVENT.venue}</b></div>
         </div>
         <div className="pass-cut" />
         <div style={{ position: "relative" }}>

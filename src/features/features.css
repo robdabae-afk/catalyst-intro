@@ -342,3 +342,14 @@ a.hud:hover .hb.bl,.hud.hov:hover .hb.bl{transform:translate(-3px,3px)}a.hud:hov
 .cf .chip.al{height:24px;padding:0 9px;font-size:11.5px;color:var(--dim)}
 .cf .chip.al.on{border-color:var(--ink);color:var(--ink);background:var(--soft)}
 .fl>.mono{font-size:11.5px;color:var(--dim)}
+/* r3 */
+.upd{display:flex;gap:12px;align-items:flex-start}
+.upd-th{width:76px;height:76px;border-radius:10px;flex:none}
+.banner.lite{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.banner.lite .dim,.banner.lite p{color:var(--dim) !important}
+.pass-meta{grid-template-columns:1fr 1fr !important}
+.pass-meta .pm-w{grid-column:1/-1}
+.pass-top{height:120px}
+.qr{max-width:150px}
+.cf .opt{padding:9px 12px}
+.banner.lite .btn{background:var(--ink);color:#fff !important;border-color:var(--ink)}
