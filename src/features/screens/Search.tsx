@@ -6,7 +6,7 @@ import { setState, toggle, useStore } from "../store";
 import { ResultCard, Switch } from "../parts";
 import { Icon, SECTOR_ICON } from "../hud";
 
-const SECTORS: Sector[] = ["Fintech", "Climate", "Food", "Health", "Consumer", "AI"];
+const SECTORS: Sector[] = ["Fintech", "Climate", "Hardware", "Health", "Consumer", "AI"];
 const STAGES: Stage[] = ["Pre-seed", "Seed", "Series A"];
 const CITIES = [...new Set(COMPANIES.map((c) => c.city))];
 

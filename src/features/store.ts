@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { NOTIFS, NotifKind } from "./data";
 
-const KEY = "catalyst.features.v1";
+const KEY = "catalyst.features.v2";
 
 export interface State {
   readIds: string[];
@@ -18,8 +18,8 @@ export interface State {
 const initial: State = {
   readIds: NOTIFS.filter((n) => n.read).map((n) => n.id),
   prefs: { new_pitch: true, founder_update: true, event_reminder: true, qa_answered: true, new_follower: true, raise_milestone: true, investing_opens: false },
-  watch: { stoop: { raise: true, closing: true, update: true }, brightyard: { raise: true, closing: false, update: true } },
-  follows: ["stoop", "pulsebox"],
+  watch: { lumen: { raise: true, closing: true, update: true }, gridline: { raise: true, closing: false, update: true } },
+  follows: ["lumen", "pulsebox"],
   recent: ["climate brooklyn", "fintech pre-seed"],
   learned: {},
   streak: 0,

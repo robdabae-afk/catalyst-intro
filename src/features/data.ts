@@ -1,5 +1,5 @@
 // All content is SAMPLE. No real companies, stats or raises.
-export type Sector = "Fintech" | "Climate" | "Food" | "Health" | "Consumer" | "AI";
+export type Sector = "Fintech" | "Climate" | "Hardware" | "Health" | "Consumer" | "AI";
 export type Stage = "Pre-seed" | "Seed" | "Series A";
 
 export interface Company {
@@ -10,12 +10,12 @@ export interface Company {
 
 const X = "/x/";
 export const COMPANIES: Company[] = [
-  { id: "stoop", name: "Stoop Coffee Co", tagline: "Canned cold brew from a Brooklyn stoop", sector: "Food", stage: "Pre-seed", city: "Brooklyn", raising: true, progress: 62, daysLeft: 4, founder: "Sample Founder A", img: X + "deal-stoop.jpg", face: X + "founder-stoop.jpg", pitch: X + "pitch-stoop.mp4", backers: 412 },
+  { id: "lumen", name: "Lumen Labs", tagline: "Glasses that caption conversations in real time", sector: "Hardware", stage: "Pre-seed", city: "Brooklyn", raising: true, progress: 62, daysLeft: 4, founder: "Maya O. (sample)", img: X + "deal-lumen.jpg", face: X + "founder-lumen.jpg", pitch: X + "pitch-lumen.mp4", backers: 412 },
   { id: "tally", name: "Tally", tagline: "Bookkeeping that runs from a photo of a receipt", sector: "Fintech", stage: "Seed", city: "New York", raising: true, progress: 38, daysLeft: 19, founder: "Sample Founder B", img: X + "deal-tally.jpg", face: X + "founder-tally.jpg", pitch: X + "pitch-tally.mp4", backers: 688 },
-  { id: "brightyard", name: "Brightyard Farms", tagline: "Rooftop greens grown two miles from you", sector: "Climate", stage: "Seed", city: "Queens", raising: true, progress: 81, daysLeft: 9, founder: "Sample Founder C", img: X + "deal-brightyard.jpg", face: X + "founder-brightyard.jpg", pitch: X + "pitch-brightyard.mp4", backers: 236 },
+  { id: "gridline", name: "Gridline", tagline: "Home batteries that sell power back to the grid at peak hours", sector: "Climate", stage: "Seed", city: "Queens", raising: true, progress: 81, daysLeft: 9, founder: "Sample Founder C", img: X + "deal-gridline.jpg", face: X + "founder-gridline.jpg", backers: 236 },
   { id: "ledgerly", name: "Ledgerly", tagline: "Payroll and tips for hourly crews", sector: "Fintech", stage: "Pre-seed", city: "Austin", raising: false, progress: 0, daysLeft: null, founder: "Sample Founder D", img: X + "deal-ledgerly.jpg", face: X + "founder-ledgerly.jpg", backers: 0 },
   { id: "pulsebox", name: "Pulsebox", tagline: "At-home vitals kit for community clinics", sector: "Health", stage: "Series A", city: "Boston", raising: true, progress: 24, daysLeft: 31, founder: "Sample Founder E", img: X + "deal-pulsebox.jpg", face: X + "founder-pulsebox.jpg", backers: 154 },
-  { id: "parse", name: "Parse Kitchen", tagline: "AI menu costing for small restaurants", sector: "AI", stage: "Pre-seed", city: "San Francisco", raising: false, progress: 0, daysLeft: null, founder: "Sample Founder F", img: X + "deal-parse.jpg", face: X + "founder-parse.jpg", backers: 0 },
+  { id: "parse", name: "Parse", tagline: "AI contract review for teams without a lawyer", sector: "AI", stage: "Pre-seed", city: "San Francisco", raising: false, progress: 0, daysLeft: null, founder: "Sample Founder F", img: X + "deal-parse.jpg", face: X + "founder-parse.jpg", backers: 0 },
 ];
 export const byId = (id: string) => COMPANIES.find((c) => c.id === id);
 
@@ -23,13 +23,13 @@ export type NotifKind = "new_pitch" | "founder_update" | "event_reminder" | "qa_
 export interface Notif { id: string; company?: string; thumb?: string; kind: NotifKind; title: string; body: string; ago: string; day: "Today" | "Yesterday" | "Earlier"; to: string; read?: boolean }
 
 export const NOTIFS: Notif[] = [
-  { id: "n1", company: "stoop", thumb: "pitch", kind: "new_pitch", title: "Stoop posted a new pitch", body: "90-second tour of the nitro line and the bodega route.", ago: "12m", day: "Today", to: "company/stoop" },
-  { id: "n2", company: "brightyard", kind: "raise_milestone", title: "Brightyard hit 75% of its sample goal", body: "Illustrative milestone. Investing opens soon.", ago: "1h", day: "Today", to: "company/brightyard" },
+  { id: "n1", company: "lumen", thumb: "pitch", kind: "new_pitch", title: "Lumen Labs posted a new pitch", body: "Live demo: captions on the lens in under 300ms.", ago: "12m", day: "Today", to: "company/lumen" },
+  { id: "n2", company: "gridline", kind: "raise_milestone", title: "Gridline hit 75% of its sample goal", body: "Illustrative milestone. Investing opens soon.", ago: "1h", day: "Today", to: "company/gridline" },
   { id: "n3", company: "tally", kind: "qa_answered", title: "Your question was answered", body: "Tally: \u201cDoes it read faded receipts?\u201d", ago: "3h", day: "Today", to: "company/tally" },
   { id: "n4", thumb: "event", kind: "event_reminder", title: "Pitch Night is tomorrow", body: "Doors 6:30 PM. Your pass is ready.", ago: "9h", day: "Today", to: "ticket" },
   { id: "n5", kind: "new_follower", title: "Sample Member J followed you", body: "Angel-curious, NYC.", ago: "1d", day: "Yesterday", to: "me", read: true },
   { id: "n6", company: "pulsebox", kind: "founder_update", title: "Pulsebox shared an update", body: "Pilot with two clinics wrapped.", ago: "1d", day: "Yesterday", to: "company/pulsebox", read: true },
-  { id: "n7", company: "stoop", kind: "founder_update", title: "Stoop shared an update", body: "Hiring a founding engineer.", ago: "4d", day: "Earlier", to: "company/stoop", read: true },
+  { id: "n7", company: "lumen", kind: "founder_update", title: "Lumen Labs shared an update", body: "Hiring a founding engineer.", ago: "4d", day: "Earlier", to: "company/lumen", read: true },
 ];
 
 export const KIND_LABEL: Record<NotifKind, string> = {
@@ -39,10 +39,10 @@ export const KIND_LABEL: Record<NotifKind, string> = {
 
 export interface Update { id: string; company: string; title: string; body: string; tag: string; ago: string }
 export const UPDATES: Update[] = [
-  { id: "u1", company: "stoop", title: "Hiring a founding engineer", body: "Looking for someone who loves small brands and can build our wholesale app. Sample update.", tag: "Hiring", ago: "4d" },
-  { id: "u2", company: "stoop", title: "Now in 40 bodegas", body: "Sample milestone from our Brooklyn route. Thanks to everyone who walked the block with us.", tag: "Milestone", ago: "2w" },
+  { id: "u1", company: "lumen", title: "Hiring a founding engineer", body: "Looking for someone who has shipped on-device speech models. Sample update.", tag: "Hiring", ago: "4d" },
+  { id: "u2", company: "lumen", title: "1,200 on the waitlist", body: "Sample milestone. First 50 beta units ship to testers this winter.", tag: "Milestone", ago: "2w" },
   { id: "u3", company: "pulsebox", title: "Clinic pilot wrapped", body: "Two sample clinics finished a six-week pilot. Writeup coming.", tag: "Product", ago: "1d" },
-  { id: "u4", company: "brightyard", title: "Second rooftop signed", body: "Sample building in Astoria. First harvest planned for spring.", tag: "Milestone", ago: "3d" },
+  { id: "u4", company: "gridline", title: "Utility pilot signed", body: "Sample pilot with 40 homes in Astoria. Install starts in spring.", tag: "Milestone", ago: "3d" },
   { id: "u5", company: "tally", title: "Receipt reader v2", body: "Handles crumpled and faded paper. Sample changelog.", tag: "Product", ago: "6d" },
 ];
 

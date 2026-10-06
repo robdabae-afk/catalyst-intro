@@ -3,7 +3,7 @@ import { Icon, type IconName } from "./bicons";
 import type { Company, Sector } from "./data";
 import { useReducedMotion } from "./store";
 
-const SECTOR_ICON: Record<Sector, IconName> = { Fintech: "fintech", Climate: "climate", Food: "food", Health: "health", Consumer: "match", AI: "software" };
+const SECTOR_ICON: Record<Sector, IconName> = { Fintech: "fintech", Climate: "climate", Hardware: "hardware", Health: "health", Consumer: "match", AI: "software" };
 
 /** HUD corner brackets around any block. */
 export function Hud({ children, className = "", tag, scan }: { children: ReactNode; className?: string; tag?: string; scan?: boolean }) {

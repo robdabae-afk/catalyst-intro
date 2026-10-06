@@ -65,7 +65,7 @@ export const ICONS = {
   sliders: <><rect x="4" y="3.5" width="14" height="17" rx="2.5" transform={tilt} /><path d="M8 9h7M8 15h7" /><circle cx="10" cy="9" r="1.4" fill="currentColor" /><circle cx="13.5" cy="15" r="1.4" fill="currentColor" />{T(21.5, 8, 21.5, 15)}</>,
   stage: <><path d="M4 19.5h4v-5H4zM10 19.5h4V10h-4zM16 19.5h4V4.5h-4z" /></>,
   fintech: <><rect x="3.5" y="6" width="15" height="11" rx="2.5" transform={tilt} /><path d="M6.5 10.5l11-1.5M8 14.5l3-.4" />{T(21, 9, 21, 16)}</>,
-  food: <><path d="M4 11h16a8 8 0 01-16 0z" /><path d="M9 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4" /></>,
+  hardware: <><rect x="7" y="7" width="10" height="10" rx="1.5" /><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4" /></>,
   health: <path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z" />,
   climate: <><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3L7 7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7" /></>,
   software: <><rect x="3" y="5" width="18" height="12" rx="2.5" /><path d="M8 21h8M9 9l-2 2 2 2M15 9l2 2-2 2" /></>,

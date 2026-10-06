@@ -11,7 +11,7 @@ export default function Home() {
   const [s] = useStore();
   const pct = Math.round((doneSteps(s).size / STEPS.length) * 100);
   const feed = UPDATES.filter((u) => s.follows.includes(u.company));
-  const top = byId("brightyard")!;
+  const top = byId("gridline")!;
   const raising = COMPANIES.filter((c) => c.raising);
   return (
     <div className="st">

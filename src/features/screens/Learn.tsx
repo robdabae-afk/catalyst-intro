@@ -29,7 +29,7 @@ export default function Learn() {
   const down = (e: React.PointerEvent) => { if ((e.target as HTMLElement).closest("button")) return; x0.current = e.clientX; setDrag(true); (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };
   const move = (e: React.PointerEvent) => { if (x0.current !== null) setDx(e.clientX - x0.current); };
   const up = () => { if (x0.current === null) return; x0.current = null; setDrag(false); if (dx < -90) go(1); else if (dx > 90) go(-1); else setDx(0); };
-  const ART = ["/x/deal-tally.jpg", "/x/ev-2.jpg", "/x/deal-stoop.jpg", "/x/ev-1.jpg", "/x/deal-brightyard.jpg"];
+  const ART = ["/x/deal-tally.jpg", "/x/ev-2.jpg", "/x/deal-lumen.jpg", "/x/ev-1.jpg", "/x/deal-gridline.jpg"];
 
   return (
     <div className="g-side">
