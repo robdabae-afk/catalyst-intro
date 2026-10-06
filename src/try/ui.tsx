@@ -1,9 +1,15 @@
+import { useTry } from "./store";
+import { THREADS } from "./threads";
 import { ReactNode, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Deal } from "./data";
 import "./try.css";
 
 export const I = {
+  inbox: <><path d="M4 5h16v11H9l-5 4z" /></>,
+  send: <path d="M4 12l16-8-6 16-2-7z" />,
+  shield: <path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z" />,
+  bank: <path d="M3 10l9-6 9 6M5 10v8M10 10v8M14 10v8M19 10v8M3 20h18" />,
   swipe: <><rect x="6" y="3.5" width="12" height="17" rx="2.5" transform="rotate(-8 12 12)" /><path d="M3 9v8M21 7v8" /></>,
   search: <><circle cx="11" cy="11" r="7" /><path d="M16.5 16.5L21 21" /></>,
   chart: <path d="M4 19V11M10 19V5M16 19v-6M22 19H2" />,
@@ -75,7 +81,10 @@ export function Shell({ title, right, children }: { title: string; right?: React
           <header className="top">
             <Logo />
             <h1 className="h1" style={{ fontSize: 28 }} data-desk>{title}</h1>
-            {right ?? <span />}
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              {right}
+              <InboxBtn />
+            </div>
           </header>
           {children}
         </main>
@@ -92,3 +101,26 @@ export function Shell({ title, right, children }: { title: string; right?: React
 export const Progress = ({ deal }: { deal: Deal }) => (
   <div className="bar"><span style={{ width: `${Math.min(100, (deal.raised / deal.goal) * 100)}%` }} /></div>
 );
+
+function InboxBtn() {
+  const [s] = useTry();
+  const unread = THREADS.some((t) => t.unread && !s.readThreads.includes(t.id));
+  return (
+    <Link to="/try/inbox" className="ic inbox-btn" aria-label={unread ? "Messages, unread" : "Messages"}>
+      <Ic d={I.inbox} size={18} />{unread && <i className="dot" />}
+    </Link>
+  );
+}
+
+export function Av({ name, size = 44, group }: { name: string; size?: number; group?: boolean }) {
+  return <span className={`lav ${group ? "grp" : ""}`} style={{ width: size, height: size, fontSize: size * 0.4 }} aria-hidden>{name[0]}</span>;
+}
+
+export function SubTop({ title, back, right }: { title: string; back: string; right?: ReactNode }) {
+  return (
+    <header className="subtop">
+      <Link to={back} className="ic" aria-label="Back"><Ic d={I.back} size={18} /></Link>
+      <b>{title}</b>{right ?? <span style={{ width: 40 }} />}
+    </header>
+  );
+}

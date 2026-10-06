@@ -213,3 +213,47 @@
 
 .cx [data-desk]{display:none}
 @media(min-width:1024px){.cx [data-desk]{display:block}.cx .mob-only{display:none}}
+
+/* messaging */
+.cx .inbox-btn{position:relative}
+.cx .inbox-btn .dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 2px #fff}
+.cx .lav{display:grid;place-items:center;border-radius:50%;background:var(--soft);color:var(--ink);font-weight:700;flex:none;border:1px solid var(--line)}
+.cx .lav.grp{border-radius:14px;background:var(--ink);color:#fff;border-color:var(--ink)}
+.cx .subtop{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);z-index:5}
+.cx .subtop b{flex:1;text-align:center;font-size:16px}
+.cx .page{max-width:640px;margin:0 auto;min-height:100dvh}
+.cx .th{display:flex;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+.cx .th .nm{display:flex;justify-content:space-between;gap:8px}
+.cx .th .pv{color:var(--mute);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cx .th.un .pv{color:var(--ink);font-weight:600}
+.cx .th .udot{width:9px;height:9px;border-radius:50%;background:var(--ink);flex:none}
+.cx .msgs{display:flex;flex-direction:column;gap:6px;padding:18px 20px 110px}
+.cx .bub{max-width:78%;padding:10px 14px;border-radius:20px;font-size:15px;line-height:1.35;background:var(--soft);align-self:flex-start;border-bottom-left-radius:6px}
+.cx .bub.me{background:var(--ink);color:#fff;align-self:flex-end;border-bottom-left-radius:20px;border-bottom-right-radius:6px}
+.cx .who{font-size:12px;color:var(--mute);margin:8px 0 0 4px}
+.cx .tm{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mute);text-align:center;margin:10px 0 4px;letter-spacing:.06em;text-transform:uppercase}
+.cx .composer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.cx .composer form{max-width:640px;margin:0 auto;display:flex;gap:8px}
+.cx .composer input,.cx .askbox textarea{flex:1;border:1px solid var(--line);border-radius:999px;padding:12px 16px;font:inherit;font-size:15px;outline:0}
+.cx .composer input:focus,.cx .askbox textarea:focus{border-color:var(--ink)}
+.cx .composer button{width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
+.cx .composer button:disabled{background:var(--line)}
+/* questions */
+.cx .qa{padding:16px 0;border-bottom:1px solid var(--line)}
+.cx .qa .q{font-weight:600;font-size:16px}
+.cx .qa .by{font-size:12px;color:var(--mute);margin-top:4px}
+.cx .qa .ans{margin-top:10px;padding-left:14px;border-left:2px solid var(--ink);font-size:15px;line-height:1.45}
+.cx .qa .ans .by{margin-top:6px}
+.cx .qa .wait{margin-top:8px;font-size:13px;color:var(--mute)}
+.cx .pub{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--mute);background:var(--soft);border-radius:12px;padding:10px 12px;margin:4px 0 6px;line-height:1.4}
+.cx .askbox{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.cx .askbox textarea{border-radius:14px;min-height:76px;resize:vertical}
+.cx .dtabs{display:flex;gap:22px;border-bottom:1px solid var(--line);margin:8px 0 4px;position:sticky;top:0;background:#fff;z-index:3}
+.cx .dtabs button{padding:12px 0;font-size:15px;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px}
+.cx .dtabs button.on{color:var(--ink);border-color:var(--ink);font-weight:600}
+/* settings */
+.cx .field{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+.cx .field input{border:0;border-bottom:1px solid var(--line);padding:10px 0;font:inherit;font-size:17px;outline:0}
+.cx .field input:focus{border-color:var(--ink)}
+.cx .stat{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.cx .stat.ok{color:var(--ink)}
