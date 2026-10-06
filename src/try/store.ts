@@ -10,8 +10,14 @@ export type TryState = {
   rsvps: string[];
   notify: boolean;
   intents: { id: string; amount: number }[];
+  readThreads: string[];
+  sent: Record<string, { text: string; at: number }[]>;
+  questions: { deal: string; text: string; at: number }[];
+  idVerified: boolean;
+  bankLinked: boolean;
+  notifPrefs: string[];
 };
-const DEFAULT: TryState = { saved: [], passed: [], interests: ["Food", "Climate"], income: 60000, netWorth: 40000, rsvps: [], notify: false, intents: [] };
+const DEFAULT: TryState = { saved: [], passed: [], interests: ["Food", "Climate"], income: 60000, netWorth: 40000, rsvps: [], notify: false, intents: [], readThreads: [], sent: {}, questions: [], idVerified: false, bankLinked: false, notifPrefs: ["deals", "messages"] };
 
 function read(): TryState {
   try { return { ...DEFAULT, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch { return DEFAULT; }
