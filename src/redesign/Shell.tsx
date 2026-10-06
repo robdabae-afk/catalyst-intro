@@ -15,9 +15,6 @@ export default function Shell({ children, legal = false }: { children: ReactNode
   return (
     <div className="rd">
       <a className="skip" href="#main">Skip to content</a>
-      <div className="status" role="note">
-        The Catalyst app is coming soon. <a href="/#join">Register to join the platform</a>
-      </div>
       <div className="wrap">
         <header className="nav">
           <Link className="logo" to="/">catalyst<i>.</i></Link>
