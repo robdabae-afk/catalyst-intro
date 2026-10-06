@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { DEALS, Deal as D, money, regCfLimit, usd } from "./data";
 import { toggle, useTry } from "./store";
 import { Art, I, Ic, Logo, Progress, useNoindex } from "./ui";
+import { sampleQA } from "./threads";
 
 const RISK = "Early-stage startups often fail. Only invest money you can afford to lose and won't need for years.";
 
@@ -24,8 +25,11 @@ export function DealPage() {
   const nav = useNavigate();
   const [s, set] = useTry();
   useNoindex(d?.name || "Deal");
+  const [tab, setTab] = useState<"about" | "qa">(new URLSearchParams(window.location.search).get("tab") === "qa" ? "qa" : "about");
   if (!d) return <Navigate to="/try/discover" replace />;
   const saved = s.saved.includes(d.id);
+  const qa = sampleQA(d.name, d.team[0].role);
+  const mineQ = s.questions.filter((q) => q.deal === d.id);
   const save = () => set((x) => ({ ...x, saved: toggle(x.saved, d.id) }));
   const SaveBtn = ({ wide }: { wide?: boolean }) => (
     <button className={wide ? "btn ghost" : "ic"} style={wide ? {} : { width: 52, height: 52, ...(saved ? { background: "var(--ink)", color: "#fff", borderColor: "var(--ink)" } : {}) }}
@@ -52,6 +56,11 @@ export function DealPage() {
             <div className="mob-only"><Terms d={d} />
               <div style={{ padding: "14px 0 6px" }}><Progress deal={d} /><div style={{ fontSize: 12, color: "var(--mute)", marginTop: 8 }}><b className="num" style={{ color: "var(--ink)" }}>{d.backers}</b> backers · {Math.round((d.raised / d.goal) * 100)}% of goal</div></div>
             </div>
+            <div className="dtabs" role="tablist">
+              <button role="tab" className={tab === "about" ? "on" : ""} aria-selected={tab === "about"} onClick={() => setTab("about")}>About</button>
+              <button role="tab" className={tab === "qa" ? "on" : ""} aria-selected={tab === "qa"} onClick={() => setTab("qa")}>Questions <span className="num" style={{ fontSize: 12 }}>{qa.length + mineQ.length}</span></button>
+            </div>
+            {tab === "qa" ? <Questions d={d} qa={qa} mine={mineQ} onAsk={(text) => set((x) => ({ ...x, questions: [...x.questions, { deal: d.id, text, at: Date.now() }] }))} /> : <>
             <div className="sec"><h2>What they do</h2><p>{d.about}</p></div>
             <div className="sec"><h2>What the money is for</h2><ul>{d.use.map((u) => <li key={u}>{u}</li>)}</ul></div>
             <div className="sec"><h2>Team</h2>
@@ -64,6 +73,7 @@ export function DealPage() {
               <p className="sub" style={{ fontSize: 12, marginTop: 6 }}>Fictional company for the preview. No real people shown.</p>
             </div>
             <div className="sec"><h2>The fine print</h2><p className="sub">Real deals will include the company's SEC filing (Form C), financials, and full risk disclosures. A SAFE converts to shares only if the company raises a priced round or sells.</p></div>
+            </>}
           </div>
           <aside className="side">
             <Logo />
@@ -79,6 +89,31 @@ export function DealPage() {
         <SaveBtn />
         <Link to={`/try/invest/${d.id}`} className="btn" style={{ flex: 1 }}>Invest from ${d.min}</Link>
       </div></div>
+    </div>
+  );
+}
+
+function Questions({ d, qa, mine, onAsk }: { d: D; qa: ReturnType<typeof sampleQA>; mine: { text: string; at: number }[]; onAsk: (t: string) => void }) {
+  const [text, setText] = useState("");
+  return (
+    <div className="sec" style={{ borderTop: 0, paddingTop: 6 }}>
+      <div className="pub"><Ic d={I.shield} size={16} /><span>Questions and founder answers are public. Everyone looking at {d.name} sees the same thing. On real deals this runs on the funding portal's communication channel, the only place founders are allowed to talk about their raise.</span></div>
+      {mine.map((q) => (
+        <div className="qa" key={q.at}><div className="q">{q.text}</div><div className="by">You · just now · Sample</div><div className="wait">Waiting for the founder to answer. In the preview, nobody will.</div></div>
+      ))}
+      {qa.map((q) => (
+        <div className="qa" key={q.q}>
+          <div className="q">{q.q}</div>
+          <div className="by">{q.asker} · {q.when} ago · ▲ {q.votes}</div>
+          {q.a ? <div className="ans">{q.a}<div className="by"><b style={{ color: "var(--ink)" }}>{q.founder}</b> · Founder reply · Sample</div></div> : <div className="wait">No answer yet.</div>}
+        </div>
+      ))}
+      <form className="askbox" onSubmit={(e) => { e.preventDefault(); const v = text.trim(); if (v) { onAsk(v); setText(""); } }}>
+        <span className="lbl">Ask the founders</span>
+        <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask anything about the business or the terms. Your question will be public." aria-label="Your question" />
+        <button className="btn" type="submit" disabled={!text.trim()}>Post publicly</button>
+        <p className="fine" style={{ marginTop: 0 }}>Preview. Your question stays on this device. Sample names only.</p>
+      </form>
     </div>
   );
 }

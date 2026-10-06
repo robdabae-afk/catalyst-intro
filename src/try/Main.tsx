@@ -234,11 +234,11 @@ export function Events() {
         <p className="sub" style={{ marginBottom: 14 }}>Meet founders in person with the Catalyst community, {COMMUNITY_SIZE} people and counting.</p>
         <div className="evgrid">
           <div>
-            <div className="evhero photo" style={{ backgroundImage: `url(${hero.photo})` }}><div className="ov" />
+            <Link to={`/try/events/${hero.id}`} className="evhero photo" style={{ backgroundImage: `url(${hero.photo})`, display: "block", color: "#fff" }}><div className="ov" />
               <div className="tx"><span className="dt" style={{ color: "#ddd" }}>{hero.date}</span>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 10, marginTop: 4 }}>
                   <div><b style={{ fontSize: 22, letterSpacing: "-.03em" }}>{hero.title}</b><div style={{ fontSize: 13, opacity: 0.8 }}>{hero.place} · {hero.blurb}</div></div>
-                </div></div></div>
+                </div></div></Link>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0" }}>
               <span className="sub" style={{ fontSize: 13 }}>Photo from a past Catalyst event</span><Rsvp id={hero.id} />
             </div>
@@ -248,7 +248,7 @@ export function Events() {
             {rest.map((e) => (
               <div className="ev" key={e.id}>
                 <div className="photo" style={{ backgroundImage: `url(${e.photo})` }} role="img" aria-label="Past Catalyst event" />
-                <div style={{ minWidth: 0 }}><div className="dt">{e.date}</div><b style={{ display: "block" }}>{e.title}</b><div className="sub" style={{ fontSize: 13 }}>{e.place}</div></div>
+                <Link to={`/try/events/${e.id}`} style={{ minWidth: 0, flex: 1 }}><div className="dt">{e.date}</div><b style={{ display: "block" }}>{e.title}</b><div className="sub" style={{ fontSize: 13 }}>{e.place}</div></Link>
                 <Rsvp id={e.id} />
               </div>
             ))}
@@ -276,6 +276,7 @@ export function Profile() {
           <div><span className="lbl">RSVPs</span><b className="num">{s.rsvps.length}</b></div>
           <div><span className="lbl">Est. limit</span><b className="num">{money(regCfLimit(s.income, s.netWorth))}</b></div>
         </div>
+        <Link className="it" to="/try/settings">Settings<span>Identity, limit, bank, alerts →</span></Link>
         <Link className="it" to="/try/onboarding/4">Interests<span>{s.interests.join(", ") || "None"}</span></Link>
         <Link className="it" to="/try/onboarding/5">Money check<span className="num">{usd(regCfLimit(s.income, s.netWorth))} est.</span></Link>
         <button className="it" onClick={() => set((x) => ({ ...x, notify: !x.notify }))} aria-pressed={s.notify}>Notifications<i className={`sw ${s.notify ? "on" : ""}`} /></button>
