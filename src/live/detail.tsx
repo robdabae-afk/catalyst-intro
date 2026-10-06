@@ -45,14 +45,16 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   const reduced = useReducedMotion();
   const last = c.metric.series[c.metric.series.length - 1];
 
+  const lock = useRef(0);
   const go = (s: SectionId, smooth = true) => {
     const el = scroller.current?.querySelector<HTMLElement>(`#cd-${s}`); const sc = scroller.current;
     if (el && sc) sc.scrollTo({ top: s === "overview" ? 0 : el.offsetTop - 52, behavior: smooth && !reduced ? "smooth" : "auto" });
+    setCur(s); lock.current = Date.now() + 900;
   };
   useEffect(() => { if (start) requestAnimationFrame(() => go(start, false)); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
   useEffect(() => {
     const sc = scroller.current; if (!sc) return;
-    const f = () => { let best: SectionId = "overview"; sc.querySelectorAll<HTMLElement>("[data-sec]").forEach((e) => { if (e.offsetTop - 70 <= sc.scrollTop) best = e.dataset.sec as SectionId; }); if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 4) best = "limit"; setCur(best); };
+    const f = () => { if (Date.now() < lock.current) return; let best: SectionId = "overview"; sc.querySelectorAll<HTMLElement>("[data-sec]").forEach((e) => { if (e.offsetTop - 70 <= sc.scrollTop) best = e.dataset.sec as SectionId; }); if (sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 4) best = "limit"; setCur(best); };
     sc.addEventListener("scroll", f, { passive: true }); return () => sc.removeEventListener("scroll", f);
   }, []);
   useEffect(() => { nav.current?.querySelector<HTMLElement>(`[data-n="${cur}"]`)?.scrollIntoView({ inline: "center", block: "nearest", behavior: reduced ? "auto" : "smooth" }); }, [cur, reduced]);

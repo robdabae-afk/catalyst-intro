@@ -667,3 +667,17 @@ p.pp-sub{line-height:1.35;max-width:300px}
 .cd-media{scroll-padding-left:22px}
 .pp-next{left:0;right:0;justify-content:center}
 .lv-big.lv-soon{font-size:22px;letter-spacing:-.02em}
+/* r1 refine: fewer labels, smaller scale */
+.pp-tag{font:500 11px 'Schibsted Grotesk';letter-spacing:0;opacity:.75;padding:3px 9px;border:1px solid rgba(255,255,255,.3);border-radius:99px}
+.pp-rail span{font:500 11px 'Schibsted Grotesk';margin-top:6px}.pp-rail i{height:2px}
+.pp-focus{left:20px;right:20px;bottom:118px}
+.pp-focus h2{font-size:20px;line-height:1.25;font-weight:600;max-width:290px}
+.pp-big{font-size:44px;font-weight:700;letter-spacing:-.03em}
+.pp-sub{font-size:14px!important;opacity:.7}
+.pp-hots{gap:6px;margin-top:12px}
+.pp-hots button{padding:6px 11px;border-radius:10px;max-width:260px}
+.pp-ht{font:600 12px 'Schibsted Grotesk'}.pp-hots em{font-size:13px}
+.pp-founder{max-width:260px;padding:6px 12px 6px 6px;gap:10px}.pp-founder b{font-size:14px}.pp-founder small{font-size:11px}
+.pp-ic{width:36px;height:36px}.pp-ic.lg{width:44px;height:44px}
+.pp-act{bottom:34px;gap:16px}
+.pp-shade{background:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 18%,transparent 55%,rgba(0,0,0,.8) 88%)}

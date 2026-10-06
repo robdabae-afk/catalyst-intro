@@ -53,7 +53,7 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
 
       <header className="pp-top">
         <button type="button" className="pp-ic" aria-label="Close pitch" onClick={onClose}><Icon name="close" size={20} /></button>
-        <span className="pp-tag lv-mono">SAMPLE PITCH · {tc(t)}</span>
+        <span className="pp-tag">Sample</span>
       </header>
 
       <nav className="pp-rail" aria-label="Chapters">
@@ -66,13 +66,12 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
 
       {/* the single focal overlay for this chapter */}
       <section className="pp-focus" key={ch} aria-live="polite">
-        <span className="pp-k lv-mono">{String(ci + 1).padStart(2, "0")} / {ch.toUpperCase()}</span>
         {ch === "Problem" && <h2>{COPY[id].Problem}</h2>}
         {ch === "Product" && (<>
           <h2>{d.line}</h2>
           <div className="pp-hots">{d.hotspots.map((h, i) => (
             <button key={h.tag} type="button" className={hot === i ? "on" : ""} aria-expanded={hot === i} onClick={(e) => { e.stopPropagation(); setHot(hot === i ? null : i); }}>
-              <span className="lv-mono">{h.title}</span>{hot === i && <em>{h.fact}</em>}
+              <span className="pp-ht">{h.title}</span>{hot === i && <em>{h.fact}</em>}
             </button>))}
           </div>
         </>)}
@@ -82,7 +81,6 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
             <Avatar p={founder} size={56} /><span><b>{founder.name}</b><small>Founder · tap for profile</small></span><Icon name="forward" size={16} />
           </button>)}
         {ch === "Ask" && (<><h2>Investing opens soon.</h2><p className="pp-sub">Save {d.name} and we'll tell you when it does.</p></>)}
-        <span className="pp-sample lv-mono">SAMPLE · ILLUSTRATIVE ONLY</span>
       </section>
 
       <footer className="pp-act">
@@ -90,12 +88,11 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
         <button type="button" className="pp-ic lg" aria-label="Ask a question" onClick={() => setQa(true)}><Icon name="qa" size={22} /></button>
         <button type="button" className={`pp-ic lg save${ch === "Ask" ? " hl" : ""}`} aria-label="Save" onClick={() => onSave(id)}><Icon name="saved" size={22} /></button>
       </footer>
-      {ids.length > 1 && <div className="pp-next lv-mono" aria-hidden>SWIPE UP · NEXT</div>}
 
       {qa && (
         <div className="pp-qa-wrap" onClick={() => setQa(false)}>
           <div className="pp-qa" role="dialog" aria-label="Ask the founder" onClick={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
-            <span className="lv-mono dim">ASK {founder.name.toUpperCase()}</span>
+            <span className="dim">Ask {founder.name}</span>
             {sent ? <h3>Sent. You'll get a reply in your inbox.</h3> : (<>
               <h3>What would you ask?</h3>
               <textarea rows={3} placeholder="e.g. How long does the battery last?" aria-label="Your question" />
