@@ -5,6 +5,7 @@ import { api, errText, isSample, useAct, useP, useSession } from "@/lib/platform
 import { resetSample } from "@/lib/platform/sample";
 import type { PEvent, Rsvp, RsvpStatus } from "@/lib/platform/contract";
 import { Ic, I, Shell, useNoindex } from "./ui";
+import { Button, ButtonLink, RsvpButton as BrandRsvp } from "@/brand/Button";
 
 const fmt = (iso: string) =>
   new Date(iso).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
@@ -30,10 +31,10 @@ function SignInPrompt() {
       <div style={{ border: "1px solid var(--line)", borderRadius: 14, padding: 16, margin: "12px 0" }}>
         <b>Sign in to RSVP</b>
         <p className="sub" style={{ fontSize: 13, margin: "4px 0 10px" }}>Demo mode: this signs you in as a local sample member.</p>
-        <button className="btn" onClick={() => act.mutate(undefined)} disabled={act.isPending}>Continue as sample member</button>
+        <Button onClick={() => act.mutate(undefined)} loading={act.isPending} disabled={act.isPending}>Continue as sample member</Button>
       </div>
     );
-  return <Link className="btn" to="/app/login" style={{ margin: "12px 0" }}>Sign in to RSVP</Link>;
+  return <div style={{ margin: "12px 0" }}><ButtonLink to="/app/login" icon="profile">Sign in to RSVP</ButtonLink></div>;
 }
 
 const LABEL: Record<RsvpStatus, string> = {
@@ -65,20 +66,21 @@ function RsvpButton({ e, mine, compact }: { e: PEvent; mine?: Rsvp; compact?: bo
   const active = st && st !== "cancelled";
   const full = spotsLeft(e) === 0;
   const past = Date.parse(e.startsAt) < Date.now();
-  const cls = compact ? `go ${active ? "on" : ""}` : `btn ${active ? "ghost" : ""}`;
+  const size = compact ? "sm" : "md";
+  const rstate = st === "approved" ? "going" : st === "pending" ? "pending" : "waitlist";
   let body: JSX.Element;
   if (e.status === "cancelled") body = <span className="sub">Event cancelled</span>;
   else if (st === "declined") body = <span className="sub">{LABEL.declined}</span>;
   else if (active)
     body = (
       <div style={{ display: "flex", gap: 8, alignItems: "center", flex: 1, flexWrap: "wrap" }}>
-        <span className={cls} style={{ cursor: "default" }}>{LABEL[st!]}</span>
-        {!mine?.checkedInAt && !past && <button className="go" disabled={busy} onClick={() => confirm("Cancel your RSVP?") && cancel.mutate(e.id)}>Cancel</button>}
+        <BrandRsvp state={rstate} size={size} tabIndex={-1} aria-disabled style={{ cursor: "default", pointerEvents: "none" }}>{LABEL[st!].replace(" ✓", "")}</BrandRsvp>
+        {!mine?.checkedInAt && !past && <Button variant="ghost" size="sm" icon="close" loading={cancel.isPending} disabled={busy} onClick={() => confirm("Cancel your RSVP?") && cancel.mutate(e.id)}>Cancel</Button>}
         {mine?.checkedInAt && <span className="sub" style={{ fontSize: 12 }}>Checked in</span>}
       </div>
     );
   else if (past) body = <span className="sub">This event has passed</span>;
-  else body = <button className={cls} style={compact ? undefined : { flex: 1 }} disabled={busy} onClick={() => go.mutate(e.id)}>{busy ? "…" : full ? "Join waitlist" : "RSVP, it's free"}</button>;
+  else body = <BrandRsvp state={full ? "waitlist" : "open"} size={size} block={!compact} loading={go.isPending} disabled={busy} onClick={() => go.mutate(e.id)}>{full ? "Join waitlist" : "RSVP, it's free"}</BrandRsvp>;
   return <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: compact ? "none" : 1 }}>{body}{err && <span role="alert" className="sub" style={{ fontSize: 12 }}>{errText(err)}</span>}</div>;
 }
 
