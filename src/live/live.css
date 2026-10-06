@@ -513,3 +513,15 @@ p.lv-mc-why{margin:12px 0 0;padding:0;background:none;font-size:12.5px;font-weig
 .lv-mc-stats div{padding:10px 0}.lv-mc-stats div+div{padding-left:12px;border-left:1px solid #ececea}
 .lv-mc-stats dt{font-size:9px;color:#888}.lv-mc-stats dd{margin:3px 0 0;font-size:13.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lv-mc-mut{border:0;padding:8px 0}
+
+/* header icons replace pill bar */
+.lv-hicons{position:fixed;top:10px;right:14px;z-index:40;display:flex;gap:4px}
+.lv-hicons button,.lv-hback{position:relative;width:36px;height:36px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);color:#0b0b0b;cursor:pointer}
+.lv-hicons i{position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#0b0b0b;border:1.5px solid #fff}
+.lv-hicons button:focus-visible,.lv-hback:focus-visible{outline:2px solid #0b0b0b}
+.lv-hback{position:fixed;top:10px;left:10px;z-index:40}
+.lv-pmenu{display:grid;gap:8px}
+.lv.lv-mob .lv-top{min-height:56px;padding-top:10px;padding-bottom:10px}
+.lv.lv-mob.hic .lv-top>:last-child{display:none}
+.lv.lv-mob.hback .lv-top{padding-left:58px}
+.lv-hicons{top:10px}.lv-hback{top:10px}

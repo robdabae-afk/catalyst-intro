@@ -48,7 +48,7 @@ export function PortfolioView() {
 }
 
 /* ---------- PROFILE ---------- */
-export function ProfileView() {
+export function ProfileView({ isAdmin = false, onAdmin }: { isAdmin?: boolean; onAdmin?: () => void }) {
   const [tags, setTags] = useState<Record<string, boolean>>({ Fintech: true, Climate: true, Software: false, Hardware: true });
   return (
     <div className="lv-prof">
@@ -72,7 +72,7 @@ export function ProfileView() {
           <div key={l} className="lv-row2" style={{ animationDelay: `${k * 90}ms` }}><Icon name={ic} size={18} /><span>{l}</span><b className="lv-mono">{v}</b></div>
         ))}
       </div>
-      <div className="lv-sec"><Button variant="secondary" icon="settings" block>Settings</Button></div>
+      <div className="lv-sec lv-pmenu"><Button variant="secondary" icon="settings" block>Settings</Button>{isAdmin && <Button variant="secondary" icon="dashboard" block onClick={onAdmin}>Admin</Button>}</div>
     </div>
   );
 }

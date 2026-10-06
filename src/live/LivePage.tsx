@@ -8,7 +8,6 @@ import "./live.css";
 
 type Tab = "swipe" | "discover" | "portfolio" | "events" | "profile" | "inbox" | "notifications" | "onboarding" | "admin";
 const TABS: [Tab, IconName, string][] = [["swipe", "swipe", "Swipe"], ["discover", "discover", "Discover"], ["portfolio", "holdings", "Portfolio"], ["events", "events", "Events"], ["profile", "profile", "Profile"]];
-const EXTRA: [Tab, IconName, string][] = [["inbox", "inbox", "Inbox"], ["notifications", "bell", "Alerts"], ["onboarding", "identity", "Onboarding"], ["admin", "dashboard", "Admin"]];
 
 function useWide() {
   const q = "(min-width: 1100px)";
@@ -55,11 +54,15 @@ export default function LivePage() {
     );
   }
   return (
-    <div className="lv lv-mob">
-      {!deal && !thread && (
-        <div className="lv-extra" role="toolbar" aria-label="More screens">
-          {EXTRA.map(([t, ic, l]) => <button key={t} type="button" aria-pressed={tab === t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}><Icon name={ic} size={16} /><span>{l}</span></button>)}
+    <div className={`lv lv-mob${!deal && !thread ? (["inbox", "notifications", "admin"].includes(tab) ? " hback" : " hic") : ""}`}>
+      {!deal && !thread && ["swipe", "discover", "portfolio", "events", "profile"].includes(tab) && (
+        <div className="lv-hicons">
+          <button type="button" aria-label="Inbox, 1 unread" onClick={() => setTab("inbox")}><Icon name="inbox" size={19} /><i aria-hidden /></button>
+          <button type="button" aria-label="Notifications, new" onClick={() => setTab("notifications")}><Icon name="bell" size={19} /><i aria-hidden /></button>
         </div>
+      )}
+      {!deal && !thread && ["inbox", "notifications", "admin"].includes(tab) && (
+        <button type="button" className="lv-hback" aria-label="Back" onClick={() => setTab(tab === "admin" ? "profile" : "swipe")}><Icon name="back" size={19} /></button>
       )}
       {deal ? (
         <div className="lv-screen"><DealView id={deal} onBack={() => setDeal(null)} /></div>
@@ -71,11 +74,11 @@ export default function LivePage() {
           {tab === "discover" && <DiscoverView onOpen={setDeal} />}
           {tab === "events" && <EventsView />}
           {tab === "portfolio" && <PortfolioView />}
-          {tab === "profile" && <ProfileView />}
+          {tab === "profile" && <ProfileView isAdmin={params.get("role") === "admin"} onAdmin={() => setTab("admin")} />}
           {tab === "inbox" && <InboxView onOpen={setThread} />}
           {tab === "notifications" && <NotificationsView />}
           {tab === "onboarding" && <OnboardingView />}
-          {tab === "admin" && <AdminView />}
+          {tab === "admin" && params.get("role") === "admin" && <AdminView />}
         </div>
       )}
       {!deal && !thread && (
