@@ -4,6 +4,7 @@ import { DEALS, Deal as D, money, regCfLimit, usd } from "./data";
 import { toggle, useTry } from "./store";
 import { Art, I, Ic, Logo, Progress, useNoindex } from "./ui";
 import { sampleQA } from "./threads";
+import { Button, ButtonLink } from "@/brand/Button";
 
 const RISK = "Early-stage startups often fail. Only invest money you can afford to lose and won't need for years.";
 
@@ -79,7 +80,7 @@ export function DealPage() {
             <Logo />
             <Terms d={d} />
             <div style={{ padding: "14px 0 18px" }}><Progress deal={d} /><div style={{ fontSize: 12, color: "var(--mute)", marginTop: 8 }}><b className="num" style={{ color: "var(--ink)" }}>{d.backers}</b> backers · {Math.round((d.raised / d.goal) * 100)}% of goal</div></div>
-            <Link to={`/app/invest/${d.id}`} className="btn">Invest from ${d.min}</Link>
+            <ButtonLink to={`/app/invest/${d.id}`} iconRight="invest" block className="cb-invest">Invest from ${d.min}</ButtonLink>
             <div style={{ marginTop: 10 }}><SaveBtn wide /></div>
             <p className="fine">Investing opens soon through an SEC-registered funding portal.</p>
           </aside>
@@ -87,7 +88,7 @@ export function DealPage() {
       </div>
       <div className="sticky"><div className="wrap">
         <SaveBtn />
-        <Link to={`/app/invest/${d.id}`} className="btn" style={{ flex: 1 }}>Invest from ${d.min}</Link>
+        <div style={{ flex: 1, display: "flex" }}><ButtonLink to={`/app/invest/${d.id}`} iconRight="invest" block className="cb-invest">Invest from ${d.min}</ButtonLink></div>
       </div></div>
     </div>
   );
@@ -111,7 +112,7 @@ function Questions({ d, qa, mine, onAsk }: { d: D; qa: ReturnType<typeof sampleQ
       <form className="askbox" onSubmit={(e) => { e.preventDefault(); const v = text.trim(); if (v) { onAsk(v); setText(""); } }}>
         <span className="lbl">Ask the founders</span>
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask anything about the business or the terms. Your question will be public." aria-label="Your question" />
-        <button className="btn" type="submit" disabled={!text.trim()}>Post publicly</button>
+        <Button type="submit" icon="send" disabled={!text.trim()}>Post publicly</Button>
         <p className="fine" style={{ marginTop: 0 }}>Preview. Your question stays on this device. Sample names only.</p>
       </form>
     </div>
@@ -159,7 +160,7 @@ export function Invest() {
             ))}
             <p className="sub" style={{ fontSize: 13, margin: "6px 0 18px" }}>On real deals, if the goal isn't hit by the deadline, you get your money back.</p>
             <div style={{ flex: 1 }} />
-            <button className="btn" disabled={!ok} onClick={() => { set((x) => ({ ...x, intents: [...x.intents.filter((i) => i.id !== d.id), { id: d.id, amount: amt }] })); setDone(true); }}>Continue</button>
+            <Button size="lg" block disabled={!ok} iconRight="forward" onClick={() => { set((x) => ({ ...x, intents: [...x.intents.filter((i) => i.id !== d.id), { id: d.id, amount: amt }] })); setDone(true); }}>Continue</Button>
             <p className="fine">Preview only. No payment info is collected.</p>
           </>
         ) : (
@@ -168,8 +169,8 @@ export function Invest() {
             <div className="h1" style={{ marginTop: 22 }}>Investing opens soon.</div>
             <p className="sub" style={{ marginTop: 10 }}>Catalyst will run investments through an SEC-registered funding portal. Nothing was charged and no money moved. We noted your {usd(amt)} interest in {d.name} on this device.</p>
             <div className="soon" style={{ marginTop: 18 }}>{d.name} is a sample company made up for this preview.</div>
-            <Link to="/signup" className="btn" style={{ marginTop: 24 }}>Join the waitlist</Link>
-            <Link to="/app/swipe" className="btn ghost" style={{ marginTop: 10 }}>Keep exploring</Link>
+            <div style={{ marginTop: 24 }}><ButtonLink to="/signup" block>Join the waitlist</ButtonLink></div>
+            <div style={{ marginTop: 10 }}><ButtonLink to="/app/swipe" variant="ghost" block>Keep exploring</ButtonLink></div>
           </div>
         )}
       </div>
