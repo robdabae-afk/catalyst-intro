@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { setState } from "@/features/store";
 import { Icon } from "@/brand/icons";
 import { DEALS, MATCH } from "./data";
 import { useCountUp, useReducedMotion } from "./hooks";
@@ -25,13 +26,13 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
   const [t, setT] = useState(0);
   const [hot, setHot] = useState<number | null>(null);
   const [qa, setQa] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState(false); const [q, setQ] = useState("");
   const [seekN, setSeekN] = useState(0);
   const ci = Math.min(4, Math.floor((t / DUR) * 5)); const ch = CH[ci];
   const n = useCountUp(TRAC[id].n, ch === "Traction", reduced, 1100);
   const y0 = useRef<number | null>(null);
 
-  useEffect(() => { setT(0); setHot(null); setQa(false); setSent(false); const el = v.current; if (el) { el.playbackRate = 0.5; el.currentTime = 0; if (!reduced) el.play().catch(() => {}); } }, [id, reduced]);
+  useEffect(() => { setT(0); setHot(null); setQa(false); setSent(false); setQ(""); const el = v.current; if (el) { el.playbackRate = 0.5; el.currentTime = 0; if (!reduced) el.play().catch(() => {}); } }, [id, reduced]);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === "Escape") qa ? setQa(false) : onClose(); }; addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, [qa, onClose]);
   useEffect(() => { setHot(null); }, [ci]);
   useEffect(() => { if (CLEAN.has(id)) return; const st = performance.now() - t * 1000; let r = 0; const f = () => { const x = Math.min(DUR, (performance.now() - st) / 1000); setT(x); if (x < DUR) r = requestAnimationFrame(f); }; r = requestAnimationFrame(f); return () => cancelAnimationFrame(r); // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,10 +94,10 @@ export function PitchPlayer({ id, ids, onClose, onNext, onSave, onPass, onProfil
         <div className="pp-qa-wrap" onClick={() => setQa(false)}>
           <div className="pp-qa" role="dialog" aria-label="Ask the founder" onClick={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()}>
             <span className="dim">Ask {founder.name}</span>
-            {sent ? <h3>Sent. You'll get a reply in your inbox.</h3> : (<>
+            {sent ? <h3>Question saved. It's on {d.name}'s Q&amp;A, and you'll see the answer there.</h3> : (<>
               <h3>What would you ask?</h3>
-              <textarea rows={3} placeholder="e.g. How long does the battery last?" aria-label="Your question" />
-              <button type="button" className="pp-send" onClick={() => setSent(true)}>Send question</button>
+              <textarea rows={3} value={q} onChange={(e) => setQ(e.target.value)} maxLength={2000} placeholder="e.g. How long does the battery last?" aria-label="Your question" />
+              <button type="button" className="pp-send" disabled={!q.trim()} onClick={() => { const b = q.trim(); if (!b) return; setState((s) => ({ ...s, qs: { ...s.qs, [id]: [b, ...(s.qs[id] ?? [])] } })); setSent(true); }}>Send question</button>
             </>)}
           </div>
         </div>)}

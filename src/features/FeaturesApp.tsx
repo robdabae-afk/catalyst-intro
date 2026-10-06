@@ -1,4 +1,7 @@
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { isAppShell } from "@/lib/platform";
+import { startSync } from "./sync";
+import { useEffect } from "react";
 import { LiveSwipe, LiveCompany, LiveInbox, LiveThread, LivePeople, LiveEvents, LivePortfolio, LiveAdmin, isLiveDeal } from "@/live/embed";
 import "./features.css";
 import { IBack } from "./icons";
@@ -13,6 +16,8 @@ import Company from "./screens/Company";
 import Invite from "./screens/Invite";
 import Ticket from "./screens/Ticket";
 import Learn from "./screens/Learn";
+import Onboarding from "./screens/Onboarding";
+import Legal from "./screens/Legal";
 
 const BASE = "/app/live";
 
@@ -62,6 +67,11 @@ export function Head({ title, right, back }: { title: string; right?: React.Reac
 export const path = (p: string) => `${BASE}/${p}`;
 
 export default function FeaturesApp() {
+  useEffect(() => { startSync(); }, []);
+  const [st] = useStore();
+  const loc = useLocation();
+  if (loc.pathname.replace(/\/$/, "") === "/app/live/welcome") return <div className="cf cf-ob"><Onboarding /></div>;
+  if (isAppShell() && !st.onboarded && !loc.pathname.startsWith("/app/live/legal")) return <Navigate to="/app/live/welcome" replace />;
   return (
     <div className="cf">
       <div className="cf-shell">
@@ -80,10 +90,11 @@ export default function FeaturesApp() {
             <Route path="events" element={<LiveEvents />} />
             <Route path="people" element={<LivePeople />} />
             <Route path="admin" element={<LiveAdmin />} />
-            <Route path="*" element={<Home />} />
             <Route path="invite" element={<Invite />} />
             <Route path="ticket" element={<Ticket />} />
             <Route path="learn" element={<Learn />} />
+            <Route path="legal/:doc" element={<Legal />} />
+            <Route path="*" element={<Home />} />
           </Routes>
         </main>
         <Tabs cls="cf-tabs" />

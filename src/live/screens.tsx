@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { setState, useStore } from "@/features/store";
 import { Icon, type IconName } from "@/brand/icons";
 import { Button, Chip, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, usd } from "./data";
@@ -102,17 +103,18 @@ export function InboxView({ onOpen }: { onOpen: (id: string) => void }) {
 }
 export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) {
   const t = THREADS.find((x) => x.id === id) ?? THREADS[0];
-  const [msgs, setMsgs] = useState([
+  const [st] = useStore();
+  const msgs = [
     { me: true, txt: "What are gross margins per unit?" },
     { me: false, txt: t.last },
     { me: false, txt: "Sample answer: around 60% at current volume." },
-  ]);
+    ...(st.msgs[t.id] ?? []).map((txt) => ({ me: true, txt })),
+  ];
   const [draft, setDraft] = useState("");
-  const [typing, setTyping] = useState(false);
+  const typing = false;
   const send = () => {
-    if (!draft.trim()) return;
-    setMsgs([...msgs, { me: true, txt: draft.trim() }]); setDraft(""); setTyping(true);
-    setTimeout(() => { setTyping(false); setMsgs((m) => [...m, { me: false, txt: "Sample reply: good question, we'll cover it in the Q&A." }]); }, 1400);
+    const b = draft.trim(); if (!b) return;
+    setState((s) => ({ ...s, msgs: { ...s.msgs, [t.id]: [...(s.msgs[t.id] ?? []), b] } })); setDraft("");
   };
   return (
     <div className="lv-thread">

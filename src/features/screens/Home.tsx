@@ -62,7 +62,7 @@ export default function Home() {
             <div className="mono" style={{ opacity: .8, marginTop: 4 }}>{EVENT.title} · Oct 13</div>
           </div>
         </Link>
-        <Link to={path("learn")} className="card row hud hov"><span className="ib"><Icon name="edu" size={20} /></span><div className="grow"><b>Learn</b><div className="dim" style={{ fontSize: 13 }}>Reg CF in 5 swipeable cards</div></div><span className="mono">{Object.keys(s.learned).length}/5</span></Link>
+        <Link to={path("learn")} className="card row hud hov"><span className="ib"><Icon name="edu" size={20} /></span><div className="grow"><b>Learn</b><div className="dim" style={{ fontSize: 13 }}>Reg CF in 5 swipeable cards</div></div><span className="mono">{Object.values(s.learned).filter(Boolean).length}/5</span></Link>
         <Link to={path("invite")} className="card row hud hov"><span className="ib"><Icon name="mutual" size={20} /></span><div className="grow"><b>Invite friends</b><div className="dim" style={{ fontSize: 13 }}>Skip the waitlist together</div></div><IArrow size={14} /></Link>
       </div>
 

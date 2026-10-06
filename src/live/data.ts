@@ -21,8 +21,8 @@ export const DEALS: LiveDeal[] = [
     img: "/live/deal-gridline.jpg", goal: 400000, raised: 118000, investors: 236, cap: "$9M", min: "$150", days: 31,
     spark: [1, 2, 2, 3, 3, 4, 4, 6, 5, 7, 8, 9],
     hotspots: [
-      { x: 52, y: 48, tag: "PRODUCT / 01", title: "Grow racks", fact: "Sample: vertical racks, harvested every 21 days." },
-      { x: 84, y: 30, tag: "TECH / 02", title: "Sensor box", fact: "Sample: tracks light, water and temperature per shelf." },
+      { x: 52, y: 48, tag: "PRODUCT / 01", title: "The battery", fact: "Sample: 13.5 kWh wall unit, installs in an afternoon." },
+      { x: 84, y: 30, tag: "TECH / 02", title: "Peak trading", fact: "Sample: software sells stored power back to the grid at peak price." },
     ],
   },
   {

@@ -178,7 +178,7 @@ export default function AppSignup() {
 
         {/* Create account button */}
         <div
-          onClick={() => navigate("/signup/form")}
+          onClick={() => { let r = new URLSearchParams(location.search).get("ref"); try { r = r || localStorage.getItem("catalyst.ref"); } catch { /* private mode */ } navigate(r ? `/signup/form?ref=${encodeURIComponent(r)}` : "/signup/form"); }}
           style={{
             width: "330px",
             height: "54px",

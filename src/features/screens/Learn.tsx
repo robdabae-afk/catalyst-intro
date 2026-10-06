@@ -7,19 +7,23 @@ import { setState, useStore } from "../store";
 
 export default function Learn() {
   const [s] = useStore();
-  const firstOpen = LEARN.findIndex((c) => !(c.id in s.learned));
+  const firstOpen = LEARN.findIndex((c) => !s.learned[c.id]);
   const [i, setI] = useState(firstOpen === -1 ? 0 : firstOpen);
   const [pick, setPick] = useState<number | null>(null);
   const c = LEARN[i];
-  const done = Object.keys(s.learned).length;
+  const done = LEARN.filter((c) => s.learned[c.id]).length;
   const allDone = done === LEARN.length;
 
   const answer = (k: number) => {
     if (pick !== null) return;
     setPick(k);
     const ok = k === c.answer;
-    setState((x) => ({ ...x, learned: { ...x.learned, [c.id]: ok }, streak: ok ? x.streak + 1 : 0,
-      steps: Object.keys({ ...x.learned, [c.id]: ok }).length === LEARN.length && !x.steps.includes("learn") ? [...x.steps, "learn"] : x.steps }));
+    // only a correct answer counts; a wrong one can be retried and never marks the card done
+    setState((x) => {
+      const learned = ok ? { ...x.learned, [c.id]: true } : x.learned;
+      const all = LEARN.every((q) => learned[q.id]);
+      return { ...x, learned, streak: ok ? x.streak + 1 : 0, steps: all && !x.steps.includes("learn") ? [...x.steps, "learn"] : x.steps };
+    });
   };
   const go = (d: number) => { setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
   const next = () => go(1);
@@ -60,13 +64,14 @@ export default function Learn() {
                 })}
               </div>
               {pick !== null && <p style={{ fontSize: 13.5, marginTop: 12 }} role="status"><b>{pick === c.answer ? "Correct." : "Not quite."}</b> {c.why}</p>}
+              {pick !== null && pick !== c.answer && <button type="button" className="opt retry" onClick={() => setPick(null)}>Try again</button>}
             </div>
             </div>
           </div>
         </div>
         <div className="deck-ctl">
           <button className="ib" onClick={() => go(-1)} aria-label="Previous card"><Icon name="back" size={18} /></button>
-          <span className="dots">{LEARN.map((x, k) => <i key={x.id} className={k === i ? "on" : x.id in s.learned ? "ok" : ""} />)}</span>
+          <span className="dots">{LEARN.map((x, k) => <i key={x.id} className={k === i ? "on" : s.learned[x.id] ? "ok" : ""} />)}</span>
           <button className="ib" onClick={next} aria-label="Next card" style={pick !== null ? { background: "var(--ink)", color: "#fff", borderColor: "var(--ink)" } : undefined}><Icon name="forward" size={18} /></button>
         </div>
         
@@ -76,8 +81,8 @@ export default function Learn() {
         <div className="sec" style={{ marginTop: 22 }}><h2>Series</h2><span className="mono dim">{done}/{LEARN.length}</span></div>
         <div className="bar" style={{ marginBottom: 8 }}><b style={{ width: `${(done / LEARN.length) * 100}%` }} /></div>
         {LEARN.map((x, k) => (
-          <button key={x.id} className={`step${x.id in s.learned ? " done" : ""}`} onClick={() => { setPick(null); setI(k); }} aria-current={k === i}>
-            <span className="tick">{x.id in s.learned ? <ICheck size={14} /> : <span className="mono">{k + 1}</span>}</span>
+          <button key={x.id} className={`step${s.learned[x.id] ? " done" : ""}`} onClick={() => { setPick(null); setI(k); }} aria-current={k === i}>
+            <span className="tick">{s.learned[x.id] ? <ICheck size={14} /> : <span className="mono">{k + 1}</span>}</span>
             <span className="grow" style={{ fontWeight: k === i ? 700 : 500 }}>{x.title}</span>
           </button>
         ))}
