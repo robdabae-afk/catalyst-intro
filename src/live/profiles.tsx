@@ -10,12 +10,12 @@ import { SaveToggle } from "./micro";
 
 export type Person = { id: string; name: string; initials: string; photo?: string; role: "Founder" | "Investor" | "Member"; at?: string; city: string; bio: string; backed: string[]; events: string[]; followers: number; mutual: number };
 export const PEOPLE: Person[] = [
-  { id: "p-maya", name: "Maya O.", initials: "MO", photo: "/live/founder-stoop.jpg", role: "Founder", at: "stoop", city: "Brooklyn", bio: "Sample founder. Started canning cold brew on her stoop.", backed: [], events: ["e1"], followers: 1240, mutual: 8 },
-  { id: "p-dev", name: "Dev K.", initials: "DK", role: "Founder", at: "stoop", city: "Brooklyn", bio: "Sample cofounder. Runs bodega distribution.", backed: ["tally"], events: ["e1", "e2"], followers: 610, mutual: 3 },
+  { id: "p-maya", name: "Maya O.", initials: "MO", photo: "/live/founder-lumen.jpg", role: "Founder", at: "lumen", city: "Brooklyn", bio: "Sample founder. Ex-AR engineer, building captions for everyone.", backed: [], events: ["e1"], followers: 1240, mutual: 8 },
+  { id: "p-dev", name: "Dev K.", initials: "DK", role: "Founder", at: "lumen", city: "Brooklyn", bio: "Sample cofounder. Leads the speech model.", backed: ["tally"], events: ["e1", "e2"], followers: 610, mutual: 3 },
   { id: "p-ana", name: "Ana R.", initials: "AR", photo: "/live/founder-brightyard.jpg", role: "Founder", at: "brightyard", city: "Queens", bio: "Sample founder. Grows greens on rooftops.", backed: [], events: ["e2"], followers: 980, mutual: 5 },
-  { id: "p-sam", name: "Sam T.", initials: "ST", photo: "/live/founder-tally.jpg", role: "Founder", at: "tally", city: "Manhattan", bio: "Sample founder. Ex-accountant, hates receipts.", backed: ["stoop"], events: ["e1"], followers: 1530, mutual: 11 },
-  { id: "p-lee", name: "Lee W.", initials: "LW", role: "Investor", city: "Manhattan", bio: "Sample investor. Backs consumer and climate.", backed: ["stoop", "brightyard"], events: ["e1", "e2"], followers: 2200, mutual: 14 },
-  { id: "p-jo", name: "Jordan R.", initials: "JR", role: "Member", city: "Brooklyn", bio: "Sample member. First startup check was $100.", backed: ["stoop"], events: ["e1"], followers: 140, mutual: 6 },
+  { id: "p-sam", name: "Sam T.", initials: "ST", photo: "/live/founder-tally.jpg", role: "Founder", at: "tally", city: "Manhattan", bio: "Sample founder. Ex-accountant, hates receipts.", backed: ["lumen"], events: ["e1"], followers: 1530, mutual: 11 },
+  { id: "p-lee", name: "Lee W.", initials: "LW", role: "Investor", city: "Manhattan", bio: "Sample investor. Backs consumer and climate.", backed: ["lumen", "brightyard"], events: ["e1", "e2"], followers: 2200, mutual: 14 },
+  { id: "p-jo", name: "Jordan R.", initials: "JR", role: "Member", city: "Brooklyn", bio: "Sample member. First startup check was $100.", backed: ["lumen"], events: ["e1"], followers: 140, mutual: 6 },
 ];
 export type ProfRef = { kind: "co"; id: string } | { kind: "person"; id: string };
 const team = (d: LiveDeal) => PEOPLE.filter((p) => p.at === d.id);

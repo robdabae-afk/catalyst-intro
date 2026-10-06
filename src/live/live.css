@@ -497,3 +497,19 @@
   .lv-mc-sway{animation:none}.lv-mc,.lv-mc-slot,.lv-seg i,.lv-seg button,.lv-mc-founder{transition:none}
   .lv-mc-slot{opacity:1;transform:none}.lv-mc-cover video,.lv-ml-done{animation:none}
 }
+
+/* card v2: cleaner */
+.lv-mc-top{justify-content:space-between}
+.lv-mc-head{margin-top:0;padding-top:14px;align-items:center}
+.lv-mc-id{padding-top:0}
+.lv-mc-head .cring{margin-top:0}
+.lv-logo{flex:none;display:grid;place-items:center;border-radius:12px;background:#0b0b0b;color:#fff}
+.lv-mc-line{margin:12px 0 0;font-size:14px;line-height:1.35;color:#333}
+.lv-mc-founder{display:flex;align-items:center;gap:8px;width:100%;margin-top:12px;padding:6px 10px 6px 6px;border:1px solid #ececea;border-radius:99px;font:500 12.5px 'Schibsted Grotesk';color:#0b0b0b;text-align:left}
+.lv-mc-founder span:nth-child(2){flex:1}
+.lv-mc-founder:active{transform:scale(.98)}
+p.lv-mc-why{margin:12px 0 0;padding:0;background:none;font-size:12.5px;font-weight:500;color:#666;line-height:1.35}
+.lv-mc-stats{display:grid;grid-template-columns:1.5fr 1fr .7fr;margin:14px 0 0;border-top:1px solid #ececea;border-bottom:1px solid #ececea}
+.lv-mc-stats div{padding:10px 0}.lv-mc-stats div+div{padding-left:12px;border-left:1px solid #ececea}
+.lv-mc-stats dt{font-size:9px;color:#888}.lv-mc-stats dd{margin:3px 0 0;font-size:13.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lv-mc-mut{border:0;padding:8px 0}

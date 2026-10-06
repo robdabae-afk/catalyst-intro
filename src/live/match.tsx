@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPE } from "react";
 import { Icon } from "@/brand/icons";
-import { Button, Chip, IconButton, MatchRing, PitchBadge, ReasonChip, SwipeAction } from "@/brand/Button";
-import { CHECKS, DEALS, DEFAULT_PREFS, MATCH, SECTORS, scoreDeal, usd, type LiveDeal, type Prefs } from "./data";
+import { Button, Chip, IconButton, MatchRing, PitchBadge, SwipeAction } from "@/brand/Button";
+import { CHECKS, DEALS, DEFAULT_PREFS, MATCH, SECTORS, scoreDeal, type LiveDeal, type Prefs } from "./data";
 import { LiveImage, SampleTag } from "./parts";
 import { useInView, useReducedMotion } from "./hooks";
 import { Avatar, PEOPLE, type ProfRef } from "./profiles";
@@ -55,17 +55,17 @@ function useSpringDrag(onFling: (dir: 1 | -1) => void, reduced: boolean) {
   return { node, bind, p, fling, dragging: () => st.current.drag };
 }
 
-function MatchCard({ d, prefs, k, onGone, onOpenDeal, onProfile }: { d: LiveDeal; prefs: Prefs; k: number; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
+function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d: LiveDeal; prefs: Prefs; k: number; settled: boolean; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
   const reduced = useReducedMotion();
   const m = MATCH[d.id];
-  const { score, reasons, line } = useMemo(() => scoreDeal(d, prefs), [d, prefs]);
+  const { score, line } = useMemo(() => scoreDeal(d, prefs), [d, prefs]);
   const { node, bind, p, fling } = useSpringDrag(onGone, reduced);
   const [vid, setVid] = useState(false);
-  const [ref, seen] = useInView<HTMLDivElement>();
+  const [ref, seenIO] = useInView<HTMLDivElement>();
+  const seen = seenIO || settled;
   const tilt = useRef<HTMLDivElement>(null);
   const founder = PEOPLE.find((x) => x.id === m.founder)!;
   const mut = m.mutuals.map((id) => PEOPLE.find((x) => x.id === id)!).filter(Boolean);
-  const pct = Math.round((d.raised / d.goal) * 100);
   const hover = (e: RPE) => {
     if (reduced || e.pointerType !== "mouse" || !tilt.current) return;
     const r = tilt.current.getBoundingClientRect();
@@ -74,7 +74,7 @@ function MatchCard({ d, prefs, k, onGone, onOpenDeal, onProfile }: { d: LiveDeal
   };
   const unhover = () => { tilt.current?.style.setProperty("--rx", "0deg"); tilt.current?.style.setProperty("--ry", "0deg"); };
   return (
-    <div ref={ref} className={`lv-mc-slot${seen ? " in" : ""}`} style={{ transitionDelay: `${k * 90}ms` }}>
+    <div ref={ref} className={`lv-mc-slot${seen ? " in" : ""}`} style={seen && settled ? undefined : { transitionDelay: `${k * 90}ms` }}>
       <div ref={node} className="lv-mc-drag" {...bind}>
         <div className="lv-mc-sway" style={{ animationDelay: `${-k * 1.7}s` }}>
           <article ref={tilt} className={`lv-mc${Math.abs(p) >= 1 ? " armed" : ""}`} onPointerMove={hover} onPointerLeave={unhover}
@@ -83,27 +83,25 @@ function MatchCard({ d, prefs, k, onGone, onOpenDeal, onProfile }: { d: LiveDeal
               {vid && m.pitch
                 ? <video src={m.pitch} autoPlay={!reduced} muted loop playsInline controls={reduced} aria-label={`${d.name} sample pitch preview, muted`} />
                 : <LiveImage src={d.img} intro={false} />}
-              <div className="lv-mc-top"><span className="lv-mc-logo" aria-hidden>{m.mark}</span><SampleTag /></div>
-              {m.pitch && <div className="lv-mc-pb"><PitchBadge len={m.pitchLen ?? ""} open={vid} onClick={() => { buzz(); setVid(!vid); }} /></div>}
+              <div className="lv-mc-top"><SampleTag />{m.pitch && <PitchBadge len={m.pitchLen ?? ""} open={vid} onClick={() => { buzz(); setVid(!vid); }} />}</div>
               <div className="lv-stamp save" style={{ opacity: Math.max(0, p) }}><Icon name="saved" size={18} />SAVE</div>
               <div className="lv-stamp pass" style={{ opacity: Math.max(0, -p) }}><Icon name="pass" size={18} />PASS</div>
             </div>
             <div className="lv-mc-body">
               <div className="lv-mc-head">
-                <button type="button" className="lv-mc-founder" onClick={() => onProfile({ kind: "person", id: founder.id })} aria-label={`Founder ${founder.name}, sample profile`}>
-                  <Avatar p={founder} size={52} ring />
-                </button>
+                <Logo id={d.id} />
                 <div className="lv-mc-id">
                   <h3>{d.name}</h3>
-                  <span className="lv-mono dim">{founder.name.toUpperCase()} · {m.stage.toUpperCase()} · {d.city.split(",")[0].toUpperCase()}</span>
+                  <span className="lv-mono dim">{d.cat.toUpperCase()} · {d.city.split(",")[0].toUpperCase()}</span>
                 </div>
                 <MatchRing score={seen ? score : 0} />
               </div>
-              <div className="lv-mc-why"><span className="lv-mono">WHY IT FITS YOU</span><p>{line}</p></div>
-              <div className="lv-mc-reasons">{reasons.map((r) => <ReasonChip key={r.text} icon={r.icon}>{r.text}</ReasonChip>)}</div>
-              <div className="lv-mc-trac"><Icon name="traction" size={16} /><span>{m.traction}</span><em className="lv-mono">SAMPLE</em></div>
-              <div className="lv-bar"><span style={{ width: seen ? `${pct}%` : 0 }} /></div>
-              <div className="lv-mc-raise lv-mono"><span><b>{usd(d.raised)}</b> / {usd(d.goal)}</span><span>{pct}%</span><span>{d.days}D LEFT</span></div>
+              <p className="lv-mc-line">{d.line}</p>
+              <button type="button" className="lv-mc-founder" onClick={() => onProfile({ kind: "person", id: founder.id })} aria-label={`Founder ${founder.name}, sample profile`}>
+                <Avatar p={founder} size={28} /><span><b>{founder.name}</b> · Founder</span><Icon name="forward" size={14} />
+              </button>
+              <p className="lv-mc-why">{line}</p>
+              <dl className="lv-mc-stats"><div><dt className="lv-mono">TRACTION</dt><dd>{m.traction}</dd></div><div><dt className="lv-mono">STAGE</dt><dd>{m.stage}</dd></div><div><dt className="lv-mono">MIN</dt><dd>${m.minCheck}</dd></div></dl>
               <button type="button" className="lv-mc-mut" onClick={() => onProfile({ kind: "person", id: mut[0].id })}>
                 <span className="lv-av-stack">{mut.slice(0, 4).map((x) => <Avatar key={x.id} p={x} size={24} />)}</span>
                 <span>{mut.slice(0, 2).map((x) => x.name).join(", ")}{mut.length > 2 ? ` +${mut.length - 2}` : ""} · mutual</span>
@@ -133,7 +131,7 @@ export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { pr
       </div>
       <div className="lv-ml-prefs lv-mono">{[...prefs.sectors, prefs.nyc ? "NYC" : "ANYWHERE", `$${prefs.check}`].map((x) => <span key={x}>{x.toUpperCase()}</span>)}</div>
       {list.map(({ d }, k) => (
-        <MatchCard key={d.id} d={d} k={k} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile}
+        <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile}
           onGone={(dir) => { setGone((g) => [...g, d.id]); toast(dir > 0 ? `Saved ${d.name} · sample` : `Passed ${d.name}`); }} />
       ))}
       {!list.length && (
@@ -173,4 +171,14 @@ export function PrefsSheet({ prefs, onChange, onClose }: { prefs: Prefs; onChang
       </div>
     </div>
   );
+}
+
+/* Sample company marks (fictional). */
+const MARKS: Record<string, JSX.Element> = {
+  lumen: <><circle cx="16" cy="16" r="9" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M16 7v18" stroke="currentColor" strokeWidth="2.4" /><circle cx="16" cy="16" r="3" fill="currentColor" /></>,
+  brightyard: <><path d="M8 24V14l8-6 8 6v10" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" /><path d="M12 24v-5h8v5" fill="none" stroke="currentColor" strokeWidth="2.4" /></>,
+  tally: <><rect x="8" y="7" width="16" height="18" rx="3" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M12 13h8M12 17h8M12 21h4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></>,
+};
+export function Logo({ id, size = 44 }: { id: string; size?: number }) {
+  return <span className="lv-logo" style={{ width: size, height: size }} aria-hidden><svg viewBox="0 0 32 32" width={size * 0.62} height={size * 0.62}>{MARKS[id]}</svg></span>;
 }

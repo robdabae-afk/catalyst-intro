@@ -49,7 +49,7 @@ export function PortfolioView() {
 
 /* ---------- PROFILE ---------- */
 export function ProfileView() {
-  const [tags, setTags] = useState<Record<string, boolean>>({ Food: true, Climate: true, Software: false, Health: false });
+  const [tags, setTags] = useState<Record<string, boolean>>({ Fintech: true, Climate: true, Software: false, Hardware: true });
   return (
     <div className="lv-prof">
       <Top l="PROFILE" />
@@ -79,7 +79,7 @@ export function ProfileView() {
 
 /* ---------- INBOX + THREAD ---------- */
 const THREADS = [
-  { id: "t1", who: "Stoop Coffee Co", d: DEALS[0], last: "Thanks for the question on margins!", unread: true, t: "2M" },
+  { id: "t1", who: "Lumen Labs", d: DEALS[0], last: "Thanks for the question on battery life!", unread: true, t: "2M" },
   { id: "t2", who: "Brightyard Farms", d: DEALS[1], last: "Rooftop tour is open to investors.", unread: true, t: "1H" },
   { id: "t3", who: "Tally", d: DEALS[2], last: "We just shipped receipt scanning v2.", unread: false, t: "1D" },
 ];
@@ -136,7 +136,7 @@ export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) 
 /* ---------- NOTIFICATIONS ---------- */
 const NOTES: { ic: IconName; txt: string; t: string; fresh?: boolean }[] = [
   { ic: "chart", txt: "Tally passed 75% of its sample goal", t: "NOW", fresh: true },
-  { ic: "qa", txt: "Stoop Coffee Co answered your question", t: "2M", fresh: true },
+  { ic: "qa", txt: "Lumen Labs answered your question", t: "2M", fresh: true },
   { ic: "events", txt: "Founder Night: 9 spots left", t: "1H" },
   { ic: "announce", txt: "Brightyard posted an update", t: "1D" },
 ];
@@ -169,7 +169,7 @@ const STEPS = [
 ];
 export function OnboardingView() {
   const [s, setS] = useState(0);
-  const [picks, setPicks] = useState<string[]>(["Food"]);
+  const [picks, setPicks] = useState<string[]>(["Fintech"]);
   const reduced = useReducedMotion();
   const lim = useCountUp(s === 2 ? 2500 : 0, s === 2, reduced, 900);
   const st = STEPS[s];
@@ -180,7 +180,7 @@ export function OnboardingView() {
         <LiveImage src="/live/ev-1.jpg" className="lv-onb-img"><div className="lv-onb-cap lv-mono">CATALYST COMMUNITY · NYC</div></LiveImage>
       ) : (
         <div className="lv-onb-vis">
-          {s === 1 && <div className="lv-chips">{["Food", "Climate", "Software", "Health", "Edu"].map((c) => <Chip key={c} on={picks.includes(c)} onClick={() => setPicks(picks.includes(c) ? picks.filter((x) => x !== c) : [...picks, c])}>{c}</Chip>)}</div>}
+          {s === 1 && <div className="lv-chips">{["Fintech", "AI", "Climate", "Software", "Hardware"].map((c) => <Chip key={c} on={picks.includes(c)} onClick={() => setPicks(picks.includes(c) ? picks.filter((x) => x !== c) : [...picks, c])}>{c}</Chip>)}</div>}
           {s === 2 && <div className="lv-gauge"><div className="lv-big xl">{usd(lim)}</div><div className="lv-mono dim">EXAMPLE 12-MONTH LIMIT</div><div className="lv-bar"><span style={{ width: `${(lim / 2500) * 100}%` }} /></div></div>}
           {s === 3 && <div className="lv-risk">{["Could lose it all", "Hard to sell", "Takes years"].map((r, k) => <div key={r} className="lv-row2" style={{ animationDelay: `${k * 120}ms` }}><Icon name="shield" size={18} /><span>{r}</span></div>)}</div>}
         </div>

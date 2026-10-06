@@ -93,7 +93,7 @@ export function RaiseHud({ d, dark, compact }: { d: LiveDeal; dark?: boolean; co
 }
 
 export function CatIcon({ cat }: { cat: string }) {
-  const m: Record<string, "food" | "climate" | "software"> = { Food: "food", Climate: "climate", Software: "software" };
+  const m: Record<string, "food" | "climate" | "software"> = { Food: "food", Climate: "climate", Software: "software", Hardware: "software", Fintech: "software" };
   return <Icon name={m[cat] ?? "software"} size={14} />;
 }
 
