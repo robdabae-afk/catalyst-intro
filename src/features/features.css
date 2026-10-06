@@ -241,7 +241,7 @@ a.hud:hover .hb.bl,.hud.hov:hover .hb.bl{transform:translate(-3px,3px)}a.hud:hov
 .pass-top .ph-body{position:absolute;inset:auto 22px 16px 22px;z-index:2}
 .pass-body{padding:6px 22px 22px}
 .holo{position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:.55;
-  background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.0) 30%,rgba(210,210,255,.35) 38%,rgba(200,255,240,.35) 44%,rgba(255,220,250,.35) 50%,rgba(255,255,255,0) 60%,transparent 70%);
+  background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.0) 30%,rgba(255,255,255,.32) 38%,rgba(200,200,200,.28) 44%,rgba(255,255,255,.36) 50%,rgba(255,255,255,0) 60%,transparent 70%);
   background-size:250% 250%;background-position:var(--hx,0%) var(--hy,0%);animation:cfholo 5s ease-in-out infinite}
 .holo::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px)}
 @keyframes cfholo{0%{background-position:0% 0%}50%{background-position:100% 100%}100%{background-position:0% 0%}}
