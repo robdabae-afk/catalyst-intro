@@ -9,7 +9,7 @@ import { Duo, Icon } from "../hud";
 import type { IconName } from "../bicons";
 
 const ICON: Record<NotifKind, IconName> = { new_pitch: "pitch", founder_update: "announce", event_reminder: "rsvp", qa_answered: "qa", new_follower: "mutual", raise_milestone: "traction" };
-const SHORT: Record<NotifKind, string> = { new_pitch: "New pitch", founder_update: "Update", event_reminder: "Event", qa_answered: "Q&A", new_follower: "Follower", raise_milestone: "Milestone" };
+const SHORT: Record<NotifKind, string> = { new_pitch: "New pitch", founder_update: "Update", event_reminder: "Event", qa_answered: "Q&A", new_follower: "Follower", raise_milestone: "Terms" };
 const KINDS = Object.keys(KIND_LABEL) as NotifKind[];
 
 function Lead({ x }: { x: Notif }) {
@@ -76,7 +76,7 @@ export default function Notifications() {
         );
       })}
       {!list.length && <p className="dim" style={{ marginTop: 24 }}>Nothing here yet.</p>}
-      <p className="note" style={{ marginTop: 20 }}>Sample notifications, people and companies. Raise milestones are illustrative; investing opens soon.</p>
+      <p className="note" style={{ marginTop: 20 }}>Sample notifications, people and companies. Terms shown are samples; investing opens soon.</p>
 
       {open && (
         <div className="sheet-bg" onClick={() => setOpen(false)}>

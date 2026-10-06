@@ -33,7 +33,7 @@ export function ResultCard({ c }: { c: Company }) {
           <span className="mono dim">{c.sector} · {c.stage} · {c.city}</span>
         </div>
         <div className="row" style={{ marginTop: 8, gap: 8 }}>
-          {c.raising ? <><span className="row mono" style={{ gap: 6 }}><span className="blink" />Raising</span><span className="grow"><Meter pct={c.progress} /></span></> : <span className="mono dim">Not raising</span>}
+          <span className="mono grow">{c.traction}</span>{c.raising && <span className="mono dim">Investing opens soon</span>}
           <span className="sample">Sample</span>
         </div>
       </div>

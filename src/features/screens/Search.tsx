@@ -42,8 +42,8 @@ export default function Search() {
       <div className="fl"><span className="mono dim">Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
       <div className={`toggle-row${raising ? " on" : ""}`}>
         <span className="ib" style={{ width: 34, height: 34 }}><Icon name="traction" size={18} /></span>
-        <span className="grow"><b style={{ fontSize: 14.5 }}>Raising now</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies with an open sample raise</span></span>
-        <Switch label="Raising now" on={raising} onChange={() => setRaising(!raising)} />
+        <span className="grow"><b style={{ fontSize: 14.5 }}>Has sample terms</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies opening for investment soon</span></span>
+        <Switch label="Has sample terms" on={raising} onChange={() => setRaising(!raising)} />
       </div>
       <div className="fl"><span className="mono dim">City</span><div className="chips">
         {CITIES.map((x) => <button key={x} className={`chip${city.includes(x) ? " on" : ""}`} aria-pressed={city.includes(x)} onClick={() => setCity(toggle(city, x))}>{x}</button>)}</div></div>

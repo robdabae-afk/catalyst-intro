@@ -53,10 +53,10 @@ export default function Company() {
         <aside className="card hud" style={{ marginTop: 22, alignSelf: "start" }}>
           <div className="row"><Face c={c} size={48} /><div className="grow"><b>{c.founder}</b><div className="mono dim">Founder · {c.city}</div></div></div>
           {c.raising ? (<>
-            <div className="row" style={{ marginTop: 18, alignItems: "baseline" }}><span style={{ fontSize: 26, letterSpacing: "-.03em" }}><CountUp to={c.progress} suffix="%" /></span><span className="mono dim grow" style={{ marginLeft: 8 }}>of sample goal</span></div>
-            <div style={{ marginTop: 10 }}><Meter pct={c.progress} /></div>
-            <div className="row mono dim" style={{ marginTop: 10, justifyContent: "space-between" }}><span><CountUp to={c.backers} /> backers</span><span>{c.daysLeft}d left</span></div>
-          </>) : <p className="mono dim" style={{ marginTop: 16 }}>Not raising</p>}
+            <div className="mono dim" style={{ marginTop: 18 }}>Traction</div>
+            <div style={{ fontSize: 20, letterSpacing: "-.02em", marginTop: 4 }}>{c.traction}</div>
+            <div className="mono dim" style={{ marginTop: 14 }}>Sample terms · {c.stage} · SAFE</div>
+          </>) : <><div className="mono dim" style={{ marginTop: 18 }}>Traction</div><div style={{ fontSize: 20, marginTop: 4 }}>{c.traction}</div><p className="mono dim" style={{ marginTop: 12 }}>No sample terms yet</p></>}
           <button className="btn" style={{ width: "100%", marginTop: 16 }} disabled>Investing opens soon</button>
           <p className="note" style={{ marginTop: 10 }}>Sample company. Portal registration pending; no investments are offered.</p>
         </aside>

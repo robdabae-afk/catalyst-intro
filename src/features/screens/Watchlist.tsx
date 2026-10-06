@@ -8,7 +8,7 @@ import { Duo, Icon, Meter, CountUp } from "../hud";
 
 type Key = "raise" | "closing" | "update";
 const ALERTS: { k: Key; label: string }[] = [
-  { k: "raise", label: "Raise progress" }, { k: "closing", label: "Closing soon" }, { k: "update", label: "New update" },
+  { k: "raise", label: "Investing opens" }, { k: "closing", label: "New pitch" }, { k: "update", label: "New update" },
 ];
 
 export default function Watchlist() {
@@ -35,15 +35,7 @@ export default function Watchlist() {
                       <div className="dim" style={{ fontSize: 13, lineHeight: 1.35 }}>{c.tagline}</div></div></Link>
                   <button className="btn ghost sm" onClick={() => remove(id)} aria-label={`Remove ${c.name}`}><IX size={14} /></button>
                 </div>
-                {c.raising && (
-                  <div style={{ marginTop: 12 }}>
-                    <div className="row mono" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-                      <span><CountUp to={c.progress} suffix="%" /> of sample goal</span>
-                      {c.daysLeft !== null && <span className="row" style={{ gap: 5, fontWeight: c.daysLeft <= 7 ? 700 : 500 }}><IClock size={13} />{c.daysLeft <= 7 ? "Closing soon · " : ""}{c.daysLeft}d</span>}
-                    </div>
-                    <Meter pct={c.progress} />
-                  </div>
-                )}
+                <div className="row mono dim" style={{ marginTop: 10, gap: 10 }}><span className="grow">{c.traction}</span>{c.raising && <span>Investing opens soon</span>}</div>
                 <div className="row" style={{ marginTop: 12, gap: 6, flexWrap: "wrap" }}><span className="dim" style={{ fontSize: 12, marginRight: 2 }}>Alerts</span>
                   {ALERTS.map(({ k, label }) => (
                     <button key={k} className={`chip al${w[k] ? " on" : ""}`} aria-pressed={w[k]} aria-label={`${label} alerts for ${c.name}`} onClick={() => set(id, k)}>{label}</button>
@@ -55,10 +47,10 @@ export default function Watchlist() {
           })}
           {!ids.length && <div className="card dim">Nothing watched. Add a company to get alerts.</div>}
         </div>
-        <p className="note" style={{ marginTop: 16 }}>Progress figures are illustrative samples. Investing opens soon; no live raises yet.</p>
+        <p className="note" style={{ marginTop: 16 }}>Sample companies. Investing opens soon; no live offerings yet.</p>
       </div>
       <aside>
-        <div className="sec" style={{ marginTop: 22 }}><h2><span className="ix">+</span>Raising now</h2></div>
+        <div className="sec" style={{ marginTop: 22 }}><h2><span className="ix">+</span>Opening soon</h2></div>
         {suggest.map((c) => (
           <div key={c.id} className="row" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
             <Duo c={c} size={36} /><div className="grow"><b style={{ display: "block" }}>{c.name}</b><span className="dim" style={{ fontSize: 12.5 }}>{c.sector} · {c.city}</span></div>

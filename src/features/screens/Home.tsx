@@ -25,14 +25,13 @@ export default function Home() {
             <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
             <p style={{ opacity: .8, fontSize: 14, marginTop: 4 }}>{top.tagline}</p>
             <div className="row" style={{ marginTop: 14, gap: 14 }}>
-              <span className="mono"><CountUp to={top.progress} suffix="%" /> of goal</span>
-              <span className="grow"><Meter pct={top.progress} /></span>
-              <span className="mono"><CountUp to={top.backers} /> backers</span>
+              <span className="mono">{top.traction}</span>
+              <span className="mono grow" style={{ textAlign: "right", opacity: .8 }}>Investing opens soon</span>
             </div>
           </div>
         </Link>
       </Hud>
-      <p className="note" style={{ marginTop: 8 }}>Illustrative figures for a sample company.</p>
+      <p className="note" style={{ marginTop: 8 }}>Sample company. Traction shown is illustrative.</p>
 
       {!s.prefs.investing_opens ? (
         <div className="banner lite" style={{ marginTop: 14 }}>
@@ -67,7 +66,7 @@ export default function Home() {
         <Link to={path("invite")} className="card row hud hov"><span className="ib"><Icon name="mutual" size={20} /></span><div className="grow"><b>Invite friends</b><div className="dim" style={{ fontSize: 13 }}>Skip the waitlist together</div></div><IArrow size={14} /></Link>
       </div>
 
-      <div className="sec"><h2><span className="ix">02</span>Raising now</h2><Link to={path("search")} className="mono dim">See all</Link></div>
+      <div className="sec"><h2><span className="ix">02</span>Opening soon</h2><Link to={path("search")} className="mono dim">See all</Link></div>
       <div className="chips" style={{ gap: 12 }}>
         {raising.map((c) => (
           <Link key={c.id} to={path(`company/${c.id}`)} className="ph" style={{ width: 150, height: 180, flex: "none" }}>
@@ -75,8 +74,7 @@ export default function Home() {
             <div className="ph-body" style={{ position: "absolute", left: 12, right: 12, bottom: 12 }}>
               <Duo c={c} size={30} />
               <b style={{ display: "block", marginTop: 8, fontSize: 15 }}>{c.name}</b>
-              <div className="mono" style={{ opacity: .75, margin: "4px 0 8px" }}>{c.progress}% · {c.daysLeft}d left</div>
-              <Meter pct={c.progress} />
+              <div className="mono" style={{ opacity: .75, marginTop: 4 }}>{c.traction}</div>
             </div>
           </Link>
         ))}

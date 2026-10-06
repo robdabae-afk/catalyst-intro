@@ -4,18 +4,18 @@ export type Stage = "Pre-seed" | "Seed" | "Series A";
 
 export interface Company {
   id: string; name: string; tagline: string; sector: Sector; stage: Stage; city: string;
-  raising: boolean; progress: number; daysLeft: number | null; founder: string;
-  img: string; face: string; pitch?: string; backers: number;
+  raising: boolean; traction: string; founder: string;
+  img: string; face: string; pitch?: string;
 }
 
 const X = "/x/";
 export const COMPANIES: Company[] = [
-  { id: "lumen", name: "Lumen Labs", tagline: "Glasses that caption conversations in real time", sector: "Hardware", stage: "Pre-seed", city: "Brooklyn", raising: true, progress: 62, daysLeft: 4, founder: "Maya O. (sample)", img: X + "deal-lumen.jpg", face: X + "founder-lumen.jpg", pitch: X + "pitch-lumen.mp4", backers: 412 },
-  { id: "tally", name: "Tally", tagline: "Bookkeeping that runs from a photo of a receipt", sector: "Fintech", stage: "Seed", city: "New York", raising: true, progress: 38, daysLeft: 19, founder: "Sample Founder B", img: X + "deal-tally.jpg", face: X + "founder-tally.jpg", pitch: X + "pitch-tally.mp4", backers: 688 },
-  { id: "gridline", name: "Gridline", tagline: "Home batteries that sell power back to the grid at peak hours", sector: "Climate", stage: "Seed", city: "Queens", raising: true, progress: 81, daysLeft: 9, founder: "Sample Founder C", img: X + "deal-gridline.jpg", face: X + "founder-gridline.jpg", backers: 236 },
-  { id: "ledgerly", name: "Ledgerly", tagline: "Payroll and tips for hourly crews", sector: "Fintech", stage: "Pre-seed", city: "Austin", raising: false, progress: 0, daysLeft: null, founder: "Sample Founder D", img: X + "deal-ledgerly.jpg", face: X + "founder-ledgerly.jpg", backers: 0 },
-  { id: "pulsebox", name: "Pulsebox", tagline: "At-home vitals kit for community clinics", sector: "Health", stage: "Series A", city: "Boston", raising: true, progress: 24, daysLeft: 31, founder: "Sample Founder E", img: X + "deal-pulsebox.jpg", face: X + "founder-pulsebox.jpg", backers: 154 },
-  { id: "parse", name: "Parse", tagline: "AI contract review for teams without a lawyer", sector: "AI", stage: "Pre-seed", city: "San Francisco", raising: false, progress: 0, daysLeft: null, founder: "Sample Founder F", img: X + "deal-parse.jpg", face: X + "founder-parse.jpg", backers: 0 },
+  { id: "lumen", name: "Lumen Labs", tagline: "Glasses that caption conversations in real time", sector: "Hardware", stage: "Pre-seed", city: "Brooklyn", raising: true, traction: "120 pilot users", founder: "Maya O. (sample)", img: X + "deal-lumen.jpg", face: X + "founder-lumen.jpg", pitch: X + "pitch-lumen.mp4" },
+  { id: "tally", name: "Tally", tagline: "Bookkeeping that runs from a photo of a receipt", sector: "Fintech", stage: "Seed", city: "New York", raising: true, traction: "2,100 businesses on waitlist", founder: "Sample Founder B", img: X + "deal-tally.jpg", face: X + "founder-tally.jpg", pitch: X + "pitch-tally.mp4" },
+  { id: "gridline", name: "Gridline", tagline: "Home batteries that sell power back to the grid at peak hours", sector: "Climate", stage: "Seed", city: "Queens", raising: true, traction: "40-home pilot", founder: "Sample Founder C", img: X + "deal-gridline.jpg", face: X + "founder-gridline.jpg" },
+  { id: "ledgerly", name: "Ledgerly", tagline: "Payroll and tips for hourly crews", sector: "Fintech", stage: "Pre-seed", city: "Austin", raising: false, traction: "18 crews in beta", founder: "Sample Founder D", img: X + "deal-ledgerly.jpg", face: X + "founder-ledgerly.jpg" },
+  { id: "pulsebox", name: "Pulsebox", tagline: "At-home vitals kit for community clinics", sector: "Health", stage: "Series A", city: "Boston", raising: true, traction: "2 clinic pilots", founder: "Sample Founder E", img: X + "deal-pulsebox.jpg", face: X + "founder-pulsebox.jpg" },
+  { id: "parse", name: "Parse", tagline: "AI contract review for teams without a lawyer", sector: "AI", stage: "Pre-seed", city: "San Francisco", raising: false, traction: "300 contracts reviewed", founder: "Sample Founder F", img: X + "deal-parse.jpg", face: X + "founder-parse.jpg" },
 ];
 export const byId = (id: string) => COMPANIES.find((c) => c.id === id);
 
@@ -24,7 +24,7 @@ export interface Notif { id: string; company?: string; thumb?: string; kind: Not
 
 export const NOTIFS: Notif[] = [
   { id: "n1", company: "lumen", thumb: "pitch", kind: "new_pitch", title: "Lumen Labs posted a new pitch", body: "Live demo: captions on the lens in under 300ms.", ago: "12m", day: "Today", to: "company/lumen" },
-  { id: "n2", company: "gridline", kind: "raise_milestone", title: "Gridline hit 75% of its sample goal", body: "Illustrative milestone. Investing opens soon.", ago: "1h", day: "Today", to: "company/gridline" },
+  { id: "n2", company: "gridline", kind: "raise_milestone", title: "Gridline added sample terms", body: "Read the terms now. Investing opens soon.", ago: "1h", day: "Today", to: "company/gridline" },
   { id: "n3", company: "tally", kind: "qa_answered", title: "Your question was answered", body: "Tally: \u201cDoes it read faded receipts?\u201d", ago: "3h", day: "Today", to: "company/tally" },
   { id: "n4", thumb: "event", kind: "event_reminder", title: "Pitch Night is tomorrow", body: "Doors 6:30 PM. Your pass is ready.", ago: "9h", day: "Today", to: "ticket" },
   { id: "n5", kind: "new_follower", title: "Sample Member J followed you", body: "Angel-curious, NYC.", ago: "1d", day: "Yesterday", to: "me", read: true },
@@ -34,7 +34,7 @@ export const NOTIFS: Notif[] = [
 
 export const KIND_LABEL: Record<NotifKind, string> = {
   new_pitch: "New pitches from companies I follow", founder_update: "Founder updates", event_reminder: "Event reminders",
-  qa_answered: "My Q&A answered", new_follower: "New followers", raise_milestone: "Raise milestones",
+  qa_answered: "My Q&A answered", new_follower: "New followers", raise_milestone: "Investing opens soon updates",
 };
 
 export interface Update { id: string; company: string; title: string; body: string; tag: string; ago: string }
