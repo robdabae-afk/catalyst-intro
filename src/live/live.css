@@ -129,7 +129,7 @@
 .lv-feed{list-style:none;margin:0;padding:0;display:block!important}
 .lv-feed li{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--line)}
 .lv-cta{display:grid;gap:8px;padding-bottom:10px}
-.lv-fine{font-size:11.5px;color:var(--dim);line-height:1.4}
+.lv-fine{font-size:11.5px;color:#5c5c55;line-height:1.4}
 
 /* ---------- discover grid ---------- */
 .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 16px}
@@ -297,7 +297,7 @@
 .lv-adm-act{display:flex;gap:8px}
 
 /* mobile extra strip */
-.lv-extra{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.lv-extra{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-bottom:1px solid var(--line);scrollbar-width:none;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 16px -12px rgba(0,0,0,.35)}
 .lv-extra button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;color:#55554f}
 .lv-extra button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .lv-extra button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
