@@ -1,6 +1,6 @@
 // Mirrors the app store into Supabase app_* tables for the signed-in user.
-// localStorage stays the instant cache (works offline + signed out); the server is the
-// source of truth once the user is signed in and the migration has been applied.
+// Production starts empty and reads account state only after auth resolves.
+// The server remains the source of truth; demo persistence is separate.
 // Tables: supabase/migrations/20261006140000_app_actions.sql
 import { supabase } from "@/integrations/supabase/client";
 import { hydrate, initial, setWriter, flushWrites, invalidatePendingWrites, type State } from "./store";
@@ -126,8 +126,10 @@ let started = false;
 export function startSync() {
   if (started || typeof window === "undefined" || isDemoMode()) return;
   started = true;
+  let resolved = false;
   const set = (id: string | null) => {
-    if (id === uid) return;
+    if (resolved && id === uid) return;
+    resolved = true;
     invalidatePendingWrites();
     uid = id;
     clearAccountState();

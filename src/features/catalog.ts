@@ -31,7 +31,7 @@ const text = (v: unknown) => typeof v === "string" ? v : "";
 const num = (v: unknown) => Number.isFinite(Number(v)) && Number(v) >= 0 ? Number(v) : 0;
 const strs = (v: unknown): string[] => Array.isArray(v) ? v.filter(x => typeof x === "string") : [];
 // Content URLs never accept javascript/data schemes from founder submissions.
-export const contentUrl = (v: unknown) => { const s = text(v); try { const u = new URL(s, window.location.origin); return ["https:", "http:"].includes(u.protocol) ? u.href : ""; } catch { return ""; } };
+export const contentUrl = (v: unknown) => { const s = text(v).trim(); if (!s) return ""; try { const u = new URL(s, window.location.origin); return ["https:", "http:"].includes(u.protocol) ? u.href : ""; } catch { return ""; } };
 const list = <T,>(v: unknown): T[] => Array.isArray(v) ? v as T[] : [];
 function loadDemo() {
   COMPANIES.splice(0, COMPANIES.length, ...D.COMPANIES);

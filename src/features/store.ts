@@ -51,6 +51,8 @@ export const initial: State = {
 };
 
 function load(): State {
+  // Production account data is never painted from cache: sync hydrates only after auth resolves.
+  if (!isDemoMode()) return initial;
   try {
     const raw = localStorage.getItem(KEY);
     return raw ? { ...initial, ...JSON.parse(raw) } : initial;
