@@ -1,5 +1,7 @@
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { isAppShell } from "@/lib/platform";
+import { startSync } from "./sync";
+import { useEffect } from "react";
 import { LiveSwipe, LiveCompany, LiveInbox, LiveThread, LivePeople, LiveEvents, LivePortfolio, LiveAdmin, isLiveDeal } from "@/live/embed";
 import "./features.css";
 import { IBack } from "./icons";
@@ -65,6 +67,7 @@ export function Head({ title, right, back }: { title: string; right?: React.Reac
 export const path = (p: string) => `${BASE}/${p}`;
 
 export default function FeaturesApp() {
+  useEffect(() => { startSync(); }, []);
   const [st] = useStore();
   const loc = useLocation();
   if (loc.pathname.replace(/\/$/, "") === "/app/live/welcome") return <div className="cf cf-ob"><Onboarding /></div>;

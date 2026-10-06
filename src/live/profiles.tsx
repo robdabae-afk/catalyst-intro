@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type PointerEvent as RPE, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import { setState, useStore, toggle, watchToggle } from "@/features/store";
 import { Icon, type IconName } from "@/brand/icons";
 import { Button, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, usd, type LiveDeal } from "./data";
@@ -117,15 +119,17 @@ function SwipeTabs({ tabs, children }: { tabs: string[]; children: ReactNode[] }
 }
 
 /* ---- action buttons ---- */
-function FollowBtn() {
-  const [on, setOn] = useState(false); const [n, setN] = useState(0);
-  return <Button variant={on ? "secondary" : "primary"} size="sm" className={`lv-follow${on ? " on" : ""}`} onClick={() => { setOn(!on); setN(n + 1); }} aria-pressed={on}>
+function FollowBtn({ id, company }: { id: string; company?: boolean }) {
+  const [st] = useStore(); const [n, setN] = useState(0);
+  const on = company ? st.follows.includes(id) : st.people.includes(id);
+  const flip = () => setState((s) => company ? { ...s, follows: toggle(s.follows, id) } : { ...s, people: toggle(s.people, id) });
+  return <Button variant={on ? "secondary" : "primary"} size="sm" className={`lv-follow${on ? " on" : ""}`} onClick={() => { flip(); setN(n + 1); }} aria-pressed={on}>
     <span key={n} className="lv-follow-ic"><Icon name={on ? "check" : "plus"} size={15} /></span>{on ? "Following" : "Follow"}
   </Button>;
 }
-function MsgBtn({ toast }: { toast: (s: string) => void }) {
-  const [n, setN] = useState(0);
-  return <IconButton icon="send" label="Message" className={`lv-msgb${n ? " fly" : ""}`} key={n} onClick={() => { setN(n + 1); toast("Message drafted · sample"); }} />;
+function MsgBtn({ thread }: { thread: string }) {
+  const nav = useNavigate();
+  return <IconButton icon="send" label="Message" className="lv-msgb" onClick={() => nav(({ lumen: "/app/live/inbox/t/t1", gridline: "/app/live/inbox/t/t2", tally: "/app/live/inbox/t/t3" } as Record<string, string>)[thread] ?? "/app/live/inbox?t=messages")} />;
 }
 
 /* ---- sheet ---- */
@@ -140,7 +144,7 @@ export function ProfileSheet({ r, onClose, onOpen, toast }: { r: ProfRef; onClos
   const d = isCo ? DEALS.find((x) => x.id === r.id)! : null;
   const p = !isCo ? PEOPLE.find((x) => x.id === r.id)! : null;
   const img = d ? d.img : p!.role === "Investor" ? "/live/ev-2.jpg" : "/live/ev-1.jpg";
-  const [saved, setSaved] = useState(false);
+  const [st] = useStore(); const saved = !!(d && st.watch[d.id]); const setSaved = (v: boolean) => { if (d && v !== saved) watchToggle(d.id); };
   return (
     <div className={`lv-sheet-wrap${shown ? " in" : ""}`} onClick={onClose}>
       <div className="lv-sheet" role="dialog" aria-modal="true" aria-label={`${d?.name ?? p!.name} profile, sample`}
@@ -158,9 +162,9 @@ export function ProfileSheet({ r, onClose, onOpen, toast }: { r: ProfRef; onClos
           <div className="lv-sheet-id" style={{ transform: reduced ? undefined : `translateY(${-Math.min(scroll, 60) * 0.3}px) scale(${1 - Math.min(scroll, 120) / 600})` }}>
             {d ? <span className="lv-av co" style={{ backgroundImage: `url(${d.img})` }} aria-hidden /> : <Avatar p={p!} size={76} ring />}
             <div className="lv-sheet-acts">
-              <FollowBtn />
-              {d ? <SaveToggle on={saved} onChange={(v) => { setSaved(v); toast(v ? "Saved · sample" : "Removed"); }} /> : null}
-              <MsgBtn toast={toast} />
+              <FollowBtn id={d ? d.id : p!.id} company={!!d} />
+              {d ? <SaveToggle on={saved} onChange={(v) => { setSaved(v); toast(v ? "Added to watchlist" : "Removed from watchlist"); }} /> : null}
+              <MsgBtn thread={d ? d.id : p!.at ?? p!.id} />
             </div>
           </div>
           <h2>{d?.name ?? p!.name}</h2>

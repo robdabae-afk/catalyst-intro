@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { useRef, useState, type PointerEvent as RPE } from "react";
+import { setState, useStore, watchAdd, watchToggle, toggle } from "@/features/store";
 
 import { Icon } from "@/brand/icons";
 import { SaveToggle, Burst } from "./micro";
@@ -29,6 +30,7 @@ export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; 
     setFly(dir);
     setBurst((b) => ({ k: dir > 0 ? "save" : "pass", n: b.n + 1 }));
     setLog((l) => (dir > 0 ? { ...l, save: l.save + 1 } : { ...l, pass: l.pass + 1 }));
+    if (dir > 0) watchAdd(d.id);
     setTimeout(() => { setI((v) => v + 1); setDx(0); setDy(0); setFly(0); }, reduced ? 0 : 320);
   };
   const down = (e: RPE) => {
@@ -104,14 +106,14 @@ function Waveform() {
 
 export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void; wide?: boolean }) {
   const d = DEALS.find((x) => x.id === id) ?? DEALS[0];
-  const [saved, setSaved] = useState(false);
+  const [st] = useStore(); const saved = !!st.watch[d.id];
   return (
     <div className={`lv-deal${wide ? " wide" : ""}`}>
       <LiveImage key={d.id} src={d.img} hotspots={d.hotspots} className="lv-hero">
         <div className="lv-hero-top">
           {onBack ? <IconButton icon="back" label="Back" className="lv-glass" onClick={onBack} /> : <span />}
           <SampleTag />
-          <SaveToggle on={saved} onChange={setSaved} className="lv-glass" />
+          <SaveToggle on={saved} onChange={() => watchToggle(d.id)} className="lv-glass" />
         </div>
       </LiveImage>
       <div className="lv-deal-body">
@@ -188,7 +190,8 @@ export function EventsView() {
 }
 function EventCard({ e }: { e: LiveEvent }) {
   const reduced = useReducedMotion();
-  const [me, setMe] = useState(false);
+  const [st] = useStore(); const me = st.rsvps.includes(e.id);
+  const setMe = () => setState((s) => ({ ...s, rsvps: toggle(s.rsvps, e.id) }));
   const [ref] = useInView<HTMLDivElement>();
   return (
     <div ref={ref} className="lv-ev">
@@ -203,7 +206,7 @@ function EventCard({ e }: { e: LiveEvent }) {
           <div className="lv-mono dim"><Icon name="location" size={13} /> {e.where.toUpperCase()}</div>
         </div>
         <span className={`lv-rsvp${me ? "" : " pulse"}`}>
-          <RsvpButton size="md" state={me ? "going" : "open"} onClick={() => setMe(!me)} />
+          <RsvpButton size="md" state={me ? "going" : "open"} onClick={setMe} />
         </span>
       </div>
     </div>

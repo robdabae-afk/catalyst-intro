@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Icon } from "@/brand/icons";
 import "@/brand/brand.css";
 import "./live.css";
@@ -49,7 +49,9 @@ export function LiveCompany({ id }: { id: string }) {
 
 export function LiveInbox({ updates }: { updates: ReactNode }) {
   const nav = useNavigate();
-  const [tab, setTab] = useState<"updates" | "messages">(() => (new URLSearchParams(location.search).get("t") === "messages" ? "messages" : "updates"));
+  const [sp, setSp] = useSearchParams();
+  const tab: "updates" | "messages" = sp.get("t") === "messages" ? "messages" : "updates";
+  const setTab = (t: "updates" | "messages") => setSp(t === "messages" ? { t: "messages" } : {});
   return (
     <div>
       <div className="cf-seg" role="tablist" aria-label="Inbox">

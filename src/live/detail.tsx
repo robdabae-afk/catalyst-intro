@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { setState, useStore, DEFAULT_WATCH } from "@/features/store";
 import { Icon } from "@/brand/icons";
 import { regCfLimit, usd } from "@/try/data";
 import { EVENTS, MATCH } from "./data";
@@ -40,8 +41,14 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   const qs = companyQuestions(c, founder.name);
   const scroller = useRef<HTMLDivElement>(null); const nav = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState<SectionId>(start ?? "overview");
-  const [inc, setInc] = useState(60000); const [nw, setNw] = useState(40000);
-  const [saved, setSaved] = useState(false); const [ask, setAsk] = useState(""); const [mine, setMine] = useState<string[]>([]);
+  const [st] = useStore();
+  const inc = st.invest?.inc ?? 60000, nw = st.invest?.nw ?? 40000;
+  const setInc = (v: number) => setState((s) => ({ ...s, invest: { inc: v, nw: s.invest?.nw ?? 40000 } }));
+  const setNw = (v: number) => setState((s) => ({ ...s, invest: { inc: s.invest?.inc ?? 60000, nw: v } }));
+  const saved = st.launch.includes(id);
+  const setSaved = (v: boolean) => setState((s) => ({ ...s, launch: v ? [...s.launch.filter((x) => x !== id), id] : s.launch.filter((x) => x !== id), watch: v ? { ...s.watch, [id]: s.watch[id] ?? DEFAULT_WATCH } : s.watch }));
+  const [ask, setAsk] = useState(""); const mine = st.qs[id] ?? [];
+  const setMine = (list: string[]) => setState((s) => ({ ...s, qs: { ...s.qs, [id]: list } }));
   const reduced = useReducedMotion();
   const last = c.metric.series[c.metric.series.length - 1];
 
@@ -168,7 +175,7 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
           <More label="Change my numbers">
             <label className="cd-rng"><span className="lv-mono">INCOME {usd(inc)}</span><input type="range" min={0} max={300000} step={5000} value={inc} onChange={(e) => setInc(+e.target.value)} /></label>
             <label className="cd-rng"><span className="lv-mono">NET WORTH {usd(nw)}</span><input type="range" min={0} max={500000} step={5000} value={nw} onChange={(e) => setNw(+e.target.value)} /></label>
-            <p className="cd-p dim">Reg CF rule: if income or net worth is under $124K, the greater of $2,500 or 5% of the higher number. If both are above, 10%, capped at $124K. Estimate only; not saved.</p>
+            <p className="cd-p dim">Reg CF rule: if income or net worth is under $124K, the greater of $2,500 or 5% of the higher number. If both are above, 10%, capped at $124K. Saved to your profile.</p>
           </More>
         </Sec>
         <p className="cd-foot lv-mono">{c.name} is a fictional sample company for this preview. Nothing here is an offer to sell securities.</p>

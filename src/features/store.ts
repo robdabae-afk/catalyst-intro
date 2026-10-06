@@ -16,6 +16,13 @@ export interface State {
   onboarded: boolean;
   role: "investor" | "founder" | null;
   interests: string[];
+  launch: string[];                       // "Save for launch" company ids
+  msgs: Record<string, string[]>;         // thread id -> my sent messages
+  qs: Record<string, string[]>;           // company id -> my questions (newest first)
+  rsvps: string[];                        // event ids I'm going to
+  people: string[];                       // founder/person ids I follow
+  profile: { bio: string; photo: string };
+  invest: { inc: number; nw: number } | null;
 }
 
 const initial: State = {
@@ -31,6 +38,13 @@ const initial: State = {
   onboarded: false,
   role: null,
   interests: [],
+  launch: [],
+  msgs: {},
+  qs: {},
+  rsvps: [],
+  people: [],
+  profile: { bio: "", photo: "" },
+  invest: null,
 };
 
 function load(): State {
@@ -43,8 +57,21 @@ function load(): State {
 let state: State = typeof window === "undefined" ? initial : load();
 const subs = new Set<() => void>();
 
-export function setState(fn: (s: State) => State) {
+export function getState() { return state; }
+const changeSubs = new Set<(prev: State, next: State) => void>();
+export function onChange(f: (prev: State, next: State) => void) { changeSubs.add(f); return () => { changeSubs.delete(f); }; }
+
+/** replace state without notifying change listeners (used when hydrating from the server) */
+export function hydrate(fn: (s: State) => State) {
   state = fn(state);
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  subs.forEach((f) => f());
+}
+
+export function setState(fn: (s: State) => State) {
+  const prev = state;
+  state = fn(state);
+  changeSubs.forEach((f) => f(prev, state));
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
   subs.forEach((f) => f());
 }
@@ -71,3 +98,7 @@ export function useToast() {
 export const unreadCount = (s: State) => NOTIFS.filter((n) => !s.readIds.includes(n.id) && s.prefs[n.kind]).length;
 
 export const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+
+export const DEFAULT_WATCH = { raise: true, closing: true, update: true };
+export const watchAdd = (id: string) => setState((s) => ({ ...s, watch: { ...s.watch, [id]: s.watch[id] ?? DEFAULT_WATCH } }));
+export const watchToggle = (id: string) => setState((s) => { const w = { ...s.watch }; if (w[id]) delete w[id]; else w[id] = DEFAULT_WATCH; return { ...s, watch: w }; });

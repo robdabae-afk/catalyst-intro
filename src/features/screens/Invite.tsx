@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Head } from "../FeaturesApp";
 import { CountUp, Hud, Icon } from "../hud";
-import { useToast } from "../store";
+import { setState, useToast } from "../store";
+const markInvite = () => setState((x) => ({ ...x, steps: x.steps.includes("invite") ? x.steps : [...x.steps, "invite"] }));
 import { Toast } from "../parts";
 
 const TIERS = [
@@ -14,11 +16,24 @@ const TIERS = [
 export default function Invite() {
   const [joined] = useState(2); // sample
   const t = useToast();
-  const link = "catalystintro.com/i/sample-you";
-  const copy = async () => { try { await navigator.clipboard.writeText(`https://${link}`); t.show("Link copied"); } catch { t.show("Copy failed. Long-press to copy."); } };
+  const [code, setCode] = useState<string | null>(null);
+  useEffect(() => {
+    // signed in: reuse or create this user's invite code (app_invites); signed out: plain signup link
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession(); if (!session) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const db = supabase as any; const uid = session.user.id;
+      const got = await db.from("app_invites").select("code").eq("user_id", uid).limit(1).maybeSingle();
+      if (got.data?.code) return setCode(got.data.code);
+      const made = await db.from("app_invites").insert({ user_id: uid, channel: "link" }).select("code").single();
+      if (made.data?.code) setCode(made.data.code);
+    })().catch(() => {});
+  }, []);
+  const link = code ? `catalystintro.com/i/${code}` : "catalystintro.com/signup";
+  const copy = async () => { try { await navigator.clipboard.writeText(`https://${link}`); t.show("Link copied"); markInvite(); } catch { t.show("Copy failed. Long-press to copy."); } };
   const share = async () => {
     const data = { title: "Catalyst", text: "Join me on Catalyst. Startup investing for everyone, opening soon.", url: `https://${link}` };
-    if (navigator.share) { try { await navigator.share(data); } catch { /* cancelled */ } } else copy();
+    if (navigator.share) { try { await navigator.share(data); markInvite(); } catch { /* cancelled */ } } else copy();
   };
   const next = TIERS.find((x) => x.n > joined);
 

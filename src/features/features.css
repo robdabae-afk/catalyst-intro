@@ -425,3 +425,18 @@ a.hud:hover .hb.bl,.hud.hov:hover .hb.bl{transform:translate(-3px,3px)}a.hud:hov
   .cf .lv-evs ul,.cf .lv-evs .lv-ev-list{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (min-width:2200px){ .cf-main{max-width:1560px} html{font-size:18px} }
+
+/* QA fixes: Learn answers stay legible + card scrolls instead of clipping */
+.cf .opt.right,.cf button.opt.right{border-color:var(--ink);background:var(--ink);color:#fff}
+.cf .opt.right svg{color:#fff;flex:none}
+.cf .opt:disabled{cursor:default;opacity:.55}
+.cf .opt.right:disabled,.cf .opt.wrong:disabled{opacity:1}
+.deck .lc-in{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.cf .opt.retry{justify-content:center;border-style:solid;border-color:var(--ink);margin-top:10px}
+/* Me profile editors */
+.me-edit{display:grid;gap:10px;padding:12px 14px 16px;border-bottom:1px solid var(--line)}
+.me-edit input[type=text],.me-edit textarea{width:100%;font:inherit;padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+.me-edit .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.me-edit .btn-ink{background:var(--ink);color:#fff;border:0;border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer}
+.me-edit .btn-ink:disabled{opacity:.4;cursor:default}
+.me-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1.5px solid var(--ink)}

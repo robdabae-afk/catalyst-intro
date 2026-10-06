@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import InviteLanding from "./pages/InviteLanding";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -84,6 +85,7 @@ const App = () => (
           <Route path="/app/x/*" element={<XRedirect />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
+          <Route path="/i/:code" element={<InviteLanding />} />
           <Route path="/app/signup/form" element={<AppSignupForm />} />
           <Route path="/signup/form" element={<AppSignupForm />} />
 

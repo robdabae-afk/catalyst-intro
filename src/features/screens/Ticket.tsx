@@ -77,7 +77,7 @@ export default function Ticket() {
         </div>
       </div>
       <div className="row" style={{ maxWidth: 400, margin: "16px auto 0", gap: 8, flexWrap: "wrap" }}>
-        <button className="btn grow" onClick={ics}><ICal size={18} />Add to calendar</button>
+        <button className="btn grow" onClick={() => { ics(); setState((x) => ({ ...x, steps: x.steps.includes("event") ? x.steps : [...x.steps, "event"] })); }}><ICal size={18} />Add to calendar</button>
         <a className="btn ghost grow" href={gcal} target="_blank" rel="noreferrer">Google Calendar</a>
       </div>
       <div style={{ maxWidth: 400, margin: "12px auto 0" }}>
