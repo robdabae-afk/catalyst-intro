@@ -3,9 +3,9 @@
 // source of truth once the user is signed in and the migration has been applied.
 // Tables: supabase/migrations/20261006140000_app_actions.sql
 import { supabase } from "@/integrations/supabase/client";
-import { getState, hydrate, onChange, type State } from "./store";
+import { getState, hydrate, initial, onChange, type State } from "./store";
 
-export type SyncStatus = "signed_out" | "ok" | "tables_missing" | "error";
+export type SyncStatus = "signed_out" | "loading" | "ok" | "tables_missing" | "error";
 let status: SyncStatus = "signed_out";
 let uid: string | null = null;
 const listeners = new Set<(s: SyncStatus) => void>();
@@ -13,6 +13,12 @@ const setStatus = (s: SyncStatus) => { status = s; (window as unknown as { __app
 export const syncStatus = () => status;
 export const onSyncStatus = (f: (s: SyncStatus) => void) => { listeners.add(f); return () => { listeners.delete(f); }; };
 export const isSignedIn = () => !!uid;
+export const currentUserId = () => uid;
+export function requireAccount() { if (uid) return true; window.location.assign("/signup"); return false; }
+let pending = Promise.resolve();
+export const flushSync = () => pending;
+export function clearAccountState() { hydrate(() => ({ ...initial, prefs: { ...initial.prefs }, watch: {}, follows: [], people: [], msgs: {}, qs: {} })); }
+
 
 // supabase-js types don't know the new tables until types are regenerated
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,6 +26,8 @@ const db = () => supabase as any;
 
 type Kind = "save" | "pass" | "watch" | "follow" | "notify" | "read" | "learn" | "checklist";
 const SETS: [Kind, (s: State) => string[]][] = [
+  ["pass", (s) => s.passes],
+  ["save", (s) => Object.keys(s.watch)],
   ["watch", (s) => Object.keys(s.watch)],
   ["follow", (s) => [...s.follows, ...s.people.map((p) => `person:${p}`)]],
   ["notify", (s) => s.launch],
@@ -52,14 +60,13 @@ async function pull(id: string) {
   if (err) { setStatus("error"); return; }
 
   const by = (k: Kind) => (items.data as { kind: Kind; item_id: string }[]).filter((r) => r.kind === k).map((r) => r.item_id);
-  const local = getState();
-  const fresh = items.data.length === 0 && !prefs.data; // first sign-in on this account: keep local picks and push them
-  if (fresh) { setStatus("ok"); await push(local, { ...local, watch: {}, follows: [], people: [], launch: [], readIds: [], learned: {}, steps: [], rsvps: [], msgs: {}, qs: {}, invest: null }, true); return; }
+  if (uid !== id) return;
 
   const p = prefs.data as { prefs: Record<string, unknown>; interests: string[]; role: State["role"] } | null;
   const follows = by("follow");
   hydrate((s) => ({
     ...s,
+    passes: by("pass"),
     watch: Object.fromEntries(by("watch").map((c) => [c, s.watch[c] ?? { raise: true, closing: true, update: true }])),
     follows: follows.filter((f) => !f.startsWith("person:")),
     people: follows.filter((f) => f.startsWith("person:")).map((f) => f.slice(7)),
@@ -70,13 +77,16 @@ async function pull(id: string) {
     rsvps: (rsvps.data as { event_id: string; status: string }[]).filter((r) => r.status === "going").map((r) => r.event_id),
     qs: (qs.data as { company_id: string; body: string }[]).reduce<Record<string, string[]>>((a, r) => ({ ...a, [r.company_id]: [...(a[r.company_id] ?? []), r.body] }), {}),
     msgs: (msgs.data as { thread_id: string; body: string }[]).reduce<Record<string, string[]>>((a, r) => ({ ...a, [r.thread_id]: [...(a[r.thread_id] ?? []), r.body] }), {}),
-    invest: inv.data ? { inc: +inv.data.annual_income, nw: +inv.data.net_worth } : s.invest,
+    invest: inv.data ? { inc: +inv.data.annual_income, nw: +inv.data.net_worth } : null,
     ...(p ? {
       prefs: { ...s.prefs, ...(p.prefs.notif as State["prefs"] ?? {}) },
       profile: { ...s.profile, ...(p.prefs.profile as State["profile"] ?? {}) },
       watch: Object.fromEntries(by("watch").map((c) => [c, (p.prefs.watch as State["watch"] ?? {})[c] ?? s.watch[c] ?? { raise: true, closing: true, update: true }])),
       interests: p.interests ?? s.interests,
-      role: p.role ?? s.role,
+      role: p.role ?? null,
+      onboarded: !!(prefs.data as any)?.onboarded_at,
+      recent: Array.isArray(p.prefs.recent) ? p.prefs.recent as string[] : [],
+      checkedIn: !!p.prefs.checkedIn,
     } : {}),
   }));
   setStatus("ok");
@@ -103,11 +113,11 @@ async function push(prev: State, next: State, force = false) {
     const n = list.length - (prev.msgs[t]?.length ?? 0);
     if (n > 0) jobs.push(db().from("app_messages").insert(list.slice(-n).map((body) => ({ user_id, thread_id: t, body }))));
   }
-  if (force || prev.prefs !== next.prefs || prev.profile !== next.profile || prev.interests !== next.interests || prev.role !== next.role || prev.watch !== next.watch || prev.onboarded !== next.onboarded)
-    jobs.push(db().from("app_prefs").upsert({ user_id, prefs: { notif: next.prefs, profile: next.profile, watch: next.watch }, interests: next.interests, role: next.role === "investor" || next.role === "founder" ? next.role : null, onboarded_at: next.onboarded ? new Date().toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }));
+  if (force || prev.recent !== next.recent || prev.checkedIn !== next.checkedIn || prev.prefs !== next.prefs || prev.profile !== next.profile || prev.interests !== next.interests || prev.role !== next.role || prev.watch !== next.watch || prev.onboarded !== next.onboarded)
+    jobs.push(db().from("app_prefs").upsert({ user_id, prefs: { notif: next.prefs, profile: next.profile, watch: next.watch, recent: next.recent, checkedIn: next.checkedIn }, interests: next.interests, role: next.role === "investor" || next.role === "founder" ? next.role : null, onboarded_at: next.onboarded ? new Date().toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }));
   if (next.invest && (force || prev.invest !== next.invest))
     jobs.push(db().from("app_invest_profile").upsert({ user_id, annual_income: next.invest.inc, net_worth: next.invest.nw }, { onConflict: "user_id" }));
-  for (const j of jobs) if (!(await run(j))) return;
+  for (const j of jobs) { if (uid !== user_id) return; if (!(await run(j))) return; }
 }
 
 let started = false;
@@ -117,9 +127,10 @@ export function startSync() {
   const set = (id: string | null) => {
     if (id === uid) return;
     uid = id;
-    if (id) { setStatus("ok"); void pull(id); } else setStatus("signed_out");
+    clearAccountState();
+    if (id) { setStatus("loading"); setTimeout(() => { if (uid === id) void pull(id); }, 0); } else setStatus("signed_out");
   };
   supabase.auth.getSession().then(({ data }) => set(data.session?.user.id ?? null));
   supabase.auth.onAuthStateChange((_e, session) => set(session?.user.id ?? null));
-  onChange((prev, next) => { void push(prev, next); });
+  onChange((prev, next) => { const account = uid; pending = pending.then(async () => { if (account && uid === account) await push(prev, next); }).catch(() => setStatus("error")); });
 }

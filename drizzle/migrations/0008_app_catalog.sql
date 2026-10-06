@@ -86,6 +86,8 @@ drop trigger if exists app_companies_stamp on public.app_companies;
 create trigger app_companies_stamp before insert or update on public.app_companies
   for each row execute function public.app_companies_stamp();
 
+grant select on public.app_questions to anon;
+
 -- Q&A: public on published companies; founders (owners) and admins can answer
 alter table public.app_questions add column if not exists asker_name text check (asker_name is null or length(asker_name) <= 80);
 alter table public.app_questions add column if not exists answered_at timestamptz;
@@ -122,6 +124,28 @@ create policy app_messages_founder_read on public.app_messages for select to aut
 drop policy if exists app_messages_founder_reply on public.app_messages;
 create policy app_messages_founder_reply on public.app_messages for insert to authenticated
   with check (sender_id = auth.uid() and (public.app_owns_company(thread_id) or public.app_is_admin()));
+
+-- Never trust caller-supplied sender IDs, and prevent investors rewriting founder replies.
+create or replace function public.app_messages_guard() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if auth.role() = 'authenticated' then
+    if tg_op = 'INSERT' then
+      new.sender_id := auth.uid();
+    else
+      if old.sender_id is not null and old.sender_id <> auth.uid() then
+        raise exception 'Only the sender can edit a message' using errcode = '42501';
+      end if;
+      new.sender_id := old.sender_id;
+      new.user_id := old.user_id;
+      new.thread_id := old.thread_id;
+    end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists app_messages_guard on public.app_messages;
+create trigger app_messages_guard before insert or update on public.app_messages
+  for each row execute function public.app_messages_guard();
 
 -- Founders/admins see interest reservations for their company (still no money; portal handoff only)
 drop policy if exists app_reservations_founder_read on public.app_reservations;

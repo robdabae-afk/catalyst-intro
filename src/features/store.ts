@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { NOTIFS, NotifKind } from "./data";
 
-const KEY = "catalyst.features.v2";
+const KEY = "catalyst.production.v1";
 
 export interface State {
   readIds: string[];
@@ -23,17 +23,18 @@ export interface State {
   people: string[];                       // founder/person ids I follow
   profile: { bio: string; photo: string };
   invest: { inc: number; nw: number } | null;
+  passes: string[];
 }
 
-const initial: State = {
-  readIds: NOTIFS.filter((n) => n.read).map((n) => n.id),
+export const initial: State = {
+  readIds: [],
   prefs: { new_pitch: true, founder_update: true, event_reminder: true, qa_answered: true, new_follower: true, raise_milestone: true, investing_opens: false },
-  watch: { lumen: { raise: true, closing: true, update: true }, gridline: { raise: true, closing: false, update: true } },
-  follows: ["lumen", "pulsebox"],
-  recent: ["climate brooklyn", "fintech pre-seed"],
+  watch: {},
+  follows: [],
+  recent: [],
   learned: {},
   streak: 0,
-  steps: ["photo", "interests"],
+  steps: [],
   checkedIn: false,
   onboarded: false,
   role: null,
@@ -45,6 +46,7 @@ const initial: State = {
   people: [],
   profile: { bio: "", photo: "" },
   invest: null,
+  passes: [],
 };
 
 function load(): State {

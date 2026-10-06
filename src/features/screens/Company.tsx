@@ -1,13 +1,15 @@
 import { useParams } from "react-router-dom";
 import { Head } from "../FeaturesApp";
-import { byId, UPDATES } from "../data";
+import { COMPANIES, UPDATES, useCatalog } from "../catalog";
+import { requireAccount } from "../sync";
 import { setState, toggle, useStore, useToast } from "../store";
 import { Toast, UpdateCard } from "../parts";
 import { CountUp, Face, Hud, Icon, Logo, Meter } from "../hud";
 
 export default function Company() {
   const { id = "" } = useParams();
-  const c = byId(id);
+  useCatalog();
+  const c = COMPANIES.find((x) => x.id === id);
   const [s] = useStore();
   const t = useToast();
   if (!c) return <Head title="Not found" back />;
@@ -25,7 +27,7 @@ export default function Company() {
             <div className="row" style={{ alignItems: "flex-end", gap: 14 }}>
               <Logo c={c} size={60} />
               <div className="grow" style={{ minWidth: 0 }}>
-                <div className="row" style={{ gap: 8 }}><span className="sample inv">Sample</span>{c.pitch && <span className="chip-d"><Icon name="play" size={11} />Pitch · 1:30</span>}</div>
+                <div className="row" style={{ gap: 8 }}>{c.pitch && <span className="chip-d"><Icon name="play" size={11} />Pitch · 1:30</span>}</div>
                 <h1 style={{ fontSize: "clamp(22px,5vw,28px)", fontWeight: 700, letterSpacing: "-.035em", lineHeight: 1.05, marginTop: 8 }}>{c.name}</h1>
                 <p style={{ opacity: .82, marginTop: 4 }}>{c.tagline}</p>
               </div>
@@ -38,10 +40,10 @@ export default function Company() {
           <p className="mono dim" style={{ marginTop: 16 }}>{c.sector} · {c.stage} · {c.city}</p>
           <div className="row" style={{ marginTop: 18, gap: 8, flexWrap: "wrap" }}>
             <button className={`btn${following ? " ghost" : ""}`} aria-pressed={following}
-              onClick={() => { setState((x) => ({ ...x, follows: toggle(x.follows, c.id) })); t.show(following ? `Unfollowed ${c.name}` : `Following ${c.name}`); }}>
+              onClick={() => { if (!requireAccount()) return; setState((x) => ({ ...x, follows: toggle(x.follows, c.id) })); t.show(following ? `Unfollowed ${c.name}` : `Following ${c.name}`); }}>
               {following ? <><Icon name="check" size={16} />Following</> : <><Icon name="plus" size={16} />Follow</>}</button>
             <button className="btn ghost" aria-pressed={watching}
-              onClick={() => { setState((x) => { const w = { ...x.watch }; if (watching) delete w[c.id]; else w[c.id] = { raise: true, closing: true, update: true }; return { ...x, watch: w }; }); t.show(watching ? "Removed from watchlist" : "Added to watchlist"); }}>
+              onClick={() => { if (!requireAccount()) return; setState((x) => { const w = { ...x.watch }; if (watching) delete w[c.id]; else w[c.id] = { raise: true, closing: true, update: true }; return { ...x, watch: w }; }); t.show(watching ? "Removed from watchlist" : "Added to watchlist"); }}>
               <Icon name="save" size={18} />{watching ? "Watching" : "Watch"}</button>
           </div>
           <div className="sec"><h2><span className="ix">01</span>Founder updates</h2><span className="mono dim">{ups.length}</span></div>
@@ -55,10 +57,10 @@ export default function Company() {
           {c.raising ? (<>
             <div className="mono dim" style={{ marginTop: 18 }}>Traction</div>
             <div style={{ fontSize: 20, letterSpacing: "-.02em", marginTop: 4 }}>{c.traction}</div>
-            <div className="mono dim" style={{ marginTop: 14 }}>Sample terms · {c.stage} · SAFE</div>
-          </>) : <><div className="mono dim" style={{ marginTop: 18 }}>Traction</div><div style={{ fontSize: 20, marginTop: 4 }}>{c.traction}</div><p className="mono dim" style={{ marginTop: 12 }}>No sample terms yet</p></>}
+            
+          </>) : <><div className="mono dim" style={{ marginTop: 18 }}>Traction</div><div style={{ fontSize: 20, marginTop: 4 }}>{c.traction}</div><p className="mono dim" style={{ marginTop: 12 }}>Not raising yet</p></>}
           <button className="btn" style={{ width: "100%", marginTop: 16 }} disabled>Investing opens soon</button>
-          <p className="note" style={{ marginTop: 10 }}>Sample company. Portal registration pending; no investments are offered.</p>
+          <p className="note" style={{ marginTop: 10 }}>Portal registration pending; no investments are offered yet.</p>
         </aside>
       </div>
       <Toast msg={t.msg} />

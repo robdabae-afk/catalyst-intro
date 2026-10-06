@@ -62,7 +62,7 @@ export default function Onboarding() {
           ? <button type="button" className="btn" disabled={st.ok === false} onClick={() => setI(i + 1)}>{st.next}</button>
           : <>
               <button type="button" className="btn" onClick={() => finish("/app/signup/form?from=app")}>Create account</button>
-              <button type="button" className="btn ghost" onClick={() => finish(path(""))}>Explore sample deals</button>
+              <button type="button" className="btn ghost" onClick={() => finish(path(""))}>Explore companies</button>
               <button type="button" className="ob-link" onClick={() => finish("/app/auth?from=app")}>I already have an account</button>
             </>}
         <p className="ob-legal">By continuing you agree to our <Link to={path("legal/terms")}>Terms</Link> and <Link to={path("legal/privacy")}>Privacy notice</Link>.</p>

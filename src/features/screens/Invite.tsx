@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Head } from "../FeaturesApp";
-import { CountUp, Hud, Icon } from "../hud";
+import { Hud, Icon } from "../hud";
 import { setState, useToast } from "../store";
 const markInvite = () => setState((x) => ({ ...x, steps: x.steps.includes("invite") ? x.steps : [...x.steps, "invite"] }));
 import { Toast } from "../parts";
@@ -14,7 +14,7 @@ const TIERS = [
 ];
 
 export default function Invite() {
-  const [joined] = useState(2); // sample
+  const joined = 0; // referral joins not tracked server-side yet; show no fabricated count
   const t = useToast();
   const [code, setCode] = useState<string | null>(null);
   useEffect(() => {
@@ -35,19 +35,15 @@ export default function Invite() {
     const data = { title: "Catalyst", text: "Join me on Catalyst. Startup investing for everyone, opening soon.", url: `https://${link}` };
     if (navigator.share) { try { await navigator.share(data); markInvite(); } catch { /* cancelled */ } } else copy();
   };
-  const next = TIERS.find((x) => x.n > joined);
 
   return (
     <div className="g-side">
       <div>
         <Head title="Invite friends" back />
-        <Hud className="in" scan tag="Community / NYC"><div className="inv-hero"><img src="/x/ev-1.jpg" alt="" /><img src="/x/ev-2.jpg" alt="" /><img src="/x/founder-lumen.jpg" alt="" /></div></Hud>
-        <p className="note" style={{ marginBottom: 12 }}>Catalyst community events. Founder photo is a sample.</p>
+        <Hud className="in" scan tag="Community / NYC"><div className="inv-hero"><img src="/x/ev-1.jpg" alt="" /><img src="/x/ev-2.jpg" alt="" /></div></Hud>
+        <p className="note" style={{ marginBottom: 12 }}>Catalyst community events.</p>
         <div className="card hud" style={{ padding: 20 }}>
-          <div className="row"><span className="faces"><img className="face" src="/x/founder-tally.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><img className="face" src="/x/founder-gridline.jpg" alt="" width={34} height={34} style={{ width: 34, height: 34 }} /><span className="ghost-face">+</span></span>
-            <div className="grow"><b style={{ fontSize: 20 }}><CountUp to={joined} /></b> <span className="dim">friends joined</span></div><span className="sample">Sample</span></div>
-          <div className="ladder" aria-hidden>{TIERS.map((x) => <div key={x.n} className={joined >= x.n ? "on" : ""} />)}</div>
-          <p style={{ fontSize: 13.5, marginTop: 12 }}>{next ? <><b>{next.n - joined} more</b> to unlock {next.t.toLowerCase()}.</> : "Every perk unlocked."}</p>
+          <p style={{ fontSize: 13.5 }}>Share your link. Perks unlock as friends join.</p>
           <div className="link" style={{ marginTop: 18 }}><span className="grow ell">{link}</span><button className="btn sm" onClick={copy}><Icon name="check" size={13} />Copy</button></div>
           <button className="btn ghost" style={{ width: "100%", marginTop: 10 }} onClick={share}><Icon name="share" size={16} />Share invite</button>
         </div>

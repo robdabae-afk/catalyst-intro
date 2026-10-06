@@ -6,13 +6,14 @@ import { Duo, Logo, Face, Meter, Icon } from "./hud";
 
 export const Mark = ({ c, sm }: { c: Company; sm?: boolean }) => <Logo c={c} size={sm ? 34 : 40} />;
 
-export function CompanyRow({ c, right }: { c: Company; right?: React.ReactNode }) {
+export function CompanyRow({ c, right }: { c?: Company; right?: React.ReactNode }) {
+  if (!c) return null;
   return (
     <div className="row" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
       <Link to={path(`company/${c.id}`)} className="row grow">
         <Duo c={c} size={40} />
         <div className="grow">
-          <div className="row" style={{ gap: 8 }}><b className="ell">{c.name}</b><span className="sample">Sample</span></div>
+          <div className="row" style={{ gap: 8 }}><b className="ell">{c.name}</b></div>
           <div className="dim" style={{ fontSize: 13 }}>{c.sector} · {c.stage} · {c.city}</div>
         </div>
       </Link>
@@ -22,10 +23,11 @@ export function CompanyRow({ c, right }: { c: Company; right?: React.ReactNode }
 }
 
 /** Search/discovery result: photo + logo + founder, full tagline (2-line clamp, never cut mid-word on one line). */
-export function ResultCard({ c }: { c: Company }) {
+export function ResultCard({ c }: { c?: Company }) {
+  if (!c) return null;
   return (
     <Link to={path(`company/${c.id}`)} className="rc">
-      <div className="ph"><img src={c.img} alt="" loading="lazy" /></div>
+      <div className="ph">{c.img && <img src={c.img} alt="" loading="lazy" />}</div>
       <div style={{ minWidth: 0 }}>
         <div className="row" style={{ gap: 8 }}><Logo c={c} size={22} /><b style={{ fontSize: 15 }}>{c.name}</b></div>
         <p className="dim clamp2" style={{ fontSize: 13, lineHeight: 1.4, marginTop: 4 }}>{c.tagline}</p>
@@ -33,8 +35,7 @@ export function ResultCard({ c }: { c: Company }) {
           <span className="mono dim">{c.sector} · {c.stage} · {c.city}</span>
         </div>
         <div className="row" style={{ marginTop: 8, gap: 8 }}>
-          <span className="mono grow">{c.traction}</span>{c.raising && <span className="mono dim">Investing opens soon</span>}
-          <span className="sample">Sample</span>
+          <span className="mono grow">{c.traction ?? ""}</span>{c.raising && <span className="mono dim">Investing opens soon</span>}
         </div>
       </div>
     </Link>
@@ -42,8 +43,9 @@ export function ResultCard({ c }: { c: Company }) {
 }
 
 export function UpdateCard({ id }: { id: string }) {
-  const u = UPDATES.find((x) => x.id === id)!;
-  const c = byId(u.company)!;
+  const u = UPDATES.find((x) => x.id === id);
+  const c = u ? byId(u.company) : undefined;
+  if (!u || !c) return null;
   return (
     <article className="card hov upd">
       <div className="grow" style={{ minWidth: 0 }}>
@@ -52,7 +54,7 @@ export function UpdateCard({ id }: { id: string }) {
         <p className="dim" style={{ fontSize: 13, lineHeight: 1.45, marginTop: 3 }}>{u.body}</p>
         <Link to={path(`company/${c.id}`)} className="row" style={{ marginTop: 8, gap: 4, fontSize: 12, fontWeight: 600 }}>View company <IArrow size={12} /></Link>
       </div>
-      <div className="ph upd-th"><img src={c.img} alt="" loading="lazy" /></div>
+      <div className="ph upd-th">{c.img && <img src={c.img} alt="" loading="lazy" />}</div>
     </article>
   );
 }

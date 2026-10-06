@@ -5,6 +5,7 @@ import { Head, path } from "../FeaturesApp";
 import { ICheck, IArrow, IWatch, IUp, ICal, IUserPlus, ILearn, ITicket, IGift } from "../icons";
 import { setState, State, toggle, useStore } from "../store";
 import { LEARN } from "../data";
+import { useIsAdmin } from "@/live/embed";
 
 const SECTORS = ["Climate", "Fintech", "AI", "Health", "Hardware", "Consumer", "Software"];
 
@@ -68,9 +69,9 @@ function Editor({ id, s, close }: { id: string; s: State; close: () => void }) {
 
 const MORE = [
   { to: "watchlist", t: "Watchlist", d: "Companies you saved", I: IWatch },
-  { to: "portfolio", t: "Portfolio", d: "Sample holdings view", I: IUp },
+  { to: "portfolio", t: "Portfolio", d: "Your holdings", I: IUp },
   { to: "events", t: "Events", d: "NYC pitch nights and dinners", I: ICal },
-  { to: "ticket", t: "Event pass", d: "Your QR pass for Pitch Night", I: ITicket },
+  { to: "ticket", t: "Event pass", d: "Passes for events you RSVP to", I: ITicket },
   { to: "people", t: "People", d: "Founders and investors to meet", I: IUserPlus },
   { to: "learn", t: "Learn", d: "Reg CF basics in five cards", I: ILearn },
   { to: "invite", t: "Invite friends", d: "Move up the waitlist", I: IGift },
@@ -83,6 +84,7 @@ const ACCOUNT = [
 
 export default function Me() {
   const [s] = useStore();
+  const admin = useIsAdmin();
   const [open, setOpen] = useState<string | null>(null);
   const auto = doneSteps(s);
   const done = STEPS.filter((x) => auto.has(x.id)).length;
@@ -97,7 +99,7 @@ export default function Me() {
             <Link key={to} to={path(to)} className="me-row" data-to={to}>
               <I size={22} /><span className="grow"><b>{t}</b><small>{d}</small></span><IArrow size={14} />
             </Link>))}
-          {(sessionStorage.getItem("cat-role") === "admin" || new URLSearchParams(location.search).get("role") === "admin") && <Link to={path("admin")} className="me-row" data-to="admin"><span className="grow"><b>Admin</b></span><IArrow size={14} /></Link>}
+          {admin && <Link to={path("manage")} className="me-row" data-to="manage"><span className="grow"><b>Manage companies</b></span><IArrow size={14} /></Link>}
         </nav>
         <Hud className="me-hero in" scan>
           <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>

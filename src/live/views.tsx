@@ -6,16 +6,32 @@ import { Icon } from "@/brand/icons";
 import { SaveToggle, Burst } from "./micro";
 import { ProfileFeed, ProfileSheet, Toast, type ProfRef } from "./profiles";
 import { MatchList, PrefsSheet } from "./match";
-import { DEFAULT_PREFS, type Prefs } from "./data";
+import { DEFAULT_PREFS, type Prefs, type LiveDeal, type LiveEvent } from "./data";
+import { DEALS, EVENTS, useCatalog } from "@/features/catalog";
+import { requireAccount } from "@/features/sync";
 import { SwipeAction, RsvpButton, InvestButton, IconButton } from "@/brand/Button";
-import { DEALS, EVENTS, type LiveDeal, type LiveEvent } from "./data";
-import { CatIcon, LiveImage, RaiseHud, SampleTag, Sparkline } from "./parts";
-import { useCountUp, useInView, useReducedMotion } from "./hooks";
+import { CatIcon, LiveImage, RaiseHud } from "./parts";
+import { useInView, useReducedMotion } from "./hooks";
+
+export function Empty({ title, body, icon = "discover" }: { title: string; body?: string; icon?: Parameters<typeof Icon>[0]["name"] }) {
+  return <div className="lv-empty"><Icon name={icon} size={30} /><strong>{title}</strong>{body && <p>{body}</p>}</div>;
+}
+const catalogNote = (status: string) => status === "loading" ? "Loading companies…" : status === "ready" ? "New companies are reviewed before they go live. Check back soon." : "Listings aren't available right now. Try again later.";
 
 const TH = 110;
 
 /* ---------- SWIPE ---------- */
 export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; topRight?: ReactNode }) {
+  const { status } = useCatalog();
+  if (!DEALS.length) return (
+    <div className="lv-swipe">
+      <header className="lv-top"><div className="lv-top-t">Discover</div>{topRight}</header>
+      <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />
+    </div>
+  );
+  return <SwipeDeck onOpen={onOpen} topRight={topRight} />;
+}
+function SwipeDeck({ onOpen, topRight }: { onOpen: (id: string) => void; topRight?: ReactNode }) {
   const reduced = useReducedMotion();
   const [i, setI] = useState(0);
   const [dx, setDx] = useState(0);
@@ -27,6 +43,7 @@ export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; 
 
   const [burst, setBurst] = useState<{ k: "save" | "pass" | null; n: number }>({ k: null, n: 0 });
   const commit = (dir: 1 | -1) => {
+    if (dir > 0 && !requireAccount()) { setDx(0); setDy(0); return; }
     setFly(dir);
     setBurst((b) => ({ k: dir > 0 ? "save" : "pass", n: b.n + 1 }));
     setLog((l) => (dir > 0 ? { ...l, save: l.save + 1 } : { ...l, pass: l.pass + 1 }));
@@ -65,11 +82,11 @@ export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; 
           className={`lv-card top${dragging ? " drag" : ""}${fly ? " fly" : ""}`}
           style={{ transform: `translate(${x}px, ${dy}px) rotate(${x / 18}deg)` }}
           onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
-          aria-label={`${d.name}, sample deal. Drag right to save, left to pass, tap for details.`}
+          aria-label={`${d.name}. Drag right to save, left to pass, tap for details.`}
         >
           <LiveImage src={d.img} hotspots={d.hotspots}>
             <div className="lv-card-hud">
-              <div className="lv-card-row"><SampleTag /><span className="lv-mono lv-chip"><CatIcon cat={d.cat} /> {d.cat.toUpperCase()}</span></div>
+              <div className="lv-card-row"><span className="lv-mono lv-chip"><CatIcon cat={d.cat} /> {(d.cat || "STARTUP").toUpperCase()}</span></div>
               <div className="lv-drag lv-mono" style={{ opacity: Math.min(1, Math.abs(p) * 1.4) }}>
                 <span>DX {x >= 0 ? "+" : ""}{Math.round(x)}</span>
                 <span className="lv-meter"><i style={{ width: `${Math.abs(p) * 100}%` }} /></span>
@@ -93,46 +110,37 @@ export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; 
         <SwipeAction kind="save" big onClick={() => commit(1)} />
       </div>
       <div className="lv-tele lv-mono">
-        <span>SAVED <b>{log.save}</b></span><span>PASSED <b>{log.pass}</b></span><span>QUEUE <b>{DEALS.length - (i % DEALS.length)}</b></span><span className="dim">SAMPLE</span>
+        <span>SAVED <b>{log.save}</b></span><span>PASSED <b>{log.pass}</b></span><span>QUEUE <b>{DEALS.length - (i % DEALS.length)}</b></span>
       </div>
     </div>
   );
 }
 
 /* ---------- DEAL PAGE ---------- */
-function Waveform() {
-  return <div className="lv-wave" aria-hidden>{Array.from({ length: 36 }, (_, k) => <i key={k} style={{ animationDelay: `${(k * 73) % 900}ms` }} />)}</div>;
-}
 
 export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void; wide?: boolean }) {
-  const d = DEALS.find((x) => x.id === id) ?? DEALS[0];
-  const [st] = useStore(); const saved = !!st.watch[d.id];
+  useCatalog();
+  const d = DEALS.find((x) => x.id === id);
+  const [st] = useStore();
+  if (!d) return <div className="lv-deal">{onBack && <IconButton icon="back" label="Back" onClick={onBack} />}<Empty title="Company not found" body="It may not be published yet." /></div>;
+  const saved = !!st.watch[d.id];
   return (
     <div className={`lv-deal${wide ? " wide" : ""}`}>
       <LiveImage key={d.id} src={d.img} hotspots={d.hotspots} className="lv-hero">
         <div className="lv-hero-top">
           {onBack ? <IconButton icon="back" label="Back" className="lv-glass" onClick={onBack} /> : <span />}
-          <SampleTag />
-          <SaveToggle on={saved} onChange={() => watchToggle(d.id)} className="lv-glass" />
+          <span />
+          <SaveToggle on={saved} onChange={() => { if (requireAccount()) watchToggle(d.id); }} className="lv-glass" />
         </div>
       </LiveImage>
       <div className="lv-deal-body">
-        <div className="lv-mono dim"><CatIcon cat={d.cat} /> {d.cat.toUpperCase()} · {d.city.toUpperCase()}</div>
+        <div className="lv-mono dim"><CatIcon cat={d.cat} /> {[d.cat, d.city].filter(Boolean).join(" · ").toUpperCase()}</div>
         <h1>{d.name}</h1>
         <p className="lv-lede">{d.line}</p>
         <RaiseHud d={d} />
-        <div className="lv-panel">
-          <div className="lv-panel-h lv-mono"><span><span className="lv-live" /> ACTIVITY · SAMPLE</span><span className="dim">LIVE</span></div>
-          <Waveform />
-          <ul className="lv-feed lv-mono">
-            <li><span>NEW INVESTOR</span><b>+{d.min}</b></li>
-            <li><span>SAVED BY</span><b>{Math.round(d.investors * 1.7)}</b></li>
-            <li><span>Q&amp;A OPEN</span><b>12</b></li>
-          </ul>
-        </div>
         <div className="lv-cta">
           <InvestButton size="lg" block disabled>Invest · coming soon</InvestButton>
-          <p className="lv-fine">Sample deal for UI preview. Catalyst is not yet offering investments. Reg CF offerings will run through a registered funding portal.</p>
+          <p className="lv-fine">Catalyst is not yet offering investments. Reg CF offerings will run through a registered funding portal once registration is complete.</p>
         </div>
       </div>
     </div>
@@ -141,6 +149,7 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
 
 /* ---------- DISCOVER GRID ---------- */
 export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { onOpen: (id: string) => void; initial?: ProfRef | null; prefsOpen?: boolean }) {
+  const { status } = useCatalog();
   const [ref, seen] = useInView<HTMLDivElement>();
   const [prof, setProf] = useState<ProfRef | null>(initial);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
@@ -149,9 +158,10 @@ export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { on
   const say = (t: string) => setToast((o) => ({ t, n: (o?.n ?? 0) + 1 }));
   return (
     <div className="lv-disc">
-      <header className="lv-top"><div className="lv-mono">DISCOVER</div><div className="lv-mono dim">{DEALS.length} SAMPLE DEALS</div></header>
-      <MatchList prefs={prefs} onOpenDeal={onOpen} onProfile={setProf} onPrefs={() => setShowPrefs(true)} toast={say} />
-      <div className="lv-sec-h lv-mono">BROWSE ALL</div>
+      <header className="lv-top"><div className="lv-mono">DISCOVER</div><div className="lv-mono dim">{DEALS.length} {DEALS.length === 1 ? "COMPANY" : "COMPANIES"}</div></header>
+      {!DEALS.length && <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />}
+      {!!DEALS.length && <MatchList prefs={prefs} onOpenDeal={onOpen} onProfile={setProf} onPrefs={() => setShowPrefs(true)} toast={say} />}
+      {!!DEALS.length && <div className="lv-sec-h lv-mono">BROWSE ALL</div>}
       <div ref={ref} className={`lv-grid${seen ? " in" : ""}`}>
         {DEALS.map((d, k) => <Tile key={k} d={d} k={k} onOpen={onOpen} big={k === 0} />)}
       </div>
@@ -168,10 +178,10 @@ function Tile({ d, k, onOpen, big }: { d: LiveDeal; k: number; onOpen: (id: stri
       <LiveImage src={d.img} intro={false}>
         <span className="lv-tile-ret" aria-hidden><b className="tl" /><b className="tr" /><b className="bl" /><b className="br" /></span>
         <div className="lv-tile-hud">
-          <span className="lv-mono lv-tag">{big ? `SAMPLE · ${d.cat.toUpperCase()}` : "SAMPLE"}</span>
+          {d.cat && <span className="lv-mono lv-tag">{d.cat.toUpperCase()}</span>}
           <div>
             <strong>{d.name}</strong>
-            <div className="lv-mono lv-tile-m"><span>OPENS SOON</span><Sparkline data={d.spark} go w={44} h={14} /></div>
+            <div className="lv-mono lv-tile-m"><span>OPENS SOON</span></div>
           </div>
         </div>
       </LiveImage>
@@ -181,9 +191,11 @@ function Tile({ d, k, onOpen, big }: { d: LiveDeal; k: number; onOpen: (id: stri
 
 /* ---------- EVENTS ---------- */
 export function EventsView() {
+  const { status } = useCatalog();
   return (
     <div className="lv-evs">
       <header className="lv-top"><div className="lv-mono">EVENTS / NYC</div><div className="lv-mono dim">CATALYST COMMUNITY</div></header>
+      {!EVENTS.length && <Empty icon="events" title={status === "loading" ? "Loading…" : "No upcoming events"} body={status === "loading" ? undefined : "New events show up here as soon as they're announced."} />}
       {EVENTS.map((e) => <EventCard key={e.id} e={e} />)}
     </div>
   );
@@ -191,7 +203,8 @@ export function EventsView() {
 function EventCard({ e }: { e: LiveEvent }) {
   const reduced = useReducedMotion();
   const [st] = useStore(); const me = st.rsvps.includes(e.id);
-  const setMe = () => setState((s) => ({ ...s, rsvps: toggle(s.rsvps, e.id) }));
+  const setMe = () => { if (requireAccount()) setState((s) => ({ ...s, rsvps: toggle(s.rsvps, e.id) })); };
+  const url = (e as LiveEvent & { url?: string }).url;
   const [ref] = useInView<HTMLDivElement>();
   return (
     <div ref={ref} className="lv-ev">
@@ -203,7 +216,8 @@ function EventCard({ e }: { e: LiveEvent }) {
       <div className="lv-ev-body">
         <div>
           <h3>{e.title}</h3>
-          <div className="lv-mono dim"><Icon name="location" size={13} /> {e.where.toUpperCase()}</div>
+          {e.where && <div className="lv-mono dim"><Icon name="location" size={13} /> {e.where.toUpperCase()}</div>}
+          {url && <a className="lv-mono dim" href={url} target="_blank" rel="noopener noreferrer">EVENT PAGE</a>}
         </div>
         <span className={`lv-rsvp${me ? "" : " pulse"}`}>
           <RsvpButton size="md" state={me ? "going" : "open"} onClick={setMe} />
