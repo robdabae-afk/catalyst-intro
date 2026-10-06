@@ -379,3 +379,49 @@ a.hud:hover .hb.bl,.hud.hov:hover .hb.bl{transform:translate(-3px,3px)}a.hud:hov
 .cf .me-row b{display:block;font-size:14.5px;font-weight:600}
 .cf .me-row small{display:block;font-size:12.5px;opacity:.6;margin-top:1px}
 .cf .head-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:6px 11px;border:1px solid var(--line,#e5e5e5);border-radius:99px}
+
+/* ---- onboarding (in-app first run) ---- */
+.cf-ob{min-height:100dvh;display:flex;justify-content:center;background:#fff}
+.ob{width:100%;max-width:460px;min-height:100dvh;display:flex;flex-direction:column;padding:calc(14px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom))}
+.ob-top{display:flex;align-items:center;justify-content:space-between;height:40px}
+.ob-back{border:0;background:none;font:600 14px inherit;color:var(--ink);cursor:pointer;padding:8px 0;min-width:44px}
+.ob-dots{display:flex;gap:6px}.ob-dots i{width:18px;height:3px;border-radius:2px;background:var(--line)}.ob-dots i.on{background:var(--ink)}
+.ob-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;animation:obIn .35s ease}
+@keyframes obIn{from{opacity:0;transform:translateY(8px)}}
+.ob-body h1{font-size:34px;line-height:1.08;letter-spacing:-.03em;font-weight:750;margin:0}
+.ob-body p{font-size:16px;line-height:1.5;color:#555;margin:0}.ob-body .dim{font-size:13px;color:#888}
+.ob-mark i{display:block;width:44px;height:58px;border:5px solid var(--ink);border-radius:10px;transform:rotate(-8deg);margin-bottom:12px}
+.ob-opts{display:grid;gap:10px}
+.ob-opt{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:58px;padding:0 18px;border:1.5px solid var(--line);border-radius:16px;background:#fff;font:600 16px inherit;text-align:left;cursor:pointer}
+.ob-opt.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.ob-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ob-list{margin:0;padding-left:20px;display:grid;gap:12px;font-size:16px;line-height:1.45}
+.ob-foot{display:grid;gap:10px}.ob-foot .btn{height:54px;font-size:16px;width:100%;justify-content:center}
+.ob-foot .btn:disabled{opacity:.35;cursor:not-allowed}
+.ob-link{border:0;background:none;font:600 14px inherit;text-decoration:underline;cursor:pointer;padding:8px}
+.ob-legal{font-size:12px;color:#888;text-align:center;margin:4px 0 0}.ob-legal a{color:inherit;text-decoration:underline}
+
+/* ---- in-app legal ---- */
+.legal{max-width:680px}
+.legal h2{font-size:17px;font-weight:700;margin:26px 0 6px}
+.legal p{font-size:15px;line-height:1.6;color:#333;margin:0}
+.legal .banner{padding:12px 14px;border:1px solid var(--ink);border-radius:12px;font-size:13px;margin:4px 0 8px}
+.me-acct{margin-top:14px}
+
+/* ---- desktop / widescreen layout ---- */
+@media (min-width:1024px){
+  .cf-main{max-width:1180px;padding:36px 48px 64px}
+  .cf .lv-embed{max-width:none;border-radius:20px}
+  .cf .lv-embed.full{height:calc(100vh - 72px);max-width:560px}
+  .cf .lv-evs ul,.cf .lv-evs .lv-ev-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .cf .lv-inbox .lv-list{max-width:none}
+}
+@media (min-width:1280px){
+  .cf-shell{grid-template-columns:272px 1fr}
+  .me-grid,.cf-main>div:has(>.me-more){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+}
+@media (min-width:1600px){
+  .cf-main{max-width:1360px}
+  .cf .lv-evs ul,.cf .lv-evs .lv-ev-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width:2200px){ .cf-main{max-width:1560px} html{font-size:18px} }

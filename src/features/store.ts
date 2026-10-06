@@ -13,6 +13,9 @@ export interface State {
   streak: number;
   steps: string[];
   checkedIn: boolean;
+  onboarded: boolean;
+  role: "investor" | "founder" | null;
+  interests: string[];
 }
 
 const initial: State = {
@@ -25,6 +28,9 @@ const initial: State = {
   streak: 0,
   steps: ["photo", "interests"],
   checkedIn: false,
+  onboarded: false,
+  role: null,
+  interests: [],
 };
 
 function load(): State {

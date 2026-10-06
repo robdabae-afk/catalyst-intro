@@ -1,3 +1,4 @@
+import { isAppShell } from "@/lib/platform";
 import { useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -307,7 +308,7 @@ export default function AppSignupForm() {
   };
 
   const goBack = () => {
-    if (step === 1) return navigate("/");
+    if (step === 1) return navigate(isAppShell() || new URLSearchParams(location.search).get("from") === "app" ? "/app/live/welcome" : "/");
     setStep((s) => s - 1);
   };
 
@@ -418,7 +419,7 @@ export default function AppSignupForm() {
         console.warn("Avatar upload skipped:", err);
       }
 
-      navigate("/onboarding");
+      navigate(isAppShell() || new URLSearchParams(location.search).get("from") === "app" ? "/app/live" : "/onboarding");
     } catch (err: any) {
       toast({
         variant: "destructive",

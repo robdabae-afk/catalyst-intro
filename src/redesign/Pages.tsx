@@ -22,13 +22,7 @@ export function Privacy() {
   useMeta("Privacy · Catalyst");
   return (
     <Shell legal>
-      <div className="kick">Legal</div>
-      <h1 style={{ fontSize: 56 }}>Privacy notice</h1>
-      <CounselBanner />
-      <h2>What we collect</h2><p>Name, email, startup or investor details you provide in signup forms, and event RSVPs via Luma.</p>
-      <h2>How we use it</h2><p>To send event invites, make community introductions you ask for, and send product updates you opted into. We don't sell personal information.</p>
-      <h2>Your choices</h2><p>Unsubscribe from any email, or ask us to delete your data at [contact email].</p>
-      <h2>Contact</h2><p>[Company legal name], [postal address], [contact email]</p>
+      <PrivacyBody />
     </Shell>
   );
 }
@@ -37,13 +31,7 @@ export function Terms() {
   useMeta("Terms · Catalyst");
   return (
     <Shell legal>
-      <div className="kick">Legal</div>
-      <h1 style={{ fontSize: 56 }}>Terms of use</h1>
-      <CounselBanner />
-      <h2>No securities offering</h2><p>Catalyst is not a registered broker-dealer or funding portal. Our registration is in process. Nothing on this site is an offer to sell or a solicitation to buy any security, and Catalyst does not facilitate investment transactions.</p>
-      <h2>Introductions and events</h2><p>Introductions are provided for networking only. Catalyst does not vet, endorse or advise on any company or investor, and receives no transaction-based compensation.</p>
-      <h2>Acceptable use</h2><p>[To be drafted by counsel.]</p>
-      <h2>Contact</h2><p>[Company legal name], [postal address]</p>
+      <TermsBody />
     </Shell>
   );
 }
@@ -96,5 +84,33 @@ export function Community() {
       </section>
       <div className="cta-end"><a className="btn ghost" href={LUMA}>See upcoming events on Luma</a></div>
     </Shell>
+  );
+}
+
+export function PrivacyBody({ app }: { app?: boolean } = {}) {
+  return (
+    <>
+      {!app && <div className="kick">Legal</div>}
+      {app ? null : <h1 style={{ fontSize: 56 }}>Privacy notice</h1>}
+      <CounselBanner />
+      <h2>What we collect</h2><p>Name, email, startup or investor details you provide in signup forms, and event RSVPs via Luma.</p>
+      <h2>How we use it</h2><p>To send event invites, make community introductions you ask for, and send product updates you opted into. We don't sell personal information.</p>
+      <h2>Your choices</h2><p>Unsubscribe from any email, or ask us to delete your data at [contact email].</p>
+      <h2>Contact</h2><p>[Company legal name], [postal address], [contact email]</p>
+    </>
+  );
+}
+
+export function TermsBody({ app }: { app?: boolean } = {}) {
+  return (
+    <>
+      {!app && <div className="kick">Legal</div>}
+      {app ? null : <h1 style={{ fontSize: 56 }}>Terms of use</h1>}
+      <CounselBanner />
+      <h2>No securities offering</h2><p>Catalyst is not a registered broker-dealer or funding portal. Our registration is in process. Nothing on this site is an offer to sell or a solicitation to buy any security, and Catalyst does not facilitate investment transactions.</p>
+      <h2>Introductions and events</h2><p>Introductions are provided for networking only. Catalyst does not vet, endorse or advise on any company or investor, and receives no transaction-based compensation.</p>
+      <h2>Acceptable use</h2><p>[To be drafted by counsel.]</p>
+      <h2>Contact</h2><p>[Company legal name], [postal address]</p>
+    </>
   );
 }
