@@ -595,14 +595,14 @@ p.pp-sub{line-height:1.35;max-width:300px}
 .cd-scroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:110px}
 .cd-hero{position:relative;height:330px;color:#fff;overflow:hidden}
 .cd-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
-.cd-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 35%,rgba(0,0,0,.82))}
+.cd-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.35),transparent 25%,rgba(0,0,0,.55) 50%,rgba(0,0,0,.9))}
 .cd-hero-top{position:absolute;z-index:2;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center}
 .cd-ic{width:38px;height:38px;border:0;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.18);backdrop-filter:blur(10px);color:#fff;cursor:pointer}
 .cd-sample{font-size:10px;letter-spacing:.08em;background:#fff;color:#000;padding:5px 9px;border-radius:99px}
 .cd-hero-b{position:absolute;z-index:2;left:22px;right:22px;bottom:22px}
 .cd-hero-b>span{font-size:10px;letter-spacing:.08em;opacity:.75}
 .cd-hero-b h1{margin:6px 0 4px;font-size:36px;letter-spacing:-.04em;line-height:1}
-.cd-hero-b p{margin:0;font-size:15px;opacity:.85;max-width:320px}
+.cd-hero-b p{margin:0;font-size:15px;opacity:.92;text-shadow:0 1px 8px rgba(0,0,0,.5);max-width:320px}
 .cd-play{margin-top:14px;display:inline-flex;gap:8px;align-items:center;height:38px;padding:0 16px;border:0;border-radius:99px;background:#fff;color:#000;font:600 13.5px 'Schibsted Grotesk';cursor:pointer}
 .cd-nav{position:sticky;top:0;z-index:5;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #eee}
 .cd-nav::-webkit-scrollbar{display:none}
