@@ -46,13 +46,13 @@ function JoinForm({ role }: { role: Role }) {
         <span>
           {role === "founder"
             ? "I agree to receive early-access and product updates from Catalyst. Unsubscribe any time. See the "
-            : "I agree to receive closed beta and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
+            : "I agree to receive beta and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
           <Link to="/privacy">privacy notice</Link>.
         </span>
       </label>
       <div className="err" aria-live="polite">{errs.consent}</div>
       <button className="btn" type="submit" style={{ justifySelf: "start" }}>
-        {role === "founder" ? "Get early access" : "Join the closed beta"}
+        {role === "founder" ? "Get early access" : "Join the beta"}
       </button>
     </form>
   );
@@ -78,7 +78,7 @@ const CMP: [string, string, string][] = [
 export default function Landing() {
   useMeta(
     "Catalyst · Startup investing, built for your phone",
-    "Catalyst is a mobile app for everyday Americans to discover early-stage startups. Coming soon, pending funding portal registration. Join the closed beta."
+    "Catalyst is a mobile app for everyday Americans to discover early-stage startups. Coming soon, pending funding portal registration. Join the beta."
   );
   const [role, setRole] = useState<Role>("investor");
   const tabs = { founder: useRef<HTMLButtonElement>(null), investor: useRef<HTMLButtonElement>(null) };
@@ -94,11 +94,10 @@ export default function Landing() {
     <Shell>
       <div className="hero">
         <div>
-          <div className="pill reveal">Closed beta · Now inviting investors</div>
           <h1 className="reveal d1">Startup investing, built for <em>your phone.</em></h1>
           <p className="lede reveal d2">The Robinhood for early-stage startups. Discover and back the companies you believe in, right from your phone.</p>
           <div className="ctas reveal d3">
-            <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the closed beta</a>
+            <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the beta</a>
             <a className="btn ghost" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst</a>
           </div>
           <p className="fine reveal d3" style={{ marginTop: 18 }}>Funding portal registration pending. No investments are available yet.</p>
@@ -147,7 +146,7 @@ export default function Landing() {
             </tbody>
           </table>
         </div>
-        <p className="fine">Comparison reflects our product goals and publicly available information as of October 2026. Catalyst is in closed beta and does not offer investments yet. Wefunder, StartEngine and Republic are trademarks of their respective owners.</p>
+        <p className="fine">Comparison reflects our product goals and publicly available information as of October 2026. Catalyst is in beta and does not offer investments yet. Wefunder, StartEngine and Republic are trademarks of their respective owners.</p>
       </section>
 
       <section aria-labelledby="h-f">
