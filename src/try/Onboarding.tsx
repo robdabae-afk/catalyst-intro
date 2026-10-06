@@ -192,7 +192,7 @@ export default function Onboarding() {
           <div className="ov" />
           <div className="tx">
             <div style={{ filter: "invert(1)" }}><Logo /></div>
-            <div style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-.045em", lineHeight: 1, marginTop: 18 }}>Startup ownership for everyone.</div>
+            <div style={{ fontSize: 48, fontWeight: 700, letterSpacing: "-.045em", lineHeight: 1, marginTop: 18 }}>Back the startups you believe in.</div>
             <div className="mono" style={{ fontSize: 11, letterSpacing: ".08em", textTransform: "uppercase", opacity: 0.75, marginTop: 16 }}>Catalyst community, NYC</div>
           </div>
         </aside>

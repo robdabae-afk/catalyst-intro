@@ -67,7 +67,7 @@
   .cx .rail svg{width:20px;height:20px}
   .cx .rail .foot{margin-top:auto;font-size:12px;color:var(--mute);line-height:1.45;padding:0 10px}
   .cx .tabbar{display:none}
-  .cx .col{max-width:1040px;padding:0 40px 60px}
+  .cx .col{max-width:1040px;width:100%;padding:0 40px 60px}
   .cx .top{padding:28px 0 18px}
   .cx .top .logo{display:none}
   .cx .pad{padding:0}
@@ -88,7 +88,7 @@
 .cx .fine{font-size:12px;color:var(--mute);line-height:1.45;text-align:center;margin-top:14px}
 .cx .u{text-decoration:underline;text-underline-offset:3px}
 .cx .code{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:30px 0 18px}
-.cx .code input{height:60px;border:0;border-bottom:1.5px solid var(--line);text-align:center;font-size:30px;outline:0;width:100%;background:transparent;border-radius:0}
+.cx .code input{height:60px;border:0;border-bottom:1.5px solid #c9c9c6;text-align:center;font-size:30px;outline:0;width:100%;background:transparent;border-radius:0}
 .cx .code input:focus,.cx .code input.f{border-color:var(--ink)}
 .cx .igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:22px}
 .cx .int{border:1px solid var(--line);padding:14px;height:84px;display:flex;flex-direction:column;justify-content:space-between;font-weight:600;font-size:15px;text-align:left;transition:background .15s}
