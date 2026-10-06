@@ -34,7 +34,7 @@ function Tabs({ cls }: { cls: string }) {
           <Icon name={I} size={22} />{label}{badge ? <span className="cf-badge">{badge}</span> : null}
         </NavLink>
       ))}
-      {cls === "cf-side" && <div className="cf-side-foot"><b>Investing opens soon.</b><br /><span className="dim">Portal registration pending. Everything here is sample content.</span></div>}
+      
     </nav>
   );
 }

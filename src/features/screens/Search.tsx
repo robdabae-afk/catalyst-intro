@@ -38,14 +38,14 @@ export default function Search() {
         {q && <button type="button" className="btn ghost sm" onClick={() => setQ("")} aria-label="Clear"><IX size={14} /></button>}
       </form>
 
-      <div className="fl"><span className="mono dim">01 · Sector</span><div className="chips">{SECTORS.map((x) => <button key={x} className={`chip${sec.includes(x) ? " on" : ""}`} aria-pressed={sec.includes(x)} onClick={() => setSec(toggle(sec, x))}><Icon name={SECTOR_ICON[x]} size={15} />{x}</button>)}</div></div>
-      <div className="fl"><span className="mono dim">02 · Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
+      <div className="fl"><span className="mono dim">Sector</span><div className="chips">{SECTORS.map((x) => <button key={x} className={`chip${sec.includes(x) ? " on" : ""}`} aria-pressed={sec.includes(x)} onClick={() => setSec(toggle(sec, x))}><Icon name={SECTOR_ICON[x]} size={15} />{x}</button>)}</div></div>
+      <div className="fl"><span className="mono dim">Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
       <div className={`toggle-row${raising ? " on" : ""}`}>
         <span className="ib" style={{ width: 34, height: 34 }}><Icon name="traction" size={18} /></span>
         <span className="grow"><b style={{ fontSize: 14.5 }}>Raising now</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies with an open sample raise</span></span>
         <Switch label="Raising now" on={raising} onChange={() => setRaising(!raising)} />
       </div>
-      <div className="fl"><span className="mono dim">03 · City</span><div className="chips">
+      <div className="fl"><span className="mono dim">City</span><div className="chips">
         {CITIES.map((x) => <button key={x} className={`chip${city.includes(x) ? " on" : ""}`} aria-pressed={city.includes(x)} onClick={() => setCity(toggle(city, x))}>{x}</button>)}</div></div>
 
       {!active && s.recent.length > 0 && (<>

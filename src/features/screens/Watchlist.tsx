@@ -27,20 +27,16 @@ export default function Watchlist() {
           {ids.map((id) => {
             const c = byId(id)!; const w = s.watch[id];
             return (
-              <article className="card hud hov" key={id} style={{ padding: 0, overflow: "hidden" }}>
-                <div className="ph" style={{ height: 88, borderRadius: 0 }}><img src={c.img} alt="" loading="lazy" />
-                  <div className="ph-body" style={{ position: "absolute", left: 14, right: 14, bottom: 10 }} >
-                    <div className="row" style={{ gap: 6 }}>{c.raising ? <span className="chip-d"><span className="blink" />Raising</span> : <span className="chip-d">Not raising</span>}<span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
-                  </div></div>
-                <div style={{ padding: 16 }}>
+              <article className="card hov" key={id} style={{ padding: 0, overflow: "hidden" }}>
+                <div style={{ padding: 14 }}>
                 <div className="row">
-                  <Link to={path(`company/${id}`)} className="row grow"><Duo c={c} size={40} />
+                  <Link to={path(`company/${id}`)} className="row grow"><Duo c={c} size={32} />
                     <div className="grow"><div className="row" style={{ gap: 8 }}><b>{c.name}</b></div>
                       <div className="dim" style={{ fontSize: 13, lineHeight: 1.35 }}>{c.tagline}</div></div></Link>
                   <button className="btn ghost sm" onClick={() => remove(id)} aria-label={`Remove ${c.name}`}><IX size={14} /></button>
                 </div>
                 {c.raising && (
-                  <div style={{ marginTop: 14 }}>
+                  <div style={{ marginTop: 12 }}>
                     <div className="row mono" style={{ justifyContent: "space-between", marginBottom: 8 }}>
                       <span><CountUp to={c.progress} suffix="%" /> of sample goal</span>
                       {c.daysLeft !== null && <span className="row" style={{ gap: 5, fontWeight: c.daysLeft <= 7 ? 700 : 500 }}><IClock size={13} />{c.daysLeft <= 7 ? "Closing soon · " : ""}{c.daysLeft}d</span>}
@@ -48,10 +44,9 @@ export default function Watchlist() {
                     <Meter pct={c.progress} />
                   </div>
                 )}
-                <div style={{ marginTop: 10 }}>
+                <div className="row" style={{ marginTop: 12, gap: 6, flexWrap: "wrap" }}><span className="dim" style={{ fontSize: 12, marginRight: 2 }}>Alerts</span>
                   {ALERTS.map(({ k, label }) => (
-                    <div className="set" key={k} style={{ padding: "9px 0" }}><span className="grow" style={{ fontSize: 13.5 }}>{label}</span>
-                      <Switch label={`${label} alerts for ${c.name}`} on={w[k]} onChange={() => set(id, k)} /></div>
+                    <button key={k} className={`chip al${w[k] ? " on" : ""}`} aria-pressed={w[k]} aria-label={`${label} alerts for ${c.name}`} onClick={() => set(id, k)}>{label}</button>
                   ))}
                 </div>
                 </div>

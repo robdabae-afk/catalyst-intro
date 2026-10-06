@@ -35,7 +35,7 @@ export default function Learn() {
     <div className="g-side">
       <div>
         <Head title="Learn" back right={<div className="row" style={{ gap: 10 }}>
-          <span className="flame" aria-hidden>{LEARN.map((_, k) => <i key={k} className={k < s.streak ? "on" : ""} />)}</span>
+          
           <span className="mono">{s.streak} streak</span></div>} />
         <div className="deck">
           {[2, 1].map((o) => { const b = LEARN[(i + o) % LEARN.length]; return (
@@ -69,7 +69,7 @@ export default function Learn() {
           <span className="dots">{LEARN.map((x, k) => <i key={x.id} className={k === i ? "on" : x.id in s.learned ? "ok" : ""} />)}</span>
           <button className="ib" onClick={next} aria-label="Next card" style={pick !== null ? { background: "var(--ink)", color: "#fff", borderColor: "var(--ink)" } : undefined}><Icon name="forward" size={18} /></button>
         </div>
-        <p className="mono dim" style={{ textAlign: "center", maxWidth: 520, marginTop: 8 }}>Swipe or use arrows</p>
+        
         <p className="note" style={{ marginTop: 28, maxWidth: 520 }}>Educational only, not investment advice. Limits reflect SEC Reg CF rules for non-accredited investors and can change; confirm on sec.gov.</p>
       </div>
       <aside>
