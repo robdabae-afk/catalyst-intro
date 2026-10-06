@@ -57,6 +57,8 @@ import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, 
 import { Inbox as TryInbox, ThreadPage as TryThread, EventPage as TryEvent, Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
 import { DealPage as TryDeal, Invest as TryInvest } from "./try/Deal";
 import { AuthGuard } from "./components/AuthGuard";
+import { adminRoutes } from "./admin/routes";
+import AppLogin from "./admin/Login";
 
 
 const queryClient = new QueryClient();
@@ -133,7 +135,7 @@ const App = () => (
           <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
           <Route path="/app/requests" element={<AuthGuard><Requests /></AuthGuard>} />
-          <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+          {adminRoutes}
           <Route path="/app/admin" element={<AuthGuard><Admin /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
           <Route path="/app/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
@@ -173,6 +175,7 @@ const App = () => (
           <Route path="/app/onboarding" element={<Onboarding />} />
 
           {/* /app/* logged-in app preview (sample data, local only, noindex) */}
+          <Route path="/app/login" element={<AppLogin />} />
           <Route path="/app/welcome" element={<TryOnboarding />} />
           <Route path="/app/welcome/:step" element={<TryOnboarding />} />
           <Route path="/app/swipe" element={<TrySwipe />} />
