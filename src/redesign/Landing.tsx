@@ -67,14 +67,6 @@ const SCREENS = [
   { src: "/redesign/screen-2532.webp", label: "Investor thesis setup", alt: "Catalyst app: investor preferences for industries, stage and check size" },
 ];
 
-const CMP: [string, string, string][] = [
-  ["Built for your phone", "✓", "Website first"],
-  ["Startups from real NYC events", "✓", "—"],
-  ["In-person founder events", "✓", "Mostly online"],
-  ["Easy for first-time investors", "✓", "Can be confusing"],
-  ["Invest today", "Coming soon", "✓"],
-];
-
 export default function Landing() {
   useMeta(
     "Catalyst · Startup investing, built for your phone",
@@ -131,22 +123,6 @@ export default function Landing() {
           <div className="card"><span className="n">02</span><h3>Get to know them</h3><p>Every startup has one clear profile with a founder video, the problem they are solving, their traction so far, and the team behind it.</p></div>
           <div className="card"><span className="n">03</span><h3>Back what you believe in</h3><p>Once our funding portal registration is approved, you will be able to invest small amounts from your phone. Investing is not available yet.</p></div>
         </div>
-      </section>
-
-      <section id="compare" aria-labelledby="h-cmp">
-        <div className="kick">How we compare</div>
-        <h2 id="h-cmp">A different kind of <em>crowdfunding.</em></h2>
-        <div className="cmp-wrap">
-          <table className="cmp">
-            <thead><tr><th scope="col"><span className="sr">Feature</span></th><th scope="col" className="us">Catalyst</th><th scope="col">Other platforms</th></tr></thead>
-            <tbody>
-              {CMP.map(([f, us, them]) => (
-                <tr key={f}><th scope="row">{f}</th><td className="us">{us}</td><td>{them}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="fine">Comparison reflects our product goals and publicly available information as of October 2026. Catalyst is in beta and does not offer investments yet. Wefunder, StartEngine and Republic are trademarks of their respective owners.</p>
       </section>
 
       <section aria-labelledby="h-f">
