@@ -68,11 +68,11 @@ const SCREENS = [
 ];
 
 const CMP: [string, string, string][] = [
-  ["Mobile-first", "Designed for the phone from day one", "Web platforms with companion mobile apps"],
-  ["Built for everyday investors", "Plain-language profiles for first-time investors", "Open to non-accredited investors under Reg CF"],
-  ["Community-sourced deal flow", "Founders come through our NYC events and network", "Founders apply to list on the platform"],
-  ["Simple checkout", "Planned as a few taps once registration is approved", "Live checkout today"],
-  ["Founder community and events", "30+ in-person events in New York", "Mostly online communities"],
+  ["Built for your phone", "✓", "Website first"],
+  ["Startups from real NYC events", "✓", "—"],
+  ["In-person founder events", "✓", "Mostly online"],
+  ["Easy for first-time investors", "✓", "Can be confusing"],
+  ["Invest today", "Coming soon", "✓"],
 ];
 
 export default function Landing() {
@@ -94,8 +94,8 @@ export default function Landing() {
     <Shell>
       <div className="hero">
         <div>
-          <h1 className="reveal d1">Startup investing, built for <em>your phone.</em></h1>
-          <p className="lede reveal d2">The Robinhood for early-stage startups. Discover and back the companies you believe in, right from your phone.</p>
+          <h1 className="reveal d1">Startup ownership <em>for everyone.</em></h1>
+          <p className="lede reveal d2">Right from your phone.</p>
           <div className="ctas reveal d3">
             <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the beta</a>
             <a className="btn ghost" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst</a>
@@ -119,7 +119,7 @@ export default function Landing() {
 
       <section aria-labelledby="h-why">
         <div className="kick">Why Catalyst</div>
-        <p className="big" id="h-why">Venture ownership is one of America's great wealth generators. Yet only <b>320,000</b> people backed a startup last year, while <b>24.3M</b> qualify as accredited, and under Reg CF you don't even need to be.</p>
+        <p className="big" id="h-why">Venture ownership is one of America's greatest wealth generators. Yet only <b>320,000</b> people backed a startup last year, while <b>24.3M</b> qualify as accredited, and under Reg CF you don't even need to be.</p>
         <p className="lede" style={{ marginTop: 24 }}>Today's crowdfunding sites are clunky and hard to trust. We're building the one you'll actually open.</p>
       </section>
 
@@ -138,7 +138,7 @@ export default function Landing() {
         <h2 id="h-cmp">A different kind of <em>crowdfunding.</em></h2>
         <div className="cmp-wrap">
           <table className="cmp">
-            <thead><tr><th scope="col"><span className="sr">Feature</span></th><th scope="col" className="us">Catalyst</th><th scope="col">Wefunder, StartEngine, Republic</th></tr></thead>
+            <thead><tr><th scope="col"><span className="sr">Feature</span></th><th scope="col" className="us">Catalyst</th><th scope="col">Other platforms</th></tr></thead>
             <tbody>
               {CMP.map(([f, us, them]) => (
                 <tr key={f}><th scope="row">{f}</th><td className="us">{us}</td><td>{them}</td></tr>
