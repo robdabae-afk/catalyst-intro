@@ -25,6 +25,7 @@ export async function currentUid(): Promise<string | null> {
 export function useUid() {
   const [uid, setUid] = useState<string | null | undefined>(undefined);
   useEffect(() => {
+    if (isDemoMode()) { setUid(DEMO_UID); return; }
     let live = true;
     void currentUid().then((u) => live && setUid(u));
     const { data } = supabase.auth.onAuthStateChange((_e, s) => live && setUid(s?.user.id ?? null));
