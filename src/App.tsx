@@ -53,8 +53,9 @@ import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
 import TryOnboarding from "./try/Onboarding";
-import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, Events as TryEvents, Profile as TryProfile } from "./try/Main";
-import { Inbox as TryInbox, ThreadPage as TryThread, EventPage as TryEvent, Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
+import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, Profile as TryProfile } from "./try/Main";
+import { Inbox as TryInbox, ThreadPage as TryThread, Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
+import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
 import { DealPage as TryDeal, Invest as TryInvest } from "./try/Deal";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
@@ -181,13 +182,13 @@ const App = () => (
           <Route path="/app/swipe" element={<TrySwipe />} />
           <Route path="/app/discover" element={<TryDiscover />} />
           <Route path="/app/holdings" element={<TryPortfolio />} />
-          <Route path="/app/events" element={<TryEvents />} />
+          <Route path="/app/events" element={<LiveEvents />} />
           <Route path="/app/profile" element={<TryProfile />} />
           <Route path="/app/deal/:id" element={<TryDeal />} />
           <Route path="/app/invest/:id" element={<TryInvest />} />
           <Route path="/app/inbox" element={<TryInbox />} />
           <Route path="/app/inbox/:id" element={<TryThread />} />
-          <Route path="/app/events/:id" element={<TryEvent />} />
+          <Route path="/app/events/:id" element={<LiveEvent />} />
           <Route path="/app/account" element={<TrySettings />} />
           <Route path="/app/account/identity" element={<TrySetIdentity />} />
           <Route path="/app/account/limit" element={<TrySetLimit />} />
