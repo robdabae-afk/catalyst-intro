@@ -59,6 +59,7 @@ import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as Try
 import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
 import { Invest as TryInvest } from "./try/Deal";
 import BrandSheet from "./brand/BrandSheet";
+import LivePage from "./live/LivePage";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
@@ -180,6 +181,7 @@ const App = () => (
           {/* /app/* logged-in app preview (sample data, local only, noindex) */}
           <Route path="/app/login" element={<AppLogin />} />
           <Route path="/app/brand" element={<BrandSheet />} />
+          <Route path="/app/live" element={<LivePage />} />
           <Route path="/app/welcome" element={<TryOnboarding />} />
           <Route path="/app/welcome/:step" element={<TryOnboarding />} />
           <Route path="/app/swipe" element={<TrySwipe />} />
