@@ -92,20 +92,27 @@ export const sampleApi: PlatformApi = {
   listEvents: async () => wait(db.events.filter((e) => e.status === "published").map(counts).sort((a, b) => a.startsAt.localeCompare(b.startsAt))),
   getEvent: async (id) => { const e = find(db.events, id); if (e.status === "draft" && db.session?.role !== "admin") throw new PlatformError("not_found", "Not found."); return wait(counts(e)); },
   rsvp: async (eventId) => {
-    const s = need(); const e = counts(find(db.events, eventId)); const me = find(db.members, s.userId);
+    const s = need(); const ev = db.events.find((x) => x.id === eventId);
+    if (!ev || ev.status !== "published") throw new PlatformError("not_found", "Event not available.");
+    const e = counts(ev); const me = find(db.members, s.userId);
     let r = db.rsvps.find((x) => x.eventId === eventId && x.userId === s.userId);
+    if (r?.status === "declined") throw new PlatformError("forbidden", "RSVP declined; contact the event organizer.");
+    if (r && (r.status === "approved" || r.status === "pending" || r.status === "waitlisted")) return wait(r);
+    if (Date.parse(e.startsAt) <= Date.now()) throw new PlatformError("conflict", "Event has already started.");
     const full = e.capacity != null && e.goingCount >= e.capacity;
     const status = full ? "waitlisted" : db.settings.requireApproval ? "pending" : "approved";
-    if (r && r.status !== "cancelled" && r.status !== "declined") return wait(r);
-    if (r) Object.assign(r, { status, createdAt: now() });
+    if (r) Object.assign(r, { status, checkedInAt: null });
     else { r = { id: uid(), eventId, userId: s.userId, memberName: me.name, memberEmail: me.email, status, checkedInAt: null, createdAt: now() }; db.rsvps.push(r); }
     notify({ kind: "rsvp", title: status === "approved" ? `You're going: ${e.title}` : status === "waitlisted" ? `Waitlisted: ${e.title}` : `Request sent: ${e.title}`, body: "Sample notification.", link: `/app/events/${eventId}` });
     commit(); return wait(r);
   },
   cancelRsvp: async (eventId) => {
     const s = need(); const r = db.rsvps.find((x) => x.eventId === eventId && x.userId === s.userId);
-    if (r) { const wasGoing = r.status === "approved"; r.status = "cancelled";
-      if (wasGoing) { const next = db.rsvps.filter((x) => x.eventId === eventId && x.status === "waitlisted").sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0]; if (next) next.status = "approved"; } }
+    if (!db.events.some((x) => x.id === eventId)) throw new PlatformError("not_found", "Event not available.");
+    if (!r) throw new PlatformError("not_found", "Not found.");
+    if (r.status === "declined") throw new PlatformError("forbidden", "RSVP declined; contact the event organizer.");
+    if (r.checkedInAt) throw new PlatformError("forbidden", "Checked-in RSVP must be changed by an organizer.");
+    r.status = "cancelled"; r.checkedInAt = null; // no auto-promotion: admins approve waitlist manually
     commit();
   },
   myRsvps: async () => { const s = need(); return wait(db.rsvps.filter((r) => r.userId === s.userId && r.status !== "cancelled").map((r) => ({ ...r, event: counts(find(db.events, r.eventId)) }))); },
@@ -135,13 +142,15 @@ export const sampleApi: PlatformApi = {
     questionsOpen: db.questions.filter((q) => !q.answer && !q.hidden).length, waitlist: db.waitlist.length }; return wait(s); },
   adminListEvents: async () => { admin(); return wait(db.events.map(counts).sort((a, b) => a.startsAt.localeCompare(b.startsAt))); },
   createEvent: async (input) => { admin(); const e: PEvent = { endsAt: null, address: null, coverUrl: null, ...input, id: uid(), goingCount: 0, waitlistCount: 0, createdAt: now() }; db.events.push(e); commit(); return wait(e); },
-  updateEvent: async (id, p) => { admin(); Object.assign(find(db.events, id), p); commit(); return wait(counts(find(db.events, id))); },
+  updateEvent: async (id, p) => { admin(); if (p.capacity != null && db.rsvps.filter((x) => x.eventId === id && x.status === "approved").length > p.capacity) throw new PlatformError("conflict", "Capacity below approved occupancy."); Object.assign(find(db.events, id), p); commit(); return wait(counts(find(db.events, id))); },
   deleteEvent: async (id) => { admin(); db.events = db.events.filter((e) => e.id !== id); db.rsvps = db.rsvps.filter((r) => r.eventId !== id); commit(); },
   uploadEventCover: async (file) => { admin(); return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result)); fr.onerror = () => rej(new PlatformError("unknown", "Could not read file.")); fr.readAsDataURL(file); }); },
   adminListRsvps: async (eventId) => { admin(); return wait(db.rsvps.filter((r) => r.eventId === eventId)); },
-  setRsvpStatus: async (id, status) => { admin(); const r = find(db.rsvps, id); r.status = status; const e = find(db.events, r.eventId);
+  setRsvpStatus: async (id, status) => { admin(); const r = find(db.rsvps, id); const e = find(db.events, r.eventId);
+    if (status === "approved" && e.capacity != null && db.rsvps.filter((x) => x.eventId === e.id && x.status === "approved" && x.id !== r.id).length >= e.capacity) throw new PlatformError("conflict", "Capacity reached.");
+    r.status = status; if (status !== "approved") r.checkedInAt = null;
     if (r.userId === ME) notify({ kind: "rsvp", title: `RSVP ${status}: ${e.title}`, body: "Sample notification.", link: `/app/events/${e.id}` }); commit(); return wait(r); },
-  checkIn: async (id, on) => { admin(); const r = find(db.rsvps, id); r.checkedInAt = on ? now() : null; commit(); return wait(r); },
+  checkIn: async (id, on) => { admin(); const r = find(db.rsvps, id); if (on && r.status !== "approved") throw new PlatformError("conflict", "Approval required."); r.checkedInAt = on ? now() : null; commit(); return wait(r); },
   adminListDeals: async () => { admin(); return wait(db.deals); },
   createDeal: async (input) => { admin(); const d: PDeal = { ...input, id: uid(), createdAt: now() }; db.deals.push(d); commit(); return wait(d); },
   updateDeal: async (id, p) => { admin(); Object.assign(find(db.deals, id), p); commit(); return wait(find(db.deals, id)); },
@@ -153,10 +162,13 @@ export const sampleApi: PlatformApi = {
   adminListMembers: async (o) => { admin(); const q = (o?.q || "").toLowerCase();
     return wait(db.members.filter((m) => !q || m.name.toLowerCase().includes(q) || m.email.includes(q)).map((m) => ({ ...m, rsvpCount: db.rsvps.filter((r) => r.userId === m.id && r.status !== "cancelled").length }))); },
   adminGetMember: async (id) => { admin(); const m = find(db.members, id); return wait({ ...m, rsvps: db.rsvps.filter((r) => r.userId === id).map((r) => ({ ...r, event: counts(find(db.events, r.eventId)) })) }); },
-  setMemberRole: async (id, role) => { const s = admin(); if (id === s.userId && role !== "admin") throw new PlatformError("conflict", "You can't remove your own admin role."); find(db.members, id).role = role; commit(); return wait(find(db.members, id)); },
+  setMemberRole: async (id, role) => { const s = admin(); void s; const m = find(db.members, id);
+    if (role !== "admin" && m.role === "admin" && db.members.filter((x) => x.role === "admin").length <= 1) throw new PlatformError("conflict", "Can't remove the last admin."); find(db.members, id).role = role; commit(); return wait(find(db.members, id)); },
   listAnnouncements: async () => { admin(); return wait(db.announcements); },
-  sendAnnouncement: async (input) => { const s = admin(); const a: Announcement = { ...input, id: uid(), sentAt: now(), createdBy: s.userId, createdAt: now() };
-    db.announcements.unshift(a); notify({ kind: "announcement", title: a.title, body: a.body, link: null }); commit(); return wait(a); },
+  sendAnnouncement: async (input) => { const s = admin(); if (typeof input.audience === "object" && !db.events.some((x) => x.id === (input.audience as { eventId: string }).eventId)) throw new PlatformError("not_found", "Event not found."); const a: Announcement = { ...input, id: uid(), sentAt: now(), createdBy: s.userId, createdAt: now() };
+    db.announcements.unshift(a); const au = a.audience; const meRole = find(db.members, ME).role;
+    const reachesMe = au === "all" || (au === "admins" && meRole === "admin") || (typeof au === "object" && db.rsvps.some((r) => r.eventId === au.eventId && r.userId === ME && (r.status === "approved" || r.status === "pending" || r.status === "waitlisted")));
+    if (reachesMe) notify({ kind: "announcement", title: a.title, body: a.body, link: null }); commit(); return wait(a); },
   adminListWaitlist: async ({ q, limit, offset }) => { admin(); const f = db.waitlist.filter((w) => !q || w.email.includes(q.toLowerCase())); return wait({ rows: f.slice(offset, offset + limit), total: f.length }); },
   getSettings: async () => { admin(); return wait(db.settings); },
   updateSettings: async (p) => { admin(); Object.assign(db.settings, p); commit(); return wait(db.settings); },
