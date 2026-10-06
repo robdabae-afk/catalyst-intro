@@ -19,7 +19,7 @@ export const STEPS = [
   { id: "learn", t: "Finish the Reg CF basics", d: "Five quick cards.", to: "learn" },
   { id: "notifications", t: "Turn on the investing-opens alert", d: "One ping when the portal goes live.", to: "inbox" },
   { id: "invite", t: "Invite a friend", d: "Unlock waitlist priority.", to: "invite" },
-  { id: "event", t: "Save your event pass", d: "Pitch Night, Oct 13.", to: "ticket" },
+  { id: "event", t: "Save your event pass", d: "Keep your RSVP handy.", to: "ticket" },
 ];
 
 /** Every step is derived from real data. Only invite + event pass are recorded actions. */

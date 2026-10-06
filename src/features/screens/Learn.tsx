@@ -19,11 +19,11 @@ export default function Learn() {
     setPick(k);
     const ok = k === c.answer;
     // only a correct answer counts; a wrong one can be retried and never marks the card done
-    setState((x) => {
+    void Promise.resolve(setState((x) => {
       const learned = ok ? { ...x.learned, [c.id]: true } : x.learned;
       const all = LEARN.every((q) => learned[q.id]);
       return { ...x, learned, streak: ok ? x.streak + 1 : 0, steps: all && !x.steps.includes("learn") ? [...x.steps, "learn"] : x.steps };
-    });
+    })).then((saved) => { if (!saved) setPick(null); });
   };
   const go = (d: number) => { setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
   const next = () => go(1);

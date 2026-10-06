@@ -37,7 +37,7 @@ export default function Notifications() {
   const n = unreadCount(s);
   const list = NOTIFS.filter((x) => s.prefs[x.kind] && (filter === "all" || x.kind === filter));
   const days = ["Today", "Yesterday", "Earlier"] as const;
-  const go = (x: Notif) => { setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/${x.to.replace(/^\/+/, "")}`); };
+  const go = async (x: Notif) => { await setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/${x.to.replace(/^\/+/, "")}`); };
 
   return (
     <div style={{ maxWidth: 720 }}>
