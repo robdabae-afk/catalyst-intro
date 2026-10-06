@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { CountUp, Hud } from "../hud";
 import { Head, path } from "../FeaturesApp";
-import { ICheck, IArrow } from "../icons";
+import { ICheck, IArrow, IWatch, IUp, ICal, IUserPlus, ILearn, ITicket, IGift } from "../icons";
 import { setState, State, toggle, useStore } from "../store";
 
 export const STEPS = [
@@ -22,6 +22,16 @@ export function doneSteps(s: State) {
   return auto;
 }
 
+const MORE = [
+  { to: "watchlist", t: "Watchlist", d: "Companies you saved", I: IWatch },
+  { to: "portfolio", t: "Portfolio", d: "Sample holdings view", I: IUp },
+  { to: "events", t: "Events", d: "NYC pitch nights and dinners", I: ICal },
+  { to: "ticket", t: "Event pass", d: "Your QR pass for Pitch Night", I: ITicket },
+  { to: "people", t: "People", d: "Founders and investors to meet", I: IUserPlus },
+  { to: "learn", t: "Learn", d: "Reg CF basics in five cards", I: ILearn },
+  { to: "invite", t: "Invite friends", d: "Move up the waitlist", I: IGift },
+];
+
 export default function Me() {
   const [s] = useStore();
   const auto = doneSteps(s);
@@ -32,6 +42,13 @@ export default function Me() {
     <div className="g-side">
       <div>
         <Head title="Me" />
+        <nav className="me-more" aria-label="More">
+          {MORE.map(({ to, t, d, I }) => (
+            <Link key={to} to={path(to)} className="me-row" data-to={to}>
+              <I size={22} /><span className="grow"><b>{t}</b><small>{d}</small></span><IArrow size={14} />
+            </Link>))}
+          {(sessionStorage.getItem("cat-role") === "admin" || new URLSearchParams(location.search).get("role") === "admin") && <Link to={path("admin")} className="me-row" data-to="admin"><span className="grow"><b>Admin</b></span><IArrow size={14} /></Link>}
+        </nav>
         <Hud className="me-hero in" scan>
           <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>
           <div className="grow">
@@ -62,16 +79,6 @@ export default function Me() {
       <aside className="card hud" style={{ marginTop: 22, alignSelf: "start" }}>
         <div className="mono dim">Account</div>
         <p style={{ fontSize: 14, marginTop: 8, lineHeight: 1.5 }}>Investing opens soon. Portal registration is pending, so there's nothing to fund yet and no payment info is collected.</p>
-        <Link to={path("invite")} className="btn ghost" style={{ width: "100%", marginTop: 14 }}>Invite friends</Link>
-        <div className="me-links">
-          <Link to={path("portfolio")} className="btn ghost">Portfolio</Link>
-          <Link to={path("watchlist")} className="btn ghost">Watchlist</Link>
-          <Link to={path("events")} className="btn ghost">Events</Link>
-          <Link to={path("ticket")} className="btn ghost">Event pass</Link>
-          <Link to={path("people")} className="btn ghost">People</Link>
-          <Link to={path("learn")} className="btn ghost">Learn about Reg CF</Link>
-          {(sessionStorage.getItem("cat-role") === "admin" || new URLSearchParams(location.search).get("role") === "admin") && <Link to={path("admin")} className="btn ghost">Admin</Link>}
-        </div>
       </aside>
     </div>
   );

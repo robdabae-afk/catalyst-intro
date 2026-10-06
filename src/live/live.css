@@ -688,3 +688,5 @@ p.pp-sub{line-height:1.35;max-width:300px}
 /* final: soften mono HUD labels everywhere (Stephen: fewer mono/bracket labels) */
 .lv .lv-mono{font-family:inherit;text-transform:none;letter-spacing:0;font-size:12px}
 .lv .cd-k{display:none}
+
+.lv-topic{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:99px;color:var(--ink)}

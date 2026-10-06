@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useRef, useState, type PointerEvent as RPE } from "react";
 
 import { Icon } from "@/brand/icons";
@@ -13,7 +14,7 @@ import { useCountUp, useInView, useReducedMotion } from "./hooks";
 const TH = 110;
 
 /* ---------- SWIPE ---------- */
-export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
+export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; topRight?: ReactNode }) {
   const reduced = useReducedMotion();
   const [i, setI] = useState(0);
   const [dx, setDx] = useState(0);
@@ -51,6 +52,7 @@ export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
     <div className="lv-swipe">
       <header className="lv-top">
         <div className="lv-top-t">Discover</div>
+        {topRight}
       </header>
       <div className="lv-deck">
         <article className="lv-card under" key={"u" + i} aria-hidden style={{ transform: `scale(${0.94 + Math.abs(p) * 0.06})` }}>
@@ -186,27 +188,22 @@ export function EventsView() {
 }
 function EventCard({ e }: { e: LiveEvent }) {
   const reduced = useReducedMotion();
-  const [going, setGoing] = useState(e.going);
   const [me, setMe] = useState(false);
-  const [ref, seen] = useInView<HTMLDivElement>();
-  const left = e.cap - going;
-  const shown = Math.round(useCountUp(left, seen, reduced, 900));
+  const [ref] = useInView<HTMLDivElement>();
   return (
     <div ref={ref} className="lv-ev">
       <LiveImage src={e.img} intro={false} className="lv-ev-img">
         <div className="lv-ev-hud">
           <span className="lv-mono lv-tag">{e.when}</span>
-          <span className={`lv-spots lv-mono${left <= 5 ? " low" : ""}`}><span className="lv-live" /><b key={left} className="lv-flip">{shown}</b> SPOTS LEFT</span>
         </div>
       </LiveImage>
       <div className="lv-ev-body">
         <div>
           <h3>{e.title}</h3>
-          <div className="lv-mono dim"><Icon name="location" size={13} /> {e.where.toUpperCase()} · {going}/{e.cap}</div>
-          <div className="lv-cap"><i style={{ width: `${(going / e.cap) * 100}%` }} /></div>
+          <div className="lv-mono dim"><Icon name="location" size={13} /> {e.where.toUpperCase()}</div>
         </div>
         <span className={`lv-rsvp${me ? "" : " pulse"}`}>
-          <RsvpButton size="md" state={me ? "going" : left > 0 ? "open" : "full"} onClick={() => { if (me) { setMe(false); setGoing(going - 1); } else if (left > 0) { setMe(true); setGoing(going + 1); } }} />
+          <RsvpButton size="md" state={me ? "going" : "open"} onClick={() => setMe(!me)} />
         </span>
       </div>
     </div>
