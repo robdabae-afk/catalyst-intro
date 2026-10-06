@@ -37,7 +37,7 @@ export function PortfolioView() {
         {HOLD.map(({ d, amt }) => (
           <li key={d.id} className="lv-li">
             <LiveImage src={d.img} intro={false} className="lv-thumb" />
-            <div className="lv-li-m"><strong>{d.name}</strong><span className="lv-mono dim">{d.cat.toUpperCase()} · {d.days}D LEFT IN RAISE</span></div>
+            <div className="lv-li-m"><strong>{d.name}</strong><span className="lv-mono dim">{d.cat}</span></div>
             <div className="lv-li-r"><b>{usd(amt)}</b><Sparkline data={d.spark} go={seen} w={52} h={16} /></div>
           </li>
         ))}
@@ -186,7 +186,7 @@ export function OnboardingView() {
         </div>
       )}
       <div key={s} className="lv-onb-txt">
-        <div className="lv-mono dim">{String(s + 1).padStart(2, "0")} / {st.k}</div>
+        <div className="lv-mono dim">{st.k.charAt(0) + st.k.slice(1).toLowerCase()}</div>
         <h2>{st.h}</h2><p>{st.p}</p>
       </div>
       <div className="lv-onb-cta">
