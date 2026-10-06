@@ -180,6 +180,90 @@ export type Database = {
         }
         Relationships: []
       }
+      app_companies: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          owner_id: string | null
+          published_at: string | null
+          sort: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id: string
+          owner_id?: string | null
+          published_at?: string | null
+          sort?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          owner_id?: string | null
+          published_at?: string | null
+          sort?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_events: {
+        Row: {
+          capacity: number | null
+          city: string
+          company_ids: string[]
+          created_at: string
+          created_by: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          starts_at: string
+          status: string
+          title: string
+          updated_at: string
+          url: string | null
+          venue: string
+        }
+        Insert: {
+          capacity?: number | null
+          city?: string
+          company_ids?: string[]
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          starts_at: string
+          status?: string
+          title: string
+          updated_at?: string
+          url?: string | null
+          venue?: string
+        }
+        Update: {
+          capacity?: number | null
+          city?: string
+          company_ids?: string[]
+          created_at?: string
+          created_by?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          starts_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          url?: string | null
+          venue?: string
+        }
+        Relationships: []
+      }
       app_invest_profile: {
         Row: {
           accredited: boolean
@@ -257,6 +341,7 @@ export type Database = {
           body: string
           created_at: string
           id: string
+          sender_id: string | null
           thread_id: string
           user_id: string
         }
@@ -264,6 +349,7 @@ export type Database = {
           body: string
           created_at?: string
           id?: string
+          sender_id?: string | null
           thread_id: string
           user_id: string
         }
@@ -271,6 +357,7 @@ export type Database = {
           body?: string
           created_at?: string
           id?: string
+          sender_id?: string | null
           thread_id?: string
           user_id?: string
         }
@@ -306,6 +393,8 @@ export type Database = {
       app_questions: {
         Row: {
           answer: string | null
+          answered_at: string | null
+          asker_name: string | null
           body: string
           company_id: string
           created_at: string
@@ -314,6 +403,8 @@ export type Database = {
         }
         Insert: {
           answer?: string | null
+          answered_at?: string | null
+          asker_name?: string | null
           body: string
           company_id: string
           created_at?: string
@@ -322,6 +413,8 @@ export type Database = {
         }
         Update: {
           answer?: string | null
+          answered_at?: string | null
+          asker_name?: string | null
           body?: string
           company_id?: string
           created_at?: string
@@ -2501,6 +2594,8 @@ export type Database = {
       }
     }
     Functions: {
+      app_is_admin: { Args: never; Returns: boolean }
+      app_owns_company: { Args: { cid: string }; Returns: boolean }
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
       get_active_ad_profiles: {
         Args: never
