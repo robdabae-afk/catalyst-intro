@@ -153,6 +153,243 @@ export type Database = {
           },
         ]
       }
+      app_admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          note: string | null
+          target_id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          target_id: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          note?: string | null
+          target_id?: string
+        }
+        Relationships: []
+      }
+      app_invest_profile: {
+        Row: {
+          accredited: boolean
+          annual_income: number
+          limit_12mo: number | null
+          net_worth: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accredited?: boolean
+          annual_income: number
+          limit_12mo?: number | null
+          net_worth: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accredited?: boolean
+          annual_income?: number
+          limit_12mo?: number | null
+          net_worth?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_invites: {
+        Row: {
+          channel: string
+          code: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          code?: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          code?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_item_state: {
+        Row: {
+          created_at: string
+          item_id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          item_id: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          item_id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_prefs: {
+        Row: {
+          interests: string[]
+          onboarded_at: string | null
+          prefs: Json
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          interests?: string[]
+          onboarded_at?: string | null
+          prefs?: Json
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          interests?: string[]
+          onboarded_at?: string | null
+          prefs?: Json
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_questions: {
+        Row: {
+          answer: string | null
+          body: string
+          company_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          answer?: string | null
+          body: string
+          company_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          answer?: string | null
+          body?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_reservations: {
+        Row: {
+          ack_risk: boolean
+          amount: number
+          company_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ack_risk?: boolean
+          amount: number
+          company_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ack_risk?: boolean
+          amount?: number
+          company_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      app_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          pass_code: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          pass_code?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          pass_code?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       cap_table_entries: {
         Row: {
           created_at: string | null
