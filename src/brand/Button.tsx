@@ -52,3 +52,24 @@ export function RsvpButton({ state = "open", ...rest }: { state?: "open" | "pend
 export function InvestButton(p: Omit<Common, "variant" | "iconRight"> & ButtonHTMLAttributes<HTMLButtonElement>) {
   return <Button {...p} variant="primary" iconRight="invest" className={`cb-invest ${p.className ?? ""}`}>{p.children ?? "Invest"}</Button>;
 }
+
+/** Match reason chip (Discover). Icon + short reason, mono-free. */
+export function ReasonChip({ icon, children }: { icon: IconName; children: ReactNode }) {
+  return <span className="creason"><Icon name={icon} size={13} />{children}</span>;
+}
+
+/** Pitch-video badge. Same tilted-card glyph as the swipe icon, with play mark. */
+export function PitchBadge({ len, open, ...rest }: { len: string; open?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type="button" aria-expanded={open} aria-label={`${open ? "Hide" : "Play"} pitch preview, ${len}`} className={`cpitch${open ? " on" : ""}`} {...rest}><Icon name={open ? "close" : "pitch"} size={16} /><span>{open ? "Close" : `Pitch · ${len}`}</span></button>;
+}
+
+/** Circular match score (0–100). */
+export function MatchRing({ score, size = 46 }: { score: number; size?: number }) {
+  const r = (size - 5) / 2, c = 2 * Math.PI * r;
+  return (
+    <span className="cring" style={{ width: size, height: size }} role="img" aria-label={`Match ${score} of 100`}>
+      <svg width={size} height={size} aria-hidden><circle cx={size / 2} cy={size / 2} r={r} className="bg" /><circle cx={size / 2} cy={size / 2} r={r} className="fg" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} /></svg>
+      <b>{score}</b>
+    </span>
+  );
+}

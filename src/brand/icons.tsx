@@ -57,6 +57,14 @@ export const ICONS = {
   draft: <><circle cx="12" cy="12" r="8.5" strokeDasharray="2.6 2.6" /><path d="M12 8v4l2.5 1.5" /></>,
   waitlist: <><path d="M4 6h11M4 12h11M4 18h7" /><path d="M18 14v6M15 17h6" /></>,
   // categories
+  // discover / match (same card + tick grammar as swipe)
+  match: <><rect x="5" y="3.5" width="12" height="17" rx="2.5" transform={tilt} /><path d="M8.3 12.3l2.2 2.2 4.2-4.6" />{T(21, 8, 21, 15)}</>,
+  pitch: <><rect x="5" y="3.5" width="12" height="17" rx="2.5" transform={tilt} /><path d="M10 9.2v5.6l4.6-2.8z" />{T(21, 8, 21, 15)}</>,
+  mutual: <><circle cx="8.5" cy="9" r="3.2" /><circle cx="15.5" cy="9" r="3.2" /><path d="M2.5 19.5c1.1-3 3.3-4.3 6-4.3M21.5 19.5c-1.1-3-3.3-4.3-6-4.3M10 18.8c.6-1.6 1.6-2.6 2-2.6s1.4 1 2 2.6" /></>,
+  traction: <><path d="M3.5 18.5l5-5 3.5 3 7.5-8" /><path d="M15 8.5h4.5V13" />{T(3.5, 4, 3.5, 9)}</>,
+  sliders: <><rect x="4" y="3.5" width="14" height="17" rx="2.5" transform={tilt} /><path d="M8 9h7M8 15h7" /><circle cx="10" cy="9" r="1.4" fill="currentColor" /><circle cx="13.5" cy="15" r="1.4" fill="currentColor" />{T(21.5, 8, 21.5, 15)}</>,
+  stage: <><path d="M4 19.5h4v-5H4zM10 19.5h4V10h-4zM16 19.5h4V4.5h-4z" /></>,
+  fintech: <><rect x="3.5" y="6" width="15" height="11" rx="2.5" transform={tilt} /><path d="M6.5 10.5l11-1.5M8 14.5l3-.4" />{T(21, 9, 21, 16)}</>,
   food: <><path d="M4 11h16a8 8 0 01-16 0z" /><path d="M9 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4" /></>,
   health: <path d="M12 20s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 10c0 5.5-7 10-7 10z" />,
   climate: <><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3L7 7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7" /></>,

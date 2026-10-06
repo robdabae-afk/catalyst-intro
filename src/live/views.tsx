@@ -3,6 +3,8 @@ import { useRef, useState, type PointerEvent as RPE } from "react";
 import { Icon } from "@/brand/icons";
 import { SaveToggle, Burst } from "./micro";
 import { ProfileFeed, ProfileSheet, Toast, type ProfRef } from "./profiles";
+import { MatchList, PrefsSheet } from "./match";
+import { DEFAULT_PREFS, type Prefs } from "./data";
 import { SwipeAction, RsvpButton, InvestButton, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, type LiveDeal, type LiveEvent } from "./data";
 import { CatIcon, LiveImage, RaiseHud, SampleTag, Sparkline, useClock } from "./parts";
@@ -138,19 +140,24 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
 }
 
 /* ---------- DISCOVER GRID ---------- */
-export function DiscoverView({ onOpen, initial = null }: { onOpen: (id: string) => void; initial?: ProfRef | null }) {
+export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { onOpen: (id: string) => void; initial?: ProfRef | null; prefsOpen?: boolean }) {
   const [ref, seen] = useInView<HTMLDivElement>();
   const [prof, setProf] = useState<ProfRef | null>(initial);
+  const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
+  const [showPrefs, setShowPrefs] = useState(prefsOpen);
   const [toast, setToast] = useState<{ t: string; n: number } | null>(null);
   const say = (t: string) => setToast((o) => ({ t, n: (o?.n ?? 0) + 1 }));
   return (
     <div className="lv-disc">
-      <header className="lv-top"><div className="lv-mono">DISCOVER / GRID</div><div className="lv-mono dim">{DEALS.length} SAMPLE DEALS</div></header>
+      <header className="lv-top"><div className="lv-mono">DISCOVER</div><div className="lv-mono dim">{DEALS.length} SAMPLE DEALS</div></header>
+      <MatchList prefs={prefs} onOpenDeal={onOpen} onProfile={setProf} onPrefs={() => setShowPrefs(true)} toast={say} />
+      <div className="lv-sec-h lv-mono">BROWSE ALL</div>
       <div ref={ref} className={`lv-grid${seen ? " in" : ""}`}>
         {DEALS.map((d, k) => <Tile key={k} d={d} k={k} onOpen={onOpen} big={k === 0} />)}
       </div>
       <ProfileFeed onOpen={setProf} toast={say} />
       {prof && <ProfileSheet key={prof.kind + prof.id} r={prof} onClose={() => setProf(null)} onOpen={setProf} toast={say} />}
+      {showPrefs && <PrefsSheet prefs={prefs} onChange={setPrefs} onClose={() => setShowPrefs(false)} />}
       <Toast msg={toast} />
     </div>
   );

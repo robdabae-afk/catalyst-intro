@@ -8,12 +8,12 @@ import { SaveToggle } from "./micro";
 
 /* All people, companies and figures here are SAMPLE data for UI preview. */
 
-export type Person = { id: string; name: string; initials: string; role: "Founder" | "Investor" | "Member"; at?: string; city: string; bio: string; backed: string[]; events: string[]; followers: number; mutual: number };
+export type Person = { id: string; name: string; initials: string; photo?: string; role: "Founder" | "Investor" | "Member"; at?: string; city: string; bio: string; backed: string[]; events: string[]; followers: number; mutual: number };
 export const PEOPLE: Person[] = [
-  { id: "p-maya", name: "Maya O.", initials: "MO", role: "Founder", at: "stoop", city: "Brooklyn", bio: "Sample founder. Started canning cold brew on her stoop.", backed: [], events: ["e1"], followers: 1240, mutual: 8 },
+  { id: "p-maya", name: "Maya O.", initials: "MO", photo: "/live/founder-stoop.jpg", role: "Founder", at: "stoop", city: "Brooklyn", bio: "Sample founder. Started canning cold brew on her stoop.", backed: [], events: ["e1"], followers: 1240, mutual: 8 },
   { id: "p-dev", name: "Dev K.", initials: "DK", role: "Founder", at: "stoop", city: "Brooklyn", bio: "Sample cofounder. Runs bodega distribution.", backed: ["tally"], events: ["e1", "e2"], followers: 610, mutual: 3 },
-  { id: "p-ana", name: "Ana R.", initials: "AR", role: "Founder", at: "brightyard", city: "Queens", bio: "Sample founder. Grows greens on rooftops.", backed: [], events: ["e2"], followers: 980, mutual: 5 },
-  { id: "p-sam", name: "Sam T.", initials: "ST", role: "Founder", at: "tally", city: "Manhattan", bio: "Sample founder. Ex-accountant, hates receipts.", backed: ["stoop"], events: ["e1"], followers: 1530, mutual: 11 },
+  { id: "p-ana", name: "Ana R.", initials: "AR", photo: "/live/founder-brightyard.jpg", role: "Founder", at: "brightyard", city: "Queens", bio: "Sample founder. Grows greens on rooftops.", backed: [], events: ["e2"], followers: 980, mutual: 5 },
+  { id: "p-sam", name: "Sam T.", initials: "ST", photo: "/live/founder-tally.jpg", role: "Founder", at: "tally", city: "Manhattan", bio: "Sample founder. Ex-accountant, hates receipts.", backed: ["stoop"], events: ["e1"], followers: 1530, mutual: 11 },
   { id: "p-lee", name: "Lee W.", initials: "LW", role: "Investor", city: "Manhattan", bio: "Sample investor. Backs consumer and climate.", backed: ["stoop", "brightyard"], events: ["e1", "e2"], followers: 2200, mutual: 14 },
   { id: "p-jo", name: "Jordan R.", initials: "JR", role: "Member", city: "Brooklyn", bio: "Sample member. First startup check was $100.", backed: ["stoop"], events: ["e1"], followers: 140, mutual: 6 },
 ];
@@ -25,7 +25,7 @@ function Count({ to, fmt = (n: number) => Math.round(n).toLocaleString("en-US"),
   return <>{fmt(useCountUp(to, go, reduced))}</>;
 }
 export const Avatar = ({ p, size = 44, ring }: { p: Person; size?: number; ring?: boolean }) => (
-  <span className={`lv-av${ring ? " ring" : ""}`} style={{ width: size, height: size, fontSize: size * 0.34 }} aria-hidden>{p.initials}</span>
+  <span className={`lv-av${ring ? " ring" : ""}`} style={{ width: size, height: size, fontSize: size * 0.34, backgroundImage: p.photo ? `url(${p.photo})` : undefined }} aria-hidden>{p.photo ? null : p.initials}</span>
 );
 
 /* ---- long press ---- */

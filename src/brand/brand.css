@@ -66,3 +66,15 @@
 .ad-nl svg{opacity:.85}
 .mtabs .ad-nl svg{display:none}
 .ci{border:0!important;outline:0;box-shadow:none}
+/* discover family: reason chip, pitch badge, match ring */
+.creason{display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 'Schibsted Grotesk',system-ui,sans-serif;padding:6px 9px;border:1px solid #e4e4e2;border-radius:999px;background:#fff;color:#0b0b0b;white-space:nowrap}
+.cpitch{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 'Schibsted Grotesk',system-ui,sans-serif;padding:7px 11px 7px 9px;border-radius:999px;border:1px solid #0b0b0b;background:#0b0b0b;color:#fff;cursor:pointer;transition:transform .12s,background .2s,color .2s;-webkit-tap-highlight-color:transparent}
+.cpitch.on{background:#fff;color:#0b0b0b}
+.cpitch:active{transform:scale(.95)}.cpitch:active svg{transform:scale(.8)}
+.cpitch:focus-visible{outline:2px solid #0b0b0b;outline-offset:2px}
+.cpitch svg{transition:transform .18s}
+.cring{position:relative;display:inline-grid;place-items:center;flex:none}
+.cring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.cring circle{fill:none;stroke-width:3}.cring .bg{stroke:rgba(127,127,127,.25)}.cring .fg{stroke:currentColor;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1)}
+.cring b{font:700 14px/1 'Schibsted Grotesk',system-ui,sans-serif}
+@media (prefers-reduced-motion:reduce){.cring .fg,.cpitch,.cpitch svg{transition:none}}

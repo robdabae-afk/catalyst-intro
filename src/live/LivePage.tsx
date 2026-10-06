@@ -49,6 +49,7 @@ export default function LivePage() {
           <Phone label="11 · ADMIN"><AdminView /></Phone>
           <Phone label="12 · COMPANY PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "stoop" }} /></Phone>
           <Phone label="13 · PERSON PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
+          <Phone label="14 · MATCH PREFERENCES"><DiscoverView onOpen={setDeskDeal} prefsOpen /></Phone>
         </div>
       </div>
     );
