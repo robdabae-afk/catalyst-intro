@@ -155,3 +155,21 @@
 @media(max-width:700px){.rd .evg-track{grid-auto-columns:78%}}
 .rd .cta-end{border-top:1px solid var(--line);padding:56px 0 96px;text-align:center}
 @media(prefers-reduced-motion:reduce){.rd .evg-media img{transition:none}}
+.rd .cmp td{text-align:center;font-size:16px;vertical-align:middle}
+.rd .cmp thead th.us,.rd .cmp thead th:last-child{text-align:center}
+.rd .cmp tbody th{vertical-align:middle}
+/* v3: calm contrast, clear dividers */
+.rd .cmp-wrap{border:1px solid #c9c9c6}
+.rd .cmp th,.rd .cmp td{border-top:1px solid #d6d6d3}
+.rd .cmp td+td,.rd .cmp th+td,.rd .cmp thead th+th{border-left:1px solid #d6d6d3}
+.rd .cmp thead th{background:#f4f4f2;color:#555}
+.rd .cmp thead th.us{background:#f4f4f2;color:#0a0a0a;border-left-color:#d6d6d3}
+.rd .cmp td.us{background:#fff;color:#0a0a0a;font-weight:700;border-top-color:#d6d6d3;border-left-color:#d6d6d3}
+.rd .cmp tbody tr:nth-child(even) th,.rd .cmp tbody tr:nth-child(even) td,.rd .cmp tbody tr:nth-child(even) td.us{background:#fafaf9}
+.rd .cmp td{color:#555}
+@media(max-width:700px){
+.rd .cmp tr{border-color:#c9c9c6}
+.rd .cmp tbody th{background:#f4f4f2!important}
+.rd .cmp td.us{background:#fff!important;border-right:1px solid #d6d6d3!important}
+.rd .cmp td.us:before{color:#0a0a0a}
+}
