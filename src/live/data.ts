@@ -60,14 +60,14 @@ export type Reason = { icon: "fintech" | "food" | "climate" | "software" | "heal
 export function scoreDeal(d: LiveDeal, p: Prefs): { score: number; reasons: Reason[]; line: string } {
   const m = MATCH[d.id];
   const reasons: Reason[] = [];
-  let s = 30;
+  let s = 18;
   const hit = m.sectors.find((x) => p.sectors.includes(x));
   if (hit) { s += 26; reasons.push({ icon: (({ Fintech: "fintech", Food: "food", Climate: "climate", Software: "software", Health: "health" } as Record<string, Reason["icon"]>)[hit] ?? "software"), text: `${hit} · you follow ${m.similarFollowed || 1} similar` }); }
   const nyc = /NY/.test(d.city);
   if (p.nyc && nyc) { s += 14; reasons.push({ icon: "location", text: m.eventsMet ? `NYC founder · met at ${m.eventsMet} event${m.eventsMet > 1 ? "s" : ""}` : "NYC founder · near you" }); }
   if (p.stages.includes(m.stage)) s += 10;
   if (m.minCheck <= p.check) { s += 10; reasons.push({ icon: "limit", text: `$${m.minCheck} min · fits your $${p.check.toLocaleString("en-US")}` }); }
-  s += Math.min(10, m.mutuals.length * 3);
+  s += Math.min(8, m.mutuals.length * 2);
   if (reasons.length < 2) reasons.push({ icon: "mutual", text: `${m.mutuals.length} mutual${m.mutuals.length > 1 ? "s" : ""} in your network` });
   const score = Math.min(99, s);
   const line = hit ? `Fits your ${hit.toLowerCase()} focus${p.nyc && nyc ? " in NYC" : ""} at a $${p.check.toLocaleString("en-US")} check` : `Outside your sectors, but ${m.mutuals.length} people you know follow it`;

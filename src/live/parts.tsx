@@ -3,7 +3,7 @@ import { Icon } from "@/brand/icons";
 import { type Hotspot, type LiveDeal, usd } from "./data";
 import { useCountUp, useInView, useParallax, useReducedMotion, useTicker } from "./hooks";
 
-export const SampleTag = ({ dark }: { dark?: boolean }) => <span className={`lv-pill${dark ? " dk" : ""}`}><i />SAMPLE DEAL</span>;
+export const SampleTag = ({ dark, label = "SAMPLE DEAL" }: { dark?: boolean; label?: string }) => <span className={`lv-pill${dark ? " dk" : ""}`}><i />{label}</span>;
 
 /* Image with Ken Burns drift, pointer/gyro parallax, scan-line intro and hotspots. */
 export function LiveImage({ src, hotspots = [], children, intro = true, className = "", style }: { src: string; hotspots?: Hotspot[]; children?: ReactNode; intro?: boolean; className?: string; style?: CSSProperties }) {

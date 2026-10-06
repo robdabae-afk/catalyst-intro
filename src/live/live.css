@@ -187,7 +187,7 @@
 .lv-desk-h{display:flex;justify-content:space-between;align-items:flex-end;max-width:1360px;margin:0 auto 26px}
 .lv-desk-h h1{font-size:44px;font-weight:800;letter-spacing:-.035em;margin-top:6px}
 .lv-phones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;max-width:1360px;margin:0 auto}
-.lv-phone{margin:0;display:grid;gap:10px}
+.lv-phone{margin:0;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
 .lv-frame{position:relative;min-height:0;aspect-ratio:9/19;max-height:720px;border-radius:44px;background:#0b0b0b;padding:10px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)}
 .lv-notch{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:80px;height:22px;border-radius:12px;background:#0b0b0b;z-index:20}
 .lv-scr{height:100%;isolation:isolate;transform:translateZ(0);border-radius:34px;overflow:hidden auto;background:#fff;display:flex;flex-direction:column;scrollbar-width:none}
@@ -456,14 +456,14 @@
 .lv-mc-pb{position:absolute;right:12px;bottom:12px;z-index:3}
 .lv-mc-cover .lv-stamp{top:56px}
 .lv-mc-body{padding:0 16px 16px}
-.lv-mc-head{display:flex;align-items:flex-end;gap:12px;margin-top:-26px;position:relative;z-index:4}
+.lv-mc-head{display:flex;align-items:flex-start;gap:12px;margin-top:-26px;position:relative;z-index:4}
 .lv-mc-founder{padding:0;border:0;background:none;border-radius:50%;cursor:pointer;transition:transform .15s}
 .lv-mc-founder:active{transform:scale(.92)}
 .lv-mc-founder:focus-visible,.lv-mc-mut:focus-visible{outline:2px solid var(--ink,#0b0b0b);outline-offset:2px}
-.lv-mc-id{flex:1;min-width:0;padding-bottom:2px}
+.lv-mc-id{flex:1;min-width:0;padding-top:34px}
 .lv-mc-id h3{margin:0 0 3px;font-size:19px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lv-mc-id .lv-mono{font-size:9.5px}
-.lv-mc-head .cring{margin-bottom:2px}
+.lv-mc-head .cring{margin-top:32px;background:#fff;border-radius:50%}
 .lv-mc-why{margin-top:14px;padding:10px 12px;border-radius:12px;background:#f4f4f2}
 .lv-mc-why .lv-mono{font-size:9.5px;color:#777}
 .lv-mc-why p{margin:4px 0 0;font-size:14px;font-weight:600;line-height:1.3}

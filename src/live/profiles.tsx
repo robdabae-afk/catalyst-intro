@@ -152,7 +152,7 @@ export function ProfileSheet({ r, onClose, onOpen, toast }: { r: ProfRef; onClos
           onPointerUp={() => { if (drag > 110) onClose(); setDrag(0); sy.current = null; }}><i /></div>
         <div ref={cover} className="lv-sheet-cover" style={{ transform: reduced ? undefined : `translateY(${scroll * 0.4}px)` }}>
           <LiveImage src={img} intro={!reduced} hotspots={d?.hotspots ?? []} />
-          <div className="lv-sheet-top"><SampleTag /><IconButton icon="close" label="Close" className="lv-glass" onClick={onClose} /></div>
+          <div className="lv-sheet-top"><SampleTag label={r.kind === "person" ? "SAMPLE PROFILE" : "SAMPLE DEAL"} /><IconButton icon="close" label="Close" className="lv-glass" onClick={onClose} /></div>
         </div>
         <div className="lv-sheet-body">
           <div className="lv-sheet-id" style={{ transform: reduced ? undefined : `translateY(${-Math.min(scroll, 60) * 0.3}px) scale(${1 - Math.min(scroll, 120) / 600})` }}>
