@@ -57,6 +57,8 @@ All SQL field names are snake_case; map to the requested camelCase in the API. F
 
 Thread creation/membership is admin-managed. Members can only read joined threads, insert messages as themselves in joined threads, and upsert their own `platform_thread_reads.read_at`. Message inserts update `threads.last_message_at` through a trusted trigger. Notification owners can update only `read_at`, never payload or ownership. Safe profile and notification column grants also apply to admins; use privileged RPCs for restricted operations. No arbitrary investment, monetary balance, raised amount, backer, or portfolio-position fields exist.
 
+Member cancellations are denied after check-in, and declined requests cannot be reset through member RSVP/cancel calls. New requests are denied after the event starts. Existing attendees can still read their own cancelled event, without opening all unpublished events. Trusted SQL triggers create owner-scoped RSVP updates, answer notifications and joined-thread message notifications; clients cannot forge payloads.
+
 ## Covers
 
 `platform-covers` is a public bucket with a 5 MiB object limit and only `image/jpeg`, `image/png`, `image/webp` MIME types. Authenticated admins alone may write; policies also require jpg/jpeg/png/webp extensions. SVG is not allowed. Upload paths should use generated UUIDs and a recognized extension. Client validation is useful, but MIME/extension controls alone cannot prove file contents. For untrusted admin-supplied uploads, use trusted server-side image decoding/re-encoding and magic-byte validation before upload. Bucket/public-object URLs are intentionally public, so do not upload private documents. Existing storage buckets/policies are unchanged.

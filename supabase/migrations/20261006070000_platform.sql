@@ -221,9 +221,29 @@ CREATE TRIGGER platform_capacity_guard BEFORE UPDATE OF capacity ON public.platf
 -- Message side effect is trusted, not a client-writable timestamp.
 CREATE FUNCTION public.platform_message_touch() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$ BEGIN UPDATE public.platform_threads SET last_message_at=NEW.created_at WHERE id=NEW.thread_id; RETURN NEW; END $$;
 CREATE TRIGGER platform_message_touch AFTER INSERT ON public.platform_messages FOR EACH ROW EXECUTE FUNCTION public.platform_message_touch();
+-- Trusted notification side effects. Clients never write notification payloads.
+CREATE FUNCTION public.platform_notify_activity() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$
+DECLARE label text;
+BEGIN
+ IF TG_TABLE_NAME='platform_event_rsvps' THEN
+  IF TG_OP='UPDATE' AND NEW.status IS NOT DISTINCT FROM OLD.status THEN RETURN NEW; END IF;
+  SELECT title INTO label FROM public.platform_events WHERE id=NEW.event_id;
+  INSERT INTO public.platform_notifications(user_id,kind,title,body,link) VALUES(NEW.user_id,'rsvp','RSVP updated',left(coalesce(label,'Event')||': '||NEW.status,10000),'/app/events/'||NEW.event_id);
+ ELSIF TG_TABLE_NAME='platform_deal_questions' THEN
+  IF NEW.answer IS NULL OR NEW.answer='' OR NEW.hidden OR NEW.answer IS NOT DISTINCT FROM OLD.answer THEN RETURN NEW; END IF;
+  INSERT INTO public.platform_notifications(user_id,kind,title,body,link) VALUES(NEW.user_id,'answer','Your question was answered',left(NEW.answer,10000),'/app/deal/'||NEW.deal_id);
+ ELSIF TG_TABLE_NAME='platform_messages' THEN
+  SELECT title INTO label FROM public.platform_threads WHERE id=NEW.thread_id;
+  INSERT INTO public.platform_notifications(user_id,kind,title,body,link) SELECT m.user_id,'message','New message',left(coalesce(label,'Conversation'),10000),'/app/inbox/'||NEW.thread_id FROM public.platform_thread_members m WHERE m.thread_id=NEW.thread_id AND m.user_id<>NEW.user_id;
+ END IF;
+ RETURN NEW;
+END $$;
+CREATE TRIGGER platform_rsvp_notification AFTER INSERT OR UPDATE OF status ON public.platform_event_rsvps FOR EACH ROW EXECUTE FUNCTION public.platform_notify_activity();
+CREATE TRIGGER platform_answer_notification AFTER UPDATE OF answer ON public.platform_deal_questions FOR EACH ROW EXECUTE FUNCTION public.platform_notify_activity();
+CREATE TRIGGER platform_message_notification AFTER INSERT ON public.platform_messages FOR EACH ROW EXECUTE FUNCTION public.platform_notify_activity();
 DO $$ DECLARE f record; BEGIN FOR f IN SELECT p.oid::regprocedure AS signature FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND (p.proname LIKE 'platform_%' OR p.proname='is_platform_admin') LOOP
  EXECUTE format('REVOKE ALL ON FUNCTION %s FROM PUBLIC,anon,authenticated',f.signature);
- IF f.signature::text NOT LIKE '%platform_message_touch%' AND f.signature::text NOT LIKE '%platform_capacity_guard%' THEN EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated',f.signature); END IF;
+ IF f.signature::text NOT LIKE '%platform_message_touch%' AND f.signature::text NOT LIKE '%platform_capacity_guard%' AND f.signature::text NOT LIKE '%platform_notify_activity%' THEN EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated',f.signature); END IF;
  END LOOP; END $$;
 GRANT EXECUTE ON FUNCTION public.platform_event_counts(uuid) TO anon;
 INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types) VALUES('platform-covers','platform-covers',true,5242880,ARRAY['image/jpeg','image/png','image/webp']) ON CONFLICT(id) DO UPDATE SET public=excluded.public,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
