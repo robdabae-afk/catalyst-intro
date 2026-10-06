@@ -21,7 +21,9 @@ INSERT INTO public.platform_deals(id,slug,name,status) VALUES
  ('20000000-0000-0000-0000-000000000001','sample','Preview','preview'),
  ('20000000-0000-0000-0000-000000000002','secret','Secret','draft');
 INSERT INTO public.platform_threads(id,kind,title) VALUES('30000000-0000-0000-0000-000000000001','dm','Private');
-INSERT INTO public.platform_thread_members(thread_id,user_id) VALUES('30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000003');
+INSERT INTO public.platform_thread_members(thread_id,user_id) VALUES
+ ('30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000003'),
+ ('30000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000001');
 INSERT INTO public.platform_notifications(id,user_id,kind,title,body) VALUES
  ('40000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000003','announcement','Private','Secret');
 SET LOCAL ROLE authenticated;
@@ -50,7 +52,9 @@ INSERT INTO public.platform_saved_deals(deal_id) VALUES('20000000-0000-0000-0000
 SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',true);
 SELECT pg_temp.assert((public.platform_rsvp('10000000-0000-0000-0000-000000000001')).status='waitlisted','capacity cannot overflow');
 INSERT INTO public.platform_messages(thread_id,body) VALUES('30000000-0000-0000-0000-000000000001','Allowed');
+SELECT pg_temp.assert((SELECT count(*)=0 FROM public.platform_notifications WHERE kind='message'),'message author does not receive own notification');
 SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',true);
+SELECT pg_temp.assert((SELECT count(*)=1 FROM public.platform_notifications WHERE kind='message' AND user_id=auth.uid()),'joined thread recipient receives message notification');
 SELECT pg_temp.denied($q$SELECT public.platform_set_role(auth.uid(),'user')$q$);
 SELECT pg_temp.denied($q$SELECT public.platform_admin_rsvp((SELECT id FROM public.platform_event_rsvps WHERE user_id='00000000-0000-0000-0000-000000000003'),'approved')$q$);
 SELECT public.platform_admin_rsvp((SELECT id FROM public.platform_event_rsvps WHERE user_id='00000000-0000-0000-0000-000000000002'),NULL,true);
