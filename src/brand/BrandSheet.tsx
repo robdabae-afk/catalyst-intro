@@ -12,8 +12,8 @@ const css = `.bs{font-family:'Schibsted Grotesk',system-ui,sans-serif;color:#0b0
 .bs .g div{border-right:1px solid #e4e4e2;border-bottom:1px solid #e4e4e2;aspect-ratio:1;display:grid;place-items:center;align-content:center;gap:10px}
 .bs .g span{font:400 10px 'JetBrains Mono',monospace;color:#6b6b6b}
 .bs .r{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.bs .big{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
-.bs .big svg{border:1px solid #e4e4e2}
+.bs .sig{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.bs .sig svg{border:1px solid #e4e4e2}
 .bs p{max-width:560px;margin:0;color:#444;line-height:1.5}`;
 
 const groups: [string, IconName[]][] = [
@@ -35,7 +35,7 @@ export default function BrandSheet() {
       <section>
         <div className="k">Signature</div>
         <p>Seeded from the swipe tab. 24 grid, 1.7 stroke, round ends, 2.5 radius. Card objects tilt −8°, like a card mid-swipe. Key icons carry one detached "tick", the swipe icon's side bar. Black on white only.</p>
-        <div className="big">{(["swipe", "holdings", "events", "discover", "bell"] as IconName[]).map((n) => <Icon key={n} name={n} size={72} />)}</div>
+        <div className="sig">{(["swipe", "holdings", "events", "discover", "bell"] as IconName[]).map((n) => <Icon key={n} name={n} size={72} />)}</div>
         <div className="r">{[16, 20, 24].map((s) => <span key={s} className="r" style={{ gap: 8 }}>{(["swipe", "discover", "holdings", "events", "profile"] as IconName[]).map((n) => <Icon key={n} name={n} size={s} />)}<span className="k">{s}px</span></span>)}</div>
       </section>
       {groups.map(([t, ns]) => (
