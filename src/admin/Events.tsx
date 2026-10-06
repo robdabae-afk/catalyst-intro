@@ -92,7 +92,11 @@ export function EventForm() {
 
 const RS: RsvpStatus[] = ["approved", "pending", "waitlisted", "declined", "cancelled"];
 function csv(rows: Rsvp[], title: string) {
-  const esc = (s: string) => `"${String(s ?? "").replace(/"/g, '""')}"`;
+  const esc = (s: string) => {
+    let v = String(s ?? "");
+    if (/^\s*[=+\-@]/.test(v) || /^[\t\r\n]/.test(v)) v = "'" + v;
+    return `"${v.replace(/"/g, '""')}"`;
+  };
   const body = ["name,email,status,checked_in,rsvp_at", ...rows.map((r) => [r.memberName, r.memberEmail, r.status, r.checkedInAt || "", r.createdAt].map(esc).join(","))].join("\n");
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/csv" }));
   a.download = `${title.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}-rsvps.csv`; a.click(); URL.revokeObjectURL(a.href);
