@@ -86,7 +86,17 @@ create table if not exists public.company_updates (
 );
 create index if not exists company_updates_company on public.company_updates(company_id, created_at desc);
 alter table public.company_updates enable row level security;
--- assumes public.company_members(company_id, user_id, role) exists from founder tables
+-- company_members does not exist yet in this repo; created here so the policy below compiles.
+create table if not exists public.company_members (
+  company_id text not null,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  role text not null default 'founder' check (role in ('founder','member')),
+  created_at timestamptz not null default now(),
+  primary key (company_id, user_id)
+);
+alter table public.company_members enable row level security;
+create policy company_members_self_read on public.company_members for select using (user_id = auth.uid());
+-- inserts/updates: service role only (admin verifies founders)
 create policy "updates read" on public.company_updates for select using (
   status = 'published' and (visibility = 'public' or exists (
     select 1 from public.follows f where f.follower_id = auth.uid() and f.target_type = 'company' and f.target_id = company_id))
