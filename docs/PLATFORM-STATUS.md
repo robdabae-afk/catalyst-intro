@@ -22,4 +22,6 @@ This is a community/events and preview-listing backend. It has no payment, money
 
 Pending requests do not reserve seats. Cancelling does not automatically promote a waitlisted person; admins explicitly approve them after capacity becomes available. Threads and membership are administrator-managed in SQL; member-initiated conversation creation is not implemented. Notifications are in-app, not email or push. Cover validation enforces claimed MIME/size and extension; trusted server-side image decoding/re-encoding remains required to verify actual bytes against spoofed media.
 
-Browser evidence is recorded separately in `/tmp/catalyst-admin/browser-qa.md`. Only executed flows in that report count as browser verification. Demo browser checks do not establish real Supabase activation.
+Member adapter routes cover `/app/swipe`, `/app/discover`, `/app/deal/:id`, `/app/events`, `/app/events/:id`, `/app/inbox`, `/app/inbox/:id`, `/app/notifications` and `/app/profile`. The protected legacy routes remain unchanged. `/app/invest/:id`, `/app/holdings` and `/app/account/*` remain the earlier local-only preview; their content is not a real account, portfolio, payment or investment system. Use `/app/profile` for the new platform profile and notification preferences.
+
+Browser evidence is recorded separately in `/tmp/catalyst-admin/browser-qa.md`, `member-browser-qa.md` and `content-browser-qa.md`. Only executed flows in those reports count as browser verification. Demo browser checks do not establish real Supabase activation.
