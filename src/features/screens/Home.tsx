@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Head, path } from "../FeaturesApp";
 import { byId, COMPANIES, EVENT, UPDATES } from "../data";
-import { IArrow } from "../icons";
+import { IArrow, ICal } from "../icons";
 import { setState, useStore } from "../store";
 import { UpdateCard } from "../parts";
 import { CountUp, Hud, Icon, Meter, Duo } from "../hud";
@@ -15,7 +15,7 @@ export default function Home() {
   const raising = COMPANIES.filter((c) => c.raising);
   return (
     <div className="st">
-      <Head title="Today" />
+      <Head title="Today" right={<Link to={path("events")} className="head-link" aria-label="Events"><ICal size={18} />Events</Link>} />
 
       <Hud className="in" scan tag="Spotlight / 01">
         <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 210, color: "#fff" }}>

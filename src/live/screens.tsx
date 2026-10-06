@@ -137,7 +137,7 @@ export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) 
 const NOTES: { ic: IconName; txt: string; t: string; fresh?: boolean }[] = [
   { ic: "chart", txt: "Tally shipped receipt scanning v2", t: "NOW", fresh: true },
   { ic: "qa", txt: "Lumen Labs answered your question", t: "2M", fresh: true },
-  { ic: "events", txt: "Founder Night: 9 spots left", t: "1H" },
+  { ic: "events", txt: "Founder Night RSVPs are open", t: "1H" },
   { ic: "announce", txt: "Gridline posted an update", t: "1D" },
 ];
 export function NotificationsView() {
@@ -201,6 +201,7 @@ export function OnboardingView() {
 export function AdminView() {
   const [ref, seen] = useInView<HTMLDivElement>();
   const [ev, setEv] = useState(EVENTS[0]);
+  const [ann, setAnn] = useState(false);
   const series = [3, 4, 4, 6, 5, 8, 9, 8, 11, 13, 12, 15];
   return (
     <div className="lv-admin">
@@ -215,10 +216,9 @@ export function AdminView() {
         <div className="lv-adm-ev">
           <strong>{ev.title}</strong>
           <span className="lv-mono"><Ticker start={ev.going} label="GOING" /></span>
-          <div className="lv-cap"><i style={{ width: `${(ev.going / ev.cap) * 100}%` }} /></div>
           <div className="lv-adm-act">
-            <Button size="sm" icon="check" onClick={() => setEv({ ...ev, going: Math.min(ev.cap, ev.going + 1) })}>Approve 1</Button>
-            <Button size="sm" variant="secondary" icon="announce">Announce</Button>
+            <Button size="sm" icon="check" onClick={() => setEv({ ...ev, going: ev.going + 1 })}>Approve 1</Button>
+            <Button size="sm" variant="secondary" icon="announce" disabled={ann} onClick={() => setAnn(true)}>{ann ? "Announced · sample" : "Announce"}</Button>
           </div>
         </div>
       </div>
