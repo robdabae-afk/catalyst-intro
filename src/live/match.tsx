@@ -3,6 +3,7 @@ import { Icon } from "@/brand/icons";
 import { Button, Chip, IconButton, MatchRing, PitchBadge, SwipeAction } from "@/brand/Button";
 import { CHECKS, DEALS, DEFAULT_PREFS, MATCH, SECTORS, scoreDeal, type LiveDeal, type Prefs } from "./data";
 import { LiveImage, SampleTag } from "./parts";
+import { PitchPlayer } from "./pitch";
 import { useInView, useReducedMotion } from "./hooks";
 import { Avatar, PEOPLE, type ProfRef } from "./profiles";
 
@@ -55,9 +56,10 @@ function useSpringDrag(onFling: (dir: 1 | -1) => void, reduced: boolean) {
   return { node, bind, p, fling, dragging: () => st.current.drag };
 }
 
-function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d: LiveDeal; prefs: Prefs; k: number; settled: boolean; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
+function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitch }: { d: LiveDeal; onPitch: (id: string) => void; prefs: Prefs; k: number; settled: boolean; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
   const reduced = useReducedMotion();
   const m = MATCH[d.id];
+  const [more, setMore] = useState(false);
   const { score, line } = useMemo(() => scoreDeal(d, prefs), [d, prefs]);
   const { node, bind, p, fling } = useSpringDrag(onGone, reduced);
   const [vid, setVid] = useState(false);
@@ -83,7 +85,7 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d:
               {vid && m.pitch
                 ? <video src={m.pitch} autoPlay={!reduced} muted loop playsInline controls={reduced} aria-label={`${d.name} sample pitch preview, muted`} />
                 : <LiveImage src={d.img} intro={false} />}
-              <div className="lv-mc-top"><SampleTag />{m.pitch && <PitchBadge len={m.pitchLen ?? ""} open={vid} onClick={() => { buzz(); setVid(!vid); }} />}</div>
+              <div className="lv-mc-top"><SampleTag />{m.pitch && <PitchBadge len={m.pitchLen ?? ""} open={vid} onClick={() => { buzz(); onPitch(d.id); }} />}</div>
               <div className="lv-stamp save" style={{ opacity: Math.max(0, p) }}><Icon name="saved" size={18} />SAVE</div>
               <div className="lv-stamp pass" style={{ opacity: Math.max(0, -p) }}><Icon name="pass" size={18} />PASS</div>
             </div>
@@ -97,6 +99,8 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d:
                 <MatchRing score={seen ? score : 0} />
               </div>
               <p className="lv-mc-line">{d.line}</p>
+              <button type="button" className="lv-mc-more" aria-expanded={more} onClick={() => setMore(!more)}><span>{more ? "Less" : "Why it fits, founder & stats"}</span><Icon name="forward" size={13} /></button>
+              <div className={`lv-mc-x${more ? " open" : ""}`} aria-hidden={!more}><div>
               <button type="button" className="lv-mc-founder" onClick={() => onProfile({ kind: "person", id: founder.id })} aria-label={`Founder ${founder.name}, sample profile`}>
                 <Avatar p={founder} size={28} /><span><b>{founder.name}</b> · Founder</span><Icon name="forward" size={14} />
               </button>
@@ -107,6 +111,7 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d:
                 <span>{mut.slice(0, 2).map((x) => x.name).join(", ")}{mut.length > 2 ? ` +${mut.length - 2}` : ""} · mutual</span>
                 <Icon name="mutual" size={15} />
               </button>
+              </div></div>
               <div className="lv-mc-act">
                 <SwipeAction kind="pass" onClick={() => fling(-1)} />
                 <SwipeAction kind="info" onClick={() => onOpenDeal(d.id)} />
@@ -122,6 +127,7 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile }: { d:
 
 export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { prefs: Prefs; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void; onPrefs: () => void; toast: (s: string) => void }) {
   const [gone, setGone] = useState<string[]>([]);
+  const [pitch, setPitch] = useState<string | null>(null);
   const list = DEALS.filter((d) => !gone.includes(d.id)).map((d) => ({ d, s: scoreDeal(d, prefs).score })).sort((a, b) => b.s - a.s);
   return (
     <section className="lv-ml">
@@ -129,14 +135,16 @@ export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { pr
         <div><span className="lv-mono">FOR YOU / MATCHES</span><strong>{list.length} sample matches</strong></div>
         <IconButton icon="sliders" label="Match preferences" onClick={onPrefs} />
       </div>
-      <div className="lv-ml-prefs lv-mono">{[...prefs.sectors, prefs.nyc ? "NYC" : "ANYWHERE", `$${prefs.check}`].map((x) => <span key={x}>{x.toUpperCase()}</span>)}</div>
       {list.map(({ d }, k) => (
-        <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile}
+        <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile} onPitch={setPitch}
           onGone={(dir) => { setGone((g) => [...g, d.id]); toast(dir > 0 ? `Saved ${d.name} · sample` : `Passed ${d.name}`); }} />
       ))}
       {!list.length && (
         <div className="lv-ml-done"><Icon name="match" size={34} /><strong>You're caught up</strong><p className="dim">Sample deck finished. Tune preferences or start over.</p><Button variant="secondary" icon="swipe" onClick={() => setGone([])}>Start over</Button></div>
       )}
+      {pitch && <PitchPlayer id={pitch} ids={list.map((x) => x.d.id)} onClose={() => setPitch(null)} onNext={setPitch} onProfile={onProfile}
+        onSave={(id) => { setPitch(null); setGone((g) => [...g, id]); toast(`Saved ${DEALS.find((x) => x.id === id)?.name} · sample`); }}
+        onPass={(id) => { setPitch(null); setGone((g) => [...g, id]); toast(`Passed ${DEALS.find((x) => x.id === id)?.name}`); }} />}
     </section>
   );
 }
