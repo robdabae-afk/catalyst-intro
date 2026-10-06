@@ -12,9 +12,9 @@ export type Person = { id: string; name: string; initials: string; photo?: strin
 export const PEOPLE: Person[] = [
   { id: "p-maya", name: "Maya O.", initials: "MO", photo: "/live/founder-lumen.jpg", role: "Founder", at: "lumen", city: "Brooklyn", bio: "Sample founder. Ex-AR engineer, building captions for everyone.", backed: [], events: ["e1"], followers: 1240, mutual: 8 },
   { id: "p-dev", name: "Dev K.", initials: "DK", role: "Founder", at: "lumen", city: "Brooklyn", bio: "Sample cofounder. Leads the speech model.", backed: ["tally"], events: ["e1", "e2"], followers: 610, mutual: 3 },
-  { id: "p-ana", name: "Ana R.", initials: "AR", photo: "/live/founder-brightyard.jpg", role: "Founder", at: "brightyard", city: "Queens", bio: "Sample founder. Grows greens on rooftops.", backed: [], events: ["e2"], followers: 980, mutual: 5 },
+  { id: "p-ana", name: "Ana R.", initials: "AR", photo: "/live/founder-gridline.jpg", role: "Founder", at: "gridline", city: "Queens", bio: "Sample founder. Ex-utility engineer building home batteries.", backed: [], events: ["e2"], followers: 980, mutual: 5 },
   { id: "p-sam", name: "Sam T.", initials: "ST", photo: "/live/founder-tally.jpg", role: "Founder", at: "tally", city: "Manhattan", bio: "Sample founder. Ex-accountant, hates receipts.", backed: ["lumen"], events: ["e1"], followers: 1530, mutual: 11 },
-  { id: "p-lee", name: "Lee W.", initials: "LW", role: "Investor", city: "Manhattan", bio: "Sample investor. Backs consumer and climate.", backed: ["lumen", "brightyard"], events: ["e1", "e2"], followers: 2200, mutual: 14 },
+  { id: "p-lee", name: "Lee W.", initials: "LW", role: "Investor", city: "Manhattan", bio: "Sample investor. Backs consumer and climate.", backed: ["lumen", "gridline"], events: ["e1", "e2"], followers: 2200, mutual: 14 },
   { id: "p-jo", name: "Jordan R.", initials: "JR", role: "Member", city: "Brooklyn", bio: "Sample member. First startup check was $100.", backed: ["lumen"], events: ["e1"], followers: 140, mutual: 6 },
 ];
 export type ProfRef = { kind: "co"; id: string } | { kind: "person"; id: string };
@@ -57,7 +57,7 @@ export function QuickActions({ at, items, onClose }: { at: { x: number; y: numbe
 export function ProfileFeed({ onOpen, toast }: { onOpen: (r: ProfRef) => void; toast: (s: string) => void }) {
   const [qa, setQa] = useState<{ x: number; y: number; r: ProfRef } | null>(null);
   const [ref, seen] = useInView<HTMLDivElement>();
-  const items: ProfRef[] = [{ kind: "person", id: "p-lee" }, { kind: "co", id: "brightyard" }, { kind: "person", id: "p-maya" }, { kind: "person", id: "p-jo" }, { kind: "co", id: "tally" }, { kind: "person", id: "p-sam" }];
+  const items: ProfRef[] = [{ kind: "person", id: "p-lee" }, { kind: "co", id: "gridline" }, { kind: "person", id: "p-maya" }, { kind: "person", id: "p-jo" }, { kind: "co", id: "tally" }, { kind: "person", id: "p-sam" }];
   return (
     <section className="lv-pfeed" ref={ref}>
       <div className="lv-pfeed-h lv-mono"><span>PEOPLE + COMPANIES</span><span className="dim">HOLD FOR ACTIONS</span></div>

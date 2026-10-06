@@ -48,7 +48,7 @@ export const DEALS: Deal[] = [
     team: [{ role: "Founder", note: "Licensed physical therapist" }, { role: "Ops lead", note: "Opened clinics for an urgent care chain" }],
   },
   {
-    id: "gridlight", name: "Gridlight", line: "Rooftop solar for renters, paid monthly.",
+    id: "gridlight", name: "Gridlight", line: "Solar for renters, paid monthly.",
     sector: "Climate", city: "Newark", art: "solar", min: 100, cap: "$8M", type: "SAFE",
     raised: 210000, goal: 500000, daysLeft: 24, backers: 377,
     traction: ["14 buildings signed", "640 renter subscribers"],

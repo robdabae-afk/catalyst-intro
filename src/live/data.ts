@@ -17,8 +17,8 @@ export const DEALS: LiveDeal[] = [
     ],
   },
   {
-    id: "brightyard", name: "Brightyard Farms", line: "Rooftop greens grown 2 miles from you", cat: "Climate", city: "Queens, NY",
-    img: "/live/deal-brightyard.jpg", goal: 400000, raised: 118000, investors: 236, cap: "$9M", min: "$150", days: 31,
+    id: "gridline", name: "Gridline", line: "Home batteries that sell power back at peak hours", cat: "Climate", city: "Queens, NY",
+    img: "/live/deal-gridline.jpg", goal: 400000, raised: 118000, investors: 236, cap: "$9M", min: "$150", days: 31,
     spark: [1, 2, 2, 3, 3, 4, 4, 6, 5, 7, 8, 9],
     hotspots: [
       { x: 52, y: 48, tag: "PRODUCT / 01", title: "Grow racks", fact: "Sample: vertical racks, harvested every 21 days." },
@@ -48,7 +48,7 @@ export const usd = (n: number) => "$" + Math.round(n).toLocaleString("en-US");
 export type MatchMeta = { founder: string; founderPhoto: string; mark: string; stage: "Pre-seed" | "Seed"; sectors: string[]; minCheck: number; traction: string; pitch?: string; pitchLen?: string; similarFollowed: number; eventsMet: number; mutuals: string[] };
 export const MATCH: Record<string, MatchMeta> = {
   lumen: { founder: "p-maya", founderPhoto: "/live/founder-lumen.jpg", mark: "L", stage: "Pre-seed", sectors: ["Hardware", "Health"], minCheck: 100, traction: "1,200 waitlist", pitch: "/live/pitch-lumen.mp4", pitchLen: "0:06", similarFollowed: 2, eventsMet: 2, mutuals: ["p-lee", "p-jo", "p-dev"] },
-  brightyard: { founder: "p-ana", founderPhoto: "/live/founder-brightyard.jpg", mark: "B", stage: "Seed", sectors: ["Climate", "Hardware"], minCheck: 150, traction: "12 grocery partners", pitch: "/live/pitch-brightyard.mp4", pitchLen: "0:06", similarFollowed: 1, eventsMet: 1, mutuals: ["p-lee"] },
+  gridline: { founder: "p-ana", founderPhoto: "/live/founder-gridline.jpg", mark: "G", stage: "Seed", sectors: ["Climate", "Hardware"], minCheck: 150, traction: "40-home utility pilot", pitch: "/live/deal-gridline.jpg", pitchLen: "0:06", similarFollowed: 1, eventsMet: 1, mutuals: ["p-lee"] },
   tally: { founder: "p-sam", founderPhoto: "/live/founder-tally.jpg", mark: "T", stage: "Seed", sectors: ["Fintech", "Software"], minCheck: 100, traction: "2,100 businesses", pitch: "/live/pitch-tally.mp4", pitchLen: "0:06", similarFollowed: 3, eventsMet: 0, mutuals: ["p-lee", "p-jo", "p-dev", "p-maya"] },
 };
 export type Prefs = { sectors: string[]; stages: string[]; nyc: boolean; check: number };

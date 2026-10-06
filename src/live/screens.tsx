@@ -80,7 +80,7 @@ export function ProfileView({ isAdmin = false, onAdmin }: { isAdmin?: boolean; o
 /* ---------- INBOX + THREAD ---------- */
 const THREADS = [
   { id: "t1", who: "Lumen Labs", d: DEALS[0], last: "Thanks for the question on battery life!", unread: true, t: "2M" },
-  { id: "t2", who: "Brightyard Farms", d: DEALS[1], last: "Rooftop tour is open to investors.", unread: true, t: "1H" },
+  { id: "t2", who: "Gridline", d: DEALS[1], last: "Install walkthrough is open to investors.", unread: true, t: "1H" },
   { id: "t3", who: "Tally", d: DEALS[2], last: "We just shipped receipt scanning v2.", unread: false, t: "1D" },
 ];
 export function InboxView({ onOpen }: { onOpen: (id: string) => void }) {
@@ -138,7 +138,7 @@ const NOTES: { ic: IconName; txt: string; t: string; fresh?: boolean }[] = [
   { ic: "chart", txt: "Tally passed 75% of its sample goal", t: "NOW", fresh: true },
   { ic: "qa", txt: "Lumen Labs answered your question", t: "2M", fresh: true },
   { ic: "events", txt: "Founder Night: 9 spots left", t: "1H" },
-  { ic: "announce", txt: "Brightyard posted an update", t: "1D" },
+  { ic: "announce", txt: "Gridline posted an update", t: "1D" },
 ];
 export function NotificationsView() {
   const [read, setRead] = useState(false);

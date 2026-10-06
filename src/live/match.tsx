@@ -4,6 +4,8 @@ import { Button, Chip, IconButton, MatchRing, PitchBadge, SwipeAction } from "@/
 import { CHECKS, DEALS, DEFAULT_PREFS, MATCH, SECTORS, scoreDeal, type LiveDeal, type Prefs } from "./data";
 import { LiveImage, SampleTag } from "./parts";
 import { PitchPlayer } from "./pitch";
+import { CompanyDetail } from "./detail";
+import type { SectionId } from "./company";
 import { useInView, useReducedMotion } from "./hooks";
 import { Avatar, PEOPLE, type ProfRef } from "./profiles";
 
@@ -56,7 +58,7 @@ function useSpringDrag(onFling: (dir: 1 | -1) => void, reduced: boolean) {
   return { node, bind, p, fling, dragging: () => st.current.drag };
 }
 
-function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitch }: { d: LiveDeal; onPitch: (id: string) => void; prefs: Prefs; k: number; settled: boolean; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
+function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitch, onDetail }: { d: LiveDeal; onPitch: (id: string) => void; onDetail: (id: string, s?: SectionId) => void; prefs: Prefs; k: number; settled: boolean; onGone: (dir: 1 | -1) => void; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void }) {
   const reduced = useReducedMotion();
   const m = MATCH[d.id];
   const [more, setMore] = useState(false);
@@ -93,20 +95,24 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitc
               <div className="lv-mc-head">
                 <Logo id={d.id} />
                 <div className="lv-mc-id">
-                  <h3>{d.name}</h3>
+                  <h3><button type="button" className="lv-mc-name" onClick={() => onDetail(d.id)}>{d.name}</button></h3>
                   <span className="lv-mono dim">{d.cat.toUpperCase()} · {d.city.split(",")[0].toUpperCase()}</span>
                 </div>
                 <MatchRing score={seen ? score : 0} />
               </div>
-              <p className="lv-mc-line">{d.line}</p>
+              <button type="button" className="lv-mc-open" onClick={() => onDetail(d.id)} aria-label={`Open ${d.name} details`}><p className="lv-mc-line">{d.line}</p></button>
               <button type="button" className="lv-mc-more" aria-expanded={more} onClick={() => setMore(!more)}><span>{more ? "Less" : "Why it fits, founder & stats"}</span><Icon name="forward" size={13} /></button>
               <div className={`lv-mc-x${more ? " open" : ""}`} aria-hidden={!more}><div>
-              <button type="button" className="lv-mc-founder" onClick={() => onProfile({ kind: "person", id: founder.id })} aria-label={`Founder ${founder.name}, sample profile`}>
+              <button type="button" className="lv-mc-founder" onClick={() => onDetail(d.id, "team")} aria-label={`Founder ${founder.name}, sample profile`}>
                 <Avatar p={founder} size={28} /><span><b>{founder.name}</b> · Founder</span><Icon name="forward" size={14} />
               </button>
               <p className="lv-mc-why">{line}</p>
-              <dl className="lv-mc-stats"><div><dt className="lv-mono">TRACTION</dt><dd>{m.traction}</dd></div><div><dt className="lv-mono">STAGE</dt><dd>{m.stage}</dd></div><div><dt className="lv-mono">MIN</dt><dd>${m.minCheck}</dd></div></dl>
-              <button type="button" className="lv-mc-mut" onClick={() => onProfile({ kind: "person", id: mut[0].id })}>
+              <div className="lv-mc-stats">
+                <button type="button" onClick={() => onDetail(d.id, "traction")}><span className="lv-mono">TRACTION</span><b>{m.traction}</b></button>
+                <button type="button" onClick={() => onDetail(d.id, "raise")}><span className="lv-mono">STAGE</span><b>{m.stage}</b></button>
+                <button type="button" onClick={() => onDetail(d.id, "limit")}><span className="lv-mono">MIN</span><b>${m.minCheck}</b></button>
+              </div>
+              <button type="button" className="lv-mc-mut" onClick={() => onDetail(d.id, "team")}>
                 <span className="lv-av-stack">{mut.slice(0, 4).map((x) => <Avatar key={x.id} p={x} size={24} />)}</span>
                 <span>{mut.slice(0, 2).map((x) => x.name).join(", ")}{mut.length > 2 ? ` +${mut.length - 2}` : ""} · mutual</span>
                 <Icon name="mutual" size={15} />
@@ -114,7 +120,7 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitc
               </div></div>
               <div className="lv-mc-act">
                 <SwipeAction kind="pass" onClick={() => fling(-1)} />
-                <SwipeAction kind="info" onClick={() => onOpenDeal(d.id)} />
+                <SwipeAction kind="info" onClick={() => onDetail(d.id)} />
                 <SwipeAction kind="save" onClick={() => fling(1)} />
               </div>
             </div>
@@ -128,6 +134,7 @@ function MatchCard({ d, prefs, k, settled, onGone, onOpenDeal, onProfile, onPitc
 export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { prefs: Prefs; onOpenDeal: (id: string) => void; onProfile: (r: ProfRef) => void; onPrefs: () => void; toast: (s: string) => void }) {
   const [gone, setGone] = useState<string[]>([]);
   const [pitch, setPitch] = useState<string | null>(null);
+  const [det, setDet] = useState<{ id: string; s?: SectionId } | null>(null);
   const list = DEALS.filter((d) => !gone.includes(d.id)).map((d) => ({ d, s: scoreDeal(d, prefs).score })).sort((a, b) => b.s - a.s);
   return (
     <section className="lv-ml">
@@ -136,12 +143,13 @@ export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { pr
         <IconButton icon="sliders" label="Match preferences" onClick={onPrefs} />
       </div>
       {list.map(({ d }, k) => (
-        <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile} onPitch={setPitch}
+        <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile} onPitch={setPitch} onDetail={(id, s) => setDet({ id, s })}
           onGone={(dir) => { setGone((g) => [...g, d.id]); toast(dir > 0 ? `Saved ${d.name} · sample` : `Passed ${d.name}`); }} />
       ))}
       {!list.length && (
         <div className="lv-ml-done"><Icon name="match" size={34} /><strong>You're caught up</strong><p className="dim">Sample deck finished. Tune preferences or start over.</p><Button variant="secondary" icon="swipe" onClick={() => setGone([])}>Start over</Button></div>
       )}
+      {det && <CompanyDetail key={det.id + (det.s ?? "")} id={det.id} start={det.s} onClose={() => setDet(null)} onProfile={onProfile} onPitch={(id) => setPitch(id)} />}
       {pitch && <PitchPlayer id={pitch} ids={list.map((x) => x.d.id)} onClose={() => setPitch(null)} onNext={setPitch} onProfile={onProfile}
         onSave={(id) => { setPitch(null); setGone((g) => [...g, id]); toast(`Saved ${DEALS.find((x) => x.id === id)?.name} · sample`); }}
         onPass={(id) => { setPitch(null); setGone((g) => [...g, id]); toast(`Passed ${DEALS.find((x) => x.id === id)?.name}`); }} />}
@@ -184,7 +192,7 @@ export function PrefsSheet({ prefs, onChange, onClose }: { prefs: Prefs; onChang
 /* Sample company marks (fictional). */
 const MARKS: Record<string, JSX.Element> = {
   lumen: <><circle cx="16" cy="16" r="9" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M16 7v18" stroke="currentColor" strokeWidth="2.4" /><circle cx="16" cy="16" r="3" fill="currentColor" /></>,
-  brightyard: <><path d="M8 24V14l8-6 8 6v10" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" /><path d="M12 24v-5h8v5" fill="none" stroke="currentColor" strokeWidth="2.4" /></>,
+  gridline: <><path d="M8 24V14l8-6 8 6v10" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" /><path d="M12 24v-5h8v5" fill="none" stroke="currentColor" strokeWidth="2.4" /></>,
   tally: <><rect x="8" y="7" width="16" height="18" rx="3" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M12 13h8M12 17h8M12 21h4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></>,
 };
 export function Logo({ id, size = 44 }: { id: string; size?: number }) {

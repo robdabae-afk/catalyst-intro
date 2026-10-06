@@ -9,10 +9,10 @@ const CH = ["Problem", "Product", "Traction", "Team", "Ask"] as const;
 type Ch = (typeof CH)[number];
 const COPY: Record<string, Record<Ch, string>> = {
   lumen: { Problem: "Group conversations move too fast for people with hearing loss. Most just nod along.", Product: "", Traction: "", Team: "", Ask: "" },
-  brightyard: { Problem: "Most greens travel 1,500 miles before they reach a NYC shelf.", Product: "", Traction: "", Team: "", Ask: "" },
+  gridline: { Problem: "Peak-hour power is the dirtiest and most expensive power on the grid.", Product: "", Traction: "", Team: "", Ask: "" },
   tally: { Problem: "Small businesses lose hours every week to paper receipts.", Product: "", Traction: "", Team: "", Ask: "" },
 };
-const TRAC: Record<string, { n: number; label: string }> = { lumen: { n: 1200, label: "on the waitlist" }, brightyard: { n: 12, label: "grocery partners" }, tally: { n: 2100, label: "businesses using it" } };
+const TRAC: Record<string, { n: number; label: string }> = { lumen: { n: 1200, label: "on the waitlist" }, gridline: { n: 40, label: "homes in the pilot" }, tally: { n: 2100, label: "businesses using it" } };
 const CLEAN = new Set(["lumen"]); // clips without burned-in HUD text
 const DUR = 12; // seconds; 6s clip plays at 0.5x
 
