@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import FeaturesApp from "./features/FeaturesApp";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
@@ -52,7 +53,16 @@ import ExitFundMission from "./exitfund/ExitFundMission";
 import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
+import TryOnboarding from "./try/Onboarding";
+import { Portfolio as TryPortfolio } from "./try/Main";
+import { Swipe as TrySwipe, Discover as TryDiscover, Profile as TryProfile, DealPage as TryDeal, Inbox as TryInbox, ThreadPage as TryThread, Notifications as TryNotifications } from "./try/LiveContent";
+import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
+import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
+import { Invest as TryInvest } from "./try/Deal";
+import BrandSheet from "./brand/BrandSheet";
 import { AuthGuard } from "./components/AuthGuard";
+import { adminRoutes } from "./admin/routes";
+import AppLogin from "./admin/Login";
 
 
 const queryClient = new QueryClient();
@@ -71,6 +81,7 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/app" element={<AppLanding />} />
+          <Route path="/app/x/*" element={<XRedirect />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
           <Route path="/app/signup/form" element={<AppSignupForm />} />
@@ -129,7 +140,7 @@ const App = () => (
           <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
           <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
           <Route path="/app/requests" element={<AuthGuard><Requests /></AuthGuard>} />
-          <Route path="/admin" element={<AuthGuard><Admin /></AuthGuard>} />
+          {adminRoutes}
           <Route path="/app/admin" element={<AuthGuard><Admin /></AuthGuard>} />
           <Route path="/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
           <Route path="/app/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
@@ -168,6 +179,28 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
 
+          {/* /app/* logged-in app preview (sample data, local only, noindex) */}
+          <Route path="/app/login" element={<AppLogin />} />
+          <Route path="/app/brand" element={<BrandSheet />} />
+          <Route path="/app/live/*" element={<FeaturesApp />} />
+          <Route path="/app/welcome" element={<TryOnboarding />} />
+          <Route path="/app/welcome/:step" element={<TryOnboarding />} />
+          <Route path="/app/swipe" element={<TrySwipe />} />
+          <Route path="/app/discover" element={<TryDiscover />} />
+          <Route path="/app/holdings" element={<TryPortfolio />} />
+          <Route path="/app/events" element={<LiveEvents />} />
+          <Route path="/app/profile" element={<TryProfile />} />
+          <Route path="/app/deal/:id" element={<TryDeal />} />
+          <Route path="/app/invest/:id" element={<TryInvest />} />
+          <Route path="/app/inbox" element={<TryInbox />} />
+          <Route path="/app/inbox/:id" element={<TryThread />} />
+          <Route path="/app/notifications" element={<TryNotifications />} />
+          <Route path="/app/events/:id" element={<LiveEvent />} />
+          <Route path="/app/account" element={<TrySettings />} />
+          <Route path="/app/account/identity" element={<TrySetIdentity />} />
+          <Route path="/app/account/limit" element={<TrySetLimit />} />
+          <Route path="/app/account/bank" element={<TrySetBank />} />
+          <Route path="/app/account/notifications" element={<TrySetNotifications />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<RdNotFound />} />
         </Routes>
@@ -177,3 +210,7 @@ const App = () => (
 );
 
 export default App;
+
+function XRedirect() {
+  return <Navigate replace to={location.pathname.replace(/^\/app\/x/, "/app/live") + location.search} />;
+}
