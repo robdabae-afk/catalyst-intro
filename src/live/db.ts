@@ -2,10 +2,12 @@
 // when a table is not deployed yet (returns empty / { ok:false, missing:true }).
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isDemoMode } from "@/demo/mode";
+import { demoDb, DEMO_UID } from "@/demo/localDb";
 
 // supabase-js types don't know the app_* tables until types are regenerated
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const db = () => supabase as any;
+const db = () => isDemoMode() ? demoDb as any : supabase as any;
 
 type PgErr = { code?: string; message?: string } | null;
 export const isMissing = (e: PgErr) => !!e && (e.code === "42P01" || e.code === "PGRST205" || e.code === "42883" || e.code === "PGRST202" || /does not exist|schema cache|could not find/i.test(e.message ?? ""));
@@ -16,6 +18,7 @@ export const ID_RE = /^[a-z0-9][a-z0-9-]{1,58}[a-z0-9]$/;
 export const slugify = (s: string) => s.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
 
 export async function currentUid(): Promise<string | null> {
+  if (isDemoMode()) return DEMO_UID;
   const { data } = await supabase.auth.getSession();
   return data.session?.user.id ?? null;
 }
@@ -54,7 +57,9 @@ export async function listQuestions(companyId: string): Promise<Res<QRow[]>> {
 }
 export async function askQuestion(companyId: string, body: string, askerName?: string): Promise<Res> {
   const user_id = await currentUid(); if (!user_id) return { ok: false, error: "Sign in first." };
-  const row: Record<string, unknown> = { user_id, company_id: companyId, body: body.trim().slice(0, 2000) };
+  const text = body.trim();
+  if (!text || text.length > 2000) return { ok: false, error: "Enter a question up to 2,000 characters." };
+  const row: Record<string, unknown> = { user_id, company_id: companyId, body: text };
   if (askerName) row.asker_name = askerName.slice(0, 80);
   let { error } = await db().from("app_questions").insert(row);
   if (error && askerName && /asker_name/.test(error.message ?? "")) ({ error } = await db().from("app_questions").insert({ user_id, company_id: companyId, body: row.body }));
@@ -164,6 +169,7 @@ export async function countRows(table: string): Promise<number | null> {
 
 /* ---------- Media upload: app-media/<uid>/<file> ---------- */
 export async function uploadMedia(file: File): Promise<Res<string>> {
+  if (isDemoMode()) return { ok: true, data: URL.createObjectURL(file) };
   const me = await currentUid(); if (!me) return { ok: false, error: "Sign in first." };
   if (file.size > 50 * 1024 * 1024) return { ok: false, error: "Max file size is 50 MB." };
   if (!/^(image\/(jpeg|png|webp)|video\/(mp4|quicktime))$/.test(file.type)) return { ok: false, error: "Use JPG, PNG, WebP, MP4 or MOV." };
