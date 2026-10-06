@@ -7,7 +7,7 @@ import { api, errText, isSample, useAct, useP, useSession } from "@/lib/platform
 import type { PDeal } from "@/lib/platform/contract";
 import { DemoBanner } from "./Live";
 import { Ic, I, Shell, SubTop, Av, useNoindex } from "./ui";
-import { SwipeAction } from "../brand/Button";
+import { Button, ButtonLink, InvestButton, SwipeAction } from "../brand/Button";
 
 const when = (iso: string) => new Date(iso).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
 const money = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -25,9 +25,9 @@ function NeedSignIn({ what }: { what: string }) {
       {isSample ? (
         <>
           <p className="sub" style={{ fontSize: 13, margin: "4px 0 10px" }}>Demo mode: signs you in as a local sample member.</p>
-          <button className="btn" onClick={() => act.mutate(undefined)} disabled={act.isPending}>Continue as sample member</button>
+          <Button onClick={() => act.mutate(undefined)} loading={act.isPending} disabled={act.isPending}>Continue as sample member</Button>
         </>
-      ) : <div style={{ marginTop: 10 }}><Link className="btn" to="/app/login">Sign in</Link></div>}
+      ) : <div style={{ marginTop: 10 }}><ButtonLink to="/app/login" icon="profile">Sign in</ButtonLink></div>}
     </div>
   );
 }
@@ -124,7 +124,7 @@ export function Swipe() {
         {deals.data && list.length === 0 && <p className="sub">No preview listings yet.</p>}
         {deals.data && list.length > 0 && !d && (
           <div style={box}><b>You're all caught up.</b><p className="sub" style={{ fontSize: 13 }}>Saved deals show on Discover.</p>
-            <button className="btn ghost" onClick={() => setI(0)}>Start over</button></div>
+            <Button variant="ghost" icon="back" onClick={() => setI(0)}>Start over</Button></div>
         )}
         {d && (
           <div style={box}>
@@ -135,7 +135,7 @@ export function Swipe() {
             <div className="num" style={{ fontSize: 12 }}>{d.sector} · {d.city} · {i + 1}/{list.length}</div>
             <div style={{ display: "flex", gap: 14, marginTop: 18, justifyContent: "center", alignItems: "center" }}>
               <SwipeAction kind="pass" onClick={() => setI(i + 1)} />
-              <Link className="csw csw-info" to={`/app/deal/${d.slug || d.id}`} aria-label="Details"><Ic d={I.forward} /></Link>
+              <Link className="csw csw-info" to={`/app/deal/${d.slug || d.id}`} aria-label="Details"><Ic d={I.forward} size={22} /></Link>
               {session && (
                 <SwipeAction kind="save" big disabled={save.isPending} aria-label={set.has(d.id) ? "Saved" : "Save"}
                   onClick={async () => { if (!set.has(d.id)) await save.mutateAsync(d.id).catch(() => {}); setI(i + 1); }} />
@@ -186,7 +186,7 @@ export function DealPage() {
             <div className="sec"><h2>About</h2><p style={{ whiteSpace: "pre-wrap" }}>{d.about}</p></div>
             {d.traction.length > 0 && <div className="sec"><h2>Traction (company-reported)</h2>{d.traction.map((t, i) => <p key={i}>{t}</p>)}</div>}
             {d.useOfFunds.length > 0 && <div className="sec"><h2>Use of funds</h2>{d.useOfFunds.map((t, i) => <p key={i}>{t}</p>)}</div>}
-            <div style={box}><b>Investing isn't open yet</b><p className="sub" style={{ fontSize: 13 }}>Registration pending. Save this deal to hear when it opens.</p></div>
+            <div style={box}><b>Investing isn't open yet</b><p className="sub" style={{ fontSize: 13 }}>Registration pending. Save this deal to hear when it opens.</p><div style={{ marginTop: 10 }}><InvestButton disabled block>Investing opens soon</InvestButton></div></div>
 
             <div className="sec">
               <h2>Questions</h2>
@@ -206,7 +206,7 @@ export function DealPage() {
                 <form onSubmit={submit} style={{ display: "flex", gap: 8 }}>
                   <input value={text} onChange={(e) => setText(e.target.value)} maxLength={1000} placeholder="Ask a public question" aria-label="Ask a question"
                     style={{ flex: 1, border: "1px solid var(--line)", borderRadius: 12, padding: "10px 14px" }} />
-                  <button className="btn" disabled={!text.trim() || ask.isPending}>Ask</button>
+                  <Button type="submit" icon="send" loading={ask.isPending} disabled={!text.trim() || ask.isPending}>Ask</Button>
                 </form>
               ) : <NeedSignIn what="ask a question" />}
               {ask.error && <p role="alert" className="sub" style={{ fontSize: 12 }}>{errText(ask.error)}</p>}
@@ -356,7 +356,7 @@ export function Profile() {
               <label className="lbl" style={{ display: "block", marginTop: 10 }}>City<input style={inp} value={f.city} maxLength={80} onChange={(e) => setF({ ...f, city: e.target.value })} /></label>
               <label className="lbl" style={{ display: "block", marginTop: 10 }}>Bio<textarea style={{ ...inp, minHeight: 80 }} value={f.bio} maxLength={500} onChange={(e) => setF({ ...f, bio: e.target.value })} /></label>
               <label className="lbl" style={{ display: "block", marginTop: 10 }}>Interests (comma separated)<input style={inp} value={f.interests} onChange={(e) => setF({ ...f, interests: e.target.value })} /></label>
-              <button className="btn" style={{ marginTop: 14 }} disabled={upd.isPending}>{upd.isPending ? "Saving…" : "Save profile"}</button>
+              <div style={{ marginTop: 14 }}><Button type="submit" loading={upd.isPending} disabled={upd.isPending}>Save profile</Button></div>
               {upd.isSuccess && <span className="sub" style={{ marginLeft: 10, fontSize: 12 }}>Saved</span>}
               {upd.error && <p role="alert" className="sub" style={{ fontSize: 12 }}>{errText(upd.error)}</p>}
             </form>
@@ -366,7 +366,7 @@ export function Profile() {
               <Link className="it" to="/app/events">My events<span>→</span></Link>
               {me.data.role === "admin" && <Link className="it" to="/admin">Admin<span>→</span></Link>}
             </div>
-            <button className="btn ghost" style={{ marginTop: 16 }} disabled={out.isPending} onClick={() => out.mutate(undefined)}>Sign out</button>
+            <div style={{ marginTop: 16 }}><Button variant="ghost" loading={out.isPending} disabled={out.isPending} onClick={() => out.mutate(undefined)}>Sign out</Button></div>
           </>
         )}
       </div>
