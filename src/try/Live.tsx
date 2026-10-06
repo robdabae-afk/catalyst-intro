@@ -135,7 +135,7 @@ export function EventPage() {
     <div className="cx"><div className="page" style={{ paddingBottom: 40 }}>
       <DemoBanner />
       <div className="evhero photo" style={{ backgroundImage: e?.coverUrl ? `url(${e.coverUrl})` : undefined, background: e?.coverUrl ? undefined : "#000", borderRadius: 0, height: 260 }}><div className="ov" />
-        <Link to="/app/events" className="ic" aria-label="Back" style={{ position: "absolute", top: 16, left: 16, background: "#fff" }}><Ic d={I.back} size={18} /></Link>
+        <Link to="/app/events" className="ic" aria-label="Back" style={{ position: "absolute", top: 16, left: 16, background: "#fff", color: "#0b0b0b", zIndex: 1 }}><Ic d={I.back} size={18} /></Link>
         {e && <div className="tx"><span className="dt" style={{ color: "#ddd" }}>{fmt(e.startsAt)}</span><b style={{ display: "block", fontSize: 28, letterSpacing: "-.03em", marginTop: 4 }}>{e.title}</b></div>}
       </div>
       <div style={{ padding: "6px 20px" }}>
