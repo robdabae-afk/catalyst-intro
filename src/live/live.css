@@ -207,10 +207,10 @@
 .lv-fine.pad{padding:4px 18px 18px}
 .lv-list{list-style:none;margin:0;padding:0 14px;display:grid;gap:8px}
 .lv-li{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;animation:lvrise .5s cubic-bezier(.2,.8,.2,1) both;transition:border-color .2s,transform .15s}
-.lv-li.btn{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;cursor:pointer;animation:lvrise .5s cubic-bezier(.2,.8,.2,1) both;transition:border-color .2s,transform .15s}
-.lv-li:hover,.lv-li.btn:hover{border-color:var(--ink)}
-.lv-li.btn:active{transform:scale(.98)}
-.lv-li.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.lv-li.lv-libtn{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:12px;padding:10px;border:1px solid var(--line);border-radius:12px;cursor:pointer;animation:lvrise .5s cubic-bezier(.2,.8,.2,1) both;transition:border-color .2s,transform .15s}
+.lv-li:hover,.lv-li.lv-libtn:hover{border-color:var(--ink)}
+.lv-li.lv-libtn:active{transform:scale(.98)}
+.lv-li.lv-libtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .lv-thumb{width:48px;height:48px;border-radius:9px;flex:none}
 .lv-thumb.round{border-radius:50%}
 .lv-thumb.sm{width:36px;height:36px}
@@ -334,7 +334,7 @@
 .lv-extra button:active{transform:scale(.95)}
 .lv-extra button.on svg{animation:lvpop .32s}
 .lv-li-r svg{transition:transform .2s}
-.lv-li.btn:hover .lv-li-r svg{transform:translateX(3px)}
+.lv-li.lv-libtn:hover .lv-li-r svg{transform:translateX(3px)}
 .lv-note-ic svg{transition:transform .25s}
 .lv-note:hover .lv-note-ic svg{transform:rotate(-12deg) scale(1.1)}
 .lv-send{width:40px;height:40px}

@@ -63,6 +63,15 @@ export default function Me() {
         <div className="mono dim">Account</div>
         <p style={{ fontSize: 14, marginTop: 8, lineHeight: 1.5 }}>Investing opens soon. Portal registration is pending, so there's nothing to fund yet and no payment info is collected.</p>
         <Link to={path("invite")} className="btn ghost" style={{ width: "100%", marginTop: 14 }}>Invite friends</Link>
+        <div className="me-links">
+          <Link to={path("portfolio")} className="btn ghost">Portfolio</Link>
+          <Link to={path("watchlist")} className="btn ghost">Watchlist</Link>
+          <Link to={path("events")} className="btn ghost">Events</Link>
+          <Link to={path("ticket")} className="btn ghost">Event pass</Link>
+          <Link to={path("people")} className="btn ghost">People</Link>
+          <Link to={path("learn")} className="btn ghost">Learn about Reg CF</Link>
+          {(sessionStorage.getItem("cat-role") === "admin" || new URLSearchParams(location.search).get("role") === "admin") && <Link to={path("admin")} className="btn ghost">Admin</Link>}
+        </div>
       </aside>
     </div>
   );

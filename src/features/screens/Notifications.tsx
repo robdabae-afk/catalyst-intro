@@ -34,7 +34,7 @@ export default function Notifications() {
   const n = unreadCount(s);
   const list = NOTIFS.filter((x) => s.prefs[x.kind] && (filter === "all" || x.kind === filter));
   const days = ["Today", "Yesterday", "Earlier"] as const;
-  const go = (x: Notif) => { setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/app/x/${x.to}`); };
+  const go = (x: Notif) => { setState((st) => ({ ...st, readIds: [...new Set([...st.readIds, x.id])] })); nav(`/app/live/${x.to}`); };
 
   return (
     <div style={{ maxWidth: 720 }}>

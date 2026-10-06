@@ -89,7 +89,7 @@ export function InboxView({ onOpen }: { onOpen: (id: string) => void }) {
       <Top l="INBOX" r={`${THREADS.filter((t) => t.unread).length} UNREAD`} />
       <ul className="lv-list">
         {THREADS.map((t, k) => (
-          <li key={t.id}><button type="button" className="lv-li btn" style={{ animationDelay: `${k * 80}ms` }} onClick={() => onOpen(t.id)}>
+          <li key={t.id}><button type="button" className="lv-li lv-libtn" style={{ animationDelay: `${k * 80}ms` }} onClick={() => onOpen(t.id)}>
             <LiveImage src={t.d.img} intro={false} className="lv-thumb round" />
             <div className="lv-li-m"><strong>{t.who}</strong><span className="lv-snip">{t.last}</span></div>
             <div className="lv-li-r"><span className="lv-mono dim">{t.t}</span>{t.unread ? <i className="lv-dot" aria-label="unread" /> : <Icon name="forward" size={14} />}</div>
@@ -103,7 +103,7 @@ export function InboxView({ onOpen }: { onOpen: (id: string) => void }) {
 export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) {
   const t = THREADS.find((x) => x.id === id) ?? THREADS[0];
   const [msgs, setMsgs] = useState([
-    { me: true, txt: "What are gross margins per can?" },
+    { me: true, txt: "What are gross margins per unit?" },
     { me: false, txt: t.last },
     { me: false, txt: "Sample answer: around 60% at current volume." },
   ]);

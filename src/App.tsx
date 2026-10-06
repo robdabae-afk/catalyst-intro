@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import FeaturesApp from "./features/FeaturesApp";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
@@ -60,7 +60,6 @@ import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as Try
 import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
 import { Invest as TryInvest } from "./try/Deal";
 import BrandSheet from "./brand/BrandSheet";
-import LivePage from "./live/LivePage";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
@@ -82,7 +81,7 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/app" element={<AppLanding />} />
-          <Route path="/app/x/*" element={<FeaturesApp />} />
+          <Route path="/app/x/*" element={<XRedirect />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
           <Route path="/app/signup/form" element={<AppSignupForm />} />
@@ -183,7 +182,7 @@ const App = () => (
           {/* /app/* logged-in app preview (sample data, local only, noindex) */}
           <Route path="/app/login" element={<AppLogin />} />
           <Route path="/app/brand" element={<BrandSheet />} />
-          <Route path="/app/live" element={<LivePage />} />
+          <Route path="/app/live/*" element={<FeaturesApp />} />
           <Route path="/app/welcome" element={<TryOnboarding />} />
           <Route path="/app/welcome/:step" element={<TryOnboarding />} />
           <Route path="/app/swipe" element={<TrySwipe />} />
@@ -211,3 +210,7 @@ const App = () => (
 );
 
 export default App;
+
+function XRedirect() {
+  return <Navigate replace to={location.pathname.replace(/^\/app\/x/, "/app/live") + location.search} />;
+}
