@@ -12,6 +12,7 @@ export function LiveImage({ src, hotspots = [], children, intro = true, classNam
   useParallax(ref, reduced);
   const [open, setOpen] = useState<number | null>(null);
   const [scanKey] = useState(() => Math.random());
+  useEffect(() => { if (open === null) return; const c = () => setOpen(null); addEventListener("scroll", c, true); return () => removeEventListener("scroll", c, true); }, [open]);
   return (
     <div ref={ref} className={`lv-img ${reduced ? "rm" : ""} ${className}`} style={style} onClick={() => setOpen(null)}>
       <div className="lv-img-in"><img src={src} alt="" draggable={false} /></div>

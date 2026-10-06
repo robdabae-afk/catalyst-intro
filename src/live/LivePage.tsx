@@ -47,6 +47,8 @@ export default function LivePage() {
           <Phone label="09 · PROFILE"><ProfileView /></Phone>
           <Phone label="10 · ONBOARDING"><OnboardingView /></Phone>
           <Phone label="11 · ADMIN"><AdminView /></Phone>
+          <Phone label="12 · COMPANY PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "stoop" }} /></Phone>
+          <Phone label="13 · PERSON PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
         </div>
       </div>
     );
@@ -78,7 +80,7 @@ export default function LivePage() {
       {!deal && !thread && (
         <nav className="lv-tabs" aria-label="Sections">
           {TABS.map(([t, ic, l]) => (
-            <button key={t} type="button" aria-current={tab === t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}><Icon name={ic} size={22} /><span>{l}</span></button>
+            <button key={t} type="button" aria-current={tab === t} className={tab === t ? "on" : ""} onClick={() => setTab(t)}><span key={tab === t ? "on" : "off"} className="lv-tabic"><Icon name={ic} size={22} /></span><i className="lv-tabbar" aria-hidden /><span>{l}</span></button>
           ))}
         </nav>
       )}
@@ -90,7 +92,7 @@ function Phone({ label, children }: { label: string; children: React.ReactNode }
   return (
     <figure className="lv-phone">
       <figcaption className="lv-mono dim">{label}</figcaption>
-      <div className="lv-frame"><div className="lv-notch" /><div className="lv-scr">{children}</div></div>
+      <div className="lv-frame"><div className="lv-notch" /><div className="lv-scr"><div className="lv-scr-in">{children}</div></div></div>
     </figure>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Icon, type IconName } from "@/brand/icons";
-import { Button, Chip } from "@/brand/Button";
+import { Button, Chip, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, usd } from "./data";
 import { LiveImage, Sparkline, Ticker, useClock } from "./parts";
 import { useCountUp, useInView, useReducedMotion } from "./hooks";
@@ -92,7 +92,7 @@ export function InboxView({ onOpen }: { onOpen: (id: string) => void }) {
           <li key={t.id}><button type="button" className="lv-li btn" style={{ animationDelay: `${k * 80}ms` }} onClick={() => onOpen(t.id)}>
             <LiveImage src={t.d.img} intro={false} className="lv-thumb round" />
             <div className="lv-li-m"><strong>{t.who}</strong><span className="lv-snip">{t.last}</span></div>
-            <div className="lv-li-r"><span className="lv-mono dim">{t.t}</span>{t.unread && <i className="lv-dot" aria-label="unread" />}</div>
+            <div className="lv-li-r"><span className="lv-mono dim">{t.t}</span>{t.unread ? <i className="lv-dot" aria-label="unread" /> : <Icon name="forward" size={14} />}</div>
           </button></li>
         ))}
       </ul>
@@ -117,7 +117,7 @@ export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) 
   return (
     <div className="lv-thread">
       <header className="lv-thread-h">
-        {onBack && <button type="button" className="lv-back" aria-label="Back" onClick={onBack}><Icon name="back" size={20} /></button>}
+        {onBack && <IconButton icon="back" label="Back" variant="ghost" onClick={onBack} />}
         <LiveImage src={t.d.img} intro={false} className="lv-thumb round sm" />
         <div><strong>{t.who}</strong><div className="lv-mono dim"><span className="lv-live" /> FOUNDER · SAMPLE</div></div>
       </header>
@@ -127,7 +127,7 @@ export function ThreadView({ id, onBack }: { id: string; onBack?: () => void }) 
       </div>
       <form className="lv-compose" onSubmit={(e) => { e.preventDefault(); send(); }}>
         <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Ask the founder…" aria-label="Message" />
-        <button type="submit" className="lv-sendbtn" aria-label="Send" disabled={!draft.trim()}><Icon name="send" size={18} /></button>
+        <IconButton type="submit" icon="send" label="Send" variant="primary" className="lv-send" disabled={!draft.trim()} />
       </form>
     </div>
   );

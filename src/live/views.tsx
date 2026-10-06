@@ -1,6 +1,8 @@
 import { useRef, useState, type PointerEvent as RPE } from "react";
 
 import { Icon } from "@/brand/icons";
+import { SaveToggle, Burst } from "./micro";
+import { ProfileFeed, ProfileSheet, Toast, type ProfRef } from "./profiles";
 import { SwipeAction, RsvpButton, InvestButton, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, type LiveDeal, type LiveEvent } from "./data";
 import { CatIcon, LiveImage, RaiseHud, SampleTag, Sparkline, useClock } from "./parts";
@@ -20,8 +22,10 @@ export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
   const clock = useClock();
   const d = DEALS[i % DEALS.length], next = DEALS[(i + 1) % DEALS.length];
 
+  const [burst, setBurst] = useState<{ k: "save" | "pass" | null; n: number }>({ k: null, n: 0 });
   const commit = (dir: 1 | -1) => {
     setFly(dir);
+    setBurst((b) => ({ k: dir > 0 ? "save" : "pass", n: b.n + 1 }));
     setLog((l) => (dir > 0 ? { ...l, save: l.save + 1 } : { ...l, pass: l.pass + 1 }));
     setTimeout(() => { setI((v) => v + 1); setDx(0); setDy(0); setFly(0); }, reduced ? 0 : 320);
   };
@@ -78,6 +82,7 @@ export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
           </LiveImage>
         </article>
       </div>
+      <Burst kind={burst.k} id={burst.n} />
       <div className="lv-actions">
         <SwipeAction kind="pass" onClick={() => commit(-1)} />
         <SwipeAction kind="info" onClick={() => onOpen(d.id)} />
@@ -105,7 +110,7 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
         <div className="lv-hero-top">
           {onBack ? <IconButton icon="back" label="Back" className="lv-glass" onClick={onBack} /> : <span />}
           <SampleTag />
-          <IconButton icon={saved ? "saved" : "save"} label={saved ? "Saved" : "Save"} aria-pressed={saved} className="lv-glass" onClick={() => setSaved(!saved)} />
+          <SaveToggle on={saved} onChange={setSaved} className="lv-glass" />
         </div>
         <div className="lv-hero-tele lv-mono"><span>REC · {clock}</span><span>TAP ◎ TO INSPECT</span></div>
       </LiveImage>
@@ -133,14 +138,20 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
 }
 
 /* ---------- DISCOVER GRID ---------- */
-export function DiscoverView({ onOpen }: { onOpen: (id: string) => void }) {
+export function DiscoverView({ onOpen, initial = null }: { onOpen: (id: string) => void; initial?: ProfRef | null }) {
   const [ref, seen] = useInView<HTMLDivElement>();
+  const [prof, setProf] = useState<ProfRef | null>(initial);
+  const [toast, setToast] = useState<{ t: string; n: number } | null>(null);
+  const say = (t: string) => setToast((o) => ({ t, n: (o?.n ?? 0) + 1 }));
   return (
     <div className="lv-disc">
       <header className="lv-top"><div className="lv-mono">DISCOVER / GRID</div><div className="lv-mono dim">{DEALS.length} SAMPLE DEALS</div></header>
       <div ref={ref} className={`lv-grid${seen ? " in" : ""}`}>
         {DEALS.map((d, k) => <Tile key={k} d={d} k={k} onOpen={onOpen} big={k === 0} />)}
       </div>
+      <ProfileFeed onOpen={setProf} toast={say} />
+      {prof && <ProfileSheet key={prof.kind + prof.id} r={prof} onClose={() => setProf(null)} onOpen={setProf} toast={say} />}
+      <Toast msg={toast} />
     </div>
   );
 }
