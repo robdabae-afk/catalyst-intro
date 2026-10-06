@@ -198,7 +198,7 @@ export default function Landing() {
         <details><summary>Can I invest through Catalyst today?</summary><p>Not yet. Our funding portal registration is pending, and Catalyst does not offer or facilitate investments today.</p></details>
         <details><summary>Do I need to be accredited?</summary><p>Regulation Crowdfunding lets non-accredited investors participate, within annual limits. We'll share the details at launch.</p></details>
         <details><summary>Is startup investing risky?</summary><p>Yes. Most startups fail, and these investments are hard to sell. You could lose everything you put in.</p></details>
-        <details><summary>Who's building Catalyst?</summary><p>Rob Guthy (CEO) and Stephen Michael (co-founder). <Link to="/about">More about us</Link>.</p></details>
+        <details><summary>Who's building Catalyst?</summary><p><a href="https://www.linkedin.com/in/rob-g-147206169/" target="_blank" rel="noopener noreferrer">Rob Guthy</a> (CEO) and <a href="https://www.linkedin.com/in/stephennmichael/" target="_blank" rel="noopener noreferrer">Stephen Michael</a> (co-founder). <Link to="/about">More about us</Link>.</p></details>
       </section>
     </Shell>
   );
