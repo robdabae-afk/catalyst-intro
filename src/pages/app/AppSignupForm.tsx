@@ -308,7 +308,7 @@ export default function AppSignupForm() {
   };
 
   const goBack = () => {
-    if (step === 1) return navigate(isAppShell() || new URLSearchParams(location.search).get("from") === "app" ? "/app/live/welcome" : "/");
+    if (step === 1) return navigate(isAppShell() || new URLSearchParams(location.search).get("from") === "app" ? "/welcome" : "/intro");
     setStep((s) => s - 1);
   };
 
@@ -419,7 +419,7 @@ export default function AppSignupForm() {
         console.warn("Avatar upload skipped:", err);
       }
 
-      navigate(isAppShell() || new URLSearchParams(location.search).get("from") === "app" ? "/app/live" : "/onboarding");
+      navigate("/");
     } catch (err: any) {
       toast({
         variant: "destructive",

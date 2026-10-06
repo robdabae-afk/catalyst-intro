@@ -4,7 +4,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import FeaturesApp from "./features/FeaturesApp";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { isDemoMode } from "@/demo/mode";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
@@ -54,13 +55,6 @@ import ExitFundMission from "./exitfund/ExitFundMission";
 import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
-import TryOnboarding from "./try/Onboarding";
-import { Portfolio as TryPortfolio } from "./try/Main";
-import { Swipe as TrySwipe, Discover as TryDiscover, Profile as TryProfile, DealPage as TryDeal, Inbox as TryInbox, ThreadPage as TryThread, Notifications as TryNotifications } from "./try/LiveContent";
-import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
-import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
-import { Invest as TryInvest } from "./try/Deal";
-import BrandSheet from "./brand/BrandSheet";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
@@ -73,16 +67,17 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={isDemoMode() ? "/demo" : undefined}>
         <Routes>
-          {/* Platform marketing/landing — homepage */}
-          <Route path="/" element={<Landing />} />
+          {/* Marketing landing (the production app lives at "/") */}
+          <Route path="/intro" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/community" element={<Community />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/app" element={<AppLanding />} />
-          <Route path="/app/x/*" element={<XRedirect />} />
+          <Route path="/app/x/*" element={<RootRedirect from="/app/x" />} />
+          <Route path="/app/live/*" element={<RootRedirect from="/app/live" />} />
           <Route path="/app/signup" element={<AppSignup />} />
           <Route path="/signup" element={<AppSignup />} />
           <Route path="/i/:code" element={<InviteLanding />} />
@@ -90,7 +85,7 @@ const App = () => (
           <Route path="/signup/form" element={<AppSignupForm />} />
 
           {/* Event check-in */}
-          <Route path="/events" element={<EventSignIn />} />
+          <Route path="/app/events" element={<EventSignIn />} />
           <Route path="/event" element={<EventSignIn />} />
 
           {/* Public routes */}
@@ -132,7 +127,6 @@ const App = () => (
           <Route path="/app/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
           <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
-          <Route path="/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
           <Route path="/app/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
           <Route path="/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
           <Route path="/app/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
@@ -181,30 +175,10 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/app/onboarding" element={<Onboarding />} />
 
-          {/* /app/* logged-in app preview (sample data, local only, noindex) */}
           <Route path="/app/login" element={<AppLogin />} />
-          <Route path="/app/brand" element={<BrandSheet />} />
-          <Route path="/app/live/*" element={<FeaturesApp />} />
-          <Route path="/app/welcome" element={<TryOnboarding />} />
-          <Route path="/app/welcome/:step" element={<TryOnboarding />} />
-          <Route path="/app/swipe" element={<TrySwipe />} />
-          <Route path="/app/discover" element={<TryDiscover />} />
-          <Route path="/app/holdings" element={<TryPortfolio />} />
-          <Route path="/app/events" element={<LiveEvents />} />
-          <Route path="/app/profile" element={<TryProfile />} />
-          <Route path="/app/deal/:id" element={<TryDeal />} />
-          <Route path="/app/invest/:id" element={<TryInvest />} />
-          <Route path="/app/inbox" element={<TryInbox />} />
-          <Route path="/app/inbox/:id" element={<TryThread />} />
-          <Route path="/app/notifications" element={<TryNotifications />} />
-          <Route path="/app/events/:id" element={<LiveEvent />} />
-          <Route path="/app/account" element={<TrySettings />} />
-          <Route path="/app/account/identity" element={<TrySetIdentity />} />
-          <Route path="/app/account/limit" element={<TrySetLimit />} />
-          <Route path="/app/account/bank" element={<TrySetBank />} />
-          <Route path="/app/account/notifications" element={<TrySetNotifications />} />
+          {/* Production app at the root: /, /swipe, /search, /inbox, /company/:id, /events, /portfolio ... */}
+          <Route path="/*" element={<FeaturesApp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<RdNotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
@@ -213,6 +187,8 @@ const App = () => (
 
 export default App;
 
-function XRedirect() {
-  return <Navigate replace to={location.pathname.replace(/^\/app\/x/, "/app/live") + location.search} />;
+function RootRedirect({ from }: { from: string }) {
+  const loc = useLocation();
+  const rest = loc.pathname.slice(from.length) || "/";
+  return <Navigate replace to={(rest.startsWith("/") ? rest : `/${rest}`) + loc.search + loc.hash} />;
 }

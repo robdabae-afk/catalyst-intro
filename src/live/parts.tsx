@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Icon } from "@/brand/icons";
 import { type Hotspot, type LiveDeal, usd } from "./data";
-import { useCountUp, useInView, useParallax, useReducedMotion, useTicker } from "./hooks";
+import { useCountUp, useInView, useParallax, useReducedMotion } from "./hooks";
 
-export const SampleTag = ({ dark, label = "SAMPLE DEAL" }: { dark?: boolean; label?: string }) => <span className={`lv-pill${dark ? " dk" : ""}`}><i />{label}</span>;
+/** Status pill (e.g. "OPENS SOON"). No sample labels on real companies. */
+export const SampleTag = ({ dark, label = "OPENS SOON" }: { dark?: boolean; label?: string }) => <span className={`lv-pill${dark ? " dk" : ""}`}><i />{label}</span>;
 
 /* Image with Ken Burns drift, pointer/gyro parallax, scan-line intro and hotspots. */
 export function LiveImage({ src, hotspots = [], children, intro = true, className = "", style }: { src: string; hotspots?: Hotspot[]; children?: ReactNode; intro?: boolean; className?: string; style?: CSSProperties }) {
@@ -15,7 +16,7 @@ export function LiveImage({ src, hotspots = [], children, intro = true, classNam
   useEffect(() => { if (open === null) return; const c = () => setOpen(null); addEventListener("scroll", c, true); return () => removeEventListener("scroll", c, true); }, [open]);
   return (
     <div ref={ref} className={`lv-img ${reduced ? "rm" : ""} ${className}`} style={style} onClick={() => setOpen(null)}>
-      <div className="lv-img-in"><img src={src} alt="" draggable={false} /></div>
+      <div className="lv-img-in">{src ? <img src={src} alt="" draggable={false} /> : <div className="lv-img-empty" aria-hidden />}</div>
       <div className="lv-grain" />
       {intro && !reduced && <div key={scanKey} className="lv-scan"><span /><b className="tl" /><b className="tr" /><b className="bl" /><b className="br" /></div>}
       {hotspots.map((h, i) => (
@@ -32,6 +33,7 @@ export function LiveImage({ src, hotspots = [], children, intro = true, classNam
 }
 
 export function Sparkline({ data, go, w = 120, h = 32 }: { data: number[]; go: boolean; w?: number; h?: number }) {
+  if (data.length < 2) return null;
   const max = Math.max(...data), min = Math.min(...data);
   const pts = data.map((v, i) => [(i / (data.length - 1)) * w, h - 3 - ((v - min) / (max - min || 1)) * (h - 6)]);
   const d = pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join("");
@@ -45,17 +47,9 @@ export function Sparkline({ data, go, w = 120, h = 32 }: { data: number[]; go: b
   );
 }
 
-/* Investor ticker with +1 pop. */
+/* Static count (no simulated live increments). */
 export function Ticker({ start, label = "INVESTORS" }: { start: number; label?: string }) {
-  const reduced = useReducedMotion();
-  const [n, pop] = useTicker(start, reduced);
-  return (
-    <span className="lv-tick">
-      <span className="lv-live" aria-hidden />
-      <b aria-live="polite">{n.toLocaleString("en-US")}</b> {label}
-      {pop > 0 && <i key={pop} className="lv-plus">+1</i>}
-    </span>
-  );
+  return <span className="lv-tick"><b>{start.toLocaleString("en-US")}</b> {label}</span>;
 }
 
 /* Raise block: no live raise numbers or ticker. Investing is not open yet. */
@@ -65,14 +59,14 @@ export function RaiseHud({ d, dark, compact }: { d: LiveDeal; dark?: boolean; co
       <div className="lv-hud-top">
         <div>
           <div className="lv-big lv-soon">Investing opens soon</div>
-          <div className="lv-mono dim">SAVE IT AND WE'LL TELL YOU · SAMPLE TERMS</div>
+          <div className="lv-mono dim">SAVE IT AND WE'LL TELL YOU</div>
         </div>
       </div>
       {!compact && (
         <div className="lv-terms">
-          <div><em>VAL CAP</em><b>{d.cap}</b></div>
-          <div><em>MIN</em><b>{d.min}</b></div>
-          <div><em>INSTRUMENT</em><b>SAFE</b></div>
+          <div><em>VAL CAP</em><b>{d.cap || "TBA"}</b></div>
+          <div><em>MIN</em><b>{d.min || "TBA"}</b></div>
+          <div><em>INSTRUMENT</em><b>{(d as LiveDeal & { instrument?: string }).instrument || "TBA"}</b></div>
         </div>
       )}
     </div>

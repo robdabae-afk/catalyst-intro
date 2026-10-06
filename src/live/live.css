@@ -690,3 +690,27 @@ p.pp-sub{line-height:1.35;max-width:300px}
 .lv .cd-k{display:none}
 
 .lv-topic{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:99px;color:var(--ink)}
+
+/* ---- production: empty media + empty states + admin forms ---- */
+.lv-img-empty { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, #111 0 14px, #161616 14px 28px); }
+.lv-empty { display: grid; place-items: center; gap: 10px; text-align: center; padding: 48px 24px; color: var(--lv-dim, #8a8a8a); }
+.lv-empty strong { color: inherit; font-size: 17px; color: #fff; }
+.lv-empty p { margin: 0; max-width: 30ch; line-height: 1.45; }
+.lv-qa { display: grid; gap: 12px; }
+.lv-qa-item { border-top: 1px solid rgba(255,255,255,.12); padding-top: 12px; display: grid; gap: 6px; }
+.lv-qa-item .a { border-left: 2px solid #fff; padding-left: 10px; }
+.lv-form { display: grid; gap: 10px; padding: 12px 16px; }
+.lv-form label { display: grid; gap: 4px; font: 500 11px/1.2 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: #9a9a9a; }
+.lv-form input, .lv-form textarea, .lv-form select { font: 400 15px/1.4 inherit; color: #fff; background: #0c0c0c; border: 1px solid rgba(255,255,255,.18); border-radius: 10px; padding: 10px 12px; width: 100%; box-sizing: border-box; }
+.lv-form textarea { min-height: 84px; resize: vertical; }
+.lv-form textarea.json { font: 12px/1.45 "JetBrains Mono", ui-monospace, monospace; min-height: 180px; }
+.lv-form input:focus-visible, .lv-form textarea:focus-visible, .lv-form select:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.lv-form .err { color: #ff6b6b; font-size: 13px; }
+.lv-form .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.lv-adm-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid rgba(255,255,255,.1); }
+.lv-adm-row .m { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.lv-adm-row .m strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lv-status { font: 500 10px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .08em; border: 1px solid currentColor; border-radius: 99px; padding: 4px 7px; text-transform: uppercase; }
+.lv-status.published { background: #fff; color: #000; border-color: #fff; }
+.lv-status.pending { color: #fff; }
+.lv-status.draft, .lv-status.archived { color: #777; }

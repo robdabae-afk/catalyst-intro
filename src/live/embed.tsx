@@ -1,10 +1,11 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Icon } from "@/brand/icons";
 import "@/brand/brand.css";
 import "./live.css";
-import { DEALS } from "./data";
-import { COMPANIES } from "./company";
+import { COMPANIES as CATALOG, DEALS, useCatalog } from "@/features/catalog";
+import { requireAccount } from "@/features/sync";
+import { supabase } from "@/integrations/supabase/client";
 import { CompanyDetail } from "./detail";
 import { PitchPlayer } from "./pitch";
 import { setState } from "@/features/store";
@@ -12,30 +13,32 @@ import { ProfileSheet, type ProfRef } from "./profiles";
 import { DiscoverView, EventsView, SwipeView } from "./views";
 import { AdminView, InboxView, PortfolioView, ThreadView } from "./screens";
 
-/* Live (sample) screens mounted inside the unified Catalyst shell at /app/live. */
-const BASE = "/app/live";
+/* Production screens mounted inside the Catalyst app shell at the site root. */
+const BASE = "";
 
 function Frame({ children, full }: { children: ReactNode; full?: boolean }) {
   return <div className={`lv lv-mob lv-embed${full ? " full" : ""}`}><div className="lv-screen">{children}</div></div>;
 }
 
-export const isLiveDeal = (id: string) => !!COMPANIES[id];
+export const isLiveDeal = (id: string) => CATALOG.some((c) => c.id === id);
 
 export function LiveSwipe() {
+  useCatalog();
   const nav = useNavigate();
   return <Frame full><SwipeView onOpen={(id) => nav(`${BASE}/company/${id}`)} topRight={<Link to={`${BASE}/watchlist`} className="lv-topic" aria-label="Watchlist"><Icon name="saved" size={18} /></Link>} /></Frame>;
 }
 
 export function LiveCompany({ id }: { id: string }) {
+  useCatalog();
   const nav = useNavigate();
   const [pitch, setPitch] = useState<string | null>(null);
   const [prof, setProf] = useState<ProfRef | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const toast = (m: string) => { setMsg(m); window.setTimeout(() => setMsg(null), 2200); };
   const name = (d: string) => DEALS.find((x) => x.id === d)?.name ?? "Company";
-  const save = (d: string) => { setState((st) => ({ ...st, watch: { ...st.watch, [d]: st.watch[d] ?? { raise: true, closing: true, update: true } } })); setPitch(null); toast(`${name(d)} added to watchlist · sample`); };
-  const pass = (d: string) => { const ids = DEALS.map((x) => x.id); const nx = ids[(ids.indexOf(d) + 1) % ids.length]; toast(`Passed on ${name(d)} · sample`); setPitch(nx === d ? null : nx); };
-  const back = () => (window.history.length > 1 ? nav(-1) : nav(BASE));
+  const save = (d: string) => { if (!requireAccount()) return; setState((st) => ({ ...st, watch: { ...st.watch, [d]: st.watch[d] ?? { raise: true, closing: true, update: true } } })).then((ok) => { if (ok) { setPitch(null); toast(`${name(d)} added to watchlist`); } }); };
+  const pass = (d: string) => { const ids = DEALS.map((x) => x.id); const nx = ids[(ids.indexOf(d) + 1) % ids.length]; toast(`Passed on ${name(d)}`); setPitch(nx === d ? null : nx); };
+  const back = () => (window.history.length > 1 ? nav(-1) : nav("/"));
   return (
     <div className="lv lv-embed-co">
       <CompanyDetail id={id} onClose={back} onProfile={setProf} onPitch={setPitch} />
@@ -64,19 +67,38 @@ export function LiveInbox({ updates }: { updates: ReactNode }) {
 }
 
 export function LiveThread() {
-  const { id = "t1" } = useParams();
+  const { id = "" } = useParams();
+  useCatalog();
   const nav = useNavigate();
   return <Frame full><ThreadView id={id} onBack={() => nav(`${BASE}/inbox?t=messages`)} /></Frame>;
 }
 
 export function LivePeople() {
+  useCatalog();
   const nav = useNavigate();
   return <Frame><DiscoverView onOpen={(id) => nav(`${BASE}/company/${id}`)} /></Frame>;
 }
-export const LiveEvents = () => <Frame><EventsView /></Frame>;
-export const LivePortfolio = () => <Frame><PortfolioView /></Frame>;
+export function LiveEvents() { useCatalog(); return <Frame><EventsView /></Frame>; }
+export function LivePortfolio() { useCatalog(); return <Frame><PortfolioView /></Frame>; }
+/** Admin = server-side app_is_admin() (same check the RLS policies use). */
+export function useIsAdmin() {
+  const [ok, setOk] = useState<boolean | null>(null);
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return live && setOk(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any).rpc("app_is_admin");
+      if (live) setOk(!error && data === true);
+    })().catch(() => live && setOk(false));
+    return () => { live = false; };
+  }, []);
+  return ok;
+}
+
 export function LiveAdmin() {
-  const ok = new URLSearchParams(location.search).get("role") === "admin" || sessionStorage.getItem("cat-role") === "admin";
-  if (ok) sessionStorage.setItem("cat-role", "admin");
-  return ok ? <Frame><AdminView /></Frame> : <p className="dim" style={{ padding: 24 }}>Admin only.</p>;
+  useCatalog();
+  // AdminView gates itself: rpc app_is_admin => full admin; other signed-in members => their own company submissions.
+  return <Frame><AdminView /></Frame>;
 }

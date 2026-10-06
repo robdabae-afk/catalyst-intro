@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { isDemoMode } from "@/demo/mode";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CountUp, Hud } from "../hud";
 import { Head, path } from "../FeaturesApp";
 import { ICheck, IArrow, IWatch, IUp, ICal, IUserPlus, ILearn, ITicket, IGift } from "../icons";
 import { setState, State, toggle, useStore } from "../store";
 import { LEARN } from "../data";
+import { useIsAdmin } from "@/live/embed";
 
 const SECTORS = ["Climate", "Fintech", "AI", "Health", "Hardware", "Consumer", "Software"];
 
@@ -16,7 +19,7 @@ export const STEPS = [
   { id: "learn", t: "Finish the Reg CF basics", d: "Five quick cards.", to: "learn" },
   { id: "notifications", t: "Turn on the investing-opens alert", d: "One ping when the portal goes live.", to: "inbox" },
   { id: "invite", t: "Invite a friend", d: "Unlock waitlist priority.", to: "invite" },
-  { id: "event", t: "Save your event pass", d: "Pitch Night, Oct 13.", to: "ticket" },
+  { id: "event", t: "Save your event pass", d: "Keep your RSVP handy.", to: "ticket" },
 ];
 
 /** Every step is derived from real data. Only invite + event pass are recorded actions. */
@@ -49,13 +52,13 @@ function Editor({ id, s, close }: { id: string; s: State; close: () => void }) {
       <div className="row">{s.profile?.photo && <img className="me-photo" src={s.profile.photo} alt="Your profile photo" />}
         <label className="btn-ink">Choose photo<input type="file" accept="image/*" hidden aria-label="Profile photo" onChange={async (e) => {
           const f = e.target.files?.[0]; if (!f) return;
-          try { const photo = await toAvatar(f); setState((x) => ({ ...x, profile: { ...x.profile, photo } })); close(); } catch { setErr("That file isn't an image."); }
+          try { const photo = await toAvatar(f); if (await setState((x) => ({ ...x, profile: { ...x.profile, photo } }))) close(); else setErr("Couldn't save. Try again."); } catch { setErr("That file isn't an image."); }
         }} /></label>
         {s.profile?.photo && <button type="button" className="chip" onClick={() => setState((x) => ({ ...x, profile: { ...x.profile, photo: "" } }))}>Remove</button>}
       </div>{err && <small role="alert">{err}</small>}
     </div>);
   if (id === "bio") return (
-    <form className="me-edit" onSubmit={(e) => { e.preventDefault(); setState((x) => ({ ...x, profile: { ...x.profile, bio: bio.trim().slice(0, 140) } })); close(); }}>
+    <form className="me-edit" onSubmit={(e) => { e.preventDefault(); void setState((x) => ({ ...x, profile: { ...x.profile, bio: bio.trim().slice(0, 140) } })).then((ok) => ok && close()); }}>
       <input type="text" value={bio} maxLength={140} onChange={(e) => setBio(e.target.value)} placeholder="e.g. Product designer, curious about climate hardware" aria-label="One-line bio" autoFocus />
       <div className="row"><button type="submit" className="btn-ink" disabled={!bio.trim()}>Save bio</button><small className="dim">{bio.length}/140</small></div>
     </form>);
@@ -68,9 +71,9 @@ function Editor({ id, s, close }: { id: string; s: State; close: () => void }) {
 
 const MORE = [
   { to: "watchlist", t: "Watchlist", d: "Companies you saved", I: IWatch },
-  { to: "portfolio", t: "Portfolio", d: "Sample holdings view", I: IUp },
+  { to: "portfolio", t: "Portfolio", d: "Your holdings", I: IUp },
   { to: "events", t: "Events", d: "NYC pitch nights and dinners", I: ICal },
-  { to: "ticket", t: "Event pass", d: "Your QR pass for Pitch Night", I: ITicket },
+  { to: "ticket", t: "Event pass", d: "Passes for events you RSVP to", I: ITicket },
   { to: "people", t: "People", d: "Founders and investors to meet", I: IUserPlus },
   { to: "learn", t: "Learn", d: "Reg CF basics in five cards", I: ILearn },
   { to: "invite", t: "Invite friends", d: "Move up the waitlist", I: IGift },
@@ -81,8 +84,28 @@ const ACCOUNT = [
   { to: "legal/privacy", t: "Privacy notice", d: "" },
 ];
 
+/** Read-only: shows the member's existing public.profiles name. Never writes or reseeds profiles. */
+function useAccountName() {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    if (isDemoMode()) { setName("Demo member"); return; }
+    let live = true;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const id = session?.user.id; if (!id) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any).from("profiles").select("name").eq("id", id).maybeSingle();
+      if (live) setName(data?.name || session.user.email || "");
+    })();
+    return () => { live = false; };
+  }, []);
+  return name;
+}
+
 export default function Me() {
   const [s] = useStore();
+  const accountName = useAccountName();
+  const admin = useIsAdmin();
   const [open, setOpen] = useState<string | null>(null);
   const auto = doneSteps(s);
   const done = STEPS.filter((x) => auto.has(x.id)).length;
@@ -92,12 +115,13 @@ export default function Me() {
     <div className="g-side">
       <div>
         <Head title="Me" />
+        {accountName && <p className="mono dim" style={{ margin: "0 0 12px" }} data-account-name>{accountName}</p>}
         <nav className="me-more" aria-label="More">
           {MORE.map(({ to, t, d, I }) => (
             <Link key={to} to={path(to)} className="me-row" data-to={to}>
               <I size={22} /><span className="grow"><b>{t}</b><small>{d}</small></span><IArrow size={14} />
             </Link>))}
-          {(sessionStorage.getItem("cat-role") === "admin" || new URLSearchParams(location.search).get("role") === "admin") && <Link to={path("admin")} className="me-row" data-to="admin"><span className="grow"><b>Admin</b></span><IArrow size={14} /></Link>}
+          <Link to={path("manage")} className="me-row" data-to="manage"><span className="grow"><b>{admin ? "Manage companies" : "List your company"}</b><small>{admin ? "Review and publish companies" : "Founders: submit for review"}</small></span><IArrow size={14} /></Link>
         </nav>
         <Hud className="me-hero in" scan>
           <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>

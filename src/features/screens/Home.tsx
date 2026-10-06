@@ -1,27 +1,31 @@
 import { Link } from "react-router-dom";
 import { Head, path } from "../FeaturesApp";
-import { byId, COMPANIES, EVENT, UPDATES } from "../data";
+import { COMPANIES, EVENTS, UPDATES, useCatalog } from "../catalog";
 import { IArrow, ICal } from "../icons";
 import { setState, useStore } from "../store";
+import { requireAccount } from "../sync";
 import { UpdateCard } from "../parts";
 import { CountUp, Hud, Icon, Meter, Duo } from "../hud";
 import { STEPS, doneSteps } from "./Me";
 
 export default function Home() {
+  useCatalog();
   const [s] = useStore();
   const pct = Math.round((doneSteps(s).size / STEPS.length) * 100);
   const feed = UPDATES.filter((u) => s.follows.includes(u.company));
-  const top = byId("gridline")!;
   const raising = COMPANIES.filter((c) => c.raising);
+  const top = raising[0] ?? COMPANIES[0];
+  const ev = EVENTS.find((e) => s.rsvps.includes(e.id));
   return (
     <div className="st">
       <Head title="Today" right={<Link to={path("events")} className="head-link" aria-label="Events"><ICal size={18} />Events</Link>} />
 
+      {top ? (
       <Hud className="in" scan tag="Spotlight / 01">
         <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 210, color: "#fff" }}>
           <img src={top.img} alt="" />
           <div className="ph-body" style={{ position: "absolute", left: 22, right: 22, bottom: 20 }}>
-            <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={26} /><span className="sample inv" style={{ marginLeft: "auto" }}>Sample</span></div>
+            <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={26} /></div>
             <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
             <p style={{ opacity: .8, fontSize: 14, marginTop: 4 }}>{top.tagline}</p>
             <div className="row" style={{ marginTop: 14, gap: 14 }}>
@@ -31,7 +35,9 @@ export default function Home() {
           </div>
         </Link>
       </Hud>
-      <p className="note" style={{ marginTop: 8 }}>Sample company. Traction shown is illustrative.</p>
+      ) : (
+        <div className="card hud in" style={{ padding: 22 }}><b>No companies listed yet</b><p className="dim" style={{ fontSize: 13.5, marginTop: 6 }}>New companies show up here as soon as they're published.</p></div>
+      )}
 
       {!s.prefs.investing_opens ? (
         <div className="banner lite" style={{ marginTop: 14 }}>
@@ -40,7 +46,7 @@ export default function Home() {
             <b style={{ fontSize: 14 }}>Investing opens soon</b>
             <p style={{ fontSize: 12.5, marginTop: 2 }} className="dim">Portal registration pending. Get one heads up when it's live.</p>
           </div>
-          <button className="btn sm" onClick={() => setState((x) => ({ ...x, prefs: { ...x.prefs, investing_opens: true } }))}>Notify me</button>
+          <button className="btn sm" onClick={() => requireAccount() && setState((x) => ({ ...x, prefs: { ...x.prefs, investing_opens: true } }))}>Notify me</button>
         </div>
       ) : (
         <div className="card row" style={{ marginTop: 14 }}><Icon name="check" size={18} /><b className="grow">You'll be alerted when investing opens.</b><span className="mono dim">On</span></div>
@@ -55,13 +61,13 @@ export default function Home() {
           </div>
           <IArrow />
         </Link>
-        <Link to={path("ticket")} className="ph hud hov" style={{ minHeight: 96, display: "block" }}>
-          <img src="/x/ev-2.jpg" alt="" />
+        {ev ? <Link to={path(`ticket?e=${encodeURIComponent(ev.id)}`)} className="ph hud hov" style={{ minHeight: 96, display: "block" }}>
+          {ev.img && <img src={ev.img} alt="" />}
           <div className="ph-body" style={{ position: "absolute", left: 16, right: 16, bottom: 14 }}>
             <div className="row"><Icon name="ticket" size={20} /><b className="grow">Your pass</b><IArrow size={14} /></div>
-            <div className="mono" style={{ opacity: .8, marginTop: 4 }}>{EVENT.title} · Oct 13</div>
+            <div className="mono" style={{ opacity: .8, marginTop: 4 }}>{ev.title}{ev.when ? ` · ${ev.when}` : ""}</div>
           </div>
-        </Link>
+        </Link> : <Link to={path("events")} className="card row hud hov"><span className="ib"><Icon name="ticket" size={20} /></span><div className="grow"><b>Events</b><div className="dim" style={{ fontSize: 13 }}>{EVENTS.length ? "RSVP to get your pass" : "No upcoming events yet"}</div></div><IArrow size={14} /></Link>}
         <Link to={path("learn")} className="card row hud hov"><span className="ib"><Icon name="edu" size={20} /></span><div className="grow"><b>Learn</b><div className="dim" style={{ fontSize: 13 }}>Reg CF in 5 swipeable cards</div></div><span className="mono">{Object.values(s.learned).filter(Boolean).length}/5</span></Link>
         <Link to={path("invite")} className="card row hud hov"><span className="ib"><Icon name="mutual" size={20} /></span><div className="grow"><b>Invite friends</b><div className="dim" style={{ fontSize: 13 }}>Skip the waitlist together</div></div><IArrow size={14} /></Link>
       </div>
@@ -79,6 +85,7 @@ export default function Home() {
           </Link>
         ))}
       </div>
+      {!raising.length && <p className="dim">Nothing opening yet.</p>}
 
       <div className="sec"><h2><span className="ix">03</span>From companies you follow</h2><span className="mono dim">{feed.length}</span></div>
       <div className="g2">{feed.map((u) => <UpdateCard key={u.id} id={u.id} />)}</div>

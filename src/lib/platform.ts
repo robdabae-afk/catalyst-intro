@@ -7,10 +7,11 @@ export const isStandalone = () =>
   (window.matchMedia?.("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
 export const isAppShell = () => isNative() || isStandalone() || sessionStorage.getItem("cat-app") === "1";
 
-const LEGAL: Record<string, string> = { "/privacy": "/app/live/legal/privacy", "/terms": "/app/live/legal/terms" };
+const LEGAL: Record<string, string> = { "/privacy": "/legal/privacy", "/terms": "/legal/terms" };
 /* Paths that belong to the marketing site; inside the app they map to app screens. */
 export function appPathFor(p: string): string | null {
   if (LEGAL[p]) return LEGAL[p];
   if (p.startsWith("/app") || p.startsWith("/signup") || p.startsWith("/auth") || p.startsWith("/forgot-password") || p.startsWith("/onboarding")) return null;
-  return "/app/live";
+  if (p === "/intro" || p === "/about" || p === "/community") return "/";
+  return null;
 }

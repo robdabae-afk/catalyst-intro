@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 import { brokeredPreviewStorage } from './previewAuthStorage';
+import { isDemoMode } from '@/demo/mode';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
@@ -10,9 +11,19 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 // import { supabase } from "@/integrations/supabase/client";
 
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  global: {
+    fetch: (input, init) => {
+      const method = (init?.method ?? (input instanceof Request ? input.method : 'GET')).toUpperCase();
+      if (isDemoMode() && method !== 'GET') {
+        return Promise.reject(new Error('Demo mode cannot write to the backend.'));
+      }
+      return fetch(input, init);
+    },
+  },
   auth: {
-    storage: brokeredPreviewStorage(),
-    persistSession: true,
-    autoRefreshToken: true,
+    storage: isDemoMode() ? { getItem: () => null, setItem: () => {}, removeItem: () => {} } : brokeredPreviewStorage(),
+    persistSession: !isDemoMode(),
+    autoRefreshToken: !isDemoMode(),
+    detectSessionInUrl: !isDemoMode(),
   }
 });

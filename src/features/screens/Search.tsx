@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Head } from "../FeaturesApp";
-import { COMPANIES, Sector, Stage } from "../data";
+import type { Sector, Stage } from "../data";
+import { COMPANIES, useCatalog } from "../catalog";
 import { ISearch, IX, IClock } from "../icons";
 import { setState, toggle, useStore } from "../store";
 import { ResultCard, Switch } from "../parts";
@@ -8,9 +9,10 @@ import { Icon, SECTOR_ICON } from "../hud";
 
 const SECTORS: Sector[] = ["Fintech", "Climate", "Hardware", "Health", "Consumer", "AI"];
 const STAGES: Stage[] = ["Pre-seed", "Seed", "Series A"];
-const CITIES = [...new Set(COMPANIES.map((c) => c.city))];
 
 export default function Search() {
+  useCatalog();
+  const CITIES = [...new Set(COMPANIES.map((c) => c.city).filter(Boolean))];
   const [s] = useStore();
   const [q, setQ] = useState("");
   const [sec, setSec] = useState<Sector[]>([]);
@@ -24,7 +26,7 @@ export default function Search() {
     const words = t ? t.split(/\s+/) : [];
     const hay = `${c.name} ${c.tagline} ${c.sector} ${c.city} ${c.stage}`.toLowerCase();
     return words.every((w) => hay.includes(w)) && (!sec.length || sec.includes(c.sector)) && (!st.length || st.includes(c.stage)) && (!city.length || city.includes(c.city)) && (!raising || c.raising);
-  }), [q, sec, st, city, raising]);
+  }), [q, sec, st, city, raising, COMPANIES.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const commit = () => { const t = q.trim(); if (t) setState((x) => ({ ...x, recent: [t, ...x.recent.filter((r) => r !== t)].slice(0, 6) })); };
   const clear = () => { setQ(""); setSec([]); setSt([]); setCity([]); setRaising(false); };
@@ -42,8 +44,8 @@ export default function Search() {
       <div className="fl"><span className="mono dim">Stage</span><div className="chips">{STAGES.map((x) => <button key={x} className={`chip${st.includes(x) ? " on" : ""}`} aria-pressed={st.includes(x)} onClick={() => setSt(toggle(st, x))}>{x}</button>)}</div></div>
       <div className={`toggle-row${raising ? " on" : ""}`}>
         <span className="ib" style={{ width: 34, height: 34 }}><Icon name="traction" size={18} /></span>
-        <span className="grow"><b style={{ fontSize: 14.5 }}>Has sample terms</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies opening for investment soon</span></span>
-        <Switch label="Has sample terms" on={raising} onChange={() => setRaising(!raising)} />
+        <span className="grow"><b style={{ fontSize: 14.5 }}>Raising soon</b><span className="dim" style={{ display: "block", fontSize: 12.5 }}>Only show companies opening for investment soon</span></span>
+        <Switch label="Raising soon" on={raising} onChange={() => setRaising(!raising)} />
       </div>
       <div className="fl"><span className="mono dim">City</span><div className="chips">
         {CITIES.map((x) => <button key={x} className={`chip${city.includes(x) ? " on" : ""}`} aria-pressed={city.includes(x)} onClick={() => setCity(toggle(city, x))}>{x}</button>)}</div></div>
@@ -60,7 +62,7 @@ export default function Search() {
 
       <div className="sec"><h2>{active ? `${res.length} result${res.length === 1 ? "" : "s"}` : "All companies"}</h2>{active ? <button className="mono dim" style={{ background: "none", border: 0, cursor: "pointer" }} onClick={clear}>Reset</button> : null}</div>
       <div className="res st">{res.map((c) => <ResultCard key={c.id} c={c} />)}</div>
-      {!res.length && <p className="dim">No sample companies match. Try fewer filters.</p>}
+      {!res.length && <p className="dim">{COMPANIES.length ? "No companies match. Try fewer filters." : "No companies listed yet."}</p>}
     </div>
   );
 }

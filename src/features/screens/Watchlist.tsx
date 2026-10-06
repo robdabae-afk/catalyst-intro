@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Head, path } from "../FeaturesApp";
-import { byId, COMPANIES } from "../data";
+import { COMPANIES, useCatalog } from "../catalog";
+import { requireAccount } from "../sync";
 import { IClock, IX } from "../icons";
 import { setState, useStore } from "../store";
 import { Switch } from "../parts";
@@ -12,12 +13,14 @@ const ALERTS: { k: Key; label: string }[] = [
 ];
 
 export default function Watchlist() {
+  useCatalog();
   const [s] = useStore();
-  const ids = Object.keys(s.watch);
+  const byId = (id: string) => COMPANIES.find((c) => c.id === id);
+  const ids = Object.keys(s.watch).filter((id) => byId(id));
   const suggest = COMPANIES.filter((c) => !s.watch[c.id] && c.raising).slice(0, 3);
-  const set = (id: string, k: Key) => setState((x) => ({ ...x, watch: { ...x.watch, [id]: { ...x.watch[id], [k]: !x.watch[id][k] } } }));
-  const remove = (id: string) => setState((x) => { const w = { ...x.watch }; delete w[id]; return { ...x, watch: w }; });
-  const add = (id: string) => setState((x) => ({ ...x, watch: { ...x.watch, [id]: { raise: true, closing: true, update: true } } }));
+  const set = (id: string, k: Key) => requireAccount() && setState((x) => ({ ...x, watch: { ...x.watch, [id]: { ...x.watch[id], [k]: !x.watch[id][k] } } }));
+  const remove = (id: string) => requireAccount() && setState((x) => { const w = { ...x.watch }; delete w[id]; return { ...x, watch: w }; });
+  const add = (id: string) => requireAccount() && setState((x) => ({ ...x, watch: { ...x.watch, [id]: { raise: true, closing: true, update: true } } }));
 
   return (
     <div className="g-side">
@@ -47,10 +50,11 @@ export default function Watchlist() {
           })}
           {!ids.length && <div className="card dim">Nothing watched. Add a company to get alerts.</div>}
         </div>
-        <p className="note" style={{ marginTop: 16 }}>Sample companies. Investing opens soon; no live offerings yet.</p>
+        <p className="note" style={{ marginTop: 16 }}>Investing opens soon; no live offerings yet.</p>
       </div>
       <aside>
         <div className="sec" style={{ marginTop: 22 }}><h2><span className="ix">+</span>Opening soon</h2></div>
+        {!suggest.length && <p className="dim">Nothing to suggest yet.</p>}
         {suggest.map((c) => (
           <div key={c.id} className="row" style={{ padding: "12px 0", borderBottom: "1px solid var(--line)" }}>
             <Duo c={c} size={36} /><div className="grow"><b style={{ display: "block" }}>{c.name}</b><span className="dim" style={{ fontSize: 12.5 }}>{c.sector} · {c.city}</span></div>
