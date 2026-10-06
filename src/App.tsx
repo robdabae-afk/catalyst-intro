@@ -54,6 +54,7 @@ import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
 import TryOnboarding from "./try/Onboarding";
 import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, Events as TryEvents, Profile as TryProfile } from "./try/Main";
+import { Inbox as TryInbox, ThreadPage as TryThread, EventPage as TryEvent, Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
 import { DealPage as TryDeal, Invest as TryInvest } from "./try/Deal";
 import { AuthGuard } from "./components/AuthGuard";
 
@@ -181,6 +182,14 @@ const App = () => (
           <Route path="/try/profile" element={<TryProfile />} />
           <Route path="/try/deal/:id" element={<TryDeal />} />
           <Route path="/try/invest/:id" element={<TryInvest />} />
+          <Route path="/try/inbox" element={<TryInbox />} />
+          <Route path="/try/inbox/:id" element={<TryThread />} />
+          <Route path="/try/events/:id" element={<TryEvent />} />
+          <Route path="/try/settings" element={<TrySettings />} />
+          <Route path="/try/settings/identity" element={<TrySetIdentity />} />
+          <Route path="/try/settings/limit" element={<TrySetLimit />} />
+          <Route path="/try/settings/bank" element={<TrySetBank />} />
+          <Route path="/try/settings/notifications" element={<TrySetNotifications />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<RdNotFound />} />
         </Routes>
