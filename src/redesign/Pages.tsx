@@ -13,7 +13,7 @@ export function About() {
       <p>We started by building rooms in New York where founders and investors actually meet. Now we're building the app that opens those rooms to everyone.</p>
       <h2>Where we're headed</h2>
       <p>We want everyday Americans to be able to back the startups they believe in. That product is pending funding portal registration and is not available today.</p>
-      <p className="cta-gap"><a className="btn" href="/#join">Join the closed beta</a></p>
+      <p className="cta-gap"><a className="btn" href="/#join">Join the beta</a></p>
     </Shell>
   );
 }
@@ -67,7 +67,7 @@ export function Community() {
           <div className="kick reveal">Community · New York</div>
           <h1 className="reveal d1">Startups are built in <em>rooms.</em></h1>
           <p className="lede reveal d2">Mixers, pitch nights and dinners where founders and investors actually meet.</p>
-          <div className="ctas reveal d3"><a className="btn" href={LUMA}>RSVP on Luma</a><a className="btn ghost" href="/#join">Join the closed beta</a></div>
+          <div className="ctas reveal d3"><a className="btn" href={LUMA}>RSVP on Luma</a><a className="btn ghost" href="/#join">Join the beta</a></div>
         </div>
         <aside className="card ticket reveal d3" aria-label="Recurring event">
           <div className="kick">Admit one</div>
