@@ -1,5 +1,10 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { isDemoMode } from "@/demo/mode";
+import * as D from "@/demo/orig/featureData";
+import * as L from "@/demo/orig/liveData";
+import * as C from "@/demo/orig/company";
+import * as P from "@/demo/orig/people";
 import type { Company as FeatureCompany, Notif, Update } from "./data";
 import type { LiveDeal, LiveEvent, MatchMeta } from "@/live/data";
 import type { Company as DetailCompany } from "@/live/company";
@@ -28,7 +33,23 @@ const strs = (v: unknown): string[] => Array.isArray(v) ? v.filter(x => typeof x
 // Content URLs never accept javascript/data schemes from founder submissions.
 export const contentUrl = (v: unknown) => { const s = text(v); try { const u = new URL(s, window.location.origin); return ["https:", "http:"].includes(u.protocol) ? u.href : ""; } catch { return ""; } };
 const list = <T,>(v: unknown): T[] => Array.isArray(v) ? v as T[] : [];
+function loadDemo() {
+  COMPANIES.splice(0, COMPANIES.length, ...D.COMPANIES);
+  NOTIFS.splice(0, NOTIFS.length, ...D.NOTIFS);
+  UPDATES.splice(0, UPDATES.length, ...D.UPDATES);
+  DEALS.splice(0, DEALS.length, ...L.DEALS);
+  PEOPLE.splice(0, PEOPLE.length, ...P.PEOPLE);
+  THREADS.splice(0, THREADS.length, ...P.THREADS);
+  Object.assign(MATCH, L.MATCH);
+  Object.assign(DETAIL_COMPANIES, C.COMPANIES);
+  const ev = D.EVENT;
+  EVENTS.splice(0, EVENTS.length, ...L.EVENTS.map((e, i) => ({ ...e, start: i === 0 ? ev.start : ev.start, end: ev.end, venue: ev.venue, city: ev.city, url: "", companyIds: L.DEALS.map(d => d.id) })));
+  catalogStatus = "ready";
+}
+export const demoQuestions = C.companyQuestions;
+if (isDemoMode()) loadDemo();
 export async function loadCatalog() {
+  if (isDemoMode()) { loadDemo(); notify(); return; }
   const db = supabase as any;
   const [companies, events] = await Promise.all([
     db.from("app_companies").select("*").eq("status", "published").order("sort"),

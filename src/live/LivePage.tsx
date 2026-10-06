@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Icon, type IconName } from "@/brand/icons";
 import { DEALS } from "./data";
+import { useCatalog } from "@/features/catalog";
+import { useAdmin } from "./db";
 import { DealView, DiscoverView, EventsView, SwipeView } from "./views";
 import { AdminView, InboxView, NotificationsView, OnboardingView, PortfolioView, ProfileView, ThreadView } from "./screens";
 import "@/brand/brand.css";
@@ -17,37 +19,37 @@ function useWide() {
 }
 
 export default function LivePage() {
+  useCatalog();
   const wide = useWide();
+  const admin = !!useAdmin();
   const params = new URLSearchParams(location.search);
   const [tab, setTab] = useState<Tab>((params.get("v") as Tab) || "swipe");
   const [deal, setDeal] = useState<string | null>(params.get("deal"));
-  const [deskDeal, setDeskDeal] = useState(DEALS[0].id);
+  const [deskDeal, setDeskDeal] = useState(DEALS[0]?.id ?? "");
   const [thread, setThread] = useState<string | null>(params.get("thread"));
-  const [deskThread, setDeskThread] = useState("t1");
+  const [deskThread, setDeskThread] = useState(DEALS[0]?.id ?? "");
 
-  useEffect(() => { document.title = "Catalyst · Live UI (sample)"; }, []);
+  useEffect(() => { document.title = "Catalyst"; }, []);
 
   if (wide) {
     return (
       <div className="lv lv-desk">
         <header className="lv-desk-h">
           <div><span className="lv-desk-k">Catalyst</span><h1>Still images, alive.</h1></div>
-          <p className="dim">All deals and numbers are samples. Drag the card to swipe.</p>
+          <p className="dim">Drag the card to swipe.</p>
         </header>
         <div className="lv-phones">
           <Phone label="Swipe"><SwipeView onOpen={setDeskDeal} /></Phone>
-          <Phone label="Deal"><DealView id={deskDeal} /></Phone>
+          {deskDeal && <Phone label="Deal"><DealView id={deskDeal} /></Phone>}
           <Phone label="Discover"><DiscoverView onOpen={setDeskDeal} /></Phone>
           <Phone label="Events"><EventsView /></Phone>
           <Phone label="Portfolio"><PortfolioView /></Phone>
           <Phone label="Inbox"><InboxView onOpen={setDeskThread} /></Phone>
-          <Phone label="Thread"><ThreadView key={deskThread} id={deskThread} /></Phone>
+          {deskThread && <Phone label="Thread"><ThreadView key={deskThread} id={deskThread} /></Phone>}
           <Phone label="Notifications"><NotificationsView /></Phone>
-          <Phone label="Profile"><ProfileView /></Phone>
+          <Phone label="Profile"><ProfileView isAdmin={admin} /></Phone>
           <Phone label="Onboarding"><OnboardingView /></Phone>
           <Phone label="Admin"><AdminView /></Phone>
-          <Phone label="Company profile"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "lumen" }} /></Phone>
-          <Phone label="Person profile"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
           <Phone label="Match preferences"><DiscoverView onOpen={setDeskDeal} prefsOpen /></Phone>
         </div>
       </div>
@@ -57,8 +59,8 @@ export default function LivePage() {
     <div className={`lv lv-mob${!deal && !thread ? (["inbox", "notifications", "admin"].includes(tab) ? " hback" : " hic") : ""}`}>
       {!deal && !thread && ["swipe", "discover", "portfolio", "events", "profile"].includes(tab) && (
         <div className="lv-hicons">
-          <button type="button" aria-label="Inbox, 1 unread" onClick={() => setTab("inbox")}><Icon name="inbox" size={19} /><i aria-hidden /></button>
-          <button type="button" aria-label="Notifications, new" onClick={() => setTab("notifications")}><Icon name="bell" size={19} /><i aria-hidden /></button>
+          <button type="button" aria-label="Inbox" onClick={() => setTab("inbox")}><Icon name="inbox" size={19} /></button>
+          <button type="button" aria-label="Notifications" onClick={() => setTab("notifications")}><Icon name="bell" size={19} /></button>
         </div>
       )}
       {!deal && !thread && ["inbox", "notifications", "admin"].includes(tab) && (
@@ -74,11 +76,11 @@ export default function LivePage() {
           {tab === "discover" && <DiscoverView onOpen={setDeal} />}
           {tab === "events" && <EventsView />}
           {tab === "portfolio" && <PortfolioView />}
-          {tab === "profile" && <ProfileView isAdmin={params.get("role") === "admin"} onAdmin={() => setTab("admin")} />}
+          {tab === "profile" && <ProfileView isAdmin={admin} onAdmin={() => setTab("admin")} />}
           {tab === "inbox" && <InboxView onOpen={setThread} />}
           {tab === "notifications" && <NotificationsView />}
           {tab === "onboarding" && <OnboardingView />}
-          {tab === "admin" && params.get("role") === "admin" && <AdminView />}
+          {tab === "admin" && <AdminView />}
         </div>
       )}
       {!deal && !thread && (

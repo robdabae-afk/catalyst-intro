@@ -3,7 +3,8 @@
 // source of truth once the user is signed in and the migration has been applied.
 // Tables: supabase/migrations/20261006140000_app_actions.sql
 import { supabase } from "@/integrations/supabase/client";
-import { getState, hydrate, initial, onChange, type State } from "./store";
+import { hydrate, initial, setWriter, type State } from "./store";
+import { isDemoMode } from "@/demo/mode";
 
 export type SyncStatus = "signed_out" | "loading" | "ok" | "tables_missing" | "error";
 let status: SyncStatus = "signed_out";
@@ -14,9 +15,8 @@ export const syncStatus = () => status;
 export const onSyncStatus = (f: (s: SyncStatus) => void) => { listeners.add(f); return () => { listeners.delete(f); }; };
 export const isSignedIn = () => !!uid;
 export const currentUserId = () => uid;
-export function requireAccount() { if (uid) return true; window.location.assign("/signup"); return false; }
-let pending = Promise.resolve();
-export const flushSync = () => pending;
+export function requireAccount() { if (isDemoMode() || uid) return true; window.location.assign("/signup"); return false; }
+export const flushSync = () => Promise.resolve();
 export function clearAccountState() { hydrate(() => ({ ...initial, prefs: { ...initial.prefs }, watch: {}, follows: [], people: [], msgs: {}, qs: {} })); }
 
 
@@ -42,7 +42,7 @@ const missing = (e: { code?: string; message?: string } | null) =>
 async function run(p: PromiseLike<{ error: { code?: string; message?: string } | null }>) {
   const { error } = await p;
   if (missing(error)) { setStatus("tables_missing"); return false; }
-  if (error) { console.warn("[app sync]", error.message); setStatus("error"); return false; }
+  if (error) { console.warn("[app sync]", error.message); return false; }
   return true;
 }
 
@@ -92,8 +92,8 @@ async function pull(id: string) {
   setStatus("ok");
 }
 
-async function push(prev: State, next: State, force = false) {
-  if (!uid || (status !== "ok" && !force)) return;
+async function push(prev: State, next: State, force = false): Promise<boolean> {
+  if (!uid || (status !== "ok" && !force)) return false;
   const user_id = uid;
   const jobs: PromiseLike<{ error: { code?: string; message?: string } | null }>[] = [];
   for (const [kind, get] of SETS) {
@@ -117,20 +117,22 @@ async function push(prev: State, next: State, force = false) {
     jobs.push(db().from("app_prefs").upsert({ user_id, prefs: { notif: next.prefs, profile: next.profile, watch: next.watch, recent: next.recent, checkedIn: next.checkedIn }, interests: next.interests, role: next.role === "investor" || next.role === "founder" ? next.role : null, onboarded_at: next.onboarded ? new Date().toISOString() : null, updated_at: new Date().toISOString() }, { onConflict: "user_id" }));
   if (next.invest && (force || prev.invest !== next.invest))
     jobs.push(db().from("app_invest_profile").upsert({ user_id, annual_income: next.invest.inc, net_worth: next.invest.nw }, { onConflict: "user_id" }));
-  for (const j of jobs) { if (uid !== user_id) return; if (!(await run(j))) return; }
+  for (const j of jobs) { if (uid !== user_id) return false; if (!(await run(j))) return false; }
+  if (status === "error") setStatus("ok");
+  return true;
 }
 
 let started = false;
 export function startSync() {
-  if (started || typeof window === "undefined") return;
+  if (started || typeof window === "undefined" || isDemoMode()) return;
   started = true;
   const set = (id: string | null) => {
     if (id === uid) return;
     uid = id;
     clearAccountState();
+    setWriter(id ? (prev, next) => (uid === id ? push(prev, next) : Promise.resolve(false)) : null);
     if (id) { setStatus("loading"); setTimeout(() => { if (uid === id) void pull(id); }, 0); } else setStatus("signed_out");
   };
   supabase.auth.getSession().then(({ data }) => set(data.session?.user.id ?? null));
   supabase.auth.onAuthStateChange((_e, session) => set(session?.user.id ?? null));
-  onChange((prev, next) => { const account = uid; pending = pending.then(async () => { if (account && uid === account) await push(prev, next); }).catch(() => setStatus("error")); });
 }

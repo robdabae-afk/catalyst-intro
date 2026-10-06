@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import FeaturesApp from "./features/FeaturesApp";
+import { isDemoMode } from "@/demo/mode";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
 import AppSignup from "./pages/app/AppSignup";
@@ -66,7 +67,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={isDemoMode() ? "/demo" : undefined}>
         <Routes>
           {/* Marketing landing (the production app lives at "/") */}
           <Route path="/intro" element={<Landing />} />

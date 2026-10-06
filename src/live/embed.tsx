@@ -36,7 +36,7 @@ export function LiveCompany({ id }: { id: string }) {
   const [msg, setMsg] = useState<string | null>(null);
   const toast = (m: string) => { setMsg(m); window.setTimeout(() => setMsg(null), 2200); };
   const name = (d: string) => DEALS.find((x) => x.id === d)?.name ?? "Company";
-  const save = (d: string) => { if (!requireAccount()) return; setState((st) => ({ ...st, watch: { ...st.watch, [d]: st.watch[d] ?? { raise: true, closing: true, update: true } } })); setPitch(null); toast(`${name(d)} added to watchlist`); };
+  const save = (d: string) => { if (!requireAccount()) return; setState((st) => ({ ...st, watch: { ...st.watch, [d]: st.watch[d] ?? { raise: true, closing: true, update: true } } })).then((ok) => { if (ok) { setPitch(null); toast(`${name(d)} added to watchlist`); } }); };
   const pass = (d: string) => { const ids = DEALS.map((x) => x.id); const nx = ids[(ids.indexOf(d) + 1) % ids.length]; toast(`Passed on ${name(d)}`); setPitch(nx === d ? null : nx); };
   const back = () => (window.history.length > 1 ? nav(-1) : nav("/"));
   return (
@@ -99,7 +99,6 @@ export function useIsAdmin() {
 
 export function LiveAdmin() {
   useCatalog();
-  const ok = useIsAdmin();
-  if (ok === null) return <p className="dim" style={{ padding: 24 }}>Checking access…</p>;
-  return ok ? <Frame><AdminView /></Frame> : <p className="dim" style={{ padding: 24 }}>Admin only.</p>;
+  // AdminView gates itself: rpc app_is_admin => full admin; other signed-in members => their own company submissions.
+  return <Frame><AdminView /></Frame>;
 }

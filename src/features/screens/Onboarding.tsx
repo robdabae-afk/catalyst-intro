@@ -11,7 +11,7 @@ export default function Onboarding() {
   const [s] = useStore();
   const [i, setI] = useState(0);
   const nav = useNavigate();
-  const finish = (to: string) => { setState((x) => ({ ...x, onboarded: true })); nav(to); };
+  const finish = (to: string) => { void setState((x) => ({ ...x, onboarded: true })).then((ok) => ok && nav(to)); };
   const steps = [
     { k: "welcome", body: (<>
       <div className="ob-mark" aria-hidden><i /></div>

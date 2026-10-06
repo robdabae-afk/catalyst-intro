@@ -155,14 +155,14 @@ export function MatchList({ prefs, onOpenDeal, onProfile, onPrefs, toast }: { pr
       </div>
       {list.map(({ d }, k) => (
         <MatchCard key={d.id} d={d} k={k} settled={gone.length > 0} prefs={prefs} onOpenDeal={onOpenDeal} onProfile={onProfile} onPitch={setPitch} onDetail={(id, s) => setDet({ id, s })}
-          onGone={(dir) => { if (dir > 0) { if (!requireAccount()) return; watchAdd(d.id); } setGone((g) => [...g, d.id]); toast(dir > 0 ? `Saved ${d.name}` : `Passed ${d.name}`); }} />
+          onGone={(dir) => { if (dir > 0) { if (!requireAccount()) return; void watchAdd(d.id).then((ok) => { if (ok) { setGone((g) => [...g, d.id]); toast(`Saved ${d.name}`); } }); return; } setGone((g) => [...g, d.id]); toast(`Passed ${d.name}`); }} />
       ))}
       {!list.length && (
         <div className="lv-ml-done"><Icon name="match" size={34} /><strong>You're caught up</strong><p className="dim">That's every live company. Tune preferences or start over.</p><Button variant="secondary" icon="swipe" onClick={() => setGone([])}>Start over</Button></div>
       )}
       {det && <CompanyDetail key={det.id + (det.s ?? "")} id={det.id} start={det.s} onClose={() => setDet(null)} onProfile={onProfile} onPitch={(id) => setPitch(id)} />}
       {pitch && <PitchPlayer id={pitch} ids={list.map((x) => x.d.id)} onClose={() => setPitch(null)} onNext={setPitch} onProfile={onProfile}
-        onSave={(id) => { if (!requireAccount()) return; watchAdd(id); setPitch(null); setGone((g) => [...g, id]); toast(`Saved ${DEALS.find((x) => x.id === id)?.name}`); }}
+        onSave={(id) => { if (!requireAccount()) return; void watchAdd(id).then((ok) => { if (!ok) return; setPitch(null); setGone((g) => [...g, id]); toast(`Saved ${DEALS.find((x) => x.id === id)?.name}`); }); }}
         onPass={(id) => { setPitch(null); setGone((g) => [...g, id]); toast(`Passed ${DEALS.find((x) => x.id === id)?.name}`); }} />}
     </section>
   );

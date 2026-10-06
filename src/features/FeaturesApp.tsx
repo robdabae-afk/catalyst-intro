@@ -1,10 +1,12 @@
+import { isDemoMode } from "@/demo/mode";
+import { onWriteError } from "./store";
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { isAppShell } from "@/lib/platform";
 import { startSync } from "./sync";
 import { catalogStatus, COMPANIES, useCatalog } from "./catalog";
 
 export const catalogLoading = () => String(typeof catalogStatus === "function" ? (catalogStatus as () => unknown)() : catalogStatus) === "loading";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { LiveSwipe, LiveCompany, LiveInbox, LiveThread, LivePeople, LiveEvents, LivePortfolio, LiveAdmin } from "@/live/embed";
 import "./features.css";
 import { IBack } from "./icons";
@@ -68,6 +70,12 @@ export function Head({ title, right, back }: { title: string; right?: React.Reac
 
 export const path = (p: string) => `${BASE}/${p}`.replace(/\/+$/, "") || "/";
 
+function WriteError() {
+  const [m, setM] = useState<string | null>(null);
+  useEffect(() => onWriteError((x) => { setM(x); window.setTimeout(() => setM(null), 3500); }), []);
+  return m ? <div role="alert" style={{ position: "fixed", left: "50%", bottom: 88, transform: "translateX(-50%)", zIndex: 1000, background: "#111", color: "#fff", border: "1px solid #444", borderRadius: 12, padding: "10px 16px", fontSize: 14 }}>{m}</div> : null;
+}
+
 export default function FeaturesApp() {
   useEffect(() => { startSync(); }, []);
   useCatalog();
@@ -77,6 +85,8 @@ export default function FeaturesApp() {
   if (isAppShell() && !st.onboarded && !loc.pathname.startsWith("/legal")) return <Navigate to="/welcome" replace />;
   return (
     <div className="cf">
+      <WriteError />
+      {isDemoMode() && <div style={{ position: "fixed", top: 8, right: 8, zIndex: 1000, font: "600 11px/1 ui-monospace,monospace", letterSpacing: ".08em", background: "#fff", color: "#000", padding: "6px 8px", borderRadius: 6 }}>DEMO · SAMPLE DATA</div>}
       <div className="cf-shell">
         <Tabs cls="cf-side" />
         <main className="cf-main">

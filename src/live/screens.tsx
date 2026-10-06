@@ -76,7 +76,7 @@ export function ProfileView({ isAdmin = false, onAdmin }: { isAdmin?: boolean; o
     <div className="lv-prof">
       <Top l="PROFILE" />
       {uid ? <div className="lv-sec"><p className="dim">Manage your profile from the Me tab.</p></div> : <SignInPrompt what="Create an account to save companies and RSVP." />}
-      <div className="lv-sec lv-pmenu">{isAdmin && <Button variant="secondary" icon="dashboard" block onClick={onAdmin}>Admin</Button>}</div>
+      <div className="lv-sec lv-pmenu">{onAdmin && <Button variant="secondary" icon="dashboard" block onClick={onAdmin}>{isAdmin ? "Admin" : "List your company"}</Button>}</div>
     </div>
   );
 }

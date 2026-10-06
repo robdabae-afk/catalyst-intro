@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { isDemoMode } from "@/demo/mode";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CountUp, Hud } from "../hud";
 import { Head, path } from "../FeaturesApp";
@@ -50,13 +52,13 @@ function Editor({ id, s, close }: { id: string; s: State; close: () => void }) {
       <div className="row">{s.profile?.photo && <img className="me-photo" src={s.profile.photo} alt="Your profile photo" />}
         <label className="btn-ink">Choose photo<input type="file" accept="image/*" hidden aria-label="Profile photo" onChange={async (e) => {
           const f = e.target.files?.[0]; if (!f) return;
-          try { const photo = await toAvatar(f); setState((x) => ({ ...x, profile: { ...x.profile, photo } })); close(); } catch { setErr("That file isn't an image."); }
+          try { const photo = await toAvatar(f); if (await setState((x) => ({ ...x, profile: { ...x.profile, photo } }))) close(); else setErr("Couldn't save. Try again."); } catch { setErr("That file isn't an image."); }
         }} /></label>
         {s.profile?.photo && <button type="button" className="chip" onClick={() => setState((x) => ({ ...x, profile: { ...x.profile, photo: "" } }))}>Remove</button>}
       </div>{err && <small role="alert">{err}</small>}
     </div>);
   if (id === "bio") return (
-    <form className="me-edit" onSubmit={(e) => { e.preventDefault(); setState((x) => ({ ...x, profile: { ...x.profile, bio: bio.trim().slice(0, 140) } })); close(); }}>
+    <form className="me-edit" onSubmit={(e) => { e.preventDefault(); void setState((x) => ({ ...x, profile: { ...x.profile, bio: bio.trim().slice(0, 140) } })).then((ok) => ok && close()); }}>
       <input type="text" value={bio} maxLength={140} onChange={(e) => setBio(e.target.value)} placeholder="e.g. Product designer, curious about climate hardware" aria-label="One-line bio" autoFocus />
       <div className="row"><button type="submit" className="btn-ink" disabled={!bio.trim()}>Save bio</button><small className="dim">{bio.length}/140</small></div>
     </form>);
@@ -82,8 +84,27 @@ const ACCOUNT = [
   { to: "legal/privacy", t: "Privacy notice", d: "" },
 ];
 
+/** Read-only: shows the member's existing public.profiles name. Never writes or reseeds profiles. */
+function useAccountName() {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    if (isDemoMode()) { setName("Demo member"); return; }
+    let live = true;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const id = session?.user.id; if (!id) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data } = await (supabase as any).from("profiles").select("name").eq("id", id).maybeSingle();
+      if (live) setName(data?.name || session.user.email || "");
+    })();
+    return () => { live = false; };
+  }, []);
+  return name;
+}
+
 export default function Me() {
   const [s] = useStore();
+  const accountName = useAccountName();
   const admin = useIsAdmin();
   const [open, setOpen] = useState<string | null>(null);
   const auto = doneSteps(s);
@@ -94,12 +115,13 @@ export default function Me() {
     <div className="g-side">
       <div>
         <Head title="Me" />
+        {accountName && <p className="mono dim" style={{ margin: "0 0 12px" }} data-account-name>{accountName}</p>}
         <nav className="me-more" aria-label="More">
           {MORE.map(({ to, t, d, I }) => (
             <Link key={to} to={path(to)} className="me-row" data-to={to}>
               <I size={22} /><span className="grow"><b>{t}</b><small>{d}</small></span><IArrow size={14} />
             </Link>))}
-          {admin && <Link to={path("manage")} className="me-row" data-to="manage"><span className="grow"><b>Manage companies</b></span><IArrow size={14} /></Link>}
+          <Link to={path("manage")} className="me-row" data-to="manage"><span className="grow"><b>{admin ? "Manage companies" : "List your company"}</b><small>{admin ? "Review and publish companies" : "Founders: submit for review"}</small></span><IArrow size={14} /></Link>
         </nav>
         <Hud className="me-hero in" scan>
           <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>

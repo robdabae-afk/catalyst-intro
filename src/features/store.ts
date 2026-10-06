@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { NOTIFS, NotifKind } from "./data";
+import { isDemoMode, DEMO_STORE_KEY } from "@/demo/mode";
 
-const KEY = "catalyst.production.v1";
+const KEY = isDemoMode() ? DEMO_STORE_KEY : "catalyst.production.v1";
 
 export interface State {
   readIds: string[];
@@ -70,12 +71,39 @@ export function hydrate(fn: (s: State) => State) {
   subs.forEach((f) => f());
 }
 
-export function setState(fn: (s: State) => State) {
+/** Transactional writer. Installed by sync for signed-in production users: must persist
+ *  prev->next to the account DB and resolve true before the UI commits. */
+type Writer = (prev: State, next: State) => Promise<boolean>;
+let writer: Writer | null = null;
+export function setWriter(w: Writer | null) { writer = w; }
+const errSubs = new Set<(m: string) => void>();
+export function onWriteError(f: (m: string) => void) { errSubs.add(f); return () => { errSubs.delete(f); }; }
+export function reportWriteError(m = "Couldn't save. Check your connection and try again.") { errSubs.forEach((f) => f(m)); }
+
+let queue: Promise<unknown> = Promise.resolve();
+function commit(next: State) {
   const prev = state;
-  state = fn(state);
+  state = next;
   changeSubs.forEach((f) => f(prev, state));
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
   subs.forEach((f) => f());
+}
+
+/** Resolves true once the change is saved (to the account DB when signed in). UI only changes on success. */
+export function setState(fn: (s: State) => State): Promise<boolean> {
+  const run = async () => {
+    const prev = state, next = fn(prev);
+    if (next === prev) return true;
+    if (!writer) { commit(next); return true; }
+    let ok = false;
+    try { ok = await writer(prev, next); } catch { ok = false; }
+    if (!ok) { reportWriteError(); return false; }
+    if (state === prev) commit(next); else commit(fn(state));
+    return true;
+  };
+  const p = queue.then(run, run);
+  queue = p.catch(() => undefined);
+  return p;
 }
 
 export function useStore(): [State, typeof setState] {
@@ -102,5 +130,5 @@ export const unreadCount = (s: State) => NOTIFS.filter((n) => !s.readIds.include
 export const toggle = <T,>(arr: T[], v: T) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
 export const DEFAULT_WATCH = { raise: true, closing: true, update: true };
-export const watchAdd = (id: string) => setState((s) => ({ ...s, watch: { ...s.watch, [id]: s.watch[id] ?? DEFAULT_WATCH } }));
-export const watchToggle = (id: string) => setState((s) => { const w = { ...s.watch }; if (w[id]) delete w[id]; else w[id] = DEFAULT_WATCH; return { ...s, watch: w }; });
+export const watchAdd = (id: string): Promise<boolean> => setState((s) => ({ ...s, watch: { ...s.watch, [id]: s.watch[id] ?? DEFAULT_WATCH } }));
+export const watchToggle = (id: string): Promise<boolean> => setState((s) => { const w = { ...s.watch }; if (w[id]) delete w[id]; else w[id] = DEFAULT_WATCH; return { ...s, watch: w }; });

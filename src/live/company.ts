@@ -1,3 +1,5 @@
+import { isDemoMode } from "@/demo/mode";
+import { demoQuestions } from "@/features/catalog";
 import type { Deal, Question } from "@/platform/types";
 export type PitchChapterKey = "hook" | "problem" | "demo" | "traction" | "team" | "ask";
 export type PitchChapter = { key: PitchChapterKey; t: number };
@@ -17,7 +19,7 @@ export type Company = Deal & {
 };
 
 export { DETAIL_COMPANIES as COMPANIES } from "@/features/catalog";
-export function companyQuestions(_c: Company, _founderName: string): (Question & { votes: number; when: string; answeredBy?: string })[] { return []; }
+export function companyQuestions(c: Company, founderName: string): (Question & { votes: number; when: string; answeredBy?: string })[] { return isDemoMode() ? demoQuestions(c as never, founderName) : []; }
 export const SECTIONS = [
   ["overview", "Overview"], ["product", "Product"], ["traction", "Traction"], ["team", "Team"], ["market", "Market"],
   ["model", "Business model"], ["raise", "The raise"], ["docs", "Documents"], ["updates", "Updates"], ["qa", "Q&A"],

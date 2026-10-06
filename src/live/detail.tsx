@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { setState, useStore, DEFAULT_WATCH } from "@/features/store";
+import { setState, useStore, watchAdd } from "@/features/store";
+import { requireAccount } from "@/features/sync";
+import { useCatalog, PEOPLE } from "@/features/catalog";
+import { listQuestions, askQuestion, answerQuestion, reserveInterest, ago, useUid, type QRow } from "./db";
 import { Icon } from "@/brand/icons";
-import { regCfLimit, usd } from "@/try/data";
+import { regCfLimit } from "./db";
+import { usd } from "./data";
+const usdf = (n: number) => "$" + Math.round(n || 0).toLocaleString("en-US");
 import { EVENTS, MATCH } from "./data";
-import { COMPANIES, SECTIONS, companyQuestions, type SectionId } from "./company";
+import { COMPANIES, SECTIONS, type SectionId } from "./company";
 import { useCountUp, useInView, useReducedMotion } from "./hooks";
-import { Avatar, PEOPLE, type ProfRef } from "./profiles";
+import { Avatar, type ProfRef } from "./profiles";
 
-/* Full company detail. One focal point per section, more behind taps. All content SAMPLE. */
+/* Full company detail. One focal point per section, more behind taps. Data from the live catalog. */
 
 function Sec({ id, k, title, children }: { id: SectionId; k: number; title: string; children: React.ReactNode }) {
   return (
@@ -35,22 +40,28 @@ function Big({ n }: { n: number }) {
 }
 
 export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: string; start?: SectionId; onClose: () => void; onProfile: (r: ProfRef) => void; onPitch?: (id: string) => void }) {
+  useCatalog();
   const c = COMPANIES[id]; const m = MATCH[id];
-  const team = PEOPLE.filter((p) => p.at === id); const founder = PEOPLE.find((p) => p.id === m.founder)!;
-  const mut = m.mutuals.map((x) => PEOPLE.find((p) => p.id === x)!).filter(Boolean);
-  const qs = companyQuestions(c, founder.name);
+  const team = PEOPLE.filter((p) => p.at === id); const founder = PEOPLE.find((p) => p.id === m?.founder);
+  const uid = useUid();
+  const [qs, setQs] = useState<QRow[]>([]); const [qErr, setQErr] = useState("");
+  const loadQs = () => void listQuestions(id).then((r) => { setQs(r.data ?? []); setQErr(r.ok ? "" : r.missing ? "Q&A opens soon." : r.error ?? ""); });
+  useEffect(loadQs, [id]);
+  const isOwner = !!uid && (c as unknown as { ownerId?: string })?.ownerId === uid;
+  const [amt, setAmt] = useState(""); const [ack, setAck] = useState(false); const [resMsg, setResMsg] = useState("");
   const scroller = useRef<HTMLDivElement>(null); const nav = useRef<HTMLDivElement>(null);
   const [cur, setCur] = useState<SectionId>(start ?? "overview");
   const [st] = useStore();
-  const inc = st.invest?.inc ?? 60000, nw = st.invest?.nw ?? 40000;
-  const setInc = (v: number) => setState((s) => ({ ...s, invest: { inc: v, nw: s.invest?.nw ?? 40000 } }));
-  const setNw = (v: number) => setState((s) => ({ ...s, invest: { inc: s.invest?.inc ?? 60000, nw: v } }));
-  const saved = st.launch.includes(id);
-  const setSaved = (v: boolean) => setState((s) => ({ ...s, launch: v ? [...s.launch.filter((x) => x !== id), id] : s.launch.filter((x) => x !== id), watch: v ? { ...s.watch, [id]: s.watch[id] ?? DEFAULT_WATCH } : s.watch }));
-  const [ask, setAsk] = useState(""); const mine = st.qs[id] ?? [];
-  const setMine = (list: string[]) => setState((s) => ({ ...s, qs: { ...s.qs, [id]: list } }));
+  // Draft values; saved to the account's invest profile only when the member reserves.
+  const [draft, setDraft] = useState<{ inc: number; nw: number } | null>(null);
+  const inc = draft?.inc ?? st.invest?.inc ?? 60000, nw = draft?.nw ?? st.invest?.nw ?? 40000;
+  const setInc = (v: number) => setDraft({ inc: v, nw });
+  const setNw = (v: number) => setDraft({ inc, nw: v });
+  const saved = id in (st.watch ?? {});
+  const setSaved = (v: boolean) => { if (!requireAccount()) return; if (v) watchAdd(id); else setState((s) => { const w = { ...s.watch }; delete w[id]; return { ...s, watch: w, launch: s.launch.filter((x) => x !== id) }; }); };
+  const [ask, setAsk] = useState(""); const [ans, setAns] = useState<Record<string, string>>({});
   const reduced = useReducedMotion();
-  const last = c.metric.series[c.metric.series.length - 1];
+  const series = c?.metric?.series ?? []; const last = series[series.length - 1] ?? 0;
 
   const lock = useRef(0);
   const go = (s: SectionId, smooth = true) => {
@@ -67,20 +78,31 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   useEffect(() => { nav.current?.querySelector<HTMLElement>(`[data-n="${cur}"]`)?.scrollIntoView({ inline: "center", block: "nearest", behavior: reduced ? "auto" : "smooth" }); }, [cur, reduced]);
   useEffect(() => { const k = (e: KeyboardEvent) => e.key === "Escape" && onClose(); addEventListener("keydown", k); return () => removeEventListener("keydown", k); }, [onClose]);
 
+  if (!c) return <div className="cd" role="dialog" aria-modal aria-label="Company"><div className="cd-scroll"><header className="cd-hero-top"><button type="button" className="cd-ic" aria-label="Close" onClick={onClose}><Icon name="close" size={18} /></button></header><p className="cd-lead" style={{ padding: 24 }}>This company isn't available.</p></div></div>;
+  const reserve = async () => {
+    if (!requireAccount()) return; const n = Math.round(Number(amt));
+    const lim = regCfLimit(inc, nw);
+    if (!(n > 0)) return setResMsg("Enter an amount."); if (c.minCheck && n < c.minCheck) return setResMsg(`Minimum is ${usdf(c.minCheck)}.`);
+    if (n > lim) return setResMsg(`That's over your Reg CF limit of ${usdf(lim)}.`); if (!ack) return setResMsg("Please confirm you understand the risks.");
+    if (!st.invest || st.invest.inc !== inc || st.invest.nw !== nw) {
+      const saved = await setState((s) => ({ ...s, invest: { inc, nw } }));
+      if (!saved) return setResMsg("Couldn't save your income and net worth. Try again.");
+    }
+    const r = await reserveInterest(id, n); setResMsg(r.ok ? "Interest reserved. No money has moved." : r.missing ? "Reservations open soon." : r.error ?? "Couldn't reserve.");
+  };
   return (
-    <div className="cd" role="dialog" aria-modal aria-label={`${c.name}, sample company`}>
+    <div className="cd" role="dialog" aria-modal aria-label={c.name}>
       <div className="cd-scroll" ref={scroller}>
         <header className="cd-hero">
-          <img src={c.coverUrl} alt="" />
+          {c.coverUrl ? <img src={c.coverUrl} alt="" /> : <div className="lv-noimg" />}
           <div className="cd-hero-top">
             <button type="button" className="cd-ic" aria-label="Close" onClick={onClose}><Icon name="close" size={18} /></button>
-            <span className="cd-sample lv-mono">SAMPLE COMPANY</span>
           </div>
           <div className="cd-hero-b">
-            <span className="lv-mono">{c.sector.toUpperCase()} · {c.city.split(",")[0].toUpperCase()} · {c.stage.toUpperCase()}</span>
+            <span className="lv-mono">{[c.sector, (c.city ?? "").split(",")[0], c.stage].filter(Boolean).join(" · ").toUpperCase()}</span>
             <h1>{c.name}</h1>
             <p>{c.line}</p>
-            {onPitch && m.pitch && <button type="button" className="cd-play" onClick={() => onPitch(id)}><Icon name="pitch" size={16} />Watch pitch · {m.pitchLen}</button>}
+            {onPitch && m?.pitch && <button type="button" className="cd-play" onClick={() => onPitch(id)}><Icon name="pitch" size={16} />Watch pitch · {m.pitchLen}</button>}
           </div>
         </header>
 
@@ -94,79 +116,86 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
         </Sec>
 
         <Sec id="product" k={2} title="Product">
-          <div className="cd-media">{c.media.map((x) => (
+          <div className="cd-media">{(c.media ?? []).map((x) => (
             <figure key={x.src}>{x.kind === "video" ? <video src={x.src} muted loop playsInline autoPlay={!reduced} poster={c.coverUrl} /> : <img src={x.src} alt={x.caption} />}<figcaption className="lv-mono">{x.caption}</figcaption></figure>
           ))}</div>
         </Sec>
 
         <Sec id="traction" k={3} title="Traction">
-          <Big n={last} /><p className="cd-sub">{c.metric.unit} · {c.metric.label.toLowerCase()} · last 12 mo</p>
-          <Chart s={c.metric.series} />
-          <More label="Milestones"><ul className="cd-list">{[...c.traction, ...c.milestones].map((t) => <li key={t}>{t}</li>)}</ul></More>
-          <p className="cd-fine lv-mono">SAMPLE · ILLUSTRATIVE METRICS</p>
+          {series.length > 1 && <><Big n={last} /><p className="cd-sub">{c.metric.unit} · {c.metric.label.toLowerCase()}</p><Chart s={series} /></>}
+          <More label="Milestones"><ul className="cd-list">{[...(c.traction ?? []), ...(c.milestones ?? [])].map((t) => <li key={t}>{t}</li>)}</ul></More>
         </Sec>
 
         <Sec id="team" k={4} title="Team">
           <div className="cd-team">{team.map((p) => (
             <button key={p.id} type="button" className="cd-person" onClick={() => onProfile({ kind: "person", id: p.id })}>
-              <Avatar p={p} size={52} /><span><b>{p.name}</b><small>{p.bio.replace(/^Sample \w+\. /, "")}</small></span><Icon name="forward" size={14} />
+              <Avatar p={p} size={52} /><span><b>{p.name}</b><small>{p.bio}</small></span><Icon name="forward" size={14} />
             </button>))}
           </div>
-          {mut.length > 0 && (<div id="cd-mutuals" className="cd-mut">
-            <span className="lv-mono dim">{mut.length} MUTUAL{mut.length > 1 ? "S" : ""} · SAMPLE</span>
-            <div>{mut.map((p) => <button key={p.id} type="button" onClick={() => onProfile({ kind: "person", id: p.id })} aria-label={p.name}><Avatar p={p} size={36} /><small>{p.name}</small></button>)}</div>
-          </div>)}
         </Sec>
 
         <Sec id="market" k={5} title="Market">
-          <p className="cd-lead">{c.market.headline}</p>
+          <p className="cd-lead">{c.market?.headline || "Details coming soon."}</p>
           <More label="Size and timing">
-            <dl className="cd-dl"><div><dt className="lv-mono">TAM</dt><dd>{c.market.tam}</dd></div><div><dt className="lv-mono">SAM</dt><dd>{c.market.sam}</dd></div></dl>
-            <p className="cd-p">{c.market.why}</p>
+            <dl className="cd-dl"><div><dt className="lv-mono">TAM</dt><dd>{c.market?.tam || "TBA"}</dd></div><div><dt className="lv-mono">SAM</dt><dd>{c.market?.sam || "TBA"}</dd></div></dl>
+            <p className="cd-p">{c.market?.why}</p>
           </More>
         </Sec>
 
         <Sec id="model" k={6} title="Business model">
-          <div className="cd-price">{c.model.price}</div><p className="cd-sub">{c.model.headline}</p>
-          <More label="How they make money"><ul className="cd-list">{c.model.points.map((t) => <li key={t}>{t}</li>)}</ul></More>
+          <div className="cd-price">{c.model?.price || "TBA"}</div><p className="cd-sub">{c.model?.headline}</p>
+          <More label="How they make money"><ul className="cd-list">{(c.model?.points ?? []).map((t) => <li key={t}>{t}</li>)}</ul></More>
         </Sec>
 
         <Sec id="raise" k={7} title="The raise">
-          <div className="cd-soon"><b>Investing opens soon.</b><span>Save {c.name} and we'll tell you when it does.</span></div>
-          <dl className="cd-dl three"><div><dt className="lv-mono">INSTRUMENT</dt><dd>{c.instrument}</dd></div><div><dt className="lv-mono">CAP</dt><dd>{c.valuationCap}</dd></div><div><dt className="lv-mono">MIN</dt><dd>{usd(c.minCheck)}</dd></div></dl>
-          <More label="Use of funds"><ul className="cd-list">{c.useOfFunds.map((t) => <li key={t}>{t}</li>)}</ul><p className="cd-p dim">Target {usd(c.goal)}. A SAFE turns into shares only if the company raises a priced round or sells.</p></More>
-          <p className="cd-fine lv-mono">SAMPLE TERMS · NOT AN OFFER</p>
+          <div className="cd-soon"><b>Reserve interest.</b><span>Non-binding. No money moves. Catalyst's funding-portal registration is pending; investing opens only through a registered portal.</span></div>
+          <form className="cd-ask" onSubmit={(e) => { e.preventDefault(); void reserve(); }}>
+            <input inputMode="numeric" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9]/g, ""))} placeholder={`Amount (limit ${usdf(regCfLimit(inc, nw))})`} aria-label="Amount" />
+            <button type="submit" aria-label="Reserve"><Icon name="check" size={16} /></button>
+          </form>
+          <label className="cd-p"><input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} /> I understand startups are risky and I could lose everything.</label>
+          {resMsg && <p className="cd-p" role="status">{resMsg}</p>}
+          <dl className="cd-dl three"><div><dt className="lv-mono">INSTRUMENT</dt><dd>{c.instrument || "TBA"}</dd></div><div><dt className="lv-mono">CAP</dt><dd>{c.valuationCap || "TBA"}</dd></div><div><dt className="lv-mono">MIN</dt><dd>{c.minCheck ? usdf(c.minCheck) : "TBA"}</dd></div></dl>
+          <More label="Use of funds"><ul className="cd-list">{(c.useOfFunds ?? []).map((t) => <li key={t}>{t}</li>)}</ul><p className="cd-p dim">{c.goal ? `Target ${usdf(c.goal)}. ` : ""}A SAFE turns into shares only if the company raises a priced round or sells.</p></More>
+          <p className="cd-fine lv-mono">NOT AN OFFER TO SELL SECURITIES</p>
         </Sec>
 
         <Sec id="docs" k={8} title="Documents">
-          <ul className="cd-docs">{c.docs.map((d) => <li key={d.kind}><Icon name="draft" size={18} /><span>{d.name}</span><em className="lv-mono">{d.ready ? "SAMPLE" : "AT LAUNCH"}</em></li>)}</ul>
+          {(c.docs ?? []).length ? <ul className="cd-docs">{c.docs.map((d) => <li key={d.kind + d.name}><Icon name="draft" size={18} /><span>{d.name}</span><em className="lv-mono">{d.ready ? "READY" : "AT LAUNCH"}</em></li>)}</ul> : <p className="cd-p dim">Documents will be posted before investing opens.</p>}
         </Sec>
 
         <Sec id="updates" k={9} title="Updates">
-          <article className="cd-upd"><span className="lv-mono dim">{c.updates[0].when} AGO</span><b>{c.updates[0].title}</b><p>{c.updates[0].body}</p></article>
-          {c.updates.length > 1 && <More label={`${c.updates.length - 1} older`}>{c.updates.slice(1).map((u) => <article key={u.title} className="cd-upd"><span className="lv-mono dim">{u.when} AGO</span><b>{u.title}</b><p>{u.body}</p></article>)}</More>}
+          {!(c.updates ?? []).length ? <p className="cd-p dim">No updates yet.</p> : <>
+          <article className="cd-upd"><span className="lv-mono dim">{c.updates[0].when}</span><b>{c.updates[0].title}</b><p>{c.updates[0].body}</p></article>
+          {c.updates.length > 1 && <More label={`${c.updates.length - 1} older`}>{c.updates.slice(1).map((u) => <article key={u.title} className="cd-upd"><span className="lv-mono dim">{u.when}</span><b>{u.title}</b><p>{u.body}</p></article>)}</More>}</>}
         </Sec>
 
         <Sec id="qa" k={10} title="Q&A">
-          {[...mine.map((b, i) => ({ id: `me${i}`, body: b, memberName: "You", when: "now", votes: 0, answer: null as string | null, answeredBy: undefined as string | undefined })), ...qs].slice(0, 99).map((q, i) => (
-            <div key={q.id} className={`cd-q${i > 0 && !mine.length ? "" : ""}`}>
-              <p><b>{q.body}</b></p><span className="lv-mono dim">{q.memberName} · {q.when}{q.votes ? ` · ▲ ${q.votes}` : ""}</span>
-              {q.answer ? <More label="Founder's answer"><p className="cd-ans"><small className="lv-mono">{q.answeredBy}</small>{q.answer}</p></More> : <span className="lv-mono cd-wait">WAITING ON FOUNDER</span>}
+          {qErr && <p className="cd-p dim">{qErr}</p>}
+          {!qErr && !qs.length && <p className="cd-p dim">No questions yet. Ask the first one.</p>}
+          {qs.map((q) => (
+            <div key={q.id} className="cd-q">
+              <p><b>{q.body}</b></p><span className="lv-mono dim">{q.user_id === uid ? "You" : q.asker_name || "Member"} · {ago(q.created_at)}</span>
+              {q.answer ? <p className="cd-ans"><small className="lv-mono">FOUNDER</small>{q.answer}</p> : isOwner ? (
+                <form className="cd-ask" onSubmit={async (e) => { e.preventDefault(); const a = (ans[q.id] ?? "").trim(); if (!a || !requireAccount()) return; const r = await answerQuestion(q.id, a); if (r.ok) loadQs(); else setQErr(r.error ?? ""); }}>
+                  <input value={ans[q.id] ?? ""} onChange={(e) => setAns({ ...ans, [q.id]: e.target.value })} placeholder="Answer as founder" aria-label="Answer" />
+                  <button type="submit" aria-label="Post answer"><Icon name="send" size={16} /></button>
+                </form>) : <span className="lv-mono cd-wait">WAITING ON FOUNDER</span>}
             </div>))}
-          <form className="cd-ask" onSubmit={(e) => { e.preventDefault(); if (ask.trim()) { setMine([ask.trim(), ...mine]); setAsk(""); } }}>
-            <input value={ask} onChange={(e) => setAsk(e.target.value)} placeholder={`Ask ${founder.name} something`} aria-label="Your question" />
+          <form className="cd-ask" onSubmit={async (e) => { e.preventDefault(); const b = ask.trim(); if (!b || !requireAccount()) return; const r = await askQuestion(id, b); if (r.ok) { setAsk(""); loadQs(); } else setQErr(r.missing ? "Q&A opens soon." : r.error ?? "Couldn't post."); }}>
+            <input value={ask} onChange={(e) => setAsk(e.target.value)} maxLength={1000} placeholder={`Ask ${founder?.name ?? "the founder"} something`} aria-label="Your question" />
             <button type="submit" aria-label="Send"><Icon name="send" size={16} /></button>
           </form>
         </Sec>
 
         <Sec id="risks" k={11} title="Risks">
-          <p className="cd-lead">{c.risks[c.risks.length - 1]}</p>
-          <More label={`${c.risks.length - 1} company risks`}><ul className="cd-list">{c.risks.slice(0, -1).map((t) => <li key={t}>{t}</li>)}</ul></More>
+          <p className="cd-lead">Startup investing is risky. You could lose all of your money, and shares are hard to sell.</p>
+          {(c.risks ?? []).length > 0 && <More label={`${c.risks.length} company risks`}><ul className="cd-list">{c.risks.map((t) => <li key={t}>{t}</li>)}</ul></More>}
         </Sec>
 
         <Sec id="events" k={12} title="Meet them">
-          {EVENTS.filter((e) => c.eventIds.includes(e.id)).map((e) => (
-            <div key={e.id} className="cd-ev"><img src={e.img} alt="" /><div><span className="lv-mono dim">{e.when} · {e.where}</span><b>{e.title}</b><small>{founder.name} will be there · sample</small></div></div>))}
+          {EVENTS.filter((e) => (c.eventIds ?? []).includes(e.id)).map((e) => (
+            <div key={e.id} className="cd-ev">{e.img ? <img src={e.img} alt="" /> : <div className="lv-noimg" />}<div><span className="lv-mono dim">{e.when} · {e.where}</span><b>{e.title}</b></div></div>))}
         </Sec>
 
         <Sec id="limit" k={13} title="Your yearly limit">
@@ -178,11 +207,11 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
             <p className="cd-p dim">Reg CF rule: if income or net worth is under $124K, the greater of $2,500 or 5% of the higher number. If both are above, 10%, capped at $124K. Saved to your profile.</p>
           </More>
         </Sec>
-        <p className="cd-foot lv-mono">{c.name} is a fictional sample company for this preview. Nothing here is an offer to sell securities.</p>
+        <p className="cd-foot lv-mono">Nothing here is an offer to sell securities. Investing opens only through a registered funding portal.</p>
       </div>
 
       <footer className="cd-bar">
-        <button type="button" className={`cd-save${saved ? " on" : ""}`} onClick={() => setSaved(!saved)}><Icon name="saved" size={18} />{saved ? "Saved · we'll notify you" : "Save for launch"}</button>
+        <button type="button" className={`cd-save${saved ? " on" : ""}`} onClick={() => setSaved(!saved)}><Icon name="saved" size={18} />{saved ? "Saved" : "Save"}</button>
       </footer>
     </div>
   );

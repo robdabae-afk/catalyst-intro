@@ -40,10 +40,10 @@ export default function Company() {
           <p className="mono dim" style={{ marginTop: 16 }}>{c.sector} · {c.stage} · {c.city}</p>
           <div className="row" style={{ marginTop: 18, gap: 8, flexWrap: "wrap" }}>
             <button className={`btn${following ? " ghost" : ""}`} aria-pressed={following}
-              onClick={() => { if (!requireAccount()) return; setState((x) => ({ ...x, follows: toggle(x.follows, c.id) })); t.show(following ? `Unfollowed ${c.name}` : `Following ${c.name}`); }}>
+              onClick={() => { if (!requireAccount()) return; void setState((x) => ({ ...x, follows: toggle(x.follows, c.id) })).then((ok) => ok && t.show(following ? `Unfollowed ${c.name}` : `Following ${c.name}`)); }}>
               {following ? <><Icon name="check" size={16} />Following</> : <><Icon name="plus" size={16} />Follow</>}</button>
             <button className="btn ghost" aria-pressed={watching}
-              onClick={() => { if (!requireAccount()) return; setState((x) => { const w = { ...x.watch }; if (watching) delete w[c.id]; else w[c.id] = { raise: true, closing: true, update: true }; return { ...x, watch: w }; }); t.show(watching ? "Removed from watchlist" : "Added to watchlist"); }}>
+              onClick={() => { if (!requireAccount()) return; setState((x) => { const w = { ...x.watch }; if (watching) delete w[c.id]; else w[c.id] = { raise: true, closing: true, update: true }; return { ...x, watch: w }; }).then((ok) => ok && t.show(watching ? "Removed from watchlist" : "Added to watchlist")); }}>
               <Icon name="save" size={18} />{watching ? "Watching" : "Watch"}</button>
           </div>
           <div className="sec"><h2><span className="ix">01</span>Founder updates</h2><span className="mono dim">{ups.length}</span></div>

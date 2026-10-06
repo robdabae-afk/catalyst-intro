@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Icon } from "@/brand/icons";
 import { type Hotspot, type LiveDeal, usd } from "./data";
-import { useCountUp, useInView, useParallax, useReducedMotion, useTicker } from "./hooks";
+import { useCountUp, useInView, useParallax, useReducedMotion } from "./hooks";
 
 /** Status pill (e.g. "OPENS SOON"). No sample labels on real companies. */
 export const SampleTag = ({ dark, label = "OPENS SOON" }: { dark?: boolean; label?: string }) => <span className={`lv-pill${dark ? " dk" : ""}`}><i />{label}</span>;
@@ -47,17 +47,9 @@ export function Sparkline({ data, go, w = 120, h = 32 }: { data: number[]; go: b
   );
 }
 
-/* Investor ticker with +1 pop. */
+/* Static count (no simulated live increments). */
 export function Ticker({ start, label = "INVESTORS" }: { start: number; label?: string }) {
-  const reduced = useReducedMotion();
-  const [n, pop] = useTicker(start, reduced);
-  return (
-    <span className="lv-tick">
-      <span className="lv-live" aria-hidden />
-      <b aria-live="polite">{n.toLocaleString("en-US")}</b> {label}
-      {pop > 0 && <i key={pop} className="lv-plus">+1</i>}
-    </span>
-  );
+  return <span className="lv-tick"><b>{start.toLocaleString("en-US")}</b> {label}</span>;
 }
 
 /* Raise block: no live raise numbers or ticker. Investing is not open yet. */
