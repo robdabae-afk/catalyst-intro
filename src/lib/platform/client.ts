@@ -2,7 +2,7 @@
 // - VITE_PLATFORM_BACKEND_ENABLED === "true": real backend from src/platform/api.ts (Forge-owned).
 //   If that module is missing or throws missing_table, we FAIL CLOSED. No sample fallback.
 // - otherwise: local sample backend, and the UI shows a "demo, sample data" banner.
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useMutation, useQuery, useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import { PlatformError, type PlatformApi, type Session } from "./contract";
 import { sampleApi } from "./sample";
@@ -73,6 +73,7 @@ function idOf(s: Session | null) { return s ? `${s.userId}|${s.role}` : "anon"; 
 function purge(qc: QueryClient) {
   void qc.cancelQueries({ queryKey: ["p"] });
   qc.removeQueries({ queryKey: ["p"], type: "inactive" });
+  // active queries under an old identity are rekeyed by useIdentity rerender; drop their data now
   void qc.resetQueries({ queryKey: ["p"] }); // drops data of active queries, refetches under new identity
 }
 
@@ -109,12 +110,29 @@ export function useSession() {
   return state;
 }
 
+function subscribe(l: () => void) { listeners.add(l); return () => { listeners.delete(l); }; }
+const getIdentity = () => identity;
+/** Reactive identity: components rerender (and rekey queries) when it changes. */
+export function useIdentity() { return useSyncExternalStore(subscribe, getIdentity, getIdentity); }
+
+function semanticMatch(qk: QueryKey, k: QueryKey) {
+  if (qk[0] !== "p") return false;
+  const rest = qk.slice(2);
+  return k.every((part, i) => JSON.stringify(rest[i]) === JSON.stringify(part));
+}
+
 export function useP<T>(key: QueryKey, fn: () => Promise<T>, enabled = true) {
   const qc = useQueryClient();
+  const id = useIdentity();
   useEffect(() => { clients.add(qc); start(); }, [qc]);
-  return useQuery({ queryKey: ["p", identity, ...key], queryFn: fn, enabled, retry: (n, e) => !(e instanceof PlatformError) && n < 1 });
+  return useQuery({ queryKey: ["p", id, ...key], queryFn: fn, enabled, retry: (n, e) => !(e instanceof PlatformError) && n < 1 });
 }
 export function useAct<A, R>(fn: (a: A) => Promise<R>, invalidate: QueryKey[] = [[]]) {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: fn, onSuccess: () => invalidate.forEach((k) => qc.invalidateQueries({ queryKey: k.length ? ["p", identity, ...k] : ["p"] })) });
+  useIdentity();
+  useEffect(() => { clients.add(qc); start(); }, [qc]);
+  // Identity-agnostic: purge() already removed other identities' data, so matching on the semantic key
+  // can never leak, and it cannot miss when the identity value seen at onSuccess differs from render time.
+  return useMutation({ mutationFn: fn, onSuccess: () => invalidate.forEach((k) =>
+    qc.invalidateQueries(k.length ? { predicate: (q) => semanticMatch(q.queryKey, k) } : { queryKey: ["p"] })) });
 }
