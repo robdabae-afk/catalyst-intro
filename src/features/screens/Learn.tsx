@@ -34,7 +34,7 @@ export default function Learn() {
       else setErr("Couldn't save your answer. Check your connection and try again.");
     });
   };
-  const go = (d: number) => { if (busy) return; setErr(null); setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
+  const go = (d: number) => { if (busy) return; seq.current++; setErr(null); setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
   const next = () => go(1);
   const [dx, setDx] = useState(0);
   const [drag, setDrag] = useState(false);
@@ -92,7 +92,7 @@ export default function Learn() {
         <div className="sec" style={{ marginTop: 22 }}><h2>Series</h2><span className="mono dim">{done}/{LEARN.length}</span></div>
         <div className="bar" style={{ marginBottom: 8 }}><b style={{ width: `${(done / LEARN.length) * 100}%` }} /></div>
         {LEARN.map((x, k) => (
-          <button key={x.id} className={`step${s.learned[x.id] ? " done" : ""}`} onClick={() => { setPick(null); setI(k); }} aria-current={k === i}>
+          <button key={x.id} className={`step${s.learned[x.id] ? " done" : ""}`} onClick={() => go(k - i)} disabled={busy} aria-current={k === i}>
             <span className="tick">{s.learned[x.id] ? <ICheck size={14} /> : <span className="mono">{k + 1}</span>}</span>
             <span className="grow" style={{ fontWeight: k === i ? 700 : 500 }}>{x.title}</span>
           </button>
