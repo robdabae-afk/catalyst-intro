@@ -1,5 +1,7 @@
 # Isolated Catalyst platform setup
 
+The new data tables and browser session storage are isolated, but the existing project shares `auth.users`. Its legacy `handle_new_user` trigger creates founder profiles/referrals for every new signup. This work deliberately does not alter that trigger. New real platform signups are therefore blocked unless `VITE_PLATFORM_ALLOW_SHARED_SIGNUP=true` is explicitly configured after rollout review. Existing confirmed accounts can sign in. Prefer an isolated staging/project Auth setup, or separately approve a narrowly scoped legacy-trigger change before enabling registrations. Do not describe shared-project signup as side-effect-free.
+
 The platform backend is opt-in. It is a community and preview-deal application, not an investment/payment processor. Existing `profiles`, auth triggers, user roles, waitlist policies, and the old product are untouched. The platform uses new `public.platform_*` tables and its own roles. Database `user` maps to UI `member`; `admin` maps unchanged. Community size defaults to 28,000.
 
 ## Apply exactly one new migration
@@ -51,7 +53,7 @@ All SQL field names are snake_case; map to the requested camelCase in the API. F
 
 `platform_announce(p_title text, p_body text, p_audience jsonb)` accepts JSON string `"all"`, JSON string `"admins"`, or exactly `{ "eventId": "uuid" }`. It creates the announcement and all scoped notifications in one transaction. Event audience means approved, pending, or waitlisted attendees, not declined/cancelled users. Title/body and audience are bounded. Use this RPC, not separate announcement/notification inserts, for sending.
 
-`platform_waitlist(p_query text default '', p_limit integer default 50, p_offset integer default 0)` is admin-only and returns `{rows,total}` from the existing `waitlist_signups` table, without changing its table or policies. Filtering is literal case-insensitive substring, not SQL wildcard matching. Limit is 1–100, offset 0–1,000,000, query at most 200 characters. Legacy entries have no `source` column, so response `source` is null. Rows use snake_case `created_at`.
+`platform_waitlist(p_query text default '', p_limit integer default 50, p_offset integer default 0)` is admin-only and returns `{rows,total}` from the existing `waitlist_signups` table, without changing its table or policies. Filtering is literal case-insensitive substring, not SQL wildcard matching. Limit is 1–100, offset 0–1,000,000, query at most 200 characters. Legacy `user_type` is returned as `source` when present, otherwise null. Rows use snake_case `created_at`.
 
 Thread creation/membership is admin-managed. Members can only read joined threads, insert messages as themselves in joined threads, and upsert their own `platform_thread_reads.read_at`. Message inserts update `threads.last_message_at` through a trusted trigger. Notification owners can update only `read_at`, never payload or ownership. Safe profile and notification column grants also apply to admins; use privileged RPCs for restricted operations. No arbitrary investment, monetary balance, raised amount, backer, or portfolio-position fields exist.
 

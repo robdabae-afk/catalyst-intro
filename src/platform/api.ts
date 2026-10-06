@@ -25,7 +25,7 @@ export function onSession(cb:(session:T.Session|null)=>void){if(!client)return (
 async function user(){const s=await getSession();if(!s)throw new PlatformError('unauthenticated','Sign in to continue');return s;}
 async function admin(){const s=await user();if(s.role!=='admin')throw new PlatformError('forbidden','Admin access required');return s;}
 export async function signIn(email:string,password:string){const {error}=await db().auth.signInWithPassword({email,password});fail(error);await rpc('ensure_profile');return getSession();}
-export async function signUp(email:string,password:string,name:string){const {data,error}=await db().auth.signUp({email,password,options:{data:{name}}});fail(error);if(data.session)await rpc('ensure_profile');return data.session ? getSession() : null;}
+export async function signUp(email:string,password:string,name:string){if(import.meta.env.VITE_PLATFORM_ALLOW_SHARED_SIGNUP!=='true')throw new PlatformError('not_enabled','New platform registrations are disabled pending the shared Auth rollout review. Existing accounts can sign in.');const {data,error}=await db().auth.signUp({email,password,options:{data:{name}}});fail(error);if(data.session)await rpc('ensure_profile');return data.session ? getSession() : null;}
 export async function signOut(){const {error}=await db().auth.signOut();fail(error);}
 export async function sendReset(email:string){const {error}=await db().auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/forgot-password'});fail(error);}
 export async function getMe(){const s=await user();await rpc('ensure_profile');return member(await one('profiles',s.userId));}

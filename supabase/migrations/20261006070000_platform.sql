@@ -101,11 +101,12 @@ GRANT DELETE ON public.platform_deal_questions TO authenticated;
 GRANT INSERT(user_id,deal_id),DELETE ON public.platform_saved_deals TO authenticated;
 GRANT INSERT(thread_id,user_id,body) ON public.platform_messages TO authenticated;
 GRANT DELETE ON public.platform_messages TO authenticated;
-GRANT INSERT(thread_id,user_id,read_at),UPDATE(read_at) ON public.platform_thread_reads TO authenticated;
+GRANT INSERT(thread_id,user_id,read_at),UPDATE(thread_id,user_id,read_at) ON public.platform_thread_reads TO authenticated;
 GRANT UPDATE(read_at) ON public.platform_notifications TO authenticated;
 CREATE POLICY self_read ON public.platform_profiles FOR SELECT TO authenticated USING(id=auth.uid());
 CREATE POLICY self_update ON public.platform_profiles FOR UPDATE TO authenticated USING(id=auth.uid()) WITH CHECK(id=auth.uid());
 CREATE POLICY published ON public.platform_events FOR SELECT TO anon,authenticated USING(status='published');
+CREATE POLICY own_rsvp_event ON public.platform_events FOR SELECT TO authenticated USING(EXISTS(SELECT 1 FROM public.platform_event_rsvps r WHERE r.event_id=platform_events.id AND r.user_id=auth.uid()));
 CREATE POLICY previews ON public.platform_deals FOR SELECT TO anon,authenticated USING(status='preview');
 CREATE POLICY own_rsvp ON public.platform_event_rsvps FOR SELECT TO authenticated USING(user_id=auth.uid());
 CREATE POLICY visible_question ON public.platform_deal_questions FOR SELECT TO authenticated USING(NOT hidden AND EXISTS(SELECT 1 FROM public.platform_deals d WHERE d.id=deal_id AND d.status='preview'));
@@ -131,7 +132,9 @@ END $$;
 CREATE FUNCTION public.platform_set_role(p_user_id uuid,p_role text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public AS $$
 BEGIN
  -- A singleton row serializes all role changes, including simultaneous demotions.
+ IF NOT public.is_platform_admin() THEN RAISE EXCEPTION 'forbidden' USING ERRCODE='42501'; END IF;
  PERFORM 1 FROM public.platform_settings WHERE id FOR UPDATE;
+ -- Recheck after the lock because another admin may have demoted this caller.
  IF NOT public.is_platform_admin() THEN RAISE EXCEPTION 'forbidden' USING ERRCODE='42501'; END IF;
  IF p_role IS NULL OR p_role NOT IN ('user','admin') THEN RAISE EXCEPTION 'invalid role' USING ERRCODE='22023'; END IF;
  IF p_role='user' AND EXISTS(SELECT 1 FROM public.platform_profiles WHERE id=p_user_id AND role='admin') AND (SELECT count(*) FROM public.platform_profiles WHERE role='admin')<=1 THEN RAISE EXCEPTION 'last admin' USING ERRCODE='23514'; END IF;
@@ -144,11 +147,14 @@ DECLARE e public.platform_events; r public.platform_event_rsvps; s text; BEGIN
  SELECT * INTO e FROM public.platform_events WHERE id=p_event_id FOR UPDATE;
  IF NOT FOUND OR (e.status<>'published' AND NOT coalesce(p_cancel,false)) THEN RAISE EXCEPTION 'event not available' USING ERRCODE='P0002'; END IF;
  SELECT * INTO r FROM public.platform_event_rsvps WHERE event_id=p_event_id AND user_id=auth.uid();
+ IF r.status='declined' THEN RAISE EXCEPTION 'RSVP declined; contact the event organizer' USING ERRCODE='42501'; END IF;
  IF coalesce(p_cancel,false) THEN
+ IF r.checked_in_at IS NOT NULL THEN RAISE EXCEPTION 'checked-in RSVP must be changed by an organizer' USING ERRCODE='42501'; END IF;
  UPDATE public.platform_event_rsvps SET status='cancelled',checked_in_at=NULL WHERE event_id=p_event_id AND user_id=auth.uid() RETURNING * INTO r;
  IF NOT FOUND THEN RAISE EXCEPTION 'not found' USING ERRCODE='P0002'; END IF; RETURN r;
  END IF;
  IF r.status IN ('approved','pending','waitlisted') THEN RETURN r; END IF;
+ IF e.starts_at<=now() THEN RAISE EXCEPTION 'event has already started' USING ERRCODE='23514'; END IF;
  IF e.capacity IS NOT NULL AND (SELECT count(*) FROM public.platform_event_rsvps WHERE event_id=e.id AND status='approved')>=e.capacity THEN s:='waitlisted';
  ELSIF (SELECT require_approval FROM public.platform_settings WHERE id) THEN s:='pending'; ELSE s:='approved'; END IF;
  INSERT INTO public.platform_event_rsvps(event_id,user_id,status) VALUES(e.id,auth.uid(),s) ON CONFLICT(event_id,user_id) DO UPDATE SET status=excluded.status,checked_in_at=NULL RETURNING * INTO r;
@@ -198,7 +204,7 @@ DECLARE rows_json jsonb; n bigint; BEGIN
  IF NOT public.is_platform_admin() THEN RAISE EXCEPTION 'forbidden' USING ERRCODE='42501'; END IF;
  IF p_limit IS NULL OR p_limit NOT BETWEEN 1 AND 100 OR p_offset IS NULL OR p_offset NOT BETWEEN 0 AND 1000000 OR length(coalesce(p_query,''))>200 THEN RAISE EXCEPTION 'invalid pagination' USING ERRCODE='22023'; END IF;
  SELECT count(*) INTO n FROM public.waitlist_signups w WHERE coalesce(p_query,'')='' OR position(lower(p_query) IN lower(w.email||' '||coalesce(w.name,'')))>0;
- SELECT coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) INTO rows_json FROM (SELECT w.id,w.email,w.name,NULL::text AS source,w.created_at FROM public.waitlist_signups w WHERE coalesce(p_query,'')='' OR position(lower(p_query) IN lower(w.email||' '||coalesce(w.name,'')))>0 ORDER BY w.created_at DESC,w.id LIMIT p_limit OFFSET p_offset) x;
+ SELECT coalesce(jsonb_agg(to_jsonb(x)),'[]'::jsonb) INTO rows_json FROM (SELECT w.id,w.email,w.name,to_jsonb(w)->>'user_type' AS source,w.created_at FROM public.waitlist_signups w WHERE coalesce(p_query,'')='' OR position(lower(p_query) IN lower(w.email||' '||coalesce(w.name,'')))>0 ORDER BY w.created_at DESC,w.id LIMIT p_limit OFFSET p_offset) x;
  RETURN jsonb_build_object('rows',rows_json,'total',n);
 END $$;
 -- Return only display names of visible Q&A authors/thread peers, never their email/profile.
@@ -220,7 +226,7 @@ DO $$ DECLARE f record; BEGIN FOR f IN SELECT p.oid::regprocedure AS signature F
  IF f.signature::text NOT LIKE '%platform_message_touch%' AND f.signature::text NOT LIKE '%platform_capacity_guard%' THEN EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated',f.signature); END IF;
  END LOOP; END $$;
 GRANT EXECUTE ON FUNCTION public.platform_event_counts(uuid) TO anon;
-INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types) VALUES('platform-covers','platform-covers',true,5242880,ARRAY['image/jpeg','image/png','image/webp']);
+INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types) VALUES('platform-covers','platform-covers',true,5242880,ARRAY['image/jpeg','image/png','image/webp']) ON CONFLICT(id) DO UPDATE SET public=excluded.public,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
 CREATE POLICY platform_covers_read ON storage.objects FOR SELECT TO anon,authenticated USING(bucket_id='platform-covers');
 CREATE POLICY platform_covers_insert ON storage.objects FOR INSERT TO authenticated WITH CHECK(bucket_id='platform-covers' AND public.is_platform_admin() AND lower(storage.extension(name)) IN ('jpg','jpeg','png','webp'));
 CREATE POLICY platform_covers_update ON storage.objects FOR UPDATE TO authenticated USING(bucket_id='platform-covers' AND public.is_platform_admin()) WITH CHECK(bucket_id='platform-covers' AND public.is_platform_admin() AND lower(storage.extension(name)) IN ('jpg','jpeg','png','webp'));
