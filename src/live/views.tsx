@@ -7,7 +7,7 @@ import { MatchList, PrefsSheet } from "./match";
 import { DEFAULT_PREFS, type Prefs } from "./data";
 import { SwipeAction, RsvpButton, InvestButton, IconButton } from "@/brand/Button";
 import { DEALS, EVENTS, type LiveDeal, type LiveEvent } from "./data";
-import { CatIcon, LiveImage, RaiseHud, SampleTag, Sparkline, useClock } from "./parts";
+import { CatIcon, LiveImage, RaiseHud, SampleTag, Sparkline } from "./parts";
 import { useCountUp, useInView, useReducedMotion } from "./hooks";
 
 const TH = 110;
@@ -21,7 +21,6 @@ export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
   const [fly, setFly] = useState<0 | 1 | -1>(0);
   const [log, setLog] = useState({ save: 0, pass: 0 });
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
-  const clock = useClock();
   const d = DEALS[i % DEALS.length], next = DEALS[(i + 1) % DEALS.length];
 
   const [burst, setBurst] = useState<{ k: "save" | "pass" | null; n: number }>({ k: null, n: 0 });
@@ -51,8 +50,7 @@ export function SwipeView({ onOpen }: { onOpen: (id: string) => void }) {
   return (
     <div className="lv-swipe">
       <header className="lv-top">
-        <div className="lv-mono">DISCOVER / SWIPE</div>
-        <div className="lv-mono dim">{clock}</div>
+        <div className="lv-top-t">Discover</div>
       </header>
       <div className="lv-deck">
         <article className="lv-card under" key={"u" + i} aria-hidden style={{ transform: `scale(${0.94 + Math.abs(p) * 0.06})` }}>
@@ -105,7 +103,6 @@ function Waveform() {
 export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void; wide?: boolean }) {
   const d = DEALS.find((x) => x.id === id) ?? DEALS[0];
   const [saved, setSaved] = useState(false);
-  const clock = useClock();
   return (
     <div className={`lv-deal${wide ? " wide" : ""}`}>
       <LiveImage key={d.id} src={d.img} hotspots={d.hotspots} className="lv-hero">
@@ -114,7 +111,6 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
           <SampleTag />
           <SaveToggle on={saved} onChange={setSaved} className="lv-glass" />
         </div>
-        <div className="lv-hero-tele lv-mono"><span>REC · {clock}</span><span>TAP ◎ TO INSPECT</span></div>
       </LiveImage>
       <div className="lv-deal-body">
         <div className="lv-mono dim"><CatIcon cat={d.cat} /> {d.cat.toUpperCase()} · {d.city.toUpperCase()}</div>

@@ -31,24 +31,24 @@ export default function LivePage() {
     return (
       <div className="lv lv-desk">
         <header className="lv-desk-h">
-          <div><span className="lv-mono">CATALYST / LIVE UI</span><h1>Still images, alive.</h1></div>
-          <p className="lv-mono dim">ALL DEALS + NUMBERS ARE SAMPLE · MOVE YOUR POINTER · DRAG THE CARD · TAP ◎</p>
+          <div><span className="lv-desk-k">Catalyst</span><h1>Still images, alive.</h1></div>
+          <p className="dim">All deals and numbers are samples. Drag the card to swipe.</p>
         </header>
         <div className="lv-phones">
-          <Phone label="01 · SWIPE"><SwipeView onOpen={setDeskDeal} /></Phone>
-          <Phone label="02 · DEAL"><DealView id={deskDeal} /></Phone>
-          <Phone label="03 · DISCOVER"><DiscoverView onOpen={setDeskDeal} /></Phone>
-          <Phone label="04 · EVENTS"><EventsView /></Phone>
-          <Phone label="05 · PORTFOLIO"><PortfolioView /></Phone>
-          <Phone label="06 · INBOX"><InboxView onOpen={setDeskThread} /></Phone>
-          <Phone label="07 · THREAD"><ThreadView key={deskThread} id={deskThread} /></Phone>
-          <Phone label="08 · NOTIFICATIONS"><NotificationsView /></Phone>
-          <Phone label="09 · PROFILE"><ProfileView /></Phone>
-          <Phone label="10 · ONBOARDING (FIRST RUN)"><OnboardingView /></Phone>
-          <Phone label="11 · ADMIN (ADMIN ROLE ONLY)"><AdminView /></Phone>
-          <Phone label="12 · COMPANY PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "lumen" }} /></Phone>
-          <Phone label="13 · PERSON PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
-          <Phone label="14 · MATCH PREFERENCES"><DiscoverView onOpen={setDeskDeal} prefsOpen /></Phone>
+          <Phone label="Swipe"><SwipeView onOpen={setDeskDeal} /></Phone>
+          <Phone label="Deal"><DealView id={deskDeal} /></Phone>
+          <Phone label="Discover"><DiscoverView onOpen={setDeskDeal} /></Phone>
+          <Phone label="Events"><EventsView /></Phone>
+          <Phone label="Portfolio"><PortfolioView /></Phone>
+          <Phone label="Inbox"><InboxView onOpen={setDeskThread} /></Phone>
+          <Phone label="Thread"><ThreadView key={deskThread} id={deskThread} /></Phone>
+          <Phone label="Notifications"><NotificationsView /></Phone>
+          <Phone label="Profile"><ProfileView /></Phone>
+          <Phone label="Onboarding"><OnboardingView /></Phone>
+          <Phone label="Admin"><AdminView /></Phone>
+          <Phone label="Company profile"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "lumen" }} /></Phone>
+          <Phone label="Person profile"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
+          <Phone label="Match preferences"><DiscoverView onOpen={setDeskDeal} prefsOpen /></Phone>
         </div>
       </div>
     );
@@ -95,7 +95,7 @@ export default function LivePage() {
 function Phone({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <figure className="lv-phone">
-      <figcaption className="lv-mono dim">{label}</figcaption>
+      <figcaption className="lv-cap">{label}</figcaption>
       <div className="lv-frame"><div className="lv-notch" /><div className="lv-scr"><div className="lv-scr-in">{children}</div></div></div>
     </figure>
   );
