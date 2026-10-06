@@ -128,10 +128,13 @@ export function Swipe() {
 export function Discover() {
   const [f, setF] = useState<(typeof SECTORS)[number]>("All");
   const [s, set] = useTry();
-  const list = DEALS.filter((d) => f === "All" || d.sector === f);
+  const [q, setQ] = useState<string | null>(null);
+  const t = (q || "").trim().toLowerCase();
+  const list = DEALS.filter((d) => (f === "All" || d.sector === f) && (!t || `${d.name} ${d.line} ${d.sector}`.toLowerCase().includes(t)));
   const [feat, ...rest] = list;
   return (
-    <Shell title="Discover" right={<span className="ic"><Ic d={I.search} size={18} /></span>}>
+    <Shell title="Discover" right={<button className="ic" aria-label={q === null ? "Search" : "Close search"} onClick={() => setQ(q === null ? "" : null)}><Ic d={q === null ? I.search : I.x} size={18} /></button>}>
+      {q !== null && <div className="pad" style={{ paddingBottom: 18 }}><input className="srch" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search sample startups" aria-label="Search sample startups" /></div>}
       <div className="pad">
         <div className="h1" style={{ fontSize: 30 }}>Own a piece of what's next.</div>
         <p className="sub" style={{ margin: "6px 0 16px" }}>Startups you can back from $100. All companies shown are samples.</p>
@@ -147,7 +150,7 @@ export function Discover() {
                 <b style={{ fontSize: 22, letterSpacing: "-.03em" }}>{feat.name}</b>
                 <span className="sample" style={{ borderColor: "#fff" }}>Sample</span></div>
               <div style={{ fontSize: 13, opacity: 0.8 }}>{feat.line}</div></div></Link>
-        ) : <div className="empty">No sample deals in this category yet.</div>}
+        ) : <div className="empty">{t ? `Nothing matches "${q}" yet.` : "No sample deals in this category yet."}</div>}
         <div className="dgrid" style={{ marginTop: 6 }}>
           {rest.map((d) => (
             <div className="card" key={d.id}>
