@@ -53,10 +53,11 @@ import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
 import TryOnboarding from "./try/Onboarding";
-import { Swipe as TrySwipe, Discover as TryDiscover, Portfolio as TryPortfolio, Profile as TryProfile } from "./try/Main";
-import { Inbox as TryInbox, ThreadPage as TryThread, Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
+import { Portfolio as TryPortfolio } from "./try/Main";
+import { Swipe as TrySwipe, Discover as TryDiscover, Profile as TryProfile, DealPage as TryDeal, Inbox as TryInbox, ThreadPage as TryThread, Notifications as TryNotifications } from "./try/LiveContent";
+import { Settings as TrySettings, SetIdentity as TrySetIdentity, SetLimit as TrySetLimit, SetBank as TrySetBank, SetNotifications as TrySetNotifications } from "./try/Social";
 import { Events as LiveEvents, EventPage as LiveEvent } from "./try/Live";
-import { DealPage as TryDeal, Invest as TryInvest } from "./try/Deal";
+import { Invest as TryInvest } from "./try/Deal";
 import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
@@ -188,6 +189,7 @@ const App = () => (
           <Route path="/app/invest/:id" element={<TryInvest />} />
           <Route path="/app/inbox" element={<TryInbox />} />
           <Route path="/app/inbox/:id" element={<TryThread />} />
+          <Route path="/app/notifications" element={<TryNotifications />} />
           <Route path="/app/events/:id" element={<LiveEvent />} />
           <Route path="/app/account" element={<TrySettings />} />
           <Route path="/app/account/identity" element={<TrySetIdentity />} />
