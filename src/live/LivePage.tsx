@@ -44,8 +44,8 @@ export default function LivePage() {
           <Phone label="07 · THREAD"><ThreadView key={deskThread} id={deskThread} /></Phone>
           <Phone label="08 · NOTIFICATIONS"><NotificationsView /></Phone>
           <Phone label="09 · PROFILE"><ProfileView /></Phone>
-          <Phone label="10 · ONBOARDING"><OnboardingView /></Phone>
-          <Phone label="11 · ADMIN"><AdminView /></Phone>
+          <Phone label="10 · ONBOARDING (FIRST RUN)"><OnboardingView /></Phone>
+          <Phone label="11 · ADMIN (ADMIN ROLE ONLY)"><AdminView /></Phone>
           <Phone label="12 · COMPANY PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "co", id: "lumen" }} /></Phone>
           <Phone label="13 · PERSON PROFILE"><DiscoverView onOpen={setDeskDeal} initial={{ kind: "person", id: "p-lee" }} /></Phone>
           <Phone label="14 · MATCH PREFERENCES"><DiscoverView onOpen={setDeskDeal} prefsOpen /></Phone>
