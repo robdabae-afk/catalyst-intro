@@ -57,6 +57,20 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   const inc = draft?.inc ?? st.invest?.inc ?? 60000, nw = draft?.nw ?? st.invest?.nw ?? 40000;
   const setInc = (v: number) => setDraft({ inc: v, nw });
   const setNw = (v: number) => setDraft({ inc, nw: v });
+  const [numMsg, setNumMsg] = useState<string | null>(null);
+  const [numBusy, setNumBusy] = useState(false);
+  const dirty = !!draft && (draft.inc !== st.invest?.inc || draft.nw !== st.invest?.nw);
+  const saveNums = async () => {
+    if (!draft || numBusy) return;
+    if (!requireAccount()) return;
+    const v = { inc: draft.inc, nw: draft.nw };
+    setNumBusy(true); setNumMsg(null);
+    let ok = false;
+    try { ok = await setState((s) => ({ ...s, invest: v })); } catch { ok = false; }
+    setNumBusy(false);
+    if (ok) { setDraft(null); setNumMsg("Saved to your profile."); }
+    else setNumMsg("Couldn't save your numbers. Try again.");
+  };
   const saved = id in (st.watch ?? {});
   const setSaved = (v: boolean) => { if (!requireAccount()) return; if (v) watchAdd(id); else setState((s) => { const w = { ...s.watch }; delete w[id]; return { ...s, watch: w, launch: s.launch.filter((x) => x !== id) }; }); };
   const [ask, setAsk] = useState(""); const [ans, setAns] = useState<Record<string, string>>({});
@@ -202,9 +216,11 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
           <div className="cd-big">{usd(regCfLimit(inc, nw))}</div>
           <p className="cd-sub">max across all crowdfunding deals in 12 months</p>
           <More label="Change my numbers">
-            <label className="cd-rng"><span className="lv-mono">INCOME {usd(inc)}</span><input type="range" min={0} max={300000} step={5000} value={inc} onChange={(e) => setInc(+e.target.value)} /></label>
-            <label className="cd-rng"><span className="lv-mono">NET WORTH {usd(nw)}</span><input type="range" min={0} max={500000} step={5000} value={nw} onChange={(e) => setNw(+e.target.value)} /></label>
-            <p className="cd-p dim">Reg CF rule: if income or net worth is under $124K, the greater of $2,500 or 5% of the higher number. If both are above, 10%, capped at $124K. Saved to your profile.</p>
+            <label className="cd-rng" htmlFor="cd-inc"><span className="lv-mono">INCOME {usd(inc)}</span><input id="cd-inc" type="range" min={0} max={300000} step={5000} value={inc} aria-label="Yearly income" aria-valuetext={usd(inc)} disabled={numBusy} onChange={(e) => { setNumMsg(null); setInc(+e.target.value); }} /></label>
+            <label className="cd-rng" htmlFor="cd-nw"><span className="lv-mono">NET WORTH {usd(nw)}</span><input id="cd-nw" type="range" min={0} max={500000} step={5000} value={nw} aria-label="Net worth" aria-valuetext={usd(nw)} disabled={numBusy} onChange={(e) => { setNumMsg(null); setNw(+e.target.value); }} /></label>
+            <p className="cd-p dim">Reg CF rule: if income or net worth is under $124K, the greater of $2,500 or 5% of the higher number. If both are above, 10%, capped at $124K.</p>
+            {dirty && <button type="button" className="cd-save" onClick={saveNums} disabled={numBusy} aria-busy={numBusy || undefined}>{numBusy ? "Saving…" : "Save my numbers"}</button>}
+            {numMsg && <p className="cd-p" role="status">{numMsg}</p>}
           </More>
         </Sec>
         <p className="cd-foot lv-mono">Nothing here is an offer to sell securities. Investing opens only through a registered funding portal.</p>

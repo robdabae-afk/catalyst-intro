@@ -10,27 +10,36 @@ export default function Learn() {
   const firstOpen = LEARN.findIndex((c) => !s.learned[c.id]);
   const [i, setI] = useState(firstOpen === -1 ? 0 : firstOpen);
   const [pick, setPick] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const seq = useRef(0);
   const c = LEARN[i];
   const done = LEARN.filter((c) => s.learned[c.id]).length;
   const allDone = done === LEARN.length;
 
   const answer = (k: number) => {
-    if (pick !== null) return;
-    setPick(k);
-    const ok = k === c.answer;
-    // only a correct answer counts; a wrong one can be retried and never marks the card done
-    void Promise.resolve(setState((x) => {
-      const learned = ok ? { ...x.learned, [c.id]: true } : x.learned;
+    if (pick !== null || busy) return;
+    const ok = k === c.answer, card = c.id, my = ++seq.current;
+    setBusy(true); setErr(null);
+    // only a correct answer counts; a wrong one can be retried and never marks the card done.
+    // nothing is shown as Correct until the write is acknowledged.
+    setState((x) => {
+      const learned = ok ? { ...x.learned, [card]: true } : x.learned;
       const all = LEARN.every((q) => learned[q.id]);
       return { ...x, learned, streak: ok ? x.streak + 1 : 0, steps: all && !x.steps.includes("learn") ? [...x.steps, "learn"] : x.steps };
-    })).then((saved) => { if (!saved) setPick(null); });
+    }).catch(() => false).then((saved) => {
+      if (my !== seq.current) return;
+      setBusy(false);
+      if (saved) setPick(k);
+      else setErr("Couldn't save your answer. Check your connection and try again.");
+    });
   };
-  const go = (d: number) => { setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
+  const go = (d: number) => { if (busy) return; setErr(null); setPick(null); setDx(0); setI((i + d + LEARN.length) % LEARN.length); };
   const next = () => go(1);
   const [dx, setDx] = useState(0);
   const [drag, setDrag] = useState(false);
   const x0 = useRef<number | null>(null);
-  const down = (e: React.PointerEvent) => { if ((e.target as HTMLElement).closest("button")) return; x0.current = e.clientX; setDrag(true); (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };
+  const down = (e: React.PointerEvent) => { if (busy || (e.target as HTMLElement).closest("button")) return; x0.current = e.clientX; setDrag(true); (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); };
   const move = (e: React.PointerEvent) => { if (x0.current !== null) setDx(e.clientX - x0.current); };
   const up = () => { if (x0.current === null) return; x0.current = null; setDrag(false); if (dx < -90) go(1); else if (dx > 90) go(-1); else setDx(0); };
   const ART = ["/x/deal-tally.jpg", "/x/ev-2.jpg", "/x/deal-lumen.jpg", "/x/ev-1.jpg", "/x/deal-gridline.jpg"];
@@ -60,9 +69,11 @@ export default function Learn() {
               <div style={{ display: "grid", gap: 8 }}>
                 {c.options.map((o, k) => {
                   const cls = pick === null ? "" : k === c.answer ? " right" : k === pick ? " wrong" : "";
-                  return <button key={o} className={`opt${cls}`} onClick={() => answer(k)} disabled={pick !== null && cls === ""}>{cls === " right" && <ICheck />}{o}</button>;
+                  return <button key={o} className={`opt${cls}`} onClick={() => answer(k)} disabled={busy || (pick !== null && cls === "")} aria-busy={busy || undefined}>{cls === " right" && <ICheck />}{o}</button>;
                 })}
               </div>
+              {busy && <p className="mono" style={{ fontSize: 13, marginTop: 12 }} role="status">Saving…</p>}
+              {err && <p style={{ fontSize: 13.5, marginTop: 12 }} role="alert">{err}</p>}
               {pick !== null && <p style={{ fontSize: 13.5, marginTop: 12 }} role="status"><b>{pick === c.answer ? "Correct." : "Not quite."}</b> {c.why}</p>}
               {pick !== null && pick !== c.answer && <button type="button" className="opt retry" onClick={() => setPick(null)}>Try again</button>}
             </div>
@@ -70,9 +81,9 @@ export default function Learn() {
           </div>
         </div>
         <div className="deck-ctl">
-          <button className="ib" onClick={() => go(-1)} aria-label="Previous card"><Icon name="back" size={18} /></button>
+          <button className="ib" onClick={() => go(-1)} disabled={busy} aria-label="Previous card"><Icon name="back" size={18} /></button>
           <span className="dots">{LEARN.map((x, k) => <i key={x.id} className={k === i ? "on" : s.learned[x.id] ? "ok" : ""} />)}</span>
-          <button className="ib" onClick={next} aria-label="Next card" style={pick !== null ? { background: "var(--ink)", color: "#fff", borderColor: "var(--ink)" } : undefined}><Icon name="forward" size={18} /></button>
+          <button className="ib" onClick={next} disabled={busy} aria-label="Next card" style={pick !== null ? { background: "var(--ink)", color: "#fff", borderColor: "var(--ink)" } : undefined}><Icon name="forward" size={18} /></button>
         </div>
         
         <p className="note" style={{ marginTop: 28, maxWidth: 520 }}>Educational only, not investment advice. Limits reflect SEC Reg CF rules for non-accredited investors and can change; confirm on sec.gov.</p>
