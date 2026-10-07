@@ -24,13 +24,14 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
   const companies = founders.filter(f => visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled").map(f => {
     const owner = visible.get(f.profile_id)!; const id = legacyId(f.id);
     companyByOwner.set(f.profile_id, id);
-    const tiles = Array.isArray(f.traction_tiles) ? f.traction_tiles.filter((x: unknown) => typeof x === "string" && x.trim()) : [];
     return { id, ownerId: f.profile_id as string, name: t(f.startup_name), line: t(f.one_liner), sector: (Array.isArray(f.industry) ? t(f.industry[0]) : ""), sectors: Array.isArray(f.industry) ? f.industry.filter((x: unknown) => typeof x === "string") as string[] : [],
       city: t(f.location), stage: STAGES[t(f.stage)] ?? "", cover: safeUrl(f.banner_url) || safeUrl(f.logo_url), logo: safeUrl(f.logo_url), pitch: safeUrl(f.video_url),
-      traction: [t(f.traction), ...tiles].filter(Boolean) as string[],
+      // traction_tiles holds metric keys (mrr etc), not values; only free-text traction is shown.
+      traction: t(f.traction) ? [t(f.traction)] : [],
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
-      raising: t(f.fundraising_status).toLowerCase() === "raising", founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
+      // fundraising_status is "actively_raising" on every row (column default), so it is not shown as a raising claim.
+      raising: false, founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
   });
   const people: Person[] = [...visible.values()].map(p => {
     const i = inv.get(p.id); const role: Person["role"] = p.user_type === "founder" ? "Founder" : p.user_type === "investor" ? "Investor" : "Member";

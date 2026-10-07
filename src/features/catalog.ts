@@ -50,20 +50,33 @@ function loadDemo() {
 export const demoQuestions = C.companyQuestions;
 if (isDemoMode()) loadDemo();
 let queue: Promise<void> = Promise.resolve();
+// Bumped on every identity change; a load started under an older generation must not publish.
+let authGen = 0;
+const legacyIds = new Set<string>();
+function clearLegacy() {
+  if (!legacyIds.size) return;
+  const keep = <T extends { id: string }>(a: T[]) => { const k = a.filter(x => !legacyIds.has(x.id)); a.splice(0, a.length, ...k); };
+  keep(COMPANIES); keep(DEALS); keep(PEOPLE);
+  for (const id of legacyIds) { delete DETAIL_COMPANIES[id]; delete MATCH[id]; }
+  legacyIds.clear();
+}
 // Serialize loads so an auth refresh can't interleave with an in-flight load.
 export function loadCatalog() { queue = queue.then(loadCatalogOnce, loadCatalogOnce); return queue; }
 async function loadCatalogOnce() {
+  const gen = authGen;
   if (isDemoMode()) { loadDemo(); notify(); return; }
   const db = supabase as any;
   const [companies, events] = await Promise.all([
     db.from("app_companies").select("*").eq("status", "published").order("sort"),
     db.from("app_events").select("*").eq("status", "published").order("starts_at"),
   ]);
+  if (gen !== authGen) return;
   const error = companies.error || events.error;
   catalogStatus = error ? ["PGRST205", "42P01"].includes(error.code) ? "missing" : "error" : "ready";
   COMPANIES.length = DEALS.length = EVENTS.length = PEOPLE.length = UPDATES.length = NOTIFS.length = 0;
   for (const k of Object.keys(DETAIL_COMPANIES)) delete DETAIL_COMPANIES[k];
   for (const k of Object.keys(MATCH)) delete MATCH[k];
+  legacyIds.clear();
   for (const row of companies.data ?? []) {
     const d = row.data ?? {}, id = row.id, team = list<Record<string, unknown>>(d.team);
     const founder = team[0] ?? {};
@@ -80,18 +93,23 @@ async function loadCatalogOnce() {
   }
   // Existing approved profiles (RLS: authenticated only). Read-only; empty for anon.
   const { data: { session } } = await supabase.auth.getSession();
+  if (gen !== authGen) return;
   if (session) {
     const [pr, fr, ir] = await Promise.all([
       db.from("profiles").select(PROFILE_COLS).eq("approved", true).eq("is_hidden", false),
       db.from("founder_profiles").select(FOUNDER_COLS),
       db.from("investor_profiles").select(INVESTOR_COLS),
     ]);
-    if (pr.error || fr.error || ir.error) console.warn("legacy profiles read failed", pr.error || fr.error || ir.error);
+    if (gen !== authGen) return;
+    const legacyError = pr.error || fr.error || ir.error;
+    if (legacyError) { console.warn("legacy profiles read failed", legacyError); if (catalogStatus === "ready") catalogStatus = "error"; }
     const legacy = mapLegacy(pr.data ?? [], fr.data ?? [], ir.data ?? []);
     const seen = new Set(PEOPLE.map(p => p.id));
-    for (const p of legacy.people) if (!seen.has(p.id)) PEOPLE.push(p);
+    for (const p of legacy.people) if (!seen.has(p.id)) { PEOPLE.push(p); legacyIds.add(p.id); }
+    const owners = new Set(Object.values(DETAIL_COMPANIES).map(d => d.ownerId).filter(Boolean));
     for (const l of legacy.companies) {
-      if (DETAIL_COMPANIES[l.id]) continue;
+      if (DETAIL_COMPANIES[l.id] || owners.has(l.ownerId)) continue;
+      owners.add(l.ownerId); legacyIds.add(l.id);
       const trac = l.traction[0] ?? "";
       COMPANIES.push({ id: l.id, name: l.name, tagline: l.line, sector: l.sector as FeatureCompany["sector"], stage: l.stage as FeatureCompany["stage"], city: l.city, raising: l.raising, traction: trac, founder: l.founderName, img: l.cover, face: l.founderPhoto, pitch: l.pitch });
       DEALS.push({ id: l.id, name: l.name, line: l.line, cat: l.sector, city: l.city, img: l.cover, goal: l.goal, raised: 0, investors: 0, cap: l.valuationCap, min: "Not set", days: 0, spark: [], hotspots: [] });
@@ -100,14 +118,14 @@ async function loadCatalogOnce() {
         media: [...(l.pitch ? [{ src: l.pitch, kind: "video" as const, caption: "Company pitch" }] : []), ...(l.cover ? [{ src: l.cover, kind: "image" as const, caption: "Company photo" }] : [])],
         metric: { label: "", unit: "", series: [] }, milestones: [], market: { headline: "", tam: "", sam: "", why: "" }, model: { headline: "", price: "", points: [] }, docs: [], updates: [], risks: [], eventIds: [], chapters: [] };
     }
-    if (catalogStatus !== "ready" && (legacy.people.length || legacy.companies.length)) catalogStatus = "ready";
+    if (!legacyError && catalogStatus !== "ready" && (legacy.people.length || legacy.companies.length)) catalogStatus = "ready";
   }
   for (const e of events.data ?? []) EVENTS.push({id: e.id, title: e.title, when: new Date(e.starts_at).toLocaleString(), where: [e.venue,e.city].filter(Boolean).join(", "), img: contentUrl(e.image_url), cap: e.capacity ?? 0, going: 0, start: e.starts_at, end: e.ends_at ?? e.starts_at, venue: e.venue, city: e.city, url: contentUrl(e.url), companyIds: e.company_ids ?? []});
   notify();
 }
 // Refresh when auth resolves/changes so RLS-gated profiles appear after login.
 let lastUser: string | null | undefined;
-if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; if (started) setTimeout(() => { void loadCatalog(); }, 0); });
+if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; authGen++; if (legacyIds.size) { clearLegacy(); notify(); } if (started) setTimeout(() => { void loadCatalog(); }, 0); });
 export function useCatalog() {
   useSyncExternalStore(subscribe, snapshot, snapshot);
   useEffect(() => { if (!started) { started = true; void loadCatalog(); } }, []);
