@@ -107,7 +107,7 @@ async function loadCatalogOnce() {
 }
 // Refresh when auth resolves/changes so RLS-gated profiles appear after login.
 let lastUser: string | null | undefined;
-if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; if (started) void loadCatalog(); });
+if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; if (started) setTimeout(() => { void loadCatalog(); }, 0); });
 export function useCatalog() {
   useSyncExternalStore(subscribe, snapshot, snapshot);
   useEffect(() => { if (!started) { started = true; void loadCatalog(); } }, []);

@@ -56,8 +56,9 @@ export function useAuth(): UseAuthResult {
     const {
       data: { subscription: authSub },
     } = supabase.auth.onAuthStateChange(() => {
-      // Refresh profile whenever auth state changes
-      load();
+      // Refresh profile whenever auth state changes. Deferred: awaiting
+      // supabase.auth calls inside this callback can deadlock the auth lock.
+      setTimeout(() => { void load(); }, 0);
     });
 
     return () => {
