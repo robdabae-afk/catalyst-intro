@@ -46,8 +46,27 @@ async function run(p: PromiseLike<{ error: { code?: string; message?: string } |
   return true;
 }
 
+// Read existing accounts without migrating or changing their original rows.
+async function pullLegacyProfile(id: string) {
+  const { data: profile } = await supabase.from("profiles")
+    .select("user_type,avatar_url").eq("id", id).maybeSingle();
+  if (!profile) return null;
+  const founder = profile.user_type === "founder"
+    ? await supabase.from("founder_profiles").select("one_liner,industry")
+      .eq("profile_id", id).maybeSingle() : null;
+  const investor = profile.user_type === "investor"
+    ? await supabase.from("investor_profiles").select("investment_thesis,sectors_of_interest")
+      .eq("profile_id", id).maybeSingle() : null;
+  return {
+    role: profile.user_type,
+    profile: { photo: profile.avatar_url ?? "", bio: founder?.data?.one_liner ?? investor?.data?.investment_thesis ?? "" },
+    interests: founder?.data?.industry ?? investor?.data?.sectors_of_interest ?? [],
+  };
+}
+
 async function pull(id: string) {
-  const [items, prefs, rsvps, qs, msgs, inv] = await Promise.all([
+  const [legacy, items, prefs, rsvps, qs, msgs, inv] = await Promise.all([
+    pullLegacyProfile(id),
     db().from("app_item_state").select("kind,item_id").eq("user_id", id),
     db().from("app_prefs").select("*").eq("user_id", id).maybeSingle(),
     db().from("app_rsvps").select("event_id,status").eq("user_id", id),
@@ -56,6 +75,9 @@ async function pull(id: string) {
     db().from("app_invest_profile").select("annual_income,net_worth").eq("user_id", id).maybeSingle(),
   ]);
   const err = [items, prefs, rsvps, qs, msgs, inv].map((r) => r.error).find(Boolean);
+  if (uid !== id) return;
+  // Optional app-table failures must not hide an existing member's profile.
+  if (legacy) hydrate((s) => ({ ...s, ...legacy }));
   if (missing(err)) { setStatus("tables_missing"); return; }
   if (err) { setStatus("error"); return; }
 
@@ -83,7 +105,7 @@ async function pull(id: string) {
       profile: { ...s.profile, ...(p.prefs.profile as State["profile"] ?? {}) },
       watch: Object.fromEntries(by("watch").map((c) => [c, (p.prefs.watch as State["watch"] ?? {})[c] ?? s.watch[c] ?? { raise: true, closing: true, update: true }])),
       interests: p.interests ?? s.interests,
-      role: p.role ?? null,
+      role: p.role ?? s.role,
       onboarded: !!(prefs.data as any)?.onboarded_at,
       recent: Array.isArray(p.prefs.recent) ? p.prefs.recent as string[] : [],
       checkedIn: !!p.prefs.checkedIn,
