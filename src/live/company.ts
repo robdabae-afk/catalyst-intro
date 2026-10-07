@@ -6,7 +6,7 @@ export type PitchChapter = { key: PitchChapterKey; t: number };
 export const CHAPTER_LABEL: Record<PitchChapterKey, string> = { hook: "Hook", problem: "Problem", demo: "Product", traction: "Traction", team: "Team", ask: "Ask" };
 
 export type Metric = { label: string; unit: string; series: number[] }; // monthly, oldest first
-export type Doc = { name: string; kind: "deck" | "form_c" | "financials" | "safe"; ready: boolean };
+export type Doc = { name: string; kind: "deck" | "form_c" | "financials" | "safe"; ready: boolean; url?: string };
 export type Update = { title: string; body: string; when: string };
 export type Company = Deal & {
   problem: string; solution: string; stage: "Pre-seed" | "Seed";
@@ -17,6 +17,7 @@ export type Company = Deal & {
   docs: Doc[]; updates: Update[]; risks: string[]; eventIds: string[];
   chapters: PitchChapter[];
   ownerId?: string | null;
+  teamMembers?: { name: string; title: string }[];
 };
 
 export { DETAIL_COMPANIES as COMPANIES } from "@/features/catalog";

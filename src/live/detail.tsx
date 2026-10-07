@@ -43,6 +43,8 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
   useCatalog();
   const c = COMPANIES[id]; const m = MATCH[id];
   const team = PEOPLE.filter((p) => p.at === id); const founder = PEOPLE.find((p) => p.id === m?.founder);
+  const teamNames = new Set(team.map((p) => p.name.trim().toLowerCase()));
+  const extraTeam = (c?.teamMembers ?? []).filter((t) => { const k = t.name?.trim().toLowerCase(); if (!k || teamNames.has(k)) return false; teamNames.add(k); return true; });
   const uid = useUid();
   const [qs, setQs] = useState<QRow[]>([]); const [qErr, setQErr] = useState("");
   const loadQs = () => void listQuestions(id).then((r) => { setQs(r.data ?? []); setQErr(r.ok ? "" : r.missing ? "Q&A opens soon." : r.error ?? ""); });
@@ -125,8 +127,8 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
         </nav>
 
         <Sec id="overview" k={1} title="The problem">
-          <p className="cd-lead">{c.problem}</p>
-          <More label="Their solution"><p className="cd-p">{c.solution}</p><p className="cd-p dim">{c.about}</p></More>
+          <p className={c.problem?.trim() ? "cd-lead" : "cd-p dim"}>{c.problem?.trim() || "The founder hasn't shared the problem yet."}</p>
+          <More label="Their solution"><p className={c.solution?.trim() ? "cd-p" : "cd-p dim"}>{c.solution?.trim() || "The founder hasn't shared their solution yet."}</p><p className="cd-p dim">{c.about}</p></More>
         </Sec>
 
         <Sec id="product" k={2} title="Product">
@@ -145,6 +147,8 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
             <button key={p.id} type="button" className="cd-person" onClick={() => onProfile({ kind: "person", id: p.id })}>
               <Avatar p={p} size={52} /><span><b>{p.name}</b><small>{p.bio}</small></span><Icon name="forward" size={14} />
             </button>))}
+            {extraTeam.map((t, i) => (
+              <div key={"tm" + i + t.name} className="cd-person"><span><b>{t.name}</b>{t.title ? <small>{t.title}</small> : null}</span></div>))}
           </div>
         </Sec>
 
@@ -175,7 +179,7 @@ export function CompanyDetail({ id, start, onClose, onProfile, onPitch }: { id: 
         </Sec>
 
         <Sec id="docs" k={8} title="Documents">
-          {(c.docs ?? []).length ? <ul className="cd-docs">{c.docs.map((d) => <li key={d.kind + d.name}><Icon name="draft" size={18} /><span>{d.name}</span><em className="lv-mono">{d.ready ? "READY" : "AT LAUNCH"}</em></li>)}</ul> : <p className="cd-p dim">Documents will be posted before investing opens.</p>}
+          {(c.docs ?? []).length ? <ul className="cd-docs">{c.docs.map((d) => <li key={d.kind + d.name}><Icon name="draft" size={18} />{d.ready && d.url && /^https?:\/\//i.test(d.url) ? <a href={d.url} target="_blank" rel="noopener noreferrer">{d.name}</a> : <span>{d.name}</span>}<em className="lv-mono">{d.ready ? "READY" : "AT LAUNCH"}</em></li>)}</ul> : <p className="cd-p dim">Documents will be posted before investing opens.</p>}
         </Sec>
 
         <Sec id="updates" k={9} title="Updates">
