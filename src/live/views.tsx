@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { useRef, useState, type PointerEvent as RPE } from "react";
 import { setState, useStore, watchAdd, watchToggle, toggle } from "@/features/store";
 
@@ -13,20 +14,22 @@ import { SwipeAction, RsvpButton, InvestButton, IconButton } from "@/brand/Butto
 import { CatIcon, LiveImage, RaiseHud } from "./parts";
 import { useInView, useReducedMotion } from "./hooks";
 
-export function Empty({ title, body, icon = "discover" }: { title: string; body?: string; icon?: Parameters<typeof Icon>[0]["name"] }) {
-  return <div className="lv-empty"><Icon name={icon} size={30} /><strong>{title}</strong>{body && <p>{body}</p>}</div>;
+export function Empty({ title, body, icon = "discover", action }: { title: string; body?: string; icon?: Parameters<typeof Icon>[0]["name"]; action?: ReactNode }) {
+  return <div className="lv-empty"><Icon name={icon} size={30} /><strong>{title}</strong>{body && <p>{body}</p>}{action}</div>;
 }
 const catalogNote = (status: string) => status === "loading" ? "Loading companies…" : status === "ready" ? "New companies are reviewed before they go live. Check back soon." : "Listings aren't available right now. Try again later.";
+
+const SignInEmpty = () => <Empty title="Sign in to discover companies" body="Company listings are visible to members." action={<Link to="/auth" className="head-link">Sign in</Link>} />;
 
 const TH = 110;
 
 /* ---------- SWIPE ---------- */
 export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; topRight?: ReactNode }) {
-  const { status } = useCatalog();
+  const { status, requiresSignIn } = useCatalog();
   if (!DEALS.length) return (
     <div className="lv-swipe">
       <header className="lv-top"><div className="lv-top-t">Discover</div>{topRight}</header>
-      <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />
+      {requiresSignIn ? <SignInEmpty /> : <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />}
     </div>
   );
   return <SwipeDeck onOpen={onOpen} topRight={topRight} />;
@@ -149,7 +152,7 @@ export function DealView({ id, onBack, wide }: { id: string; onBack?: () => void
 
 /* ---------- DISCOVER GRID ---------- */
 export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { onOpen: (id: string) => void; initial?: ProfRef | null; prefsOpen?: boolean }) {
-  const { status } = useCatalog();
+  const { status, requiresSignIn } = useCatalog();
   const [ref, seen] = useInView<HTMLDivElement>();
   const [prof, setProf] = useState<ProfRef | null>(initial);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
@@ -159,7 +162,7 @@ export function DiscoverView({ onOpen, initial = null, prefsOpen = false }: { on
   return (
     <div className="lv-disc">
       <header className="lv-top"><div className="lv-mono">DISCOVER</div><div className="lv-mono dim">{DEALS.length} {DEALS.length === 1 ? "COMPANY" : "COMPANIES"}</div></header>
-      {!DEALS.length && <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />}
+      {!DEALS.length && (requiresSignIn ? <SignInEmpty /> : <Empty title={status === "loading" ? "Loading…" : "No companies live yet"} body={catalogNote(status)} />)}
       {!!DEALS.length && <MatchList prefs={prefs} onOpenDeal={onOpen} onProfile={setProf} onPrefs={() => setShowPrefs(true)} toast={say} />}
       {!!DEALS.length && <div className="lv-sec-h lv-mono">BROWSE ALL</div>}
       <div ref={ref} className={`lv-grid${seen ? " in" : ""}`}>

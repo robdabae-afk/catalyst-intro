@@ -9,7 +9,7 @@ import { CountUp, Hud, Icon, Meter, Duo } from "../hud";
 import { STEPS, doneSteps } from "./Me";
 
 export default function Home() {
-  useCatalog();
+  const { status, requiresSignIn } = useCatalog();
   const [s] = useStore();
   const pct = Math.round((doneSteps(s).size / STEPS.length) * 100);
   const feed = UPDATES.filter((u) => s.follows.includes(u.company));
@@ -36,7 +36,9 @@ export default function Home() {
         </Link>
       </Hud>
       ) : (
-        <div className="card hud in" style={{ padding: 22 }}><b>No companies listed yet</b><p className="dim" style={{ fontSize: 13.5, marginTop: 6 }}>New companies show up here as soon as they're published.</p></div>
+        requiresSignIn ? <div className="card hud in" style={{ padding: 22 }}><b>Sign in to discover companies</b><p className="dim" style={{ fontSize: 13.5, marginTop: 6 }}>Company listings are visible to members.</p><p style={{ marginTop: 10 }}><Link to="/auth" className="head-link">Sign in</Link></p></div>
+        : status === "loading" ? <div className="card hud in" style={{ padding: 22 }}><b>Loading…</b></div>
+        : <div className="card hud in" style={{ padding: 22 }}><b>No companies listed yet</b><p className="dim" style={{ fontSize: 13.5, marginTop: 6 }}>New companies show up here as soon as they're published.</p></div>
       )}
 
       {!s.prefs.investing_opens ? (
@@ -85,7 +87,7 @@ export default function Home() {
           </Link>
         ))}
       </div>
-      {!raising.length && <p className="dim">Nothing opening yet.</p>}
+      {!raising.length && <p className="dim">{requiresSignIn ? "Sign in to see open rounds." : status === "loading" ? "Loading…" : "Nothing opening yet."}</p>}
 
       <div className="sec"><h2><span className="ix">03</span>From companies you follow</h2><span className="mono dim">{feed.length}</span></div>
       <div className="g2">{feed.map((u) => <UpdateCard key={u.id} id={u.id} />)}</div>

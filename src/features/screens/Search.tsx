@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Head } from "../FeaturesApp";
 import type { Sector, Stage } from "../data";
 import { COMPANIES, useCatalog } from "../catalog";
@@ -11,7 +12,7 @@ const SECTORS: Sector[] = ["Fintech", "Climate", "Hardware", "Health", "Consumer
 const STAGES: Stage[] = ["Pre-seed", "Seed", "Series A"];
 
 export default function Search() {
-  useCatalog();
+  const { status, requiresSignIn } = useCatalog();
   const CITIES = [...new Set(COMPANIES.map((c) => c.city).filter(Boolean))];
   const [s] = useStore();
   const [q, setQ] = useState("");
@@ -62,7 +63,7 @@ export default function Search() {
 
       <div className="sec"><h2>{active ? `${res.length} result${res.length === 1 ? "" : "s"}` : "All companies"}</h2>{active ? <button className="mono dim" style={{ background: "none", border: 0, cursor: "pointer" }} onClick={clear}>Reset</button> : null}</div>
       <div className="res st">{res.map((c) => <ResultCard key={c.id} c={c} />)}</div>
-      {!res.length && <p className="dim">{COMPANIES.length ? "No companies match. Try fewer filters." : "No companies listed yet."}</p>}
+      {!res.length && (requiresSignIn ? <p className="dim">Sign in to discover companies. <Link to="/auth" className="head-link">Sign in</Link></p> : <p className="dim">{COMPANIES.length ? "No companies match. Try fewer filters." : status === "loading" ? "Loading…" : "No companies listed yet."}</p>)}
     </div>
   );
 }
