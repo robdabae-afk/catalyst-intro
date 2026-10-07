@@ -3,7 +3,7 @@
 import type { Person } from "@/live/profiles";
 
 export const PROFILE_COLS = "id,name,user_type,avatar_url,linkedin_url,approved,is_hidden,is_flagged,is_test_account,is_test_mode,created_at";
-export const FOUNDER_COLS = "id,profile_id,startup_name,one_liner,industry,location,stage,logo_url,banner_url,video_url,traction,traction_tiles,raise_amount,raise_type,valuation_cap_target,fundraising_status,team_members,created_at";
+export const FOUNDER_COLS = "id,profile_id,startup_name,one_liner,industry,location,stage,logo_url,banner_url,video_url,traction,raise_amount,raise_type,valuation_cap_target,fundraising_status,team_members,created_at";
 export const INVESTOR_COLS = "profile_id,firm_name,position,location,investment_thesis,sectors_of_interest,preferred_stage";
 
 type Row = Record<string, any>;
@@ -33,7 +33,7 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
       traction: t(f.traction) ? [t(f.traction)] : [],
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
-      // Every live row is "actively_raising" (column default, checked 10/7); intended meaning unknown, so not claimed.
+      // Every live row is "actively_raising" (possible default, checked 10/7); intended meaning unknown, so not claimed.
       raising: false, founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
   });
   const people: Person[] = [...visible.values()].map(p => {

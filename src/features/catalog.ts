@@ -105,7 +105,8 @@ async function loadCatalogOnce() {
     if (legacyError) { console.warn("legacy profiles read failed", legacyError); if (catalogStatus === "ready") catalogStatus = "error"; }
     const legacy = mapLegacy(pr.data ?? [], fr.data ?? [], ir.data ?? []);
     const seen = new Set(PEOPLE.map(p => p.id));
-    for (const p of legacy.people) if (!seen.has(p.id)) { PEOPLE.push(p); legacyIds.add(p.id); }
+    const publishedByOwner = new Map(Object.values(DETAIL_COMPANIES).filter(d => d.ownerId).map(d => [d.ownerId, d.id]));
+    for (const p of legacy.people) if (!seen.has(p.id)) { PEOPLE.push({ ...p, at: publishedByOwner.get(p.id) ?? p.at }); legacyIds.add(p.id); }
     const owners = new Set(Object.values(DETAIL_COMPANIES).map(d => d.ownerId).filter(Boolean));
     for (const l of legacy.companies) {
       if (DETAIL_COMPANIES[l.id] || owners.has(l.ownerId)) continue;
