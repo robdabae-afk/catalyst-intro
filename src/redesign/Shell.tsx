@@ -24,7 +24,13 @@ export default function Shell({ children, legal = false }: { children: ReactNode
               <li><Link to="/community">Community</Link></li>
               <li><Link to="/about">About</Link></li>
               <li><Link to="/auth">Log in</Link></li>
-              <li><a className="btn sm" href="/#join">Join the beta</a></li>
+              <li><a className="btn sm" href="/intro#signup" onClick={(e) => {
+                const el = document.getElementById("signup");
+                if (!el) return;
+                e.preventDefault();
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                (document.getElementById("hs-name") as HTMLInputElement | null)?.focus({ preventScroll: true });
+              }}>Join the beta</a></li>
             </ul>
           </nav>
         </header>
