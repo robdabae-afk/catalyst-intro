@@ -21,7 +21,10 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
   const visible = new Map(profiles.filter(isVisibleProfile).map(p => [p.id, p]));
   const inv = new Map(investors.map(i => [i.profile_id, i]));
   const companyByOwner = new Map<string, string>();
-  const companies = founders.filter(f => visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled").map(f => {
+  // One company per owner, stable: oldest created_at then id. Source rows untouched.
+  const ordered = [...founders].sort((a, b) => String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")) || String(a.id).localeCompare(String(b.id)));
+  const owned = new Set<string>();
+  const companies = ordered.filter(f => visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled" && !owned.has(f.profile_id) && !!owned.add(f.profile_id)).map(f => {
     const owner = visible.get(f.profile_id)!; const id = legacyId(f.id);
     companyByOwner.set(f.profile_id, id);
     return { id, ownerId: f.profile_id as string, name: t(f.startup_name), line: t(f.one_liner), sector: (Array.isArray(f.industry) ? t(f.industry[0]) : ""), sectors: Array.isArray(f.industry) ? f.industry.filter((x: unknown) => typeof x === "string") as string[] : [],
@@ -30,8 +33,8 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
       traction: t(f.traction) ? [t(f.traction)] : [],
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
-      // fundraising_status is "actively_raising" on every row (column default), so it is not shown as a raising claim.
-      raising: false, founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
+      // Live values are "actively_raising" (checked 10/7); compare that exact string.
+      raising: t(f.fundraising_status) === "actively_raising", founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
   });
   const people: Person[] = [...visible.values()].map(p => {
     const i = inv.get(p.id); const role: Person["role"] = p.user_type === "founder" ? "Founder" : p.user_type === "investor" ? "Investor" : "Member";
