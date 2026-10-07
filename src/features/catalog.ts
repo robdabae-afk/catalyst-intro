@@ -22,6 +22,8 @@ export const UPDATES: Update[] = [];
 export const THREADS: { id: string; who: string; d: LiveDeal; last: string; unread: boolean; t: string }[] = [];
 export type CatalogStatus = "loading" | "ready" | "missing" | "error";
 export let catalogStatus: CatalogStatus = "loading";
+// Legacy profiles remain authenticated-only under the existing RLS policies.
+let requiresSignIn = false;
 let revision = 0;
 const listeners = new Set<() => void>();
 const notify = () => { revision++; listeners.forEach(f => f()); };
@@ -65,6 +67,9 @@ export function loadCatalog() { queue = queue.then(loadCatalogOnce, loadCatalogO
 async function loadCatalogOnce() {
   const gen = authGen;
   if (isDemoMode()) { loadDemo(); notify(); return; }
+  catalogStatus = "loading";
+  requiresSignIn = false;
+  notify();
   const db = supabase as any;
   const [companies, events] = await Promise.all([
     db.from("app_companies").select("*").eq("status", "published").order("sort"),
@@ -121,6 +126,7 @@ async function loadCatalogOnce() {
     }
     if (!legacyError && catalogStatus !== "ready" && (legacy.people.length || legacy.companies.length)) catalogStatus = "ready";
   }
+  requiresSignIn = !session && !COMPANIES.length;
   for (const e of events.data ?? []) EVENTS.push({id: e.id, title: e.title, when: new Date(e.starts_at).toLocaleString(), where: [e.venue,e.city].filter(Boolean).join(", "), img: contentUrl(e.image_url), cap: e.capacity ?? 0, going: 0, start: e.starts_at, end: e.ends_at ?? e.starts_at, venue: e.venue, city: e.city, url: contentUrl(e.url), companyIds: e.company_ids ?? []});
   notify();
 }
@@ -130,6 +136,6 @@ if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.use
 export function useCatalog() {
   useSyncExternalStore(subscribe, snapshot, snapshot);
   useEffect(() => { if (!started) { started = true; void loadCatalog(); } }, []);
-  return { status: catalogStatus, companies: COMPANIES, events: EVENTS };
+  return { status: catalogStatus, requiresSignIn, revision, companies: COMPANIES, events: EVENTS };
 }
 export const byId = (id: string) => COMPANIES.find(c => c.id === id);
