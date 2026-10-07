@@ -12,7 +12,7 @@ const SECTORS: Sector[] = ["Fintech", "Climate", "Hardware", "Health", "Consumer
 const STAGES: Stage[] = ["Pre-seed", "Seed", "Series A"];
 
 export default function Search() {
-  const { status, requiresSignIn } = useCatalog();
+  const { status, requiresSignIn, revision } = useCatalog();
   const CITIES = [...new Set(COMPANIES.map((c) => c.city).filter(Boolean))];
   const [s] = useStore();
   const [q, setQ] = useState("");
@@ -27,7 +27,7 @@ export default function Search() {
     const words = t ? t.split(/\s+/) : [];
     const hay = `${c.name} ${c.tagline} ${c.sector} ${c.city} ${c.stage}`.toLowerCase();
     return words.every((w) => hay.includes(w)) && (!sec.length || sec.includes(c.sector)) && (!st.length || st.includes(c.stage)) && (!city.length || city.includes(c.city)) && (!raising || c.raising);
-  }), [q, sec, st, city, raising, COMPANIES.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  }), [q, sec, st, city, raising, revision]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const commit = () => { const t = q.trim(); if (t) setState((x) => ({ ...x, recent: [t, ...x.recent.filter((r) => r !== t)].slice(0, 6) })); };
   const clear = () => { setQ(""); setSec([]); setSt([]); setCity([]); setRaising(false); };

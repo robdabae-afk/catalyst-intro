@@ -50,7 +50,7 @@ export function QuickActions({ at, items, onClose }: { at: { x: number; y: numbe
 export function ProfileFeed({ onOpen, toast }: { onOpen: (r: ProfRef) => void; toast: (s: string) => void }) {
   const [qa, setQa] = useState<{ x: number; y: number; r: ProfRef } | null>(null);
   const [ref, seen] = useInView<HTMLDivElement>();
-  const items: ProfRef[] = [...DEALS.slice(0, 4).map((d) => ({ kind: "co" as const, id: d.id })), ...PEOPLE.slice(0, 4).map((p) => ({ kind: "person" as const, id: p.id }))];
+  const items: ProfRef[] = [...DEALS.slice(0, 4).map((d) => ({ kind: "co" as const, id: d.id })), ...PEOPLE.map((p) => ({ kind: "person" as const, id: p.id }))];
   const nav = useNavigate();
   if (!items.length) return null;
   return (

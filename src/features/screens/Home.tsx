@@ -87,7 +87,7 @@ export default function Home() {
           </Link>
         ))}
       </div>
-      {!raising.length && <p className="dim">{requiresSignIn ? "Sign in to see open rounds." : status === "loading" ? "Loading…" : "Nothing opening yet."}</p>}
+      {!raising.length && <p className="dim">{requiresSignIn ? "Sign in to browse companies." : status === "loading" ? "Loading…" : "Nothing opening yet."}</p>}
 
       <div className="sec"><h2><span className="ix">03</span>From companies you follow</h2><span className="mono dim">{feed.length}</span></div>
       <div className="g2">{feed.map((u) => <UpdateCard key={u.id} id={u.id} />)}</div>
