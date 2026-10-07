@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+.su{min-height:100vh;width:100%;background:#fff;color:#0b0b0b;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;display:flex;justify-content:center;align-items:flex-start;box-sizing:border-box}
+.su *{box-sizing:border-box}
+.su-card{width:100%;max-width:480px;height:100vh;height:100dvh;background:#fff}
+@media(min-width:700px){.su{background:#f4f4f2;padding:40px 24px;align-items:center}.su-card{height:min(844px,calc(100vh - 80px));border:1px solid #e6e6e3;border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.08)}}
+.su-mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:500;color:#74746d!important}
+.su-logo{font-weight:800;font-size:22px;letter-spacing:-.02em}
+.su-btn{display:flex;width:100%;height:56px;flex-shrink:0;align-items:center;justify-content:center;gap:8px;border-radius:999px;border:1.5px solid #0b0b0b;background:#0b0b0b;color:#fff;font:700 15px 'Schibsted Grotesk',system-ui,sans-serif;cursor:pointer;transition:transform .15s}
+.su-btn:hover{transform:translateY(-1px)}
+.su :focus-visible{outline:2px solid #0b0b0b;outline-offset:2px}
+.su-done{display:flex;flex-direction:column;justify-content:center;padding:40px 28px}
+.su-done h1{font-size:34px;line-height:1.08;letter-spacing:-.02em;font-weight:800;margin:24px 0 12px}
+.su-done p{color:#5f5f5f;font-size:15px;line-height:1.55;margin:0 0 28px}
+.su-done b{color:#0b0b0b}
+.su-check{width:56px;height:56px;border-radius:50%;background:#0b0b0b;color:#fff;display:flex;align-items:center;justify-content:center}
+.su-intro{display:flex;flex-direction:column;padding:48px 28px 32px}
+.su-intro h1{font-size:40px;line-height:1.02;letter-spacing:-.03em;font-weight:800;margin:0 0 12px}
+.su-intro p{color:#5f5f5f;font-size:16px;line-height:1.5;margin:0}
+.su-shot{flex:1;min-height:120px;margin:24px 0;border-radius:22px;overflow:hidden;background:#f4f4f2;border:1px solid #e6e6e3}
+.su-shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.su-link{background:none;border:0;margin-top:14px;font:600 14px 'Schibsted Grotesk',system-ui,sans-serif;color:#0b0b0b;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-skip-ink:auto}

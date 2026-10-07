@@ -1,5 +1,5 @@
 import { FormEvent, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Showcase from "./Showcase";
 import Shell, { LUMA, useMeta } from "./Shell";
@@ -7,12 +7,13 @@ import Shell, { LUMA, useMeta } from "./Shell";
 type Role = "founder" | "investor";
 
 function HeroSignup() {
+  const navigate = useNavigate();
   const [role, setRole] = useState<Role>("investor");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [errs, setErrs] = useState<Record<string, string>>({});
-  const [state, setState] = useState<"idle" | "sending" | "done">("idle");
+  const [state, setState] = useState<"idle" | "sending">("idle");
   const refs = { name: useRef<HTMLInputElement>(null), email: useRef<HTMLInputElement>(null), consent: useRef<HTMLInputElement>(null) };
 
   const submit = async (e: FormEvent) => {
@@ -35,18 +36,13 @@ function HeroSignup() {
       setErrs({ form: "Something went wrong. Please try again." });
       return;
     }
-    setState("done");
-  };
-
-  if (state === "done") {
+    // Go straight to full account creation, prefilled. Keep any referral code.
     const q = new URLSearchParams({ role, name: name.trim(), email: email.trim() });
-    return (
-      <div id="signup" className="hs hs-done" role="status">
-        <p className="hs-ok">You're on the list.</p>
-        <p className="fine" style={{ margin: 0 }}>We'll email {email.trim()} when Catalyst opens. <Link to={`/signup/form?${q}`} style={{ color: "var(--ink)" }}>Finish your profile</Link></p>
-      </div>
-    );
-  }
+    let ref = new URLSearchParams(window.location.search).get("ref");
+    try { ref = ref || localStorage.getItem("catalyst.ref"); } catch { /* private mode */ }
+    if (ref) q.set("ref", ref);
+    navigate(`/signup/form?${q}`);
+  };
 
   return (
     <form id="signup" className="hs reveal d3" noValidate onSubmit={submit} aria-label="Join Catalyst">

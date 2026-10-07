@@ -1,5 +1,6 @@
 import { isAppShell } from "@/lib/platform";
 import { useRef, useState } from "react";
+import "./signup.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -42,40 +43,10 @@ const stageToValue: Record<string, "pre-seed" | "seed" | "series-a" | "series-b"
 };
 
 // Shared visual tokens matching the design mockups
-const glass =
-  "bg-white/[0.06] shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.25)] outline outline-1 outline-white/[0.14] backdrop-blur-[9px]";
-const inputWrapCls = `h-14 px-4 rounded-[14px] ${glass} flex items-center gap-3`;
+const glass = "bg-white border-[1.5px] border-[#e6e6e3]";
+const inputWrapCls = `h-14 px-4 rounded-[14px] ${glass} flex items-center gap-3 focus-within:border-[#0b0b0b] transition-colors`;
 const inputCls =
-  "flex-1 min-w-0 bg-transparent outline-none text-[15px] text-[#F6F5F2] placeholder:text-[#6F6B63]";
-
-function Blobs({ variant }: { variant: "role" | "form" }) {
-  if (variant === "role") {
-    return (
-      <>
-        <div
-          className="absolute rounded-[160px] pointer-events-none"
-          style={{ width: 320, height: 320, left: -30, top: 120, opacity: 0.28, background: "#C6A02C", filter: "blur(60px)" }}
-        />
-        <div
-          className="absolute rounded-[150px] pointer-events-none"
-          style={{ width: 300, height: 300, left: 160, top: 220, opacity: 0.36, background: "#C6A02C", filter: "blur(60px)" }}
-        />
-      </>
-    );
-  }
-  return (
-    <>
-      <div
-        className="absolute rounded-[150px] pointer-events-none"
-        style={{ width: 300, height: 300, left: 130, top: 120, opacity: 0.24, background: "#C6A02C", filter: "blur(60px)" }}
-      />
-      <div
-        className="absolute rounded-[150px] pointer-events-none"
-        style={{ width: 300, height: 300, left: -70, top: 430, opacity: 0.3, background: "#C6A02C", filter: "blur(60px)" }}
-      />
-    </>
-  );
-}
+  "flex-1 min-w-0 bg-transparent outline-none text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]";
 
 function Dots({ current, total }: { current: number; total: number }) {
   return (
@@ -85,7 +56,7 @@ function Dots({ current, total }: { current: number; total: number }) {
         return (
           <span
             key={i}
-            className={on ? "w-[22px] h-[6px] rounded-[3px] bg-[#F6F5F2]" : "w-[6px] h-[6px] rounded-[3px] bg-[#3A3A3C]"}
+            className={on ? "w-[22px] h-[6px] rounded-[3px] bg-[#0b0b0b]" : "w-[6px] h-[6px] rounded-[3px] bg-[#d8d8d4]"}
           />
         );
       })}
@@ -101,37 +72,37 @@ function BackButton({ onClick }: { onClick: () => void }) {
       aria-label="Back"
       className={`w-10 h-10 rounded-full ${glass} flex items-center justify-center shrink-0`}
     >
-      <ArrowLeft className="w-[18px] h-[18px] text-[#F6F5F2]" strokeWidth={1.75} />
+      <ArrowLeft className="w-[18px] h-[18px] text-[#0b0b0b]" strokeWidth={1.75} />
     </button>
   );
 }
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11.5px] font-normal uppercase tracking-[0.16em] text-[#C6A02C]">{children}</div>
+    <div className="su-mono text-[#0b0b0b]">{children}</div>
   );
 }
 
 function Title({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-1.5 text-[30px] font-semibold text-[#F6F5F2]" style={{ fontFamily: "Fraunces, serif" }}>
+    <div className="mt-1.5 text-[30px] font-bold tracking-[-0.02em] leading-[1.1] text-[#0b0b0b]">
       {children}
     </div>
   );
 }
 
 function Sub({ children }: { children: React.ReactNode }) {
-  return <div className="mt-2 text-[14px] text-[#94908A]">{children}</div>;
+  return <div className="mt-2 text-[14px] text-[#74746d]">{children}</div>;
 }
 
 function LabelRow({ label, required }: { label: string; required?: boolean }) {
   return (
-    <div className="text-[11px] uppercase tracking-[0.11em] text-[#94908A]">
+    <div className="text-[11px] uppercase tracking-[0.11em] text-[#74746d]">
       {label}{" "}
       {required ? (
-        <span className="text-[#C6A02C]">*</span>
+        <span className="text-[#0b0b0b]">*</span>
       ) : (
-        <span className="normal-case text-[#6F6B63]">(optional)</span>
+        <span className="normal-case text-[#9a9a93]">(optional)</span>
       )}
     </div>
   );
@@ -172,19 +143,19 @@ function Select({
         onChange={(e) => onChange(e.target.value)}
         className={[
           "flex-1 min-w-0 appearance-none bg-transparent outline-none text-[15px]",
-          value ? "text-[#F6F5F2]" : "text-[#CFCCC5]",
+          value ? "text-[#0b0b0b]" : "text-[#3d3d3d]",
         ].join(" ")}
       >
         <option value="" disabled hidden>
           {placeholder}
         </option>
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#0A0A0D] text-[#F6F5F2]">
+          <option key={o} value={o} className="bg-white text-[#0b0b0b]">
             {o}
           </option>
         ))}
       </select>
-      <ChevronDown className="w-[18px] h-[18px] text-[#94908A] shrink-0 pointer-events-none" strokeWidth={1.5} />
+      <ChevronDown className="w-[18px] h-[18px] text-[#74746d] shrink-0 pointer-events-none" strokeWidth={1.5} />
     </div>
   );
 }
@@ -204,7 +175,7 @@ function Chip({
       onClick={onClick}
       className={[
         "h-9 px-[15px] rounded-full text-[13px] transition-colors select-none",
-        selected ? "bg-[#F6F5F2] text-[#111111] font-semibold" : `${glass} text-[#CFCCC5] font-normal`,
+        selected ? "bg-[#0b0b0b] text-white font-semibold border-[1.5px] border-[#0b0b0b]" : `${glass} text-[#3d3d3d] font-normal`,
       ].join(" ")}
     >
       {children}
@@ -219,21 +190,21 @@ function AvatarPicker({ preview, onFile }: { preview: string | null; onFile: (f:
       <button
         type="button"
         onClick={() => ref.current?.click()}
-        className="w-16 h-16 rounded-full bg-[#1C1B18] outline outline-1 outline-white/[0.10] flex items-center justify-center overflow-hidden shrink-0"
+        className="w-16 h-16 rounded-full bg-[#f4f4f2] border-[1.5px] border-[#e6e6e3] flex items-center justify-center overflow-hidden shrink-0"
       >
         {preview ? (
           <img src={preview} alt="avatar" className="w-full h-full object-cover" />
         ) : (
-          <ImagePlus className="w-8 h-8 text-[#8E8980]" strokeWidth={1.5} />
+          <ImagePlus className="w-8 h-8 text-[#74746d]" strokeWidth={1.5} />
         )}
       </button>
       <div className="flex-1">
-        <div className="text-[15px] text-[#F6F5F2]">Profile photo</div>
-        <div className="text-[13px] text-[#94908A]">Optional — you can add later.</div>
+        <div className="text-[15px] text-[#0b0b0b]">Profile photo</div>
+        <div className="text-[13px] text-[#74746d]">Optional — you can add later.</div>
         <button
           type="button"
           onClick={() => ref.current?.click()}
-          className="text-[13px] text-[#F6F5F2] underline underline-offset-2"
+          className="text-[13px] text-[#0b0b0b] underline underline-offset-2"
         >
           {preview ? "Change photo" : "Upload"}
         </button>
@@ -261,6 +232,8 @@ export default function AppSignupForm() {
   const [role, setRole] = useState<Role>(initialRole === "investor" ? "investor" : "founder");
   const [step, setStep] = useState(initialRole === "founder" || initialRole === "investor" ? 2 : 1);
   const [submitting, setSubmitting] = useState(false);
+  // Set after signUp succeeds. hasSession=false means email confirmation is required.
+  const [created, setCreated] = useState<{ hasSession: boolean } | null>(null);
 
   const [name, setName] = useState(searchParams.get("name") || "");
   const [email, setEmail] = useState(searchParams.get("email") || "");
@@ -419,7 +392,7 @@ export default function AppSignupForm() {
         console.warn("Avatar upload skipped:", err);
       }
 
-      navigate("/");
+      setCreated({ hasSession: !!authData.session });
     } catch (err: any) {
       toast({
         variant: "destructive",
@@ -442,12 +415,31 @@ export default function AppSignupForm() {
 
   const eyebrow = step === 1 ? `Step 1 of ${TOTAL_STEPS}` : `${role === "founder" ? "Founder" : "Investor"} · ${step} of ${TOTAL_STEPS}`;
 
+  if (created) {
+    return (
+      <div className="su">
+        <div className="su-card su-done" role="status">
+          <div className="su-check" aria-hidden="true"><Check className="w-7 h-7" strokeWidth={2.2} /></div>
+          <h1>Your account has been created</h1>
+          {created.hasSession ? (
+            <>
+              <p>Welcome to Catalyst, {name.trim().split(" ")[0] || "friend"}.</p>
+              <button type="button" className="su-btn" onClick={() => navigate("/feed")}>Enter the app</button>
+            </>
+          ) : (
+            <>
+              <p>We sent a confirmation link to <b>{email}</b>. Confirm your email, then log in to enter the app.</p>
+              <button type="button" className="su-btn" onClick={() => navigate("/auth")}>Go to log in</button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      style={{ width: "100%", minHeight: "100vh", padding: "24px", background: "#111111", display: "flex", justifyContent: "center", alignItems: "flex-start", boxSizing: "border-box" }}
-    >
-      <div className="relative w-[390px] h-[844px] rounded-[40px] overflow-hidden bg-[#0A0A0D] flex flex-col shrink-0">
-        <Blobs variant={step === 1 ? "role" : "form"} />
+    <div className="su">
+      <div className="su-card relative flex flex-col">
 
         {/* Header */}
         <div className="relative pt-[52px] px-[26px] shrink-0">
@@ -489,17 +481,17 @@ export default function AppSignupForm() {
                     className={[
                       "flex-1 min-h-[132px] px-4 py-[18px] rounded-[18px] text-left flex flex-col transition-colors",
                       glass,
-                      selected ? "outline-white/[0.85] shadow-[0_0_26px_-8px_rgba(255,255,255,0.25),inset_0_1px_0_1px_rgba(255,255,255,0.25)]" : "",
+                      selected ? "!border-[#0b0b0b] shadow-[0_0_0_1px_#0b0b0b]" : "",
                     ].join(" ")}
                   >
                     {r === "founder" ? (
-                      <Rocket className="w-6 h-6 text-[#C6A02C]" strokeWidth={1.7} />
+                      <Rocket className="w-6 h-6 text-[#0b0b0b]" strokeWidth={1.7} />
                     ) : (
-                      <Coins className="w-6 h-6 text-[#C6A02C]" strokeWidth={1.7} />
+                      <Coins className="w-6 h-6 text-[#0b0b0b]" strokeWidth={1.7} />
                     )}
                     <div className="flex-1 flex flex-col justify-end mt-4">
-                      <div className="text-[16px] font-semibold text-[#F6F5F2]">{r === "founder" ? "Founder" : "Investor"}</div>
-                      <div className="mt-1 text-[12px] text-[#94908A] leading-snug">
+                      <div className="text-[16px] font-semibold text-[#0b0b0b]">{r === "founder" ? "Founder" : "Investor"}</div>
+                      <div className="mt-1 text-[12px] text-[#74746d] leading-snug">
                         {r === "founder" ? "Raising pre-seed to Series B" : "Actively deploying capital"}
                       </div>
                     </div>
@@ -513,25 +505,25 @@ export default function AppSignupForm() {
             <div className="flex flex-col gap-4">
               <Field label="Full name" required>
                 <div className={inputWrapCls}>
-                  <User className="w-[18px] h-[18px] text-[#C6A02C] shrink-0" strokeWidth={1.5} />
+                  <User className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
                   <input className={inputCls} placeholder="Alex Chen" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
               </Field>
               <Field label="Email" required>
                 <div className={inputWrapCls}>
-                  <Mail className="w-[18px] h-[18px] text-[#C6A02C] shrink-0" strokeWidth={1.5} />
+                  <Mail className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
                   <input type="email" className={inputCls} placeholder="alex@startup.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </Field>
               <Field label="Password" required>
                 <div className={inputWrapCls}>
-                  <Lock className="w-[18px] h-[18px] text-[#C6A02C] shrink-0" strokeWidth={1.5} />
+                  <Lock className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
                   <input type="password" className={inputCls} placeholder="Enter a password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
               </Field>
               <Field label="Referral code">
                 <div className={inputWrapCls}>
-                  <Tag className="w-[18px] h-[18px] text-[#C6A02C] shrink-0" strokeWidth={1.5} />
+                  <Tag className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
                   <input className={inputCls} placeholder="e.g. ALEX2024" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} />
                 </div>
               </Field>
@@ -550,7 +542,7 @@ export default function AppSignupForm() {
                 <Field label="HQ location" required>
                   <div className={inputWrapCls}>
                     <input className={inputCls} placeholder="San Francisco, CA" value={hqLocation} onChange={(e) => setHqLocation(e.target.value)} />
-                    <MapPin className="w-[18px] h-[18px] text-[#6F6B63] shrink-0" strokeWidth={1.5} />
+                    <MapPin className="w-[18px] h-[18px] text-[#9a9a93] shrink-0" strokeWidth={1.5} />
                   </div>
                 </Field>
                 <Field label="One-liner" required>
@@ -574,7 +566,7 @@ export default function AppSignupForm() {
                 <Field label="HQ location" required>
                   <div className={inputWrapCls}>
                     <input className={inputCls} placeholder="San Francisco, CA" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
-                    <MapPin className="w-[18px] h-[18px] text-[#6F6B63] shrink-0" strokeWidth={1.5} />
+                    <MapPin className="w-[18px] h-[18px] text-[#9a9a93] shrink-0" strokeWidth={1.5} />
                   </div>
                 </Field>
                 <Field label="LinkedIn">
@@ -606,7 +598,7 @@ export default function AppSignupForm() {
                     onChange={(e) => setOperationsStartDate(e.target.value)}
                   />
                 </div>
-                <div className="text-[12px] text-[#6F6B63] mt-1.5">
+                <div className="text-[12px] text-[#9a9a93] mt-1.5">
                   We use this to show months in operation on your profile.
                 </div>
               </Field>
@@ -699,7 +691,7 @@ export default function AppSignupForm() {
               <Field label="Investment thesis">
                 <div className={`${glass} rounded-[14px] p-4`}>
                   <textarea
-                    className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[15px] text-[#F6F5F2] placeholder:text-[#6F6B63]"
+                    className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]"
                     placeholder="What you back, and why."
                     value={investmentThesis}
                     onChange={(e) => setInvestmentThesis(e.target.value)}
@@ -712,8 +704,8 @@ export default function AppSignupForm() {
           {step === 5 && (
             <div className="flex flex-col gap-5">
               <div className={`p-[22px] rounded-[20px] ${glass} flex flex-col gap-3`}>
-                <div className="text-[16px] font-semibold text-[#F6F5F2]">Legal disclaimer</div>
-                <div className="text-[13.5px] text-[#8F8B82] leading-[22.95px]">
+                <div className="text-[16px] font-semibold text-[#0b0b0b]">Legal disclaimer</div>
+                <div className="text-[13.5px] text-[#5f5f5f] leading-[22.95px]">
                   Catalyst Intro is not responsible for the outcome of any relationships made on the platform.
                   Background checks are run on all users, but due diligence remains your responsibility. You
                   must be over 18 to use this platform. Catalyst does not process or facilitate any financial
@@ -728,14 +720,14 @@ export default function AppSignupForm() {
                 <div
                   className={[
                     "w-[26px] h-[26px] rounded-[7px] flex items-center justify-center shrink-0",
-                    agreed ? "bg-[#F6F5F2]" : `${glass}`,
+                    agreed ? "bg-[#0b0b0b]" : `${glass}`,
                   ].join(" ")}
                 >
-                  {agreed && <Check className="w-4 h-4 text-[#0A0A0C]" strokeWidth={1.73} />}
+                  {agreed && <Check className="w-4 h-4 text-white" strokeWidth={2} />}
                 </div>
-                <span className="text-[14px] text-[#CFCCC5] leading-[21px]">
-                  I am over 18 and agree to the <span className="text-[#F6F5F2] font-medium">Legal Disclaimer</span> and{" "}
-                  <span className="text-[#F6F5F2] font-medium">Terms of Use</span>.
+                <span className="text-[14px] text-[#3d3d3d] leading-[21px]">
+                  I am over 18 and agree to the <span className="text-[#0b0b0b] font-medium">Legal Disclaimer</span> and{" "}
+                  <span className="text-[#0b0b0b] font-medium">Terms of Use</span>.
                 </span>
               </button>
             </div>
@@ -749,10 +741,10 @@ export default function AppSignupForm() {
             onClick={advance}
             disabled={!canContinue() || submitting}
             className={[
-              "w-full h-14 rounded-2xl text-[15px] font-medium flex items-center justify-center gap-2 transition-colors",
+              "w-full h-14 rounded-full text-[15px] font-bold flex items-center justify-center gap-2 transition-colors",
               canContinue() && !submitting
-                ? "bg-[#F6F5F2] text-[#0A0A0C]"
-                : "bg-white/[0.05] outline outline-1 outline-white/[0.10] text-[#6F6B63] cursor-not-allowed",
+                ? "bg-[#0b0b0b] text-white"
+                : "bg-[#f4f4f2] text-[#9a9a93] cursor-not-allowed",
             ].join(" ")}
           >
             {submitting ? (
