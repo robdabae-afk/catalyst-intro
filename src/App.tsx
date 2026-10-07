@@ -76,6 +76,8 @@ const App = () => (
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/app" element={<AppLanding />} />
+          <Route path="/discover" element={<Navigate replace to="/search" />} />
+          <Route path="/app/discover" element={<Navigate replace to="/search" />} />
           <Route path="/app/x/*" element={<RootRedirect from="/app/x" />} />
           <Route path="/app/live/*" element={<RootRedirect from="/app/live" />} />
           <Route path="/app/signup" element={<AppSignup />} />
