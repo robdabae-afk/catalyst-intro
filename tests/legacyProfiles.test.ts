@@ -20,6 +20,24 @@ describe("legacy profile mapping", () => {
     expect(people[1].bio).toBe("Partner at Fund");
     expect(JSON.stringify(people)).not.toContain("x@y");
   });
+  it("keeps privacy filters and owner links stable across refresh ordering", () => {
+    const profiles = [
+      { ...base, id: "visible", name: "Visible", user_type: "founder" },
+      { ...base, id: "hidden", name: "Hidden", user_type: "founder", is_hidden: true },
+      { ...base, id: "test", name: "Test", user_type: "founder", is_test_account: true },
+    ];
+    const founders = [
+      { id: "later", profile_id: "visible", startup_name: "Later", created_at: "2026-02-01" },
+      { id: "oldest", profile_id: "visible", startup_name: "Real", created_at: "2025-01-01" },
+      { id: "hidden-company", profile_id: "hidden", startup_name: "Hidden company" },
+      { id: "test-company", profile_id: "test", startup_name: "Test company" },
+    ];
+    const mapped = mapLegacy(profiles, founders, []);
+    assert.deepEqual(mapped, mapLegacy(profiles, [...founders].reverse(), []));
+    assert.deepEqual(mapped.companies.map(c => c.id), ["legacy-oldest"]);
+    assert.deepEqual(mapped.people.map(p => [p.id, p.at]), [["visible", "legacy-oldest"]]);
+    assert.ok(mapped.companies.every(c => c.raising === false));
+  });
   it("mirrors live shape: investor-owned Untitled excluded, real status compared exactly", () => {
     const { companies } = mapLegacy(
       [{ ...base, id: "f", name: "F", user_type: "founder" }, { ...base, id: "i", name: "I", user_type: "investor" }],
