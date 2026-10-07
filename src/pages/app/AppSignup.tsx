@@ -6,9 +6,15 @@ export default function AppSignup() {
   const navigate = useNavigate();
 
   const start = () => {
-    let r = new URLSearchParams(location.search).get("ref");
+    // Carry prefill (role/name/email/from) and referral through to the form.
+    const src = new URLSearchParams(location.search);
+    const q = new URLSearchParams();
+    for (const k of ["role", "name", "email", "from"]) { const v = src.get(k); if (v) q.set(k, v); }
+    let r = src.get("ref");
     try { r = r || localStorage.getItem("catalyst.ref"); } catch { /* private mode */ }
-    navigate(r ? `/signup/form?ref=${encodeURIComponent(r)}` : "/signup/form");
+    if (r) q.set("ref", r);
+    const qs = q.toString();
+    navigate(qs ? `/signup/form?${qs}` : "/signup/form");
   };
 
   return (

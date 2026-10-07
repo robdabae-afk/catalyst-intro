@@ -95,31 +95,34 @@ function Sub({ children }: { children: React.ReactNode }) {
   return <div className="mt-2 text-[14px] text-[#74746d]">{children}</div>;
 }
 
-function LabelRow({ label, required }: { label: string; required?: boolean }) {
+function LabelRow({ label, required, htmlFor }: { label: string; required?: boolean; htmlFor?: string }) {
+  const Tag = htmlFor ? "label" : "div";
   return (
-    <div className="text-[11px] uppercase tracking-[0.11em] text-[#74746d]">
+    <Tag htmlFor={htmlFor} className="text-[11px] uppercase tracking-[0.11em] text-[#74746d]">
       {label}{" "}
       {required ? (
         <span className="text-[#0b0b0b]">*</span>
       ) : (
         <span className="normal-case text-[#9a9a93]">(optional)</span>
       )}
-    </div>
+    </Tag>
   );
 }
 
 function Field({
   label,
   required,
+  htmlFor,
   children,
 }: {
   label: string;
   required?: boolean;
+  htmlFor?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <LabelRow label={label} required={required} />
+      <LabelRow label={label} required={required} htmlFor={htmlFor} />
       {children}
     </div>
   );
@@ -130,7 +133,9 @@ function Select({
   onChange,
   options,
   placeholder,
+  id,
 }: {
+  id?: string;
   value: string;
   onChange: (v: string) => void;
   options: readonly string[];
@@ -139,6 +144,7 @@ function Select({
   return (
     <div className={`h-[58px] px-[18px] rounded-[14px] ${glass} flex items-center justify-between gap-2`}>
       <select
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={[
@@ -212,6 +218,7 @@ function AvatarPicker({ preview, onFile }: { preview: string | null; onFile: (f:
       <input
         ref={ref}
         type="file"
+        aria-label="Profile photo"
         accept="image/*"
         className="hidden"
         onChange={(e) => {
@@ -503,28 +510,28 @@ export default function AppSignupForm() {
 
           {step === 2 && (
             <div className="flex flex-col gap-4">
-              <Field label="Full name" required>
+              <Field label="Full name" htmlFor="su-name" required>
                 <div className={inputWrapCls}>
                   <User className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
-                  <input className={inputCls} placeholder="Alex Chen" value={name} onChange={(e) => setName(e.target.value)} />
+                  <input id="su-name" name="name" autoComplete="name" className={inputCls} placeholder="Alex Chen" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
               </Field>
-              <Field label="Email" required>
+              <Field label="Email" htmlFor="su-email" required>
                 <div className={inputWrapCls}>
                   <Mail className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
-                  <input type="email" className={inputCls} placeholder="alex@startup.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <input id="su-email" name="email" autoComplete="email" inputMode="email" type="email" className={inputCls} placeholder="alex@startup.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
               </Field>
-              <Field label="Password" required>
+              <Field label="Password" htmlFor="su-password" required>
                 <div className={inputWrapCls}>
                   <Lock className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
-                  <input type="password" className={inputCls} placeholder="Enter a password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <input id="su-password" name="password" autoComplete="new-password" type="password" className={inputCls} placeholder="Enter a password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
               </Field>
-              <Field label="Referral code">
+              <Field label="Referral code" htmlFor="su-ref">
                 <div className={inputWrapCls}>
                   <Tag className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
-                  <input className={inputCls} placeholder="e.g. ALEX2024" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} />
+                  <input id="su-ref" name="referral" autoComplete="off" className={inputCls} placeholder="e.g. ALEX2024" value={referralCode} onChange={(e) => setReferralCode(e.target.value)} />
                 </div>
               </Field>
             </div>
@@ -534,20 +541,20 @@ export default function AppSignupForm() {
             <div className="flex flex-col gap-6">
               <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
               <div className="flex flex-col gap-4">
-                <Field label="Startup name" required>
+                <Field label="Startup name" htmlFor="su-startup" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="Aperture AI" value={startupName} onChange={(e) => setStartupName(e.target.value)} />
+                    <input id="su-startup" autoComplete="organization" className={inputCls} placeholder="Aperture AI" value={startupName} onChange={(e) => setStartupName(e.target.value)} />
                   </div>
                 </Field>
-                <Field label="HQ location" required>
+                <Field label="HQ location" htmlFor="su-hq" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="San Francisco, CA" value={hqLocation} onChange={(e) => setHqLocation(e.target.value)} />
+                    <input id="su-hq" className={inputCls} placeholder="San Francisco, CA" value={hqLocation} onChange={(e) => setHqLocation(e.target.value)} />
                     <MapPin className="w-[18px] h-[18px] text-[#9a9a93] shrink-0" strokeWidth={1.5} />
                   </div>
                 </Field>
-                <Field label="One-liner" required>
+                <Field label="One-liner" htmlFor="su-oneliner" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="AI that writes QA tests while your engineers ship." value={oneLiner} onChange={(e) => setOneLiner(e.target.value)} />
+                    <input id="su-oneliner" className={inputCls} placeholder="AI that writes QA tests while your engineers ship." value={oneLiner} onChange={(e) => setOneLiner(e.target.value)} />
                   </div>
                 </Field>
               </div>
@@ -558,20 +565,20 @@ export default function AppSignupForm() {
             <div className="flex flex-col gap-6">
               <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
               <div className="flex flex-col gap-4">
-                <Field label="Start up name" required>
+                <Field label="Start up name" htmlFor="su-firm" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="Aperture AI" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
+                    <input id="su-firm" autoComplete="organization" className={inputCls} placeholder="Aperture AI" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
                   </div>
                 </Field>
-                <Field label="HQ location" required>
+                <Field label="HQ location" htmlFor="su-invloc" required>
                   <div className={inputWrapCls}>
-                    <input className={inputCls} placeholder="San Francisco, CA" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
+                    <input id="su-invloc" className={inputCls} placeholder="San Francisco, CA" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
                     <MapPin className="w-[18px] h-[18px] text-[#9a9a93] shrink-0" strokeWidth={1.5} />
                   </div>
                 </Field>
-                <Field label="LinkedIn">
+                <Field label="LinkedIn" htmlFor="su-linkedin">
                   <div className={inputWrapCls}>
-                    <input type="url" className={inputCls} placeholder="linkedin.com/in/ ..." value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} />
+                    <input id="su-linkedin" autoComplete="url" type="url" className={inputCls} placeholder="linkedin.com/in/ ..." value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} />
                   </div>
                 </Field>
               </div>
@@ -589,7 +596,7 @@ export default function AppSignupForm() {
                   ))}
                 </div>
               </Field>
-              <Field label="Company start date">
+              <Field label="Company start date" htmlFor="su-start">
                 <div className={inputWrapCls}>
                   <input
                     type="date"
@@ -613,6 +620,7 @@ export default function AppSignupForm() {
                     <input
                       className={inputCls}
                       placeholder="Waitlist / signups"
+                      aria-label="Waitlist / signups"
                       inputMode="numeric"
                       value={waitlistSignups}
                       onChange={(e) => setWaitlistSignups(e.target.value)}
@@ -622,6 +630,7 @@ export default function AppSignupForm() {
                     <input
                       className={inputCls}
                       placeholder="Active users"
+                      aria-label="Active users"
                       value={activeUsers}
                       onChange={(e) => setActiveUsers(e.target.value)}
                     />
@@ -630,6 +639,7 @@ export default function AppSignupForm() {
                     <input
                       className={inputCls}
                       placeholder="Pilots / LOIs"
+                      aria-label="Pilots / LOIs"
                       inputMode="numeric"
                       value={pilotsLois}
                       onChange={(e) => setPilotsLois(e.target.value)}
@@ -639,6 +649,7 @@ export default function AppSignupForm() {
                     <input
                       className={inputCls}
                       placeholder="User growth MoM"
+                      aria-label="User growth MoM"
                       value={userGrowthMom}
                       onChange={(e) => setUserGrowthMom(e.target.value)}
                     />
@@ -670,11 +681,11 @@ export default function AppSignupForm() {
 
           {step === 4 && role === "investor" && (
             <div className="flex flex-col gap-6">
-              <Field label="Investor type" required>
-                <Select value={investorType} onChange={setInvestorType} options={INVESTOR_TYPES} placeholder="Select type" />
+              <Field label="Investor type" htmlFor="su-invtype" required>
+                <Select id="su-invtype" value={investorType} onChange={setInvestorType} options={INVESTOR_TYPES} placeholder="Select type" />
               </Field>
-              <Field label="Accreditation status" required>
-                <Select value={accreditation} onChange={setAccreditation} options={ACCREDITATION} placeholder="Select status" />
+              <Field label="Accreditation status" htmlFor="su-accred" required>
+                <Select id="su-accred" value={accreditation} onChange={setAccreditation} options={ACCREDITATION} placeholder="Select status" />
               </Field>
               <Field label="Sectors of interest" required>
                 <div className="flex flex-wrap gap-2">
@@ -685,12 +696,12 @@ export default function AppSignupForm() {
                   ))}
                 </div>
               </Field>
-              <Field label="Typical check size" required>
-                <Select value={typicalCheckSize} onChange={setTypicalCheckSize} options={CHECK_SIZE_OPTIONS} placeholder="Select range" />
+              <Field label="Typical check size" htmlFor="su-check" required>
+                <Select id="su-check" value={typicalCheckSize} onChange={setTypicalCheckSize} options={CHECK_SIZE_OPTIONS} placeholder="Select range" />
               </Field>
-              <Field label="Investment thesis">
+              <Field label="Investment thesis" htmlFor="su-thesis">
                 <div className={`${glass} rounded-[14px] p-4`}>
-                  <textarea
+                  <textarea id="su-thesis"
                     className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]"
                     placeholder="What you back, and why."
                     value={investmentThesis}
