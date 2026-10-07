@@ -23,7 +23,7 @@ export default function Home() {
       {top ? (
       <Hud className="in" scan tag="Spotlight / 01">
         <Link to={path(`company/${top.id}`)} className="ph kb" style={{ display: "block", minHeight: 210, color: "#fff" }}>
-          <img src={top.img} alt="" />
+          {top.img && <img src={top.img} alt="" />}
           <div className="ph-body" style={{ position: "absolute", left: 22, right: 22, bottom: 20 }}>
             <div className="row" style={{ gap: 10, marginBottom: 10 }}><Duo c={top} size={26} /></div>
             <h2 style={{ fontSize: 21, fontWeight: 700, letterSpacing: "-.03em", lineHeight: 1.05 }}>{top.name}</h2>
@@ -78,7 +78,7 @@ export default function Home() {
       <div className="chips" style={{ gap: 12 }}>
         {raising.map((c) => (
           <Link key={c.id} to={path(`company/${c.id}`)} className="ph" style={{ width: 150, height: 180, flex: "none" }}>
-            <img src={c.img} alt="" loading="lazy" />
+            {c.img && <img src={c.img} alt="" loading="lazy" />}
             <div className="ph-body" style={{ position: "absolute", left: 12, right: 12, bottom: 12 }}>
               <Duo c={c} size={30} />
               <b style={{ display: "block", marginTop: 8, fontSize: 15 }}>{c.name}</b>
