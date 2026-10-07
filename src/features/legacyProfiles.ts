@@ -33,8 +33,8 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
       traction: t(f.traction) ? [t(f.traction)] : [],
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
-      // Live values are "actively_raising" (checked 10/7); compare that exact string.
-      raising: t(f.fundraising_status) === "actively_raising", founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
+      // Every live row is "actively_raising" (column default, checked 10/7); intended meaning unknown, so not claimed.
+      raising: false, founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
   });
   const people: Person[] = [...visible.values()].map(p => {
     const i = inv.get(p.id); const role: Person["role"] = p.user_type === "founder" ? "Founder" : p.user_type === "investor" ? "Investor" : "Member";
