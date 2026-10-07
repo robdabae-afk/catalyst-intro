@@ -21,14 +21,16 @@ export function Hud({ children, className = "", tag, scan }: { children: ReactNo
 export function Logo({ c, size = 40 }: { c: Company; size?: number }) {
   return (
     <span className="lg" style={{ width: size, height: size, borderRadius: size * 0.3 }} aria-hidden>
-      <img src={c.img} alt="" loading="lazy" />
+      {c.img && <img src={c.img} alt="" loading="lazy" />}
       <span className="lg-ic"><Icon name={SECTOR_ICON[c.sector]} size={Math.round(size * 0.42)} /></span>
     </span>
   );
 }
 
 export const Face = ({ c, size = 36, ring }: { c: Company; size?: number; ring?: boolean }) => (
-  <img className={`face${ring ? " ring" : ""}`} src={c.face} alt="" width={size} height={size} loading="lazy" style={{ width: size, height: size }} />
+  c.face
+    ? <img className={`face${ring ? " ring" : ""}`} src={c.face} alt="" width={size} height={size} loading="lazy" style={{ width: size, height: size }} />
+    : <span className={`face${ring ? " ring" : ""}`} aria-hidden style={{ width: size, height: size }} />
 );
 
 /** Logo with founder avatar overlapped bottom-right. */
