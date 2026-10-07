@@ -70,6 +70,7 @@ const App = () => (
       <BrowserRouter basename={isDemoMode() ? "/demo" : undefined}>
         <Routes>
           {/* Marketing landing (the production app lives at "/") */}
+          <Route path="/" element={<Landing />} />
           <Route path="/intro" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/community" element={<Community />} />

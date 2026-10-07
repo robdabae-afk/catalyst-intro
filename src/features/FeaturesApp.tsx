@@ -92,6 +92,7 @@ export default function FeaturesApp() {
         <main className="cf-main">
           <Routes>
             <Route index element={<Home />} />
+            <Route path="feed" element={<Home />} />
             <Route path="search" element={<Search />} />
             <Route path="watchlist" element={<Watchlist />} />
             <Route path="inbox" element={<LiveInbox updates={<Notifications />} />} />
