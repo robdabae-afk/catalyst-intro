@@ -60,12 +60,12 @@ function HeroSignup() {
       <div className="hs-row">
         <div>
         <label className="sr" htmlFor="hs-name">Full name</label>
-        <input id="hs-name" ref={refs.name} placeholder="Full name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errs.name} />
+        <input id="hs-name" name="name" ref={refs.name} placeholder="Full name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errs.name} />
         {errs.name && <div className="err" aria-live="polite">{errs.name}</div>}
       </div>
         <div>
         <label className="sr" htmlFor="hs-email">Email</label>
-        <input id="hs-email" ref={refs.email} type="email" placeholder="Email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errs.email} />
+        <input id="hs-email" name="email" inputMode="email" ref={refs.email} type="email" placeholder="Email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errs.email} />
         {errs.email && <div className="err" aria-live="polite">{errs.email}</div>}
       </div>
       </div>
