@@ -184,3 +184,14 @@
 .rd .hs-done{border:1px solid var(--line);border-radius:20px;padding:20px}
 .rd .hs-ok{font-weight:700;font-size:18px;margin:0 0 6px;color:var(--ink)}
 .rd .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rd .hs-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:860px){
+.rd .hero h1{font-size:40px;margin-bottom:.25em}
+.rd .hero .lede{font-size:17px;margin:0}
+.rd .hero{padding:12px 0 56px;gap:28px}
+.rd .hs{margin-top:16px;gap:8px}
+.rd .hs-roles button{padding:9px;font-size:14px}
+.rd .hs input:not([type=checkbox]){padding:11px 12px;font-size:16px;border-radius:12px}
+.rd .hs .btn{padding:11px 18px}
+.rd .hero .fine.reveal{margin-top:10px!important;font-size:12px}
+}

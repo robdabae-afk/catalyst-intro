@@ -13,6 +13,7 @@ function HeroSignup() {
   const [consent, setConsent] = useState(false);
   const [errs, setErrs] = useState<Record<string, string>>({});
   const [state, setState] = useState<"idle" | "sending" | "done">("idle");
+  const [open, setOpen] = useState(false);
   const refs = { name: useRef<HTMLInputElement>(null), email: useRef<HTMLInputElement>(null), consent: useRef<HTMLInputElement>(null) };
 
   const submit = async (e: FormEvent) => {
@@ -49,7 +50,7 @@ function HeroSignup() {
   }
 
   return (
-    <form id="signup" className="hs reveal d3" noValidate onSubmit={submit} aria-label="Join Catalyst">
+    <form id="signup" className="hs reveal d3" noValidate onSubmit={submit} onFocusCapture={() => setOpen(true)} aria-label="Join Catalyst">
       <div className="hs-roles" role="radiogroup" aria-label="I am a">
         {(["founder", "investor"] as Role[]).map((r) => (
           <button key={r} type="button" role="radio" aria-checked={role === r} onClick={() => setRole(r)}>
@@ -57,17 +58,19 @@ function HeroSignup() {
           </button>
         ))}
       </div>
-      <div>
+      <div className="hs-row">
+        <div>
         <label className="sr" htmlFor="hs-name">Full name</label>
         <input id="hs-name" ref={refs.name} placeholder="Full name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errs.name} />
         {errs.name && <div className="err" aria-live="polite">{errs.name}</div>}
       </div>
-      <div>
+        <div>
         <label className="sr" htmlFor="hs-email">Email</label>
         <input id="hs-email" ref={refs.email} type="email" placeholder="Email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errs.email} />
         {errs.email && <div className="err" aria-live="polite">{errs.email}</div>}
       </div>
-      <label className="consent">
+      </div>
+      {(open || errs.consent) && <label className="consent">
         <input type="checkbox" ref={refs.consent} checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-invalid={!!errs.consent} />
         <span>
           {role === "founder"
@@ -75,7 +78,7 @@ function HeroSignup() {
             : "I agree to receive beta and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
           <Link to="/privacy">privacy notice</Link>.
         </span>
-      </label>
+      </label>}
       {(errs.consent || errs.form) && <div className="err" aria-live="polite">{errs.consent || errs.form}</div>}
       <button className="btn" type="submit" disabled={state === "sending"}>{state === "sending" ? "Joining..." : "Join"}</button>
     </form>
