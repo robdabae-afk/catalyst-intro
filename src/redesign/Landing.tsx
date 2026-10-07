@@ -71,12 +71,7 @@ function HeroSignup() {
       </div>
       <label className="consent">
         <input type="checkbox" ref={refs.consent} checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-invalid={!!errs.consent} />
-        <span>
-          {role === "founder"
-            ? "I agree to receive early-access and product updates from Catalyst. Unsubscribe any time. See the "
-            : "I agree to receive beta and product updates from Catalyst. I understand this is not an offer of securities and Catalyst does not currently facilitate investments. See the "}
-          <Link to="/privacy">privacy notice</Link>.
-        </span>
+        <span>Email me Catalyst updates. Not an offer of securities. <Link to="/privacy">Privacy</Link></span>
       </label>
       {(errs.consent || errs.form) && <div className="err" aria-live="polite">{errs.consent || errs.form}</div>}
       <button className="btn" type="submit" disabled={state === "sending"}>{state === "sending" ? "Joining..." : "Join"}</button>
@@ -105,7 +100,6 @@ export default function Landing() {
           <h1 className="reveal d1">Startup ownership <em>for everyone.</em></h1>
           <p className="lede reveal d2">Right from your phone.</p>
           <HeroSignup />
-          <p className="fine reveal d3" style={{ marginTop: 18 }}>Funding portal registration pending. No investments are available yet.</p>
         </div>
         <div className="phone tilt reveal d2">
           <div className="back"><img src="/redesign/app-detail.jpg" alt="" loading="lazy" /></div>
