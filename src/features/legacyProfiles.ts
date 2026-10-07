@@ -3,12 +3,36 @@
 import type { Person } from "@/live/profiles";
 
 export const PROFILE_COLS = "id,name,user_type,avatar_url,linkedin_url,approved,is_hidden,is_flagged,is_test_account,is_test_mode,created_at";
-export const FOUNDER_COLS = "id,profile_id,startup_name,one_liner,industry,location,stage,logo_url,banner_url,video_url,traction,raise_amount,raise_type,valuation_cap_target,fundraising_status,team_members,created_at";
+export const FOUNDER_COLS = "id,profile_id,startup_name,one_liner,industry,location,stage,logo_url,banner_url,video_url,traction,raise_amount,raise_type,valuation_cap_target,fundraising_status,team_members,pitch_deck_url,pitch_deck_visibility,created_at";
 export const INVESTOR_COLS = "profile_id,firm_name,position,location,investment_thesis,sectors_of_interest,preferred_stage";
 
 type Row = Record<string, any>;
 const t = (v: unknown) => typeof v === "string" ? v.trim() : "";
 const safeUrl = (v: unknown) => { const s = t(v); if (!s) return ""; try { const u = new URL(s); return u.protocol === "https:" || u.protocol === "http:" ? u.href : ""; } catch { return ""; } };
+// A public visibility flag must not expose private/signed storage URLs.
+export function publicDeckUrl(value: unknown, visibility: unknown): string {
+  if (visibility !== "public") return "";
+  const url = safeUrl(value);
+  if (!url) return "";
+  const u = new URL(url);
+  if (u.protocol !== "https:" || u.username || u.password) return "";
+  if ([...u.searchParams.keys()].some(k => /token|signature|credential|secret|password|authorization|^sig$|^key$|^expires$/i.test(k))) return "";
+  if (/\.supabase\.(co|in)$/i.test(u.hostname) && !u.pathname.startsWith("/storage/v1/object/public/")) return "";
+  return url;
+}
+// Only display fields are allowed, never contact details or arbitrary team JSON.
+function publicTeam(value: unknown): { name: string; title: string }[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  return value.flatMap(member => {
+    if (!member || typeof member !== "object") return [];
+    const name = t(member.name), title = t(member.title), key = name.toLocaleLowerCase();
+    if (!name || seen.has(key)) return [];
+    seen.add(key);
+    return [{ name, title }];
+  });
+}
+
 const initials = (n: string) => n.split(/\s+/).filter(Boolean).map(s => s[0]).slice(0, 2).join("").toUpperCase();
 
 /** Visible = approved, not hidden, not flagged, not a test account/mode. */
@@ -34,6 +58,9 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
       // Every live row is "actively_raising" (possible default, checked 10/7); intended meaning unknown, so not claimed.
+      // No problem/solution fields exist in the legacy schema. Never repurpose the one-liner.
+      problem: "", solution: "", teamMembers: publicTeam(f.team_members),
+      docs: publicDeckUrl(f.pitch_deck_url, f.pitch_deck_visibility) ? [{ name: "Pitch deck", kind: "deck" as const, ready: true, url: publicDeckUrl(f.pitch_deck_url, f.pitch_deck_visibility) }] : [],
       raising: false, founderName: t(owner.name), founderPhoto: safeUrl(owner.avatar_url), createdAt: f.created_at ?? owner.created_at };
   });
   const people: Person[] = [...visible.values()].map(p => {
