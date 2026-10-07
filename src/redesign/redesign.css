@@ -173,3 +173,14 @@
 .rd .cmp td.us{background:#fff!important;border-right:1px solid #d6d6d3!important}
 .rd .cmp td.us:before{color:#0a0a0a}
 }
+.rd .hs{max-width:440px;margin-top:28px;gap:10px}
+.rd .hs-roles{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px}
+.rd .hs-roles button{font:700 15px var(--s);border:0;background:transparent;color:var(--mut);padding:12px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+.rd .hs-roles button[aria-checked=true]{background:#0a0a0a;color:#fff}
+.rd .hs .consent{font-size:12px;line-height:1.45}
+.rd .hs .consent input{accent-color:#0a0a0a;margin-top:2px}
+.rd .hs .btn{width:100%;justify-content:center}
+.rd .hs .btn[disabled]{opacity:.6}
+.rd .hs-done{border:1px solid var(--line);border-radius:20px;padding:20px}
+.rd .hs-ok{font-weight:700;font-size:18px;margin:0 0 6px;color:var(--ink)}
+.rd .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}

@@ -1,45 +1,71 @@
-import { FormEvent, KeyboardEvent, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { FormEvent, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Showcase from "./Showcase";
 import Shell, { LUMA, useMeta } from "./Shell";
 
 type Role = "founder" | "investor";
 
-function JoinForm({ role }: { role: Role }) {
-  const navigate = useNavigate();
+function HeroSignup() {
+  const [role, setRole] = useState<Role>("investor");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [errs, setErrs] = useState<Record<string, string>>({});
+  const [state, setState] = useState<"idle" | "sending" | "done">("idle");
   const refs = { name: useRef<HTMLInputElement>(null), email: useRef<HTMLInputElement>(null), consent: useRef<HTMLInputElement>(null) };
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
     const n: Record<string, string> = {};
-    if (!name.trim()) n.name = "This is required.";
-    if (!email.trim()) n.email = "This is required.";
+    if (!name.trim()) n.name = "Add your name.";
+    if (!email.trim()) n.email = "Add your email.";
     else if (!/^\S+@\S+\.\S+$/.test(email)) n.email = "Enter a valid email.";
-    if (!consent) n.consent = "This is required.";
+    if (!consent) n.consent = "Please agree to continue.";
     setErrs(n);
     const first = (["name", "email", "consent"] as const).find((k) => n[k]);
     if (first) return refs[first].current?.focus();
-    // Hand off to the existing Supabase signup flow, prefilled.
-    const q = new URLSearchParams({ role, name: name.trim(), email: email.trim() });
-    navigate(`/signup/form?${q}`);
+    setState("sending");
+    const { error } = await supabase
+      .from("waitlist_signups")
+      .insert({ name: name.trim(), email: email.trim().toLowerCase(), user_type: role });
+    // 23505 = email already on the list; treat as success.
+    if (error && error.code !== "23505") {
+      setState("idle");
+      setErrs({ form: "Something went wrong. Please try again." });
+      return;
+    }
+    setState("done");
   };
 
-  const p = role === "founder" ? "f" : "i";
+  if (state === "done") {
+    const q = new URLSearchParams({ role, name: name.trim(), email: email.trim() });
+    return (
+      <div id="signup" className="hs hs-done" role="status">
+        <p className="hs-ok">You're on the list.</p>
+        <p className="fine" style={{ margin: 0 }}>We'll email {email.trim()} when Catalyst opens. <Link to={`/signup/form?${q}`} style={{ color: "var(--ink)" }}>Finish your profile</Link></p>
+      </div>
+    );
+  }
+
   return (
-    <form id={`p-${p}`} role="tabpanel" aria-labelledby={`t-${p}`} noValidate onSubmit={submit}>
-      <div>
-        <label htmlFor={`${p}-name`}>Full name</label>
-        <input id={`${p}-name`} ref={refs.name} autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errs.name} />
-        <div className="err" aria-live="polite">{errs.name}</div>
+    <form id="signup" className="hs reveal d3" noValidate onSubmit={submit} aria-label="Join Catalyst">
+      <div className="hs-roles" role="radiogroup" aria-label="I am a">
+        {(["founder", "investor"] as Role[]).map((r) => (
+          <button key={r} type="button" role="radio" aria-checked={role === r} onClick={() => setRole(r)}>
+            {r === "founder" ? "Founder" : "Investor"}
+          </button>
+        ))}
       </div>
       <div>
-        <label htmlFor={`${p}-email`}>Email</label>
-        <input id={`${p}-email`} ref={refs.email} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errs.email} />
-        <div className="err" aria-live="polite">{errs.email}</div>
+        <label className="sr" htmlFor="hs-name">Full name</label>
+        <input id="hs-name" ref={refs.name} placeholder="Full name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={!!errs.name} />
+        {errs.name && <div className="err" aria-live="polite">{errs.name}</div>}
+      </div>
+      <div>
+        <label className="sr" htmlFor="hs-email">Email</label>
+        <input id="hs-email" ref={refs.email} type="email" placeholder="Email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} aria-invalid={!!errs.email} />
+        {errs.email && <div className="err" aria-live="polite">{errs.email}</div>}
       </div>
       <label className="consent">
         <input type="checkbox" ref={refs.consent} checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-invalid={!!errs.consent} />
@@ -50,10 +76,8 @@ function JoinForm({ role }: { role: Role }) {
           <Link to="/privacy">privacy notice</Link>.
         </span>
       </label>
-      <div className="err" aria-live="polite">{errs.consent}</div>
-      <button className="btn" type="submit" style={{ justifySelf: "start" }}>
-        {role === "founder" ? "Get early access" : "Join the beta"}
-      </button>
+      {(errs.consent || errs.form) && <div className="err" aria-live="polite">{errs.consent || errs.form}</div>}
+      <button className="btn" type="submit" disabled={state === "sending"}>{state === "sending" ? "Joining..." : "Join"}</button>
     </form>
   );
 }
@@ -72,26 +96,13 @@ export default function Landing() {
     "Catalyst · Startup investing, built for your phone",
     "Catalyst is a mobile app for everyday Americans to discover early-stage startups. Coming soon, pending funding portal registration. Join the beta."
   );
-  const [role, setRole] = useState<Role>("investor");
-  const tabs = { founder: useRef<HTMLButtonElement>(null), investor: useRef<HTMLButtonElement>(null) };
-  const onKey = (e: KeyboardEvent) => {
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-      const next: Role = role === "founder" ? "investor" : "founder";
-      setRole(next);
-      tabs[next].current?.focus();
-    }
-  };
-
   return (
     <Shell>
       <div className="hero">
         <div>
           <h1 className="reveal d1">Startup ownership <em>for everyone.</em></h1>
           <p className="lede reveal d2">Right from your phone.</p>
-          <div className="ctas reveal d3">
-            <a className="btn" href="#join" onClick={() => setRole("investor")}>Join the beta</a>
-            <a className="btn ghost" href="#join" onClick={() => setRole("founder")}>Raise with Catalyst</a>
-          </div>
+          <HeroSignup />
           <p className="fine reveal d3" style={{ marginTop: 18 }}>Funding portal registration pending. No investments are available yet.</p>
         </div>
         <div className="phone tilt reveal d2">
@@ -136,7 +147,7 @@ export default function Landing() {
               <li>Tell your story in a profile built for phones</li>
               <li>Bring your community in with one link</li>
             </ul>
-            <a className="btn" href="#join" onClick={() => setRole("founder")}>Get early access</a>
+            <a className="btn" href="#signup">Get early access</a>
           </div>
         </div>
       </section>
@@ -155,16 +166,9 @@ export default function Landing() {
       <section id="join" aria-labelledby="h-join">
         <div className="join">
           <h2 id="h-join">Get in <em>early.</em></h2>
-          <p>Which side of the table are you on?</p>
-          <div role="tablist" aria-label="Signup type" onKeyDown={onKey}>
-            {(["investor", "founder"] as Role[]).map((r) => (
-              <button key={r} ref={tabs[r]} role="tab" id={`t-${r[0]}`} aria-controls={`p-${r[0]}`} aria-selected={role === r} tabIndex={role === r ? 0 : -1} onClick={() => setRole(r)}>
-                I'm {r === "founder" ? "a founder" : "an investor"}
-              </button>
-            ))}
-          </div>
-          <JoinForm key={role} role={role} />
-          <p className="fine">Next step: create your account. Already a member? <Link to="/auth" style={{ color: "var(--ink)" }}>Log in</Link>.</p>
+          <p>Founders and investors, join the list in ten seconds.</p>
+          <a className="btn" href="#signup" style={{ marginTop: 8 }}>Join</a>
+          <p className="fine" style={{ marginTop: 20 }}>Already a member? <Link to="/auth" style={{ color: "var(--ink)" }}>Log in</Link>.</p>
         </div>
       </section>
 
