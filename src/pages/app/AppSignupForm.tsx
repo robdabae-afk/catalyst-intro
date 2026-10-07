@@ -1,5 +1,5 @@
 import { isAppShell } from "@/lib/platform";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import "./signup.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,7 +46,7 @@ const stageToValue: Record<string, "pre-seed" | "seed" | "series-a" | "series-b"
 const glass = "bg-white border-[1.5px] border-[#e6e6e3]";
 const inputWrapCls = `h-14 px-4 rounded-[14px] ${glass} flex items-center gap-3 focus-within:border-[#0b0b0b] transition-colors`;
 const inputCls =
-  "flex-1 min-w-0 bg-transparent outline-none text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]";
+  "flex-1 min-w-0 bg-transparent outline-none text-[16px] sm:text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]";
 
 function Dots({ current, total }: { current: number; total: number }) {
   return (
@@ -85,9 +85,9 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function Title({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-1.5 text-[30px] font-bold tracking-[-0.02em] leading-[1.1] text-[#0b0b0b]">
+    <h1 className="m-0 mt-1.5 text-[30px] font-bold tracking-[-0.02em] leading-[1.1] text-[#0b0b0b]">
       {children}
-    </div>
+    </h1>
   );
 }
 
@@ -95,10 +95,10 @@ function Sub({ children }: { children: React.ReactNode }) {
   return <div className="mt-2 text-[14px] text-[#74746d]">{children}</div>;
 }
 
-function LabelRow({ label, required, htmlFor }: { label: string; required?: boolean; htmlFor?: string }) {
+function LabelRow({ label, required, htmlFor, id }: { label: string; required?: boolean; htmlFor?: string; id?: string }) {
   const Tag = htmlFor ? "label" : "div";
   return (
-    <Tag htmlFor={htmlFor} className="text-[11px] uppercase tracking-[0.11em] text-[#74746d]">
+    <Tag id={id} htmlFor={htmlFor} className="text-[11px] uppercase tracking-[0.11em] text-[#74746d]">
       {label}{" "}
       {required ? (
         <span className="text-[#0b0b0b]">*</span>
@@ -120,10 +120,11 @@ function Field({
   htmlFor?: string;
   children: React.ReactNode;
 }) {
+  const labelId = useId();
   return (
     <div className="flex flex-col gap-2">
-      <LabelRow label={label} required={required} htmlFor={htmlFor} />
-      {children}
+      <LabelRow label={label} required={required} htmlFor={htmlFor} id={labelId} />
+      {htmlFor ? children : <div role="group" aria-labelledby={labelId}>{children}</div>}
     </div>
   );
 }
@@ -148,7 +149,7 @@ function Select({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={[
-          "flex-1 min-w-0 appearance-none bg-transparent outline-none text-[15px]",
+          "flex-1 min-w-0 appearance-none bg-transparent outline-none text-[16px] sm:text-[15px]",
           value ? "text-[#0b0b0b]" : "text-[#3d3d3d]",
         ].join(" ")}
       >
@@ -178,6 +179,7 @@ function Chip({
   return (
     <button
       type="button"
+      aria-pressed={selected}
       onClick={onClick}
       className={[
         "h-9 px-[15px] rounded-full text-[13px] transition-colors select-none",
@@ -196,6 +198,7 @@ function AvatarPicker({ preview, onFile }: { preview: string | null; onFile: (f:
       <button
         type="button"
         onClick={() => ref.current?.click()}
+        aria-label={preview ? "Change profile photo" : "Upload profile photo"}
         className="w-16 h-16 rounded-full bg-[#f4f4f2] border-[1.5px] border-[#e6e6e3] flex items-center justify-center overflow-hidden shrink-0"
       >
         {preview ? (
@@ -485,6 +488,7 @@ export default function AppSignupForm() {
                     key={r}
                     type="button"
                     onClick={() => setRole(r)}
+                    aria-pressed={selected}
                     className={[
                       "flex-1 min-h-[132px] px-4 py-[18px] rounded-[18px] text-left flex flex-col transition-colors",
                       glass,
@@ -599,6 +603,7 @@ export default function AppSignupForm() {
               <Field label="Company start date" htmlFor="su-start">
                 <div className={inputWrapCls}>
                   <input
+                    id="su-start"
                     type="date"
                     className={inputCls}
                     value={operationsStartDate}
@@ -702,7 +707,7 @@ export default function AppSignupForm() {
               <Field label="Investment thesis" htmlFor="su-thesis">
                 <div className={`${glass} rounded-[14px] p-4`}>
                   <textarea id="su-thesis"
-                    className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]"
+                    className="w-full min-h-[88px] bg-transparent outline-none resize-none text-[16px] sm:text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]"
                     placeholder="What you back, and why."
                     value={investmentThesis}
                     onChange={(e) => setInvestmentThesis(e.target.value)}
@@ -726,6 +731,8 @@ export default function AppSignupForm() {
               <button
                 type="button"
                 onClick={() => setAgreed((a) => !a)}
+                role="checkbox"
+                aria-checked={agreed}
                 className={`p-[18px] rounded-[18px] ${glass} flex items-start gap-3.5 text-left`}
               >
                 <div

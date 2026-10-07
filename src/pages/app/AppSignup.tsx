@@ -6,10 +6,9 @@ export default function AppSignup() {
   const navigate = useNavigate();
 
   const start = () => {
-    // Carry prefill (role/name/email/from) and referral through to the form.
+    // Copy every existing query param (role/name/email/from/...), then add ref.
     const src = new URLSearchParams(location.search);
-    const q = new URLSearchParams();
-    for (const k of ["role", "name", "email", "from"]) { const v = src.get(k); if (v) q.set(k, v); }
+    const q = new URLSearchParams(src);
     let r = src.get("ref");
     try { r = r || localStorage.getItem("catalyst.ref"); } catch { /* private mode */ }
     if (r) q.set("ref", r);

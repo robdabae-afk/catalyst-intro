@@ -19,3 +19,4 @@
 .su-shot{flex:1;min-height:120px;margin:24px 0;border-radius:22px;overflow:hidden;background:#f4f4f2;border:1px solid #e6e6e3}
 .su-shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 .su-link{background:none;border:0;margin-top:14px;font:600 14px 'Schibsted Grotesk',system-ui,sans-serif;color:#0b0b0b;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-skip-ink:auto}
+.su-done p,.su-done b{overflow-wrap:anywhere}
