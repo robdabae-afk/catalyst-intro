@@ -12,7 +12,7 @@ describe("legacy profile mapping", () => {
   it("maps founders to companies without inventing stats and strips unsafe urls", () => {
     const { companies, people } = mapLegacy(
       [{ ...base, id: "u1", name: "Jo Doe", user_type: "founder", avatar_url: "javascript:x", email: "x@y" }, { ...base, id: "u2", name: "Ivy", user_type: "investor" }, { ...base, approved: false, id: "u3", name: "No", user_type: "founder" }],
-      [{ id: "f1", profile_id: "u1", startup_name: "Acme", one_liner: "x", industry: ["AI"], raise_amount: 500000, traction_tiles: ["10 pilots"] }, { id: "f3", profile_id: "u3", startup_name: "Hidden" }],
+      [{ id: "f1", profile_id: "u1", startup_name: "Acme", one_liner: "x", industry: ["AI"], raise_amount: 500000, traction_tiles: ["10 pilots"] }, { id: "f3", profile_id: "u3", startup_name: "Hidden" }, { id: "f2", profile_id: "u2", startup_name: "InvestorCo" }, { id: "f4", profile_id: "u1", startup_name: "Untitled" }],
       [{ profile_id: "u2", firm_name: "Fund", position: "Partner" }]);
     expect(companies.map(c => c.id)).toEqual(["legacy-f1"]);
     expect(companies[0]).toMatchObject({ goal: 500000, sector: "AI", founderPhoto: "", traction: ["10 pilots"] });

@@ -14,18 +14,19 @@ const initials = (n: string) => n.split(/\s+/).filter(Boolean).map(s => s[0]).sl
 /** Visible = approved, not hidden, not flagged, not a test account/mode. */
 export const isVisibleProfile = (p: Row) => p?.approved === true && p.is_hidden !== true && p.is_flagged !== true && p.is_test_account !== true && p.is_test_mode !== true && !!t(p.name);
 
+const STAGES: Record<string, string> = { "pre-seed": "Pre-seed", seed: "Seed", "series-a": "Series A", "series-b": "Series B" };
 export const legacyId = (founderRowId: string) => `legacy-${founderRowId}`;
 
 export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
   const visible = new Map(profiles.filter(isVisibleProfile).map(p => [p.id, p]));
   const inv = new Map(investors.map(i => [i.profile_id, i]));
   const companyByOwner = new Map<string, string>();
-  const companies = founders.filter(f => visible.has(f.profile_id) && t(f.startup_name)).map(f => {
+  const companies = founders.filter(f => visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled").map(f => {
     const owner = visible.get(f.profile_id)!; const id = legacyId(f.id);
     companyByOwner.set(f.profile_id, id);
     const tiles = Array.isArray(f.traction_tiles) ? f.traction_tiles.filter((x: unknown) => typeof x === "string" && x.trim()) : [];
     return { id, ownerId: f.profile_id as string, name: t(f.startup_name), line: t(f.one_liner), sector: (Array.isArray(f.industry) ? t(f.industry[0]) : ""), sectors: Array.isArray(f.industry) ? f.industry.filter((x: unknown) => typeof x === "string") as string[] : [],
-      city: t(f.location), stage: t(f.stage), cover: safeUrl(f.banner_url) || safeUrl(f.logo_url), logo: safeUrl(f.logo_url), pitch: safeUrl(f.video_url),
+      city: t(f.location), stage: STAGES[t(f.stage)] ?? "", cover: safeUrl(f.banner_url) || safeUrl(f.logo_url), logo: safeUrl(f.logo_url), pitch: safeUrl(f.video_url),
       traction: [t(f.traction), ...tiles].filter(Boolean) as string[],
       // Only founder-entered targets; never fabricate raised/investors.
       goal: Number(f.raise_amount) > 0 ? Number(f.raise_amount) : 0, instrument: t(f.raise_type), valuationCap: Number(f.valuation_cap_target) > 0 ? `$${Number(f.valuation_cap_target).toLocaleString()}` : "",
