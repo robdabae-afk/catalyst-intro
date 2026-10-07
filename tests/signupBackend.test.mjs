@@ -31,3 +31,19 @@ test('existing signup routes and components stay available', () => {
   }
   assert.match(app, /path="\/" element={<Landing \/>} /);
 });
+
+test('hero keeps real waitlist persistence and duplicate/error handling', () => {
+  const landing = readFileSync(new URL('../src/redesign/Landing.tsx', import.meta.url), 'utf8');
+  assert.ok(landing.includes('.from("waitlist_signups")'));
+  assert.ok(landing.includes('.insert({ name: name.trim(), email: email.trim().toLowerCase(), user_type: role })'));
+  assert.ok(landing.includes('error.code !== "23505"'));
+  assert.ok(landing.includes('navigate(' + String.fromCharCode(96) + '/signup/form?'));
+  assert.ok(!landing.includes("You're on the list."));
+});
+
+test('account-created screen respects email confirmation and enters real app', () => {
+  assert.ok(form.includes('setCreated({ hasSession: !!authData.session })'));
+  assert.ok(form.includes('Your account has been created'));
+  assert.ok(form.includes('navigate("/feed")'));
+  assert.ok(form.includes('Confirm your email'));
+});
