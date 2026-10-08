@@ -6,7 +6,7 @@ import Shell, { LUMA, useMeta } from "./Shell";
 
 type Role = "founder" | "investor";
 
-function HeroSignup() {
+export function HeroSignup() {
   const navigate = useNavigate();
   const [role, setRole] = useState<Role>("investor");
   const [name, setName] = useState("");
