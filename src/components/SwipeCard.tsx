@@ -346,8 +346,8 @@ export const SwipeCard = ({
             {/* Featured Badge - Sticky Top Left */}
             {isFeatured && (
               <div className="absolute top-4 left-4 z-20 w-fit">
-                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-[#0B0B0B]/30">
-                  <Star className="w-4 h-4 text-[#0B0B0B] fill-[#0B0B0B]" />
+                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-white/30">
+                  <Star className="w-4 h-4 text-white fill-white" />
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-white leading-none">FEATURED</span>
                   </div>
