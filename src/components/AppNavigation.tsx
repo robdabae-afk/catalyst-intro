@@ -1,3 +1,5 @@
+import type React from "react";
+import { useInAppFrame } from "@/components/AppFrameContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,7 +44,7 @@ interface AppNavigationProps {
   isPro?: boolean;
 }
 
-export const AppNavigation = ({ 
+const AppNavigationInner = ({ 
   userId,
   userType, 
   userName, 
@@ -281,3 +283,8 @@ export const AppNavigation = ({
     </nav>
   );
 };
+
+/** Hidden inside the new app frame, which provides the single nav. */
+export function AppNavigation(props: React.ComponentProps<typeof AppNavigationInner>) {
+  return useInAppFrame() ? null : <AppNavigationInner {...props} />;
+}

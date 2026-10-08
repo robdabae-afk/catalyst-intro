@@ -1,3 +1,5 @@
+import type React from "react";
+import { useInAppFrame } from "@/components/AppFrameContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutGrid, Search, MessageSquare, Users } from "lucide-react";
 
@@ -6,7 +8,7 @@ interface BottomNavProps {
   inboxBadge?: number;
 }
 
-export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
+function BottomNavInner({ inboxBadge = 0 }: BottomNavProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -88,4 +90,9 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
       })}
     </div>
   );
+}
+
+/** Hidden inside the new app frame, which provides the single nav. */
+export function BottomNav(props: React.ComponentProps<typeof BottomNavInner>) {
+  return useInAppFrame() ? null : <BottomNavInner {...props} />;
 }

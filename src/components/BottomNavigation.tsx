@@ -1,3 +1,5 @@
+import type React from "react";
+import { useInAppFrame } from "@/components/AppFrameContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, Mail, MessageSquare, Settings as SettingsIcon, DollarSign } from "lucide-react";
 
@@ -5,7 +7,7 @@ interface BottomNavigationProps {
     userType?: 'founder' | 'investor';
 }
 
-export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
+const BottomNavigationInner = ({ userType }: BottomNavigationProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -51,3 +53,8 @@ export const BottomNavigation = ({ userType }: BottomNavigationProps) => {
         </div>
     );
 };
+
+/** Hidden inside the new app frame, which provides the single nav. */
+export function BottomNavigation(props: React.ComponentProps<typeof BottomNavigationInner>) {
+  return useInAppFrame() ? null : <BottomNavigationInner {...props} />;
+}
