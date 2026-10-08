@@ -50,7 +50,7 @@ export const UnlockHistoryModal = ({
                         {/* Option 2: Pro */}
                         <Button
                             onClick={onUpgrade}
-                            className="w-full h-14 bg-gradient-to-r from-[#C5A059] to-[#997B40] hover:opacity-90 text-black border-none flex items-center justify-center gap-2"
+                            className="w-full h-14 bg-gradient-to-r from-[#0B0B0B] to-[#997B40] hover:opacity-90 text-black border-none flex items-center justify-center gap-2"
                         >
                             <Crown className="w-4 h-4 fill-black" />
                             <span className="font-bold text-sm uppercase tracking-wide">Upgrade to Pro</span>

@@ -84,3 +84,13 @@ html.cl-light .bg-white:is(.rounded-full.w-1, .w-1.h-1) { background-color: #0b0
 html.cl-light .cl-keep h2.text-white, html.cl-light .cl-keep .text-white { color: #fff; }
 html.cl-light .cl-photo-fade { --tw-gradient-from: rgb(0 0 0 / .7) var(--tw-gradient-from-position); --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position); }
 html.cl-light .font-playfair { font-family: "Schibsted Grotesk", system-ui, sans-serif; }
+
+/* settings / profile / finance leftovers */
+html.cl-light :is(.bg-neutral-800\/50, .bg-zinc-700, .bg-white\/\[0\.06\]) { background-color: #f4f4f2; }
+html.cl-light :is(.border-neutral-700\/50, .border-white\/\[0\.24\]) { border-color: #e6e6e3; }
+html.cl-light :is(.focus\:border-white\/30:focus, .hover\:border-zinc-700:hover, .hover\:border-zinc-600:hover) { border-color: #0b0b0b; }
+html.cl-light :is(.hover\:bg-neutral-900, .hover\:bg-neutral-700):hover { background-color: #f4f4f2; }
+html.cl-light .text-white\/30 { color: #a3a39c; }
+html.cl-light .to-neutral-900\/50 { --tw-gradient-to: #f4f4f2 var(--tw-gradient-to-position); }
+html.cl-light .border-t-\[\#C6A02C\] { border-top-color: #0b0b0b; }
+html.cl-light .placeholder-neutral-500::placeholder { color: #74746d; }

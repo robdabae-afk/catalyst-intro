@@ -76,7 +76,7 @@ export function LiveThread() {
 export function LivePeople() {
   useCatalog();
   const nav = useNavigate();
-  return <Frame><DiscoverView onOpen={(id) => nav(`${BASE}/company/${id}`)} /></Frame>;
+  return <><Link to="/people/swipe" className="me-row" data-to="/people/swipe"><span className="grow"><b>Swipe people</b><small>Match with founders and investors</small></span></Link><Frame><DiscoverView onOpen={(id) => nav(`${BASE}/company/${id}`)} /></Frame></>;
 }
 export function LiveEvents() { useCatalog(); return <Frame><EventsView /></Frame>; }
 export function LivePortfolio() { useCatalog(); return <Frame><PortfolioView /></Frame>; }

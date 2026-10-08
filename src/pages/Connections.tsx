@@ -76,15 +76,15 @@ export default function Connections() {
       className="relative min-h-[100dvh] flex flex-col"
       style={{
         background:
-          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(120,92,30,0.16) 0%, rgba(120,92,30,0) 62%), linear-gradient(139deg, #0B0A07 0%, #060606 55%, #080709 100%)",
+          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 62%), linear-gradient(139deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)",
       }}
     >
       {/* Header */}
       <div className="px-6 pt-14 pb-4">
-        <h1 style={{ color: "#F6F5F2", fontSize: 24, fontWeight: 700, fontFamily: "Fraunces, serif" }}>
+        <h1 style={{ color: "#0B0B0B", fontSize: 24, fontWeight: 700, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>
           Connections
         </h1>
-        <p style={{ color: "#94908A", fontSize: 13, marginTop: 2 }}>
+        <p style={{ color: "#74746D", fontSize: 13, marginTop: 2 }}>
           {userType === "investor" ? "Startups you've saved" : "Investors you've saved"}
         </p>
       </div>
@@ -93,14 +93,14 @@ export default function Connections() {
       <div className="flex-1 overflow-y-auto pb-28 px-6 space-y-3 no-scrollbar">
         {loading ? (
           <div className="flex items-center justify-center pt-16">
-            <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#0B0B0B]/30 border-t-[#0B0B0B] rounded-full animate-spin" />
           </div>
         ) : saved.length === 0 ? (
           <div className="flex flex-col items-center justify-center pt-20 text-center">
-            <p style={{ color: "#94908A", fontSize: 14 }}>
+            <p style={{ color: "#74746D", fontSize: 14 }}>
               No saved {userType === "investor" ? "startups" : "investors"} yet.
             </p>
-            <p style={{ color: "#6F6B63", fontSize: 12.5, marginTop: 6, maxWidth: 240 }}>
+            <p style={{ color: "#74746D", fontSize: 12.5, marginTop: 6, maxWidth: 240 }}>
               Bookmark a profile from Discover to see it here.
             </p>
           </div>
@@ -110,8 +110,8 @@ export default function Connections() {
               key={p.id}
               className="flex items-center gap-3 px-4 py-3 rounded-2xl cursor-pointer"
               style={{
-                background: "linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-                border: "1px solid rgba(255,255,255,0.1)",
+                background: "linear-gradient(165deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+                border: "1px solid rgba(11,11,11,0.09)",
               }}
               onClick={() => navigate(`/profile/${p.id}`)}
             >
@@ -120,14 +120,14 @@ export default function Connections() {
               ) : (
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  style={{ background: "rgba(11,11,11,0.054)" }}
                 >
-                  <User size={20} color="#6F6B63" />
+                  <User size={20} color="#74746D" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p style={{ color: "#F6F5F2", fontSize: 14.5, fontWeight: 600 }}>{p.name}</p>
-                <p style={{ color: "#94908A", fontSize: 12.5, marginTop: 1 }} className="truncate">
+                <p style={{ color: "#0B0B0B", fontSize: 14.5, fontWeight: 600 }}>{p.name}</p>
+                <p style={{ color: "#74746D", fontSize: 12.5, marginTop: 1 }} className="truncate">
                   {p.subtitle}
                 </p>
               </div>
@@ -137,10 +137,10 @@ export default function Connections() {
                   handleUnsave(p.id);
                 }}
                 className="flex items-center justify-center rounded-full shrink-0"
-                style={{ width: 34, height: 34, background: "rgba(255,255,255,0.05)" }}
+                style={{ width: 34, height: 34, background: "rgba(11,11,11,0.045)" }}
                 aria-label="Remove from saved"
               >
-                <BookmarkX size={16} color="#94908A" />
+                <BookmarkX size={16} color="#74746D" />
               </button>
             </div>
           ))
