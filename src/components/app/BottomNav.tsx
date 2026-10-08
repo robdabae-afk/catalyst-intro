@@ -45,11 +45,10 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
         width: "calc(100% - 32px)",
         maxWidth: 358,
         height: 66,
-        background:
-          "linear-gradient(175deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
+        background: "rgba(255,255,255,0.94)",
+        boxShadow: "0 8px 24px -12px rgba(0,0,0,0.18)",
         borderRadius: 26,
-        outline: "1px solid rgba(255,255,255,0.12)",
+        border: "1px solid #E6E6E3",
         backdropFilter: "blur(10px)",
       }}
     >
@@ -66,8 +65,8 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
           >
             <Icon
               className="w-5 h-5"
-              style={{ color: active ? "#C6A02C" : "#5F5C57" }}
-              strokeWidth={1.6}
+              style={{ color: active ? "#0B0B0B" : "#74746D" }}
+              strokeWidth={active ? 2 : 1.6}
             />
             {tab.badge ? (
               <span
@@ -76,8 +75,9 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
                   minWidth: 14,
                   height: 14,
                   padding: "0 3px",
-                  background: "#C6A02C",
-                  color: "#2A2005",
+                  background: "#0B0B0B",
+                  color: "#FFFFFF",
+                  border: "2px solid #FFFFFF",
                 }}
               >
                 {tab.badge > 9 ? "9+" : tab.badge}

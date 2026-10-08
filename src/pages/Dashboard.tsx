@@ -176,14 +176,14 @@ export default function Dashboard() {
 
   const outOfCards = !loading && cardIndex >= profiles.length;
   const swipeOpacity = Math.min(Math.abs(dragX) / 120, 1);
-  const swipeColor = dragX > 0 ? `rgba(198,160,44,${swipeOpacity * 0.4})` : `rgba(180,60,60,${swipeOpacity * 0.4})`;
+  const swipeColor = dragX > 0 ? `rgba(11,11,11,${swipeOpacity * 0.35})` : `rgba(180,60,60,${swipeOpacity * 0.4})`;
 
   return (
     <div
       className="relative flex flex-col min-h-[100dvh] overflow-hidden"
       style={{
         background:
-          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(212,176,86,0.1) 0%, transparent 60%), linear-gradient(139deg, #0B0A07 0%, #060606 55%, #080709 100%)",
+          "#FFFFFF",
       }}
     >
       {/* Top bar */}
@@ -193,16 +193,15 @@ export default function Dashboard() {
             fontSize: 17,
             fontWeight: 700,
             letterSpacing: "2.38px",
-            fontFamily: "Inter, sans-serif",
+            fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
+            color: "#0B0B0B",
           }}
         >
-          <span style={{ color: "#F6F5F2" }}>CAT</span>
-          <span style={{ color: "#C6A02C" }}>A</span>
-          <span style={{ color: "#F6F5F2" }}>LYST</span>
+          CATALYST
         </span>
         <div className="flex items-center gap-3">
           {swipesRemaining !== null && !isPro && (
-            <span style={{ color: "#94908A", fontSize: 12 }}>
+            <span style={{ color: "#74746D", fontSize: 12 }}>
               {swipesRemaining} right swipes left
             </span>
           )}
@@ -212,12 +211,12 @@ export default function Dashboard() {
             style={{
               width: 38,
               height: 38,
-              background: "rgba(255,255,255,0.05)",
-              boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.2)",
-              outline: "1px solid rgba(255,255,255,0.1)",
+              background: "#FFFFFF",
+              border: "1px solid #E6E6E3",
             }}
+            aria-label="Menu"
           >
-            <Settings size={16} color="#C6A02C" strokeWidth={1.5} />
+            <Settings size={16} color="#0B0B0B" strokeWidth={1.5} />
           </button>
         </div>
       </div>
@@ -229,16 +228,16 @@ export default function Dashboard() {
       >
         {loading ? (
           <div className="flex-1 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#E6E6E3] border-t-[#0B0B0B] rounded-full animate-spin" />
           </div>
         ) : outOfCards ? (
           <div className="flex-1 flex flex-col items-center justify-center gap-3 pb-10">
-            <p style={{ color: "#94908A", fontSize: 15 }}>You've seen everyone for now.</p>
+            <p style={{ color: "#74746D", fontSize: 15 }}>You've seen everyone for now.</p>
             {!isPro && (
               <button
                 onClick={() => navigate("/settings")}
                 className="px-6 py-3 rounded-full text-sm font-semibold"
-                style={{ background: "#C6A02C", color: "#2A2005" }}
+                style={{ background: "#0B0B0B", color: "#FFFFFF" }}
               >
                 Go Pro — unlock the full directory
               </button>
@@ -253,9 +252,8 @@ export default function Dashboard() {
               transition: isDragging ? "none" : "transform 0.2s ease",
               background: bgImage
                 ? "transparent"
-                : "linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-              boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-              outline: "1px solid rgba(255,255,255,0.12)",
+                : "linear-gradient(165deg, #2A2A27 0%, #0B0B0B 100%)",
+              border: "1px solid #E6E6E3",
             }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
@@ -291,7 +289,7 @@ export default function Dashboard() {
               <div className="flex items-start gap-2 flex-wrap">
                 {isInvestorCard && isVerified && (
                   <Chip gold>
-                    <BadgeCheck size={11} color="#2A2005" strokeWidth={2.5} />
+                    <BadgeCheck size={11} color="#0B0B0B" strokeWidth={2.5} />
                     Verified investor
                   </Chip>
                 )}
@@ -309,8 +307,9 @@ export default function Dashboard() {
               {/* Name + subtitle */}
               <h2
                 style={{
-                  fontFamily: "Fraunces, serif",
-                  fontSize: 36,
+                  fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
+                  letterSpacing: "-0.03em",
+                  fontSize: 34,
                   fontWeight: 700,
                   color: "#F6F5F2",
                   lineHeight: 1.1,
@@ -363,7 +362,7 @@ export default function Dashboard() {
               {isFounderCard && founderOneLiner && (
                 <p
                   style={{
-                    color: "#94908A",
+                    color: "#CFCCC5",
                     fontSize: 12.5,
                     lineHeight: 1.5,
                     marginBottom: 12,
@@ -379,8 +378,6 @@ export default function Dashboard() {
               {isInvestorCard && investorThesis && (
                 <p
                   style={{
-                    fontFamily: "Fraunces, serif",
-                    fontStyle: "italic",
                     color: "#CFCCC5",
                     fontSize: 13,
                     lineHeight: 1.5,
@@ -425,12 +422,12 @@ export default function Dashboard() {
               style={{
                 width: 52,
                 height: 52,
-                background: "rgba(255,255,255,0.07)",
-                border: "1.5px solid rgba(255,255,255,0.18)",
+                background: "#FFFFFF",
+                border: "1px solid #E6E6E3",
               }}
               aria-label="Pass"
             >
-              <X size={22} color="#8E8B84" strokeWidth={2} />
+              <X size={22} color="#74746D" strokeWidth={2} />
             </button>
 
             {/* Send / Connect */}
@@ -441,11 +438,11 @@ export default function Dashboard() {
                 width: 64,
                 height: 64,
                 background: "#FFFFFF",
-                boxShadow: "0 8px 24px rgba(255,255,255,0.2)",
+                border: "1.5px solid #0B0B0B",
               }}
               aria-label="Connect"
             >
-              <Send size={22} color="#0A0A0C" strokeWidth={2} />
+              <Send size={22} color="#0B0B0B" strokeWidth={2} />
             </button>
 
             {/* Like */}
@@ -455,15 +452,15 @@ export default function Dashboard() {
               style={{
                 width: 52,
                 height: 52,
-                background: "#C6A02C",
-                boxShadow: "0 8px 20px rgba(198,160,44,0.4)",
+                background: "#0B0B0B",
+                boxShadow: "0 6px 18px -8px rgba(0,0,0,0.5)",
               }}
               aria-label="Like"
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M12 21C12 21 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 13.5 14 21 12 21Z"
-                  fill="#2A2005"
+                  fill="#FFFFFF"
                 />
               </svg>
             </button>
@@ -475,10 +472,10 @@ export default function Dashboard() {
           <div className="mt-1 text-center">
             <button
               onClick={() => navigate("/settings")}
-              style={{ color: "#94908A", fontSize: 11.5 }}
+              style={{ color: "#74746D", fontSize: 11.5 }}
             >
               Out of swipes?{" "}
-              <span style={{ color: "#E7CB7E", textDecoration: "underline" }}>
+              <span style={{ color: "#0B0B0B", fontWeight: 600, textDecoration: "underline" }}>
                 Go Pro to search the full directory
               </span>
             </button>
@@ -494,17 +491,17 @@ export default function Dashboard() {
             bottom: 96,
             width: "calc(100% - 32px)",
             maxWidth: 358,
-            background: "rgba(20,19,16,0.96)",
-            outline: "1px solid rgba(255,255,255,0.12)",
-            backdropFilter: "blur(10px)",
+            background: "#FFFFFF",
+            border: "1px solid #E6E6E3",
+            boxShadow: "0 12px 32px -12px rgba(0,0,0,0.25)",
           }}
         >
           <div className="flex items-center justify-between mb-2">
-            <span style={{ color: "#CFCCC5", fontSize: 12, fontWeight: 600 }}>
+            <span style={{ color: "#0B0B0B", fontSize: 12, fontWeight: 600 }}>
               Why did you pass?
             </span>
             <button onClick={() => setPassReasonTarget(null)} aria-label="Dismiss">
-              <X size={14} color="#94908A" />
+              <X size={14} color="#74746D" />
             </button>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -514,9 +511,9 @@ export default function Dashboard() {
                 onClick={() => submitPassReason(r.toLowerCase().replace(" ", "_"))}
                 className="px-3 py-1.5 rounded-full"
                 style={{
-                  background: "rgba(255,255,255,0.06)",
-                  outline: "1px solid rgba(255,255,255,0.12)",
-                  color: "#CFCCC5",
+                  background: "#FFFFFF",
+                  border: "1px solid #E6E6E3",
+                  color: "#0B0B0B",
                   fontSize: 11.5,
                 }}
               >
@@ -563,7 +560,7 @@ function Chip({
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-medium"
       style={
         gold
-          ? { background: "#C6A02C", color: "#2A2005" }
+          ? { background: "#FFFFFF", color: "#0B0B0B" }
           : {
               background: "rgba(255,255,255,0.12)",
               color: "#E9E7E1",
@@ -590,15 +587,15 @@ function StatChip({
     <div
       className="inline-flex flex-col px-3 py-2 rounded-xl"
       style={{
-        background: gold ? "rgba(198,160,44,0.15)" : "rgba(255,255,255,0.08)",
-        border: gold ? "1px solid rgba(198,160,44,0.35)" : "1px solid rgba(255,255,255,0.14)",
+        background: gold ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.08)",
+        border: gold ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.14)",
         backdropFilter: "blur(8px)",
       }}
     >
       <span style={{ color: "#94908A", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.7px" }}>
         {label}
       </span>
-      <span style={{ color: gold ? "#E7CB7E" : "#F6F5F2", fontSize: 13, fontWeight: 600, marginTop: 1 }}>
+      <span style={{ color: "#F6F5F2", fontSize: 13, fontWeight: 600, marginTop: 1 }}>
         {value}
       </span>
     </div>
