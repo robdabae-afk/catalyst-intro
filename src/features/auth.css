@@ -1,0 +1,22 @@
+/* /auth sign in, sign up and password reset in the features app language (reuses .cf/.ob/.btn tokens from features.css) */
+.ob-auth .ob-top{justify-content:flex-start}
+.ob-auth .ob-body{justify-content:flex-start;padding-top:28px;gap:0}
+.ob-auth .ob-head{display:grid;gap:10px;margin-bottom:26px}
+.ob-auth .ob-mark i{width:30px;height:40px;border-width:4px;border-radius:8px;margin-bottom:10px}
+.ob-auth h1{font-size:32px}
+.au-form{display:grid;gap:14px}
+.au-field{display:grid;gap:6px}
+.au-field label{font-size:13px;font-weight:600}
+.au-field input{width:100%;height:52px;padding:0 14px;border:1.5px solid var(--line);border-radius:14px;background:#fff;color:var(--ink);font:500 16px 'Schibsted Grotesk',system-ui,sans-serif;outline:0;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+.au-field input::placeholder{color:#a3a39c}
+.au-field input:focus{border-color:var(--ink)}
+.au-field input:disabled{background:var(--soft);color:var(--dim)}
+.au-forgot{justify-self:end;margin:-6px 0 -2px;border:0;background:none;padding:6px 0;font:600 13px inherit;color:var(--dim);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.ob-auth .ob-foot .btn,.ob-auth .au-form .btn{height:54px;font-size:16px;width:100%}
+.au-or{display:flex;align-items:center;gap:12px;margin:22px 0 14px;font-size:12.5px;color:var(--dim)}
+.au-or::before,.au-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.au-social{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cf .au-social .btn{height:52px;font-size:15px;border-color:var(--line);width:100%}
+.cf .au-social .btn:hover:not([disabled]){border-color:var(--ink)}
+.au-swap{margin-top:22px;text-align:center;font-size:14px;color:var(--dim)}
+.au-swap .ob-link{color:var(--ink);padding:8px 4px}
