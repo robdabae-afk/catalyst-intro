@@ -25,13 +25,13 @@ test("legacy nav points at new screens where they exist", () => {
 });
 test("new app links legacy DMs and settings instead of dropping them", () => {
   const me = readFileSync("src/features/screens/Me.tsx", "utf8"), emb = readFileSync("src/live/embed.tsx", "utf8");
-  expect(me).toContain('to: "/matches"'); expect(me).toContain('to: "/settings"'); expect(emb).toContain('to="/matches"');
+  expect(me).toContain('to: "/messages"'); expect(me).toContain('to: "/settings"'); expect(emb).toContain('to="/messages"');
 });
 test("person swiping (swipes/matches tables) keeps its original route; new /swipe is companies", () => {
   expect(app).toContain('<Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
   expect(app).toContain('<Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
   expect(readFileSync("src/components/app/BottomNav.tsx", "utf8")).toContain('label: "People"');
-  expect(readFileSync("src/features/screens/Me.tsx", "utf8")).toContain('to: "/dashboard"');
+  expect(readFileSync("src/features/screens/Me.tsx", "utf8")).toContain('to: "/people/swipe"');
 });
 const read = (p: string) => readFileSync(p, "utf8");
 test("data-source guard: person DMs and person swipe keep legacy tables, never app_messages", () => {
@@ -42,12 +42,19 @@ test("data-source guard: person DMs and person swipe keep legacy tables, never a
   expect(app).not.toMatch(/path="\/(app\/)?dashboard" element=\{<Navigate/);
 });
 test("new shell nav exposes people swipe and person messages distinct from companies/inbox", () => {
-  expect(fa).toContain('{ to: "/dashboard", label: "People"');
-  expect(fa).toContain('{ to: "/matches", label: "Messages"');
+  expect(fa).toContain('{ to: "people/swipe", label: "People"');
+  expect(fa).toContain('{ to: "messages", label: "Messages"'); expect(fa).toContain('{ to: "/settings", label: "Settings"');
   expect(fa).toContain('{ to: "swipe", label: "Companies"');
 });
 test("features palette applies only to person swipe + DMs", () => {
   const t = read("src/components/CatalystLightTheme.tsx");
   expect(t).toContain('const BOTH = ["/dashboard", "/matches"];');
   expect(app).toContain("<CatalystLightTheme />");
+});
+test("new-shell people swipe and DMs mount the real legacy components (same swipes/matches/messages logic), gated", () => {
+  expect(fa).toContain('<Route path="people/swipe" element={<AuthGuard><Dashboard embedded /></AuthGuard>} />');
+  expect(fa).toContain('<Route path="messages" element={<AuthGuard><Matches embedded /></AuthGuard>} />');
+  expect(fa).toContain('import Dashboard from "@/pages/Dashboard"'); expect(fa).toContain('import Matches from "@/pages/Matches"');
+  expect(app).toContain('<Route path="/discover" element={<Navigate replace to="/people/swipe" />} />');
+  expect(readFileSync("src/components/CatalystLightTheme.tsx", "utf8")).toContain('"/people/swipe", "/messages"');
 });

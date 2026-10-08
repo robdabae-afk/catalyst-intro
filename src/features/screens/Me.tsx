@@ -80,8 +80,8 @@ const MORE = [
   { to: "invite", t: "Invite friends", d: "Move up the waitlist", I: IGift },
 ];
 const ACCOUNT = [
-  { to: "/dashboard", t: "Swipe people", d: "Match with founders and investors (Swipe tab is companies)" },
-  { to: "/matches", t: "Direct messages", d: "Conversations with your matches" },
+  { to: "/people/swipe", t: "Swipe people", d: "Match with founders and investors (Companies tab is company deals)" },
+  { to: "/messages", t: "Direct messages", d: "Conversations with your matches" },
   { to: "/settings", t: "Settings", d: "Profile details, Pro plan, sign out" },
   { to: "welcome", t: "Account and setup", d: "Create an account or redo onboarding" },
   { to: "legal/terms", t: "Terms of use", d: "" },
