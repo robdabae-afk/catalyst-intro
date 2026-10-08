@@ -295,7 +295,7 @@ export default function Dashboard() {
                 )}
                 {isInvestorCard && investorLocation && (
                   <Chip>
-                    <MapPin size={10} color="#F6F5F2" strokeWidth={2} />
+                    <MapPin size={10} color="#FFFFFF" strokeWidth={2} />
                     {investorLocation}
                   </Chip>
                 )}
@@ -311,14 +311,14 @@ export default function Dashboard() {
                   letterSpacing: "-0.03em",
                   fontSize: 34,
                   fontWeight: 700,
-                  color: "#F6F5F2",
+                  color: "#FFFFFF",
                   lineHeight: 1.1,
                   marginBottom: 4,
                 }}
               >
                 {name}
               </h2>
-              <p style={{ color: "#CFCCC5", fontSize: 13.5, marginBottom: 12 }}>
+              <p style={{ color: "#E6E6E3", fontSize: 13.5, marginBottom: 12 }}>
                 {isFounderCard
                   ? `Founder${founderCompany ? ` · ${founderCompany}` : ""}`
                   : `${investorPosition ? investorPosition : ""}${investorFirm ? (investorPosition ? " · " : "") + investorFirm : ""}${investorLocation ? (investorFirm || investorPosition ? " · " : "") + investorLocation : ""}`}
@@ -333,7 +333,7 @@ export default function Dashboard() {
                       className="inline-block px-2.5 py-1 rounded-full text-[11px]"
                       style={{
                         background: "rgba(255,255,255,0.1)",
-                        color: "#E9E7E1",
+                        color: "#F4F4F2",
                         backdropFilter: "blur(4px)",
                         border: "1px solid rgba(255,255,255,0.15)",
                       }}
@@ -348,7 +348,7 @@ export default function Dashboard() {
                       className="inline-block px-2.5 py-1 rounded-full text-[11px]"
                       style={{
                         background: "rgba(255,255,255,0.1)",
-                        color: "#E9E7E1",
+                        color: "#F4F4F2",
                         backdropFilter: "blur(4px)",
                         border: "1px solid rgba(255,255,255,0.15)",
                       }}
@@ -362,7 +362,7 @@ export default function Dashboard() {
               {isFounderCard && founderOneLiner && (
                 <p
                   style={{
-                    color: "#CFCCC5",
+                    color: "#E6E6E3",
                     fontSize: 12.5,
                     lineHeight: 1.5,
                     marginBottom: 12,
@@ -378,7 +378,7 @@ export default function Dashboard() {
               {isInvestorCard && investorThesis && (
                 <p
                   style={{
-                    color: "#CFCCC5",
+                    color: "#E6E6E3",
                     fontSize: 13,
                     lineHeight: 1.5,
                     marginBottom: 12,
@@ -563,7 +563,7 @@ function Chip({
           ? { background: "#FFFFFF", color: "#0B0B0B" }
           : {
               background: "rgba(255,255,255,0.12)",
-              color: "#E9E7E1",
+              color: "#F4F4F2",
               border: "1px solid rgba(255,255,255,0.2)",
               backdropFilter: "blur(8px)",
             }
@@ -592,10 +592,10 @@ function StatChip({
         backdropFilter: "blur(8px)",
       }}
     >
-      <span style={{ color: "#94908A", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.7px" }}>
+      <span style={{ color: "#D6D6D1", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.7px" }}>
         {label}
       </span>
-      <span style={{ color: "#F6F5F2", fontSize: 13, fontWeight: 600, marginTop: 1 }}>
+      <span style={{ color: "#FFFFFF", fontSize: 13, fontWeight: 600, marginTop: 1 }}>
         {value}
       </span>
     </div>
