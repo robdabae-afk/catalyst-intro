@@ -2606,6 +2606,7 @@ export type Database = {
       app_is_admin: { Args: never; Returns: boolean }
       app_owns_company: { Args: { cid: string }; Returns: boolean }
       approval_exception: { Args: { _profile_id: string }; Returns: boolean }
+      browse_is_admin: { Args: never; Returns: boolean }
       can_view_member: { Args: { _profile_id: string }; Returns: boolean }
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
       get_active_ad_profiles: {
