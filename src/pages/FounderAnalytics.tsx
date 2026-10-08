@@ -90,7 +90,7 @@ export default function FounderAnalytics() {
         .eq("id", user.id)
         .single();
       if (profile?.user_type !== "founder") {
-        navigate("/swipe");
+        navigate("/dashboard");
         return;
       }
 

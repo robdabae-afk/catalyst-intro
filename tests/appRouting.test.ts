@@ -2,7 +2,7 @@ import { test, expect } from "bun:test";
 import { readFileSync } from "fs";
 const app = readFileSync("src/App.tsx", "utf8"), auth = readFileSync("src/pages/Auth.tsx", "utf8"), fa = readFileSync("src/features/FeaturesApp.tsx", "utf8");
 test("legacy post-login screens point at the new features app", () => {
-  for (const [from, to] of [["/dashboard", "/swipe"], ["/app/dashboard", "/swipe"], ["/app/home", "/feed"], ["/app/portfolio", "/portfolio"]])
+  for (const [from, to] of [["/app/home", "/feed"], ["/app/portfolio", "/portfolio"]])
     expect(app).toContain(`<Route path="${from}" element={<Navigate replace to="${to}" />} />`);
 });
 test("sign-in lands in the new app, never the legacy dashboard", () => {
@@ -20,10 +20,16 @@ test("legacy person-to-person messages stay reachable (new inbox uses app_messag
 });
 test("legacy nav points at new screens where they exist", () => {
   const nav = readFileSync("src/components/app/BottomNav.tsx", "utf8");
-  expect(nav).toContain('navigate("/feed")'); expect(nav).toContain('navigate("/swipe")');
-  expect(nav).not.toContain('navigate("/dashboard")'); expect(nav).not.toContain('navigate("/app/home")');
+  expect(nav).toContain('navigate("/feed")'); 
+   expect(nav).not.toContain('navigate("/app/home")');
 });
 test("new app links legacy DMs and settings instead of dropping them", () => {
   const me = readFileSync("src/features/screens/Me.tsx", "utf8"), emb = readFileSync("src/live/embed.tsx", "utf8");
   expect(me).toContain('to: "/matches"'); expect(me).toContain('to: "/settings"'); expect(emb).toContain('to="/matches"');
+});
+test("person swiping (swipes/matches tables) keeps its original route; new /swipe is companies", () => {
+  expect(app).toContain('<Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
+  expect(app).toContain('<Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
+  expect(readFileSync("src/components/app/BottomNav.tsx", "utf8")).toContain('label: "People"');
+  expect(readFileSync("src/features/screens/Me.tsx", "utf8")).toContain('to: "/dashboard"');
 });

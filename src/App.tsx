@@ -111,8 +111,8 @@ const App = () => (
 
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<Navigate replace to="/swipe" />} />
-          <Route path="/app/dashboard" element={<Navigate replace to="/swipe" />} />
+          <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/home" element={<AppSignup />} />
           <Route path="/app/home" element={<Navigate replace to="/feed" />} />
           <Route path="/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
