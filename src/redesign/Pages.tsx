@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import EventGallery from "./EventGallery";
 import Shell, { CounselBanner, LUMA, useMeta } from "./Shell";
 
 export function About() {
