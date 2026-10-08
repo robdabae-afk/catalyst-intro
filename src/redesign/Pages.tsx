@@ -76,12 +76,6 @@ export function Community() {
           <div className="stat"><b>$1.8M</b>raised by founders in our network<br /><small>Catalyst did not raise, hold or route these funds.</small></div>
         </div>
       </section>
-      <section aria-labelledby="h-ev">
-        <div className="kick">Events</div>
-        <h2 id="h-ev">What we've <em>hosted.</em></h2>
-        <p className="lede">Rooms where founders and investors meet in person, all across New York.</p>
-        <EventGallery />
-      </section>
       <div className="cta-end"><a className="btn ghost" href={LUMA}>See upcoming events on Luma</a></div>
     </Shell>
   );
