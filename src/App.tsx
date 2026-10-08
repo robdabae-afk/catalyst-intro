@@ -57,6 +57,7 @@ import ExitFundAbout from "./exitfund/ExitFundAbout";
 import ExitFundTeam from "./exitfund/ExitFundTeam";
 import ExitFundContact from "./exitfund/ExitFundContact";
 import { AuthGuard } from "./components/AuthGuard";
+import { CatalystLightTheme } from "./components/CatalystLightTheme";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
 
@@ -69,6 +70,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename={isDemoMode() ? "/demo" : undefined}>
+        <CatalystLightTheme />
         <Routes>
           {/* Marketing landing (the production app lives at "/") */}
           <Route path="/" element={<Landing />} />
