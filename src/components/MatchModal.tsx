@@ -29,7 +29,7 @@ export const MatchModal = ({ isOpen, onClose, matchedProfile, userType }: MatchM
       <DialogContent className="max-w-md">
         <DialogHeader>
           <div className="flex justify-center mb-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-red-500 flex items-center justify-center animate-scale-in">
+            <div className="w-20 h-20 rounded-full bg-[#0B0B0B] flex items-center justify-center animate-scale-in">
               <Heart className="w-10 h-10 text-white fill-white" />
             </div>
           </div>
