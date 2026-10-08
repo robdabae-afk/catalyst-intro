@@ -19,9 +19,9 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
     },
     {
       icon: Search,
-      label: "Discover",
+      label: "People",
       paths: ["/dashboard"],
-      onClick: () => navigate("/swipe"),
+      onClick: () => navigate("/dashboard"),
     },
     {
       icon: MessageSquare,

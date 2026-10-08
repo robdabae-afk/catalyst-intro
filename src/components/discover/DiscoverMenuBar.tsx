@@ -190,7 +190,7 @@ export function DiscoverMenuBar({
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1.5 sm:gap-3 h-11 sm:h-12">
           <h1
-            onClick={() => navigate("/swipe")}
+            onClick={() => navigate("/dashboard")}
             className="text-sm sm:text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer shrink-0"
           >
             CATALYST
