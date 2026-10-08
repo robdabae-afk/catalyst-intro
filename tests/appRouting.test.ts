@@ -61,3 +61,11 @@ test("new-shell people swipe and DMs mount the real legacy components (same swip
 test("new /people directory links to person swipe", () => {
   expect(readFileSync("src/live/embed.tsx", "utf8")).toContain('<Link to="/people/swipe"');
 });
+test("people swipe uses features tokens: no gold, amber, serif or glass", () => {
+  for (const f of ["src/pages/Dashboard.tsx", "src/components/MatchModal.tsx", "src/components/app/MenuDrawer.tsx"]) {
+    const s = readFileSync(f, "utf8");
+    expect(s).not.toMatch(/#(c6a02c|d4af37|b8941f|e8c547)|amber-\d|yellow-\d|font-(serif|playfair)|Playfair|backdrop-blur|from-pink/i);
+  }
+  const d = readFileSync("src/pages/Dashboard.tsx", "utf8");
+  expect(d).toContain("Schibsted Grotesk"); expect(d).toContain("#0B0B0B"); expect(d).toContain("#74746D");
+});
