@@ -41,17 +41,18 @@ export const isVisibleProfile = (p: Row) => p?.approved === true && p.is_hidden 
 const STAGES: Record<string, string> = { "pre-seed": "Pre-seed", seed: "Seed", "series-a": "Series A", "series-b": "Series B" };
 export const legacyId = (founderRowId: string) => `legacy-${founderRowId}`;
 
-export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
-  const visible = new Map(profiles.filter(isVisibleProfile).map(p => [p.id, p]));
+// adminViewer comes only from the session-bound server RPC; RLS remains authoritative.
+export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[], adminViewer = false) {
+  const visible = new Map(profiles.filter(p => adminViewer || isVisibleProfile(p)).map(p => [p.id, p]));
   const inv = new Map(investors.map(i => [i.profile_id, i]));
   const companyByOwner = new Map<string, string>();
   // One company per owner, stable: oldest created_at then id. Source rows untouched.
   const ordered = [...founders].sort((a, b) => String(a.created_at ?? "").localeCompare(String(b.created_at ?? "")) || String(a.id).localeCompare(String(b.id)));
   const owned = new Set<string>();
-  const companies = ordered.filter(f => visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled" && !owned.has(f.profile_id) && !!owned.add(f.profile_id)).map(f => {
+  const companies = ordered.filter(f => adminViewer ? visible.has(f.profile_id) : visible.get(f.profile_id)?.user_type === "founder" && t(f.startup_name) && t(f.startup_name).toLowerCase() !== "untitled" && !owned.has(f.profile_id) && !!owned.add(f.profile_id)).map(f => {
     const owner = visible.get(f.profile_id)!; const id = legacyId(f.id);
     companyByOwner.set(f.profile_id, id);
-    return { id, ownerId: f.profile_id as string, name: t(f.startup_name), line: t(f.one_liner), sector: (Array.isArray(f.industry) ? t(f.industry[0]) : ""), sectors: Array.isArray(f.industry) ? f.industry.filter((x: unknown) => typeof x === "string") as string[] : [],
+    return { id, ownerId: f.profile_id as string, name: t(f.startup_name) || "Untitled", line: t(f.one_liner), sector: (Array.isArray(f.industry) ? t(f.industry[0]) : ""), sectors: Array.isArray(f.industry) ? f.industry.filter((x: unknown) => typeof x === "string") as string[] : [],
       city: t(f.location), stage: STAGES[t(f.stage)] ?? "", cover: safeUrl(f.banner_url) || safeUrl(f.logo_url), logo: safeUrl(f.logo_url), pitch: safeUrl(f.video_url),
       // traction_tiles holds metric keys (mrr etc), not values; only free-text traction is shown.
       traction: t(f.traction) ? [t(f.traction)] : [],
@@ -66,7 +67,7 @@ export function mapLegacy(profiles: Row[], founders: Row[], investors: Row[]) {
   const people: Person[] = [...visible.values()].map(p => {
     const i = inv.get(p.id); const role: Person["role"] = p.user_type === "founder" ? "Founder" : p.user_type === "investor" ? "Investor" : "Member";
     const bio = role === "Investor" ? [t(i?.position) && t(i?.firm_name) ? `${t(i?.position)} at ${t(i?.firm_name)}` : t(i?.firm_name), t(i?.investment_thesis)].filter(Boolean).join(". ") : "";
-    return { id: p.id, name: t(p.name), initials: initials(t(p.name)), photo: safeUrl(p.avatar_url) || undefined, role, at: companyByOwner.get(p.id), city: t(i?.location) || companies.find(c => c.ownerId === p.id)?.city || "", bio, backed: [], events: [], followers: 0, mutual: 0 };
+    return { id: p.id, name: t(p.name) || "Unnamed member", initials: initials(t(p.name)), photo: safeUrl(p.avatar_url) || undefined, role, at: companyByOwner.get(p.id), city: t(i?.location) || companies.find(c => c.ownerId === p.id)?.city || "", bio, backed: [], events: [], followers: 0, mutual: 0 };
   });
   return { companies, people };
 }
