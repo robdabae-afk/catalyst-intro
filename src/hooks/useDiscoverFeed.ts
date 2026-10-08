@@ -1,3 +1,4 @@
+import { canBrowseProfiles } from "./useProfileReview";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -61,7 +62,9 @@ export function useDiscoverFeed(
 
   const fetchPage = useCallback(
     async (nextPage: number) => {
-      if (!currentUserId || !targetType) return;
+      if (!currentUserId || !targetType || !await canBrowseProfiles(currentUserId)) {
+        setProfiles([]); setHasMore(false); setLoading(false); return;
+      }
       setLoading(true);
 
       const from = nextPage * PAGE_SIZE;
@@ -72,6 +75,7 @@ export function useDiscoverFeed(
         .select(`*, founder_profiles(*), investor_profiles(*)`, { count: "exact" })
         .neq("id", currentUserId)
         .eq("user_type", targetType)
+        .eq("approved", true)
         .eq("is_hidden", false)
         .eq("is_test_account", false);
 

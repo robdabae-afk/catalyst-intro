@@ -1,3 +1,4 @@
+import { ProfileReviewGate } from "./ProfileReviewGate";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,23 +23,6 @@ export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) =
         return;
       }
 
-      if (!allowNonAdmin) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("role", "admin");
-
-        const isAdmin = !!roles && roles.length > 0;
-        if (!isAdmin) {
-          // Pre-launch: non-admins can only access their settings page.
-          if (!location.pathname.endsWith("/settings")) {
-            navigate("/settings", { replace: true });
-            return;
-          }
-        }
-      }
-
       setChecking(false);
     };
 
@@ -53,5 +37,5 @@ export const AuthGuard = ({ children, allowNonAdmin = false }: AuthGuardProps) =
     );
   }
 
-  return <>{children}</>;
+  return allowNonAdmin ? <>{children}</> : <ProfileReviewGate>{children}</ProfileReviewGate>;
 };
