@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Mail } from "lucide-react";
+import "@/features/features.css";
+import "@/features/auth.css";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -60,60 +57,26 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/auth")}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Sign In
-        </Button>
-
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-xl">
-          <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold tracking-tight">
-              Reset Password
-            </CardTitle>
-            <CardDescription>
-              Enter your email to receive a reset link
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="reset-email">Email</Label>
-                <Input
-                  id="reset-email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  className="bg-background/50"
-                />
-              </div>
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="mr-2 h-4 w-4" />
-                    Send Reset Link
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+    <div className="cf cf-ob">
+      <div className="ob ob-auth">
+        <div className="ob-top">
+          <button type="button" className="ob-back" onClick={() => navigate("/auth")} aria-label="Back to sign in">Back</button>
+        </div>
+        <div className="ob-body">
+          <div className="ob-head">
+            <div className="ob-mark" aria-hidden><i /></div>
+            <h1>Reset your password.</h1>
+            <p>Enter your email and we'll send you a reset link.</p>
+          </div>
+          <form className="au-form" onSubmit={handleForgotPassword}>
+            <div className="au-field">
+              <label htmlFor="reset-email">Email</label>
+              <input id="reset-email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading} />
+            </div>
+            <button type="submit" className="btn" disabled={isLoading}>{isLoading ? "Sending..." : "Send reset link"}</button>
+          </form>
+          <p className="au-swap">Remember it? <button type="button" className="ob-link" onClick={() => navigate("/auth")}>Sign in</button></p>
+        </div>
       </div>
     </div>
   );
