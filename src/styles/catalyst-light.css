@@ -80,3 +80,7 @@ html.cl-light .cl-keep :is(.border-white\/10, .border-white\/20, .border-white\/
 html.cl-light :is(.bg-black\/80, .bg-black\/70, .bg-black\/60):not(.inset-0) { background-color: rgb(255 255 255 / .92); }
 html.cl-light .drop-shadow-\[0_0_8px_rgba\(255\2c 255\2c 255\2c 0\.4\)\] { filter: none; }
 html.cl-light .bg-white:is(.rounded-full.w-1, .w-1.h-1) { background-color: #0b0b0b; }
+
+html.cl-light .cl-keep h2.text-white, html.cl-light .cl-keep .text-white { color: #fff; }
+html.cl-light .cl-photo-fade { --tw-gradient-from: rgb(0 0 0 / .7) var(--tw-gradient-from-position); --tw-gradient-to: rgb(0 0 0 / 0) var(--tw-gradient-to-position); }
+html.cl-light .font-playfair { font-family: "Schibsted Grotesk", system-ui, sans-serif; }

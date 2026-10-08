@@ -352,22 +352,22 @@ export const SwipePanel: React.FC<SwipePanelProps> = ({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-zinc-900 to-black">
-              <span className="text-8xl font-playfair text-zinc-700">{displayName.charAt(0)}</span>
+              <span className="text-8xl font-semibold text-zinc-700">{displayName.charAt(0)}</span>
             </div>
           )}
           
           {/* Gradient overlay at bottom */}
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 to-transparent cl-photo-fade" />
           
           {/* Name overlay on image */}
-          <div className="absolute bottom-6 left-6 right-6">
+          <div className="absolute bottom-6 left-6 right-6 cl-keep">
             {location && (
               <div className="flex items-center gap-1 text-white/60 text-sm mb-2">
                 <MapPin className="w-3 h-3" />
                 <span>{location}</span>
               </div>
             )}
-            <h2 className="text-3xl font-playfair text-white font-bold">{displayName}</h2>
+            <h2 className="text-3xl font-semibold text-white">{displayName}</h2>
             {companyName && (
               <p className="text-white/70 text-sm mt-1">
                 {isFounderProfile ? 'Founder' : 'Investor'} @ {companyName}

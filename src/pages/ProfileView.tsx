@@ -792,7 +792,7 @@ function ActionBar({
       className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-center gap-5 px-6 pt-4 pb-8"
       style={{
         background:
-          "linear-gradient(0deg, rgba(6,6,6,1) 60%, rgba(6,6,6,0) 100%)",
+          "linear-gradient(0deg, rgba(255,255,255,1) 60%, rgba(255,255,255,0) 100%)",
       }}
     >
       <button
