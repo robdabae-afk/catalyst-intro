@@ -1,3 +1,4 @@
+import { initialAuthMode, type AuthMode } from "@/lib/auth-mode";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +12,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [mode, setMode] = useState<"signin" | "signup">(() => new URLSearchParams(window.location.search).get("mode") === "signup" ? "signup" : "signin");
+  const [mode, setMode] = useState<AuthMode>(() => initialAuthMode(window.location.search));
   const [isLoading, setIsLoading] = useState(false);
   
   // Password reset states
