@@ -15,13 +15,13 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
       icon: LayoutGrid,
       label: "Home",
       paths: ["/app/home", "/home"],
-      onClick: () => navigate("/app/home"),
+      onClick: () => navigate("/feed"),
     },
     {
       icon: Search,
       label: "Discover",
       paths: ["/dashboard"],
-      onClick: () => navigate("/dashboard"),
+      onClick: () => navigate("/swipe"),
     },
     {
       icon: MessageSquare,
