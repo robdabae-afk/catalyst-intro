@@ -8,6 +8,7 @@ import FeaturesApp from "./features/FeaturesApp";
 import { isDemoMode } from "@/demo/mode";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import AppLanding from "./pages/app/AppLanding";
+import { CatalystLightTheme } from "./components/CatalystLightTheme";
 import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
 import Auth from "./pages/Auth";
@@ -69,6 +70,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter basename={isDemoMode() ? "/demo" : undefined}>
+        <CatalystLightTheme />
         <Routes>
           {/* Marketing landing (the production app lives at "/") */}
           <Route path="/" element={<Landing />} />

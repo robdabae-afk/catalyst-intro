@@ -200,7 +200,7 @@ export const SwipeCard = ({
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
           {endorsements.map((endorsement) => (
             <Island key={endorsement.id} className="flex-shrink-0 w-[280px] p-5">
-              <Quote className="w-6 h-6 text-[#C5A059]/80 mb-3" />
+              <Quote className="w-6 h-6 text-[#0B0B0B]/80 mb-3" />
               <p className="text-sm text-zinc-300 italic leading-relaxed mb-4">"{endorsement.text}"</p>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
@@ -346,8 +346,8 @@ export const SwipeCard = ({
             {/* Featured Badge - Sticky Top Left */}
             {isFeatured && (
               <div className="absolute top-4 left-4 z-20 w-fit">
-                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-[#C5A059]/30">
-                  <Star className="w-4 h-4 text-[#C5A059] fill-[#C5A059]" />
+                <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-lg px-3 py-2 border border-white/30">
+                  <Star className="w-4 h-4 text-white fill-white" />
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-white leading-none">FEATURED</span>
                   </div>
@@ -371,7 +371,7 @@ export const SwipeCard = ({
                 <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
-                <div className="flex items-center gap-2 text-[#C5A059]">
+                <div className="flex items-center gap-2 text-[#0B0B0B]">
                   <Briefcase className="w-3.5 h-3.5" />
                   <span className="text-sm font-inter font-normal">Founder @ {companyName}</span>
                 </div>
@@ -405,7 +405,7 @@ export const SwipeCard = ({
                   </div>
                   <div className="z-10">
                     <p className="text-xl sm:text-2xl font-serif font-medium text-white tracking-tight">{founderProfile.mrr || '—'}</p>
-                    <div className="w-8 h-0.5 bg-[#C5A059]/50 mt-2 rounded-full"></div>
+                    <div className="w-8 h-0.5 bg-[#0B0B0B]/50 mt-2 rounded-full"></div>
                   </div>
                   <TrendingUp className="absolute top-4 right-4 w-12 h-12 text-zinc-800/50 group-hover:text-zinc-800 transition-colors" />
                 </Island>
@@ -416,7 +416,7 @@ export const SwipeCard = ({
                   </div>
                   <div className="z-10">
                     <p className="text-lg sm:text-xl font-serif font-medium text-white truncate">{founderProfile.backed_by || '—'}</p>
-                    <div className="w-8 h-0.5 bg-[#C5A059]/50 mt-2 rounded-full"></div>
+                    <div className="w-8 h-0.5 bg-[#0B0B0B]/50 mt-2 rounded-full"></div>
                   </div>
                   <Rocket className="absolute top-4 right-4 w-12 h-12 text-zinc-800/50 group-hover:text-zinc-800 transition-colors" />
                 </Island>
@@ -460,17 +460,17 @@ export const SwipeCard = ({
                   onClick={(e) => e.stopPropagation()}
                   className="block"
                 >
-                  <Island className="flex items-center justify-between border-dashed border-zinc-700 hover:border-[#C5A059]/50 hover:bg-zinc-900/80 transition-all group">
+                  <Island className="flex items-center justify-between border-dashed border-zinc-700 hover:border-[#0B0B0B]/50 hover:bg-zinc-900/80 transition-all group">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#C5A059]/10 transition-colors">
-                        <FileText className="w-5 h-5 text-zinc-400 group-hover:text-[#C5A059]" />
+                      <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#0B0B0B]/10 transition-colors">
+                        <FileText className="w-5 h-5 text-zinc-400 group-hover:text-[#0B0B0B]" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-white">Pitch Deck</p>
                         <p className="text-xs text-zinc-500">View presentation</p>
                       </div>
                     </div>
-                    <ExternalLink className="w-4 h-4 text-zinc-600 group-hover:text-[#C5A059]" />
+                    <ExternalLink className="w-4 h-4 text-zinc-600 group-hover:text-[#0B0B0B]" />
                   </Island>
                 </a>
               )}
@@ -503,7 +503,7 @@ export const SwipeCard = ({
                 <h2 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-1">
                   {profileName}
                 </h2>
-                <div className="flex items-center gap-2 text-[#C5A059]">
+                <div className="flex items-center gap-2 text-[#0B0B0B]">
                   <Briefcase className="w-3.5 h-3.5" />
                   <span className="text-sm font-inter font-normal">{investorProfile.firm_name || 'Angel Investor'}</span>
                 </div>
@@ -526,7 +526,7 @@ export const SwipeCard = ({
                 {investorStats.map((stat, idx) => (
                   <Island key={idx} className="p-3 text-center flex flex-col items-center justify-center min-h-[90px] gap-2 hover:bg-zinc-800/80 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-black/30 flex items-center justify-center mb-1">
-                      <stat.icon className="w-4 h-4 text-[#C5A059]" />
+                      <stat.icon className="w-4 h-4 text-[#0B0B0B]" />
                     </div>
                     <div>
                       <p className="text-xs sm:text-sm font-bold text-white leading-tight">{stat.value}</p>
@@ -568,7 +568,7 @@ export const SwipeCard = ({
               {investorProfile.portfolio_link && (
                 <a href={investorProfile.portfolio_link} target="_blank" rel="noopener noreferrer" className="block">
                   <Island className="flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors border-dashed border-zinc-700">
-                    <LinkIcon size={16} className="text-[#C5A059]" />
+                    <LinkIcon size={16} className="text-[#0B0B0B]" />
                     <span className="text-sm font-medium text-zinc-200">View Public Portfolio</span>
                   </Island>
                 </a>
@@ -601,7 +601,7 @@ export const SwipeCard = ({
           <button
             onClick={() => handleButtonPress('message')}
             disabled={swipeCooldown || adLocked}
-            className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-gradient-to-t from-[#C5A059] to-[#E5C585] shadow-[0_4px_20px_rgba(197,160,89,0.3)] hover:scale-105 transition-all active:scale-95"
+            className="flex flex-col items-center justify-center w-16 h-16 rounded-full bg-gradient-to-t from-[#0B0B0B] to-[#E5C585] shadow-[0_4px_20px_rgba(11,11,11,0.3)] hover:scale-105 transition-all active:scale-95"
           >
             <Star className="text-black fill-black" size={24} />
           </button>

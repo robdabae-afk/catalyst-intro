@@ -60,19 +60,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
-const TEXT = "#F6F5F2";
-const TEXT_DIM = "#94908A";
-const GREEN = "#5EC98E";
+const GOLD = "#0B0B0B";
+const GOLD_LIGHT = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const TEXT_DIM = "#74746D";
+const GREEN = "#15803D";
 
 const PAGE_BG =
-  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 46%), radial-gradient(ellipse 90% 50% at 88% 100%, rgba(120,92,30,0.15) 0%, rgba(120,92,30,0) 52%), linear-gradient(137deg, #0B0A07 0%, #060606 55%, #080709 100%)";
+  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 46%), radial-gradient(ellipse 90% 50% at 88% 100%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 52%), linear-gradient(137deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)";
 
 const glassCard = {
-  background: "rgba(255,255,255,0.06)",
-  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(255,255,255,0.24) inset",
-  outline: "1px solid rgba(255,255,255,0.14)",
+  background: "rgba(11,11,11,0.054)",
+  boxShadow: "0px 14px 34px -18px rgba(0,0,0,0.12), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
+  outline: "1px solid rgba(11,11,11,0.12)",
   backdropFilter: "blur(9px)",
 } as const;
 
@@ -148,7 +148,7 @@ function PresenceBadge({ state }: { state: PresenceState }) {
         bottom: 0,
         background: state === "online" ? GREEN : TEXT,
         borderRadius: 6,
-        border: "2px solid #090809",
+        border: "2px solid #FFFFFF",
       }}
     />
   );
@@ -170,8 +170,8 @@ function GlassAvatar({
         width: size,
         height: size,
         borderRadius: size / 2,
-        background: "linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        boxShadow: "0px 1px 0px 1px rgba(255,255,255,0.24) inset",
+        background: "linear-gradient(155deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+        boxShadow: "0px 1px 0px 1px rgba(11,11,11,0.12) inset",
         outline: `1px solid ${GOLD}`,
         outlineOffset: -1,
       }}
@@ -765,7 +765,7 @@ export default function Matches() {
                   {currentUserType === "investor" && selectedMatch.matchRecord?.investor_stage && (
                     <span
                       className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                      style={{ background: "rgba(198,160,44,0.15)", color: GOLD_LIGHT, border: "1px solid rgba(198,160,44,0.3)" }}
+                      style={{ background: "rgba(11,11,11,0.15)", color: GOLD_LIGHT, border: "1px solid rgba(11,11,11,0.3)" }}
                     >
                       {PIPELINE_STAGES.find((s) => s.value === selectedMatch.matchRecord?.investor_stage)?.label ?? selectedMatch.matchRecord.investor_stage}
                     </span>
@@ -782,8 +782,8 @@ export default function Matches() {
                   align="end"
                   className="w-56 border-0"
                   style={{
-                    background: "linear-gradient(138deg, rgba(30,29,26,0.98) 0%, rgba(16,15,14,0.98) 100%)",
-                    outline: "1px solid rgba(255,255,255,0.12)",
+                    background: "#FFFFFF",
+                    outline: "1px solid rgba(11,11,11,0.108)",
                     color: TEXT,
                   }}
                 >
@@ -854,7 +854,7 @@ export default function Matches() {
               </DropdownMenu>
             </div>
             {/* Context stats */}
-            <div className="flex gap-3.5 px-3.5 py-[11px]" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <div className="flex gap-3.5 px-3.5 py-[11px]" style={{ borderTop: "1px solid rgba(11,11,11,0.072)" }}>
               {stats.map((s) => (
                 <div key={s.label} className="flex-1 min-w-0">
                   <p style={{ color: TEXT_DIM, fontSize: 9.5, letterSpacing: 0.95, textTransform: "uppercase" }}>
@@ -874,7 +874,7 @@ export default function Matches() {
           {isMessagingDisabled && messages.length === 0 && (
             <div
               className="rounded-2xl p-4 mb-4 text-center"
-              style={{ background: "rgba(198,160,44,0.08)", outline: "1px solid rgba(198,160,44,0.32)" }}
+              style={{ background: "rgba(11,11,11,0.08)", outline: "1px solid rgba(11,11,11,0.32)" }}
             >
               <Lock className="w-5 h-5 mx-auto mb-2" color={GOLD_LIGHT} />
               <p style={{ color: GOLD_LIGHT, fontSize: 12.5, lineHeight: 1.5 }}>
@@ -882,7 +882,7 @@ export default function Matches() {
               </p>
               <button
                 className="mt-3 px-4 py-2 rounded-full inline-flex items-center gap-1.5"
-                style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+                style={{ background: GOLD, color: "#FFFFFF", fontSize: 12.5, fontWeight: 600 }}
                 onClick={() => navigate('/settings')}
               >
                 <Crown className="w-3.5 h-3.5" />
@@ -913,13 +913,13 @@ export default function Matches() {
                           style={
                             own
                               ? {
-                                background: "linear-gradient(176deg, rgba(255,255,255,0.19) 0%, rgba(255,255,255,0.09) 100%)",
-                                outline: "1px solid rgba(255,255,255,0.26)",
+                                background: "linear-gradient(176deg, rgba(11,11,11,0.12) 0%, rgba(11,11,11,0.081) 100%)",
+                                outline: "1px solid rgba(11,11,11,0.12)",
                                 borderRadius: "19px 19px 6px 19px",
                               }
                               : {
-                                background: "rgba(255,255,255,0.04)",
-                                outline: "1px solid rgba(255,255,255,0.08)",
+                                background: "rgba(11,11,11,0.036)",
+                                outline: "1px solid rgba(11,11,11,0.072)",
                                 borderRadius: "19px 19px 19px 6px",
                               }
                           }
@@ -969,10 +969,10 @@ export default function Matches() {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                background: "radial-gradient(ellipse 120% 120% at 30% 20%, #E7CB7E 0%, #C6A02C 100%)",
+                background: "radial-gradient(ellipse 120% 120% at 30% 20%, #0B0B0B 0%, #0B0B0B 100%)",
               }}
             >
-              <Send size={16} color="#2A2005" strokeWidth={1.9} />
+              <Send size={16} color="#FFFFFF" strokeWidth={1.9} />
             </button>
           </div>
         </div>
@@ -1113,7 +1113,7 @@ export default function Matches() {
         key={m.profile.id}
         onClick={() => handleSelectMatch(m)}
         className="w-full flex items-center gap-3 px-0.5 py-3 text-left"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+        style={{ borderBottom: "1px solid rgba(11,11,11,0.045)" }}
       >
         <GlassAvatar url={m.profile.avatar_url} presence={presence} />
         <div className="flex-1 min-w-0">
@@ -1126,7 +1126,7 @@ export default function Matches() {
               {currentUserType === "investor" && m.matchRecord?.investor_stage && (
                 <span
                   className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0"
-                  style={{ background: "rgba(198,160,44,0.12)", color: GOLD_LIGHT }}
+                  style={{ background: "rgba(11,11,11,0.12)", color: GOLD_LIGHT }}
                 >
                   {PIPELINE_STAGES.find((s) => s.value === m.matchRecord?.investor_stage)?.label.split(" ").slice(1).join(" ") ?? m.matchRecord.investor_stage}
                 </span>
@@ -1175,8 +1175,8 @@ export default function Matches() {
             width: 42,
             height: 42,
             borderRadius: 21,
-            background: "linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-            boxShadow: "0px 1px 0px 1px rgba(255,255,255,0.24) inset",
+            background: "linear-gradient(155deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+            boxShadow: "0px 1px 0px 1px rgba(11,11,11,0.12) inset",
             outline: `1px solid ${GOLD}`,
             outlineOffset: -1,
             backdropFilter: "blur(10px)",
@@ -1193,7 +1193,7 @@ export default function Matches() {
       {/* Title */}
       <div className="flex items-center gap-2 pt-3.5">
         <MessageSquare size={22} color={GOLD} strokeWidth={1.65} />
-        <h1 style={{ color: TEXT, fontSize: 28, fontWeight: 600, fontFamily: "Fraunces, serif" }}>Messages</h1>
+        <h1 style={{ color: TEXT, fontSize: 28, fontWeight: 600, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>Messages</h1>
       </div>
       <p className="pb-2.5" style={{ color: TEXT_DIM, fontSize: 12.5, marginTop: 4 }}>
         {waitingCount > 0 ? `${waitingCount} ${oppositeLabel} waiting on you` : loading ? " " : matches.length === 0 ? "No conversations yet" : "You're all caught up"}
@@ -1221,8 +1221,8 @@ export default function Matches() {
               onClick={() => setChip(c.key)}
               className="h-[30px] px-3 rounded-full"
               style={{
-                background: active ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.04)",
-                outline: `1px solid ${active ? "rgba(255,255,255,0.22)" : "rgba(255,255,255,0.10)"}`,
+                background: active ? "rgba(11,11,11,0.09)" : "rgba(11,11,11,0.036)",
+                outline: `1px solid ${active ? "rgba(11,11,11,0.12)" : "rgba(11,11,11,0.09)"}`,
                 outlineOffset: -1,
                 color: active ? TEXT : TEXT_DIM,
                 fontSize: active ? 11 : 12,
@@ -1235,7 +1235,7 @@ export default function Matches() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      <div className="flex gap-6" style={{ borderBottom: "1px solid rgba(11,11,11,0.072)" }}>
         <div className="relative pb-[11px]">
           <span style={{ color: TEXT, fontSize: 13, fontWeight: 600 }}>Messages</span>
           <div className="absolute left-0 bottom-0" style={{ width: 55, height: 2, background: TEXT, borderRadius: 2 }} />
@@ -1245,7 +1245,7 @@ export default function Matches() {
           {pendingRequests > 0 && (
             <span
               className="flex items-center justify-center rounded-full px-1.5"
-              style={{ minWidth: 19, height: 19, background: "rgba(255,255,255,0.13)", color: TEXT, fontSize: 11 }}
+              style={{ minWidth: 19, height: 19, background: "rgba(11,11,11,0.117)", color: TEXT, fontSize: 11 }}
             >
               {pendingRequests}
             </span>
@@ -1257,14 +1257,14 @@ export default function Matches() {
       <div className="flex-1 overflow-y-auto pb-28 no-scrollbar">
         {loading ? (
           <div className="flex items-center justify-center pt-16">
-            <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#0B0B0B]/30 border-t-[#0B0B0B] rounded-full animate-spin" />
           </div>
         ) : filteredMatches.length === 0 ? (
           <div className="flex flex-col items-center pt-[110px] text-center">
             <div className="flex items-center justify-center mb-5" style={{ width: 84, height: 84, borderRadius: 42, ...glassCard }}>
               <MessageSquare size={32} color={GOLD_LIGHT} strokeWidth={2} />
             </div>
-            <p style={{ color: TEXT, fontSize: 21, fontWeight: 600, fontFamily: "Fraunces, serif" }}>
+            <p style={{ color: TEXT, fontSize: 21, fontWeight: 600, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>
               No conversations yet
             </p>
             <p className="mt-2 max-w-[280px]" style={{ color: TEXT_DIM, fontSize: 13.5, lineHeight: "21.6px" }}>
@@ -1277,8 +1277,8 @@ export default function Matches() {
                 width: 210,
                 height: 44,
                 borderRadius: 13,
-                background: "linear-gradient(175deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
-                outline: "1px solid rgba(198,160,44,0.35)",
+                background: "linear-gradient(175deg, rgba(11,11,11,0.072) 0%, rgba(11,11,11,0.027) 100%)",
+                outline: "1px solid rgba(11,11,11,0.35)",
                 outlineOffset: -1,
                 color: GOLD_LIGHT,
                 fontSize: 13.5,
