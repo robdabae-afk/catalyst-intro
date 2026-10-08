@@ -53,8 +53,8 @@ function compareBadge(mine: number | null, cohort: number | null) {
     <span
       className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded-full"
       style={{
-        background: better ? "rgba(94,201,142,0.15)" : "rgba(200,100,100,0.15)",
-        color: better ? "#5EC98E" : "#C86464",
+        background: better ? "rgba(21,128,61,0.15)" : "rgba(200,100,100,0.15)",
+        color: better ? "#15803D" : "#C86464",
       }}
     >
       {better ? "+" : ""}{diff.toFixed(1)}% vs cohort

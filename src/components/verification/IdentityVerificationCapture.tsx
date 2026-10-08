@@ -246,7 +246,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           borderRadius: 16,
           border: "none",
           cursor: "pointer",
-          color: "#0A0A0C",
+          color: "#FFFFFF",
           fontSize: 15,
           fontWeight: 500,
         }}
@@ -370,7 +370,7 @@ function ReviewScreen({
           className="mx-4 mb-4 px-4 py-3 rounded-2xl flex items-start gap-3"
           style={{ background: "rgba(198,86,44,0.12)", border: "1px solid rgba(198,86,44,0.3)" }}
         >
-          <AlertTriangle size={18} style={{ color: "#E79A6C", flexShrink: 0, marginTop: 1 }} />
+          <AlertTriangle size={18} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
           <div>
             <p style={{ color: "#0B0B0B", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
               This photo might not pass review
@@ -411,7 +411,7 @@ function ReviewScreen({
             borderRadius: 16,
             background: shot.quality.ok ? "#0B0B0B" : "rgba(246,245,242,0.7)",
             border: "none",
-            color: "#0A0A0C",
+            color: "#FFFFFF",
             fontSize: 14.5,
             fontWeight: 500,
           }}

@@ -6,7 +6,7 @@ const TEXT = "#0B0B0B";
 const BODY = "#3A3A36";
 const MUTED = "#74746D";
 const DIM = "#74746D";
-const GREEN = "#5EC98E";
+const GREEN = "#15803D";
 
 export type UpdateCategory = "raise" | "launch" | "hiring" | "partnership" | "milestone" | "update";
 

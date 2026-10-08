@@ -69,7 +69,7 @@ const GOLD_LIGHT = "#0B0B0B";
 const TEXT = "#0B0B0B";
 const TEXT_DIM = "#74746D";
 const TEXT_LABEL = "#3A3A36";
-const TEXT_VALUE = "#F2F0EA";
+const TEXT_VALUE = "#0B0B0B";
 const TEXT_DISABLED = "#74746D";
 const DARK_ON_GOLD = "#FFFFFF";
 
@@ -631,7 +631,7 @@ const Settings = () => {
     return (
       <div
         className="min-h-[100dvh] flex items-center justify-center"
-        style={{ background: "#0A0A0C" }}
+        style={{ background: "#FFFFFF" }}
       >
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: GOLD }} />
       </div>
@@ -646,7 +646,7 @@ const Settings = () => {
       className="min-h-[100dvh] flex justify-center"
       style={{
         background:
-          "radial-gradient(ellipse 100% 55% at 26% 4%, rgba(11,11,11,0.1) 0%, rgba(11,11,11,0.0) 44%), radial-gradient(ellipse 90% 45% at 88% 100%, rgba(11,11,11,0.07) 0%, rgba(11,11,11,0.0) 50%), #0A0A0C",
+          "radial-gradient(ellipse 100% 55% at 26% 4%, rgba(11,11,11,0.1) 0%, rgba(11,11,11,0.0) 44%), radial-gradient(ellipse 90% 45% at 88% 100%, rgba(11,11,11,0.07) 0%, rgba(11,11,11,0.0) 50%), #FFFFFF",
       }}
     >
       <div className="w-full max-w-[422px] px-4 pb-16">
@@ -788,11 +788,11 @@ const Settings = () => {
 
             {idVerificationStatus === "approved" && (
               <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
-                <div className="w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0" style={{ background: "rgba(94,201,142,0.12)" }}>
-                  <ShieldCheck size={15} color="#5EC98E" strokeWidth={1.8} />
+                <div className="w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0" style={{ background: "rgba(21,128,61,0.12)" }}>
+                  <ShieldCheck size={15} color="#15803D" strokeWidth={1.8} />
                 </div>
                 <div>
-                  <p style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 600 }}>Verified</p>
+                  <p style={{ color: "#15803D", fontSize: 13.5, fontWeight: 600 }}>Verified</p>
                   <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>Your identity has been confirmed.</p>
                 </div>
               </div>
@@ -814,10 +814,10 @@ const Settings = () => {
               <>
                 <div className={`flex items-center gap-3 p-3.5 rounded-[16px] ${glass}`}>
                   <div className={`w-8 h-8 rounded-[16px] flex items-center justify-center shrink-0 ${glass}`}>
-                    <ShieldX size={15} color="#E79A6C" strokeWidth={1.8} />
+                    <ShieldX size={15} color="#B45309" strokeWidth={1.8} />
                   </div>
                   <div>
-                    <p style={{ color: "#E79A6C", fontSize: 13.5, fontWeight: 600 }}>Not approved</p>
+                    <p style={{ color: "#B45309", fontSize: 13.5, fontWeight: 600 }}>Not approved</p>
                     {idVerificationRecord?.rejection_reason && (
                       <p style={{ color: TEXT_DIM, fontSize: 11.5 }}>{idVerificationRecord.rejection_reason}</p>
                     )}
@@ -1047,7 +1047,7 @@ const Settings = () => {
                     style={{ color: TEXT_VALUE }}
                   />
                   <button onClick={() => setTeamMembers((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0" aria-label="Remove">
-                    <X size={16} color="#E79A6C" />
+                    <X size={16} color="#B45309" />
                   </button>
                 </div>
               ))}
@@ -1107,7 +1107,7 @@ const Settings = () => {
               </div>
               <input id="video-upload" type="file" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" className="hidden" onChange={handleVideoUpload} />
               {videoUrl && (
-                <button onClick={() => setVideoUrl("")} style={{ color: "#E79A6C", fontSize: 12 }} className="self-start">
+                <button onClick={() => setVideoUrl("")} style={{ color: "#B45309", fontSize: 12 }} className="self-start">
                   Remove video
                 </button>
               )}
@@ -1338,7 +1338,7 @@ const Settings = () => {
                     style={{ color: TEXT_VALUE }}
                   />
                   <button onClick={() => setPortfolioCompanies((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0" aria-label="Remove">
-                    <X size={16} color="#E79A6C" />
+                    <X size={16} color="#B45309" />
                   </button>
                 </div>
               ))}

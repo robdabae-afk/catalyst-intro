@@ -700,7 +700,7 @@ function InvestorView({
             <div className="flex items-center justify-between py-2">
               <span style={{ color: "#74746D", fontSize: 13.5 }}>Active</span>
               {val(ip?.responsiveness_status) ? (
-                <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip?.responsiveness_status}</span>
+                <span style={{ color: "#15803D", fontSize: 13.5, fontWeight: 500 }}>{ip?.responsiveness_status}</span>
               ) : (
                 <EmptyLine>—</EmptyLine>
               )}
@@ -819,7 +819,7 @@ function ActionBar({
         }}
         aria-label="Connect"
       >
-        <Send size={24} color="#0A0A0C" strokeWidth={2} />
+        <Send size={24} color="#FFFFFF" strokeWidth={2} />
       </button>
       <button
         onClick={onLike}
@@ -991,7 +991,7 @@ function TractionStat({
       </span>
       <span
         style={{
-          color: !v ? "#74746D" : positive ? "#5EC98E" : "#0B0B0B",
+          color: !v ? "#74746D" : positive ? "#15803D" : "#0B0B0B",
           fontSize: 18,
           fontWeight: 700,
           marginTop: 2,

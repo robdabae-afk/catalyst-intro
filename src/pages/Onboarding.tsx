@@ -215,7 +215,7 @@ export default function Onboarding() {
                 borderRadius: 16,
                 border: "none",
                 cursor: "pointer",
-                color: "#0A0A0C",
+                color: "#FFFFFF",
                 fontSize: 15,
                 fontFamily: "Inter",
                 fontWeight: 500,

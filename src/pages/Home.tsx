@@ -123,7 +123,7 @@ export default function Home() {
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
                 d="M4.17 10h11.66M10 4.17l5.83 5.83L10 15.83"
-                stroke="#0A0A0C"
+                stroke="#FFFFFF"
                 strokeWidth="1.67"
                 strokeLinecap="round"
                 strokeLinejoin="round"

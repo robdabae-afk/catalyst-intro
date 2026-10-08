@@ -64,7 +64,7 @@ const GOLD = "#0B0B0B";
 const GOLD_LIGHT = "#0B0B0B";
 const TEXT = "#0B0B0B";
 const TEXT_DIM = "#74746D";
-const GREEN = "#5EC98E";
+const GREEN = "#15803D";
 
 const PAGE_BG =
   "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 46%), radial-gradient(ellipse 90% 50% at 88% 100%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 52%), linear-gradient(137deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)";
@@ -148,7 +148,7 @@ function PresenceBadge({ state }: { state: PresenceState }) {
         bottom: 0,
         background: state === "online" ? GREEN : TEXT,
         borderRadius: 6,
-        border: "2px solid #090809",
+        border: "2px solid #FFFFFF",
       }}
     />
   );
