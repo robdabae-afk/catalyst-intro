@@ -80,6 +80,8 @@ const MORE = [
   { to: "invite", t: "Invite friends", d: "Move up the waitlist", I: IGift },
 ];
 const ACCOUNT = [
+  { to: "/matches", t: "Direct messages", d: "Conversations with your matches" },
+  { to: "/settings", t: "Settings", d: "Profile details, Pro plan, sign out" },
   { to: "welcome", t: "Account and setup", d: "Create an account or redo onboarding" },
   { to: "legal/terms", t: "Terms of use", d: "" },
   { to: "legal/privacy", t: "Privacy notice", d: "" },
@@ -158,7 +160,7 @@ export default function Me() {
         </div>
       </div>
       <nav className="me-more me-acct" aria-label="Account">
-        {ACCOUNT.map(({ to, t, d }) => <Link key={to} to={path(to)} className="me-row" data-to={to}><span className="grow"><b>{t}</b>{d && <small>{d}</small>}</span><IArrow size={14} /></Link>)}
+        {ACCOUNT.map(({ to, t, d }) => <Link key={to} to={to.startsWith("/") ? to : path(to)} className="me-row" data-to={to}><span className="grow"><b>{t}</b>{d && <small>{d}</small>}</span><IArrow size={14} /></Link>)}
       </nav>
       <aside className="card hud" style={{ marginTop: 22, alignSelf: "start" }}>
         <div className="mono dim">Account</div>

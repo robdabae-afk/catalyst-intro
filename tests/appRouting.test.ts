@@ -23,3 +23,7 @@ test("legacy nav points at new screens where they exist", () => {
   expect(nav).toContain('navigate("/feed")'); expect(nav).toContain('navigate("/swipe")');
   expect(nav).not.toContain('navigate("/dashboard")'); expect(nav).not.toContain('navigate("/app/home")');
 });
+test("new app links legacy DMs and settings instead of dropping them", () => {
+  const me = readFileSync("src/features/screens/Me.tsx", "utf8"), emb = readFileSync("src/live/embed.tsx", "utf8");
+  expect(me).toContain('to: "/matches"'); expect(me).toContain('to: "/settings"'); expect(emb).toContain('to="/matches"');
+});

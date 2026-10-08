@@ -61,7 +61,7 @@ export function LiveInbox({ updates }: { updates: ReactNode }) {
         <button role="tab" aria-selected={tab === "updates"} className={tab === "updates" ? "on" : ""} onClick={() => setTab("updates")}>Updates</button>
         <button role="tab" aria-selected={tab === "messages"} className={tab === "messages" ? "on" : ""} onClick={() => setTab("messages")}>Messages</button>
       </div>
-      {tab === "updates" ? updates : <Frame><InboxView onOpen={(id) => nav(`${BASE}/inbox/t/${id}`)} /></Frame>}
+      {tab === "updates" ? updates : <><Link to="/matches" className="me-row" data-to="/matches"><span className="grow"><b>Direct messages</b><small>Conversations with your matches</small></span></Link><Frame><InboxView onOpen={(id) => nav(`${BASE}/inbox/t/${id}`)} /></Frame></>}
     </div>
   );
 }
