@@ -48,7 +48,7 @@ const Auth = () => {
 
       // Redirect signed-in users (but never during recovery flows)
       if (event === "SIGNED_IN" && session && !isRecoveryUrl()) {
-        navigate("/dashboard");
+        navigate("/feed");
       }
     });
 
@@ -59,7 +59,7 @@ const Auth = () => {
       } = await supabase.auth.getSession();
 
       if (session) {
-        if (!isRecoveryUrl()) navigate("/dashboard");
+        if (!isRecoveryUrl()) navigate("/feed");
         return;
       }
 
@@ -146,7 +146,7 @@ const Auth = () => {
       // Clear recovery params from URL
       window.history.replaceState(null, "", window.location.pathname);
 
-      navigate("/dashboard");
+      navigate("/feed");
     } catch (error) {
       toast({
         title: "Error",
@@ -196,7 +196,7 @@ const Auth = () => {
           title: "Welcome back!",
           description: "You have successfully logged in.",
         });
-        navigate("/dashboard");
+        navigate("/feed");
       }
     } catch (error) {
       toast({

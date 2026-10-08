@@ -111,14 +111,14 @@ const App = () => (
 
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
+          <Route path="/dashboard" element={<Navigate replace to="/swipe" />} />
+          <Route path="/app/dashboard" element={<Navigate replace to="/swipe" />} />
           <Route path="/home" element={<AppSignup />} />
-          <Route path="/app/home" element={<AuthGuard><Home /></AuthGuard>} />
+          <Route path="/app/home" element={<Navigate replace to="/feed" />} />
           <Route path="/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
           <Route path="/app/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
-          <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
-          <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
+          <Route path="/matches" element={<Navigate replace to="/inbox" />} />
+          <Route path="/app/matches" element={<Navigate replace to="/inbox" />} />
           <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
           <Route path="/app/connections" element={<AuthGuard><Connections /></AuthGuard>} />
           <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
@@ -131,7 +131,7 @@ const App = () => (
           <Route path="/app/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
           <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
-          <Route path="/app/portfolio" element={<AuthGuard><InvestorPortfolio /></AuthGuard>} />
+          <Route path="/app/portfolio" element={<Navigate replace to="/portfolio" />} />
           <Route path="/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
           <Route path="/app/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
           <Route path="/market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />

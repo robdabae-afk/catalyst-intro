@@ -12,6 +12,6 @@ const LEGAL: Record<string, string> = { "/privacy": "/legal/privacy", "/terms": 
 export function appPathFor(p: string): string | null {
   if (LEGAL[p]) return LEGAL[p];
   if (p.startsWith("/app") || p.startsWith("/signup") || p.startsWith("/auth") || p.startsWith("/forgot-password") || p.startsWith("/onboarding")) return null;
-  if (p === "/intro" || p === "/about" || p === "/community") return "/";
+  if (p === "/" || p === "/intro" || p === "/about" || p === "/community") return "/feed";
   return null;
 }
