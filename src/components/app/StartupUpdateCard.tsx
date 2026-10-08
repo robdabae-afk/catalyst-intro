@@ -1,12 +1,12 @@
 import { Rocket, TrendingUp, Users, Megaphone, Handshake, Sparkles, MessageCircle, Heart, MessageSquare } from "lucide-react";
 
-const GOLD = "#C6A02C";
-const GOLD_SOFT = "#E7CB7E";
-const TEXT = "#F6F5F2";
-const BODY = "#CFCCC5";
-const MUTED = "#94908A";
-const DIM = "#5F5C57";
-const GREEN = "#5EC98E";
+const GOLD = "#0B0B0B";
+const GOLD_SOFT = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const BODY = "#3A3A36";
+const MUTED = "#74746D";
+const DIM = "#74746D";
+const GREEN = "#15803D";
 
 export type UpdateCategory = "raise" | "launch" | "hiring" | "partnership" | "milestone" | "update";
 
@@ -51,9 +51,9 @@ export function timeAgo(iso: string): string {
 
 export const glass = {
   background:
-    "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-  boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-  outline: "1px solid rgba(255,255,255,0.10)",
+    "linear-gradient(180deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+  boxShadow: "inset 0px 1px 0px 1px rgba(11,11,11,0.12)",
+  outline: "1px solid rgba(11,11,11,0.09)",
   outlineOffset: "-1px",
   backdropFilter: "blur(10px)",
 } as const;
@@ -97,7 +97,7 @@ function Tile({ label, value, positive }: { label: string; value: string; positi
         style={{
           color: positive ? GREEN : TEXT,
           fontSize: 16,
-          fontFamily: "Fraunces, serif",
+          fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
           fontWeight: 600,
         }}
       >
@@ -158,7 +158,7 @@ export function StartupUpdateCard({
       {/* Category pill */}
       <span
         className="inline-flex self-start rounded-full"
-        style={{ background: GOLD, color: "#2A2005", fontSize: 10.5, fontWeight: 500, padding: "5px 11px" }}
+        style={{ background: GOLD, color: "#FFFFFF", fontSize: 10.5, fontWeight: 500, padding: "5px 11px" }}
       >
         {label}
       </span>
@@ -167,7 +167,7 @@ export function StartupUpdateCard({
         style={{
           color: TEXT,
           fontSize: 18,
-          fontFamily: "Fraunces, serif",
+          fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
           fontWeight: 600,
           lineHeight: "23.4px",
           marginTop: 2,
@@ -202,7 +202,7 @@ export function StartupUpdateCard({
       {/* Footer */}
       <div
         className="flex items-center gap-[18px] pt-3"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ borderTop: "1px solid rgba(11,11,11,0.063)" }}
       >
 
         {onAction && (

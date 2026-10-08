@@ -46,9 +46,9 @@ test("new shell nav exposes people swipe and person messages distinct from compa
   expect(fa).toContain('{ to: "messages", label: "Messages"'); expect(fa).toContain('{ to: "/settings", label: "Settings"');
   expect(fa).toContain('{ to: "swipe", label: "Companies"');
 });
-test("features palette applies only to person swipe + DMs", () => {
+test("features palette applies to legacy member routes, not FeaturesApp/marketing/match", () => {
   const t = read("src/components/CatalystLightTheme.tsx");
-  expect(t).toContain('const BOTH = ["/dashboard", "/matches"];');
+  expect(t).toContain('const BOTH = ["/dashboard", "/matches", "/settings", "/profile"');
   expect(app).toContain("<CatalystLightTheme />");
 });
 test("new-shell people swipe and DMs mount the real legacy components (same swipes/matches/messages logic), gated", () => {

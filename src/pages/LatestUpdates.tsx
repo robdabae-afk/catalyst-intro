@@ -17,9 +17,9 @@ import {
 } from "@/components/app/StartupUpdateCard";
 import { RequestIntroBanner, type IntroTarget } from "@/components/app/RequestIntroBanner";
 
-const GOLD = "#C6A02C";
-const TEXT = "#F6F5F2";
-const MUTED = "#94908A";
+const GOLD = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const MUTED = "#74746D";
 
 const INVESTOR_FILTERS = [
   { key: "all", label: "All" },
@@ -120,12 +120,12 @@ export default function LatestUpdates() {
       className="relative min-h-[100dvh] overflow-hidden flex flex-col"
       style={{
         background:
-          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(120,92,30,0.16) 0%, rgba(120,92,30,0) 62%), linear-gradient(139deg, #0B0A07 0%, #060606 55%, #080709 100%)",
+          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 62%), linear-gradient(139deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)",
       }}
     >
       {/* Header */}
       <div className="flex items-start gap-3 px-4 pt-12 pb-1">
-        <button onClick={() => navigate("/feed")} aria-label="Back" className="mt-1 shrink-0">
+        <button onClick={() => navigate("/app/home")} aria-label="Back" className="mt-1 shrink-0">
           <ArrowLeft size={22} color={TEXT} strokeWidth={1.6} />
         </button>
         <div className="flex-1">
@@ -133,7 +133,7 @@ export default function LatestUpdates() {
             style={{
               color: TEXT,
               fontSize: 28,
-              fontFamily: "Fraunces, serif",
+              fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
               fontWeight: 600,
               lineHeight: "32.2px",
             }}
@@ -150,7 +150,7 @@ export default function LatestUpdates() {
           <button
             onClick={() => setComposerOpen((v) => !v)}
             className="mt-1 h-8 px-4 rounded-full shrink-0 inline-flex items-center gap-1.5"
-            style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+            style={{ background: GOLD, color: "#FFFFFF", fontSize: 12.5, fontWeight: 600 }}
           >
             <Plus size={14} strokeWidth={2.2} />
             Post
@@ -169,7 +169,7 @@ export default function LatestUpdates() {
               className="h-[30px] px-[13px] rounded-full shrink-0"
               style={
                 active
-                  ? { background: GOLD, color: "#2A2005", fontSize: 11.5, fontWeight: 500 }
+                  ? { background: GOLD, color: "#FFFFFF", fontSize: 11.5, fontWeight: 500 }
                   : { ...glass, color: MUTED, fontSize: 12 }
               }
             >
@@ -194,7 +194,7 @@ export default function LatestUpdates() {
                       className="h-7 px-3 rounded-full"
                       style={
                         active
-                          ? { background: GOLD, color: "#2A2005", fontSize: 11, fontWeight: 600 }
+                          ? { background: GOLD, color: "#FFFFFF", fontSize: 11, fontWeight: 600 }
                           : { ...glass, color: MUTED, fontSize: 11 }
                       }
                     >
@@ -208,7 +208,7 @@ export default function LatestUpdates() {
                 onChange={(e) => setPostTitle(e.target.value)}
                 placeholder="Headline (e.g. We crossed $50k MRR)"
                 className="w-full rounded-[12px] px-3 py-2 bg-transparent outline-none"
-                style={{ color: TEXT, fontSize: 13.5, border: "1px solid rgba(255,255,255,0.12)" }}
+                style={{ color: TEXT, fontSize: 13.5, border: "1px solid rgba(11,11,11,0.108)" }}
               />
               <textarea
                 value={postBody}
@@ -216,7 +216,7 @@ export default function LatestUpdates() {
                 placeholder="Add the details investors should know…"
                 rows={4}
                 className="w-full rounded-[12px] px-3 py-2 bg-transparent outline-none resize-none"
-                style={{ color: TEXT, fontSize: 12.5, border: "1px solid rgba(255,255,255,0.12)" }}
+                style={{ color: TEXT, fontSize: 12.5, border: "1px solid rgba(11,11,11,0.108)" }}
               />
               <div className="flex gap-2">
                 <button
@@ -230,7 +230,7 @@ export default function LatestUpdates() {
                   onClick={submitPost}
                   disabled={posting || !postTitle.trim()}
                   className="h-9 flex-1 rounded-full disabled:opacity-50"
-                  style={{ background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }}
+                  style={{ background: GOLD, color: "#FFFFFF", fontSize: 12.5, fontWeight: 600 }}
                 >
                   {posting ? "Posting…" : "Post update"}
                 </button>

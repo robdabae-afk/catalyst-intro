@@ -7,19 +7,19 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
-const TEXT = "#F6F5F2";
-const TEXT_DIM = "#94908A";
+const GOLD = "#0B0B0B";
+const GOLD_LIGHT = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const TEXT_DIM = "#74746D";
 const PAGE_BG =
-  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 46%), " +
-  "radial-gradient(ellipse 90% 50% at 88% 100%, rgba(120,92,30,0.15) 0%, rgba(120,92,30,0) 52%), " +
-  "linear-gradient(137deg, #0B0A07 0%, #060606 55%, #080709 100%)";
+  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 46%), " +
+  "radial-gradient(ellipse 90% 50% at 88% 100%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 52%), " +
+  "linear-gradient(137deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)";
 
 const glass = {
-  background: "rgba(255,255,255,0.06)",
-  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(255,255,255,0.24) inset",
-  outline: "1px solid rgba(255,255,255,0.14)",
+  background: "rgba(11,11,11,0.054)",
+  boxShadow: "0px 14px 34px -18px rgba(0,0,0,0.12), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
+  outline: "1px solid rgba(11,11,11,0.12)",
   backdropFilter: "blur(9px)",
 } as const;
 
@@ -143,7 +143,7 @@ export default function InvestorMarketPulse() {
       {/* Header */}
       <div
         className="sticky top-0 z-20 flex items-center gap-3 px-4 pt-12 pb-4"
-        style={{ background: "rgba(11,10,7,0.85)", backdropFilter: "blur(12px)" }}
+        style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)" }}
       >
         <button onClick={() => navigate(-1)} className="p-1.5" aria-label="Back">
           <ArrowLeft size={20} color={TEXT} />
@@ -162,7 +162,7 @@ export default function InvestorMarketPulse() {
         {!isPro && (
           <div
             className="absolute inset-0 z-30 flex flex-col items-center justify-start pt-24 px-8 text-center"
-            style={{ background: "rgba(8,7,6,0.55)", backdropFilter: "blur(7px)" }}
+            style={{ background: "rgba(255,255,255,0.6)", backdropFilter: "blur(7px)" }}
           >
             <div className="rounded-2xl p-6 w-full max-w-sm" style={glass}>
               <Lock size={28} color={GOLD} className="mx-auto mb-3" />
@@ -175,8 +175,8 @@ export default function InvestorMarketPulse() {
                 onClick={() => navigate("/settings")}
                 className="mt-4 w-full py-2.5 rounded-xl font-bold"
                 style={{
-                  background: "radial-gradient(ellipse 120% 120% at 30% 20%, #E7CB7E 0%, #C6A02C 100%)",
-                  color: "#2A2005",
+                  background: "radial-gradient(ellipse 120% 120% at 30% 20%, #0B0B0B 0%, #0B0B0B 100%)",
+                  color: "#FFFFFF",
                   fontSize: 14,
                 }}
               >
@@ -220,18 +220,18 @@ export default function InvestorMarketPulse() {
                     if (!active || !payload?.[0]) return null;
                     const d = payload[0].payload as SectorRow;
                     return (
-                      <div className="rounded-lg p-2 text-xs" style={{ background: "#151310", border: "1px solid rgba(255,255,255,0.14)", color: TEXT }}>
+                      <div className="rounded-lg p-2 text-xs" style={{ background: "#151310", border: "1px solid rgba(11,11,11,0.12)", color: TEXT }}>
                         <div className="font-semibold">{d.sector}</div>
                         <div style={{ color: TEXT_DIM }}>{d.likes} likes · {d.passes} passes</div>
                         <div style={{ color: GOLD_LIGHT }}>{d.like_rate_pct?.toFixed(1)}% like rate</div>
                       </div>
                     );
                   }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                  cursor={{ fill: "rgba(11,11,11,0.036)" }}
                 />
                 <Bar dataKey="like_rate_pct" radius={[0, 3, 3, 0]}>
                   {sectors.map((s, i) => (
-                    <Cell key={i} fill={s.isFocus ? GOLD : "rgba(198,160,44,0.38)"} />
+                    <Cell key={i} fill={s.isFocus ? GOLD : "rgba(11,11,11,0.38)"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -282,7 +282,7 @@ export default function InvestorMarketPulse() {
                     <span className="capitalize" style={{ color: TEXT }}>{r.pass_reason}</span>
                     <span style={{ color: TEXT_DIM }}>{r.count} ({r.pct?.toFixed(0) ?? 0}%)</span>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(11,11,11,0.072)" }}>
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${r.pct ?? 0}%`, background: i === 0 ? GOLD : GOLD_LIGHT }}
@@ -316,7 +316,7 @@ function EmptyNote({ text }: { text: string }) {
   return (
     <div
       className="h-20 flex items-center justify-center text-sm rounded-xl px-4 text-center"
-      style={{ color: TEXT_DIM, background: "rgba(255,255,255,0.03)" }}
+      style={{ color: TEXT_DIM, background: "rgba(11,11,11,0.027)" }}
     >
       {text}
     </div>

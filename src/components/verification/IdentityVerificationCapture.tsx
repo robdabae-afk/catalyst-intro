@@ -120,7 +120,7 @@ export function IdentityVerificationCapture({ open, onClose, userId, onSubmitted
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex justify-center" style={{ background: "#060606" }}>
+    <div className="fixed inset-0 z-[100] flex justify-center" style={{ background: "#FFFFFF" }}>
       <div className="relative w-full max-w-[430px] h-[100dvh] flex flex-col overflow-hidden">
         {/* Close button */}
         <button
@@ -128,7 +128,7 @@ export function IdentityVerificationCapture({ open, onClose, userId, onSubmitted
           className="absolute top-14 right-5 z-20 icon-btn"
           aria-label="Close"
         >
-          <X size={18} color="#F6F5F2" strokeWidth={2} />
+          <X size={18} color="#0B0B0B" strokeWidth={2} />
         </button>
 
         {stage === "intro" && (
@@ -184,8 +184,8 @@ export function IdentityVerificationCapture({ open, onClose, userId, onSubmitted
 
         {stage === "submitting" && (
           <div className="flex-1 flex flex-col items-center justify-center gap-4">
-            <Loader2 size={28} className="animate-spin" style={{ color: "#C6A02C" }} />
-            <p style={{ color: "#94908A", fontSize: 14 }}>Submitting…</p>
+            <Loader2 size={28} className="animate-spin" style={{ color: "#0B0B0B" }} />
+            <p style={{ color: "#74746D", fontSize: 14 }}>Submitting…</p>
           </div>
         )}
       </div>
@@ -212,27 +212,27 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           width: 64,
           height: 64,
           borderRadius: "50%",
-          background: "rgba(198, 160, 44, 0.12)",
+          background: "rgba(11,11,11,0.12)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           marginBottom: 22,
         }}
       >
-        <ShieldCheck size={28} style={{ color: "#C6A02C" }} />
+        <ShieldCheck size={28} style={{ color: "#0B0B0B" }} />
       </div>
       <h1
         style={{
-          color: "#F6F5F2",
+          color: "#0B0B0B",
           fontSize: 24,
-          fontFamily: "Fraunces, serif",
+          fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
           fontWeight: 600,
           marginBottom: 10,
         }}
       >
         Verify your identity
       </h1>
-      <p style={{ color: "#94908A", fontSize: 13.5, lineHeight: 1.6, marginBottom: 28, maxWidth: 300 }}>
+      <p style={{ color: "#74746D", fontSize: 13.5, lineHeight: 1.6, marginBottom: 28, maxWidth: 300 }}>
         You'll need a government-issued ID and your camera. We'll walk you through a photo of your
         ID, then a quick selfie. A team member reviews every submission manually.
       </p>
@@ -242,11 +242,11 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
           width: "100%",
           maxWidth: 300,
           height: 54,
-          background: "#F6F5F2",
+          background: "#0B0B0B",
           borderRadius: 16,
           border: "none",
           cursor: "pointer",
-          color: "#0A0A0C",
+          color: "#FFFFFF",
           fontSize: 15,
           fontWeight: 500,
         }}
@@ -275,10 +275,10 @@ function CameraScreen({
   return (
     <div className="flex-1 flex flex-col">
       <div className="px-6 pt-14 pb-4">
-        <h2 style={{ color: "#F6F5F2", fontSize: 19, fontWeight: 600, fontFamily: "Fraunces, serif" }}>
+        <h2 style={{ color: "#0B0B0B", fontSize: 19, fontWeight: 600, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>
           {title}
         </h2>
-        <p style={{ color: "#94908A", fontSize: 12.5, marginTop: 4 }}>{subtitle}</p>
+        <p style={{ color: "#74746D", fontSize: 12.5, marginTop: 4 }}>{subtitle}</p>
       </div>
 
       <div className="relative flex-1 mx-4 mb-4 rounded-3xl overflow-hidden" style={{ background: "#111" }}>
@@ -324,7 +324,7 @@ function CameraScreen({
             height: 74,
             borderRadius: "50%",
             background: "#FFFFFF",
-            border: "5px solid rgba(255,255,255,0.25)",
+            border: "5px solid rgba(11,11,11,0.12)",
             cursor: "pointer",
           }}
         />
@@ -351,7 +351,7 @@ function ReviewScreen({
   return (
     <div className="flex-1 flex flex-col">
       <div className="px-6 pt-14 pb-4">
-        <h2 style={{ color: "#F6F5F2", fontSize: 19, fontWeight: 600, fontFamily: "Fraunces, serif" }}>
+        <h2 style={{ color: "#0B0B0B", fontSize: 19, fontWeight: 600, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>
           Review {label.toLowerCase()}
         </h2>
       </div>
@@ -370,17 +370,17 @@ function ReviewScreen({
           className="mx-4 mb-4 px-4 py-3 rounded-2xl flex items-start gap-3"
           style={{ background: "rgba(198,86,44,0.12)", border: "1px solid rgba(198,86,44,0.3)" }}
         >
-          <AlertTriangle size={18} style={{ color: "#E79A6C", flexShrink: 0, marginTop: 1 }} />
+          <AlertTriangle size={18} style={{ color: "#B45309", flexShrink: 0, marginTop: 1 }} />
           <div>
-            <p style={{ color: "#F6F5F2", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
+            <p style={{ color: "#0B0B0B", fontSize: 13, fontWeight: 600, marginBottom: 2 }}>
               This photo might not pass review
             </p>
             {shot.quality.issues.map((issue) => (
-              <p key={issue} style={{ color: "#CFCCC5", fontSize: 12, lineHeight: 1.5 }}>
+              <p key={issue} style={{ color: "#3A3A36", fontSize: 12, lineHeight: 1.5 }}>
                 {issueMessage(issue)}
               </p>
             ))}
-            <p style={{ color: "#94908A", fontSize: 11.5, marginTop: 4 }}>
+            <p style={{ color: "#74746D", fontSize: 11.5, marginTop: 4 }}>
               We recommend retaking it in better light and holding steady.
             </p>
           </div>
@@ -394,9 +394,9 @@ function ReviewScreen({
           style={{
             height: 54,
             borderRadius: 16,
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.14)",
-            color: "#F6F5F2",
+            background: "rgba(11,11,11,0.054)",
+            border: "1px solid rgba(11,11,11,0.12)",
+            color: "#0B0B0B",
             fontSize: 14.5,
             fontWeight: 500,
           }}
@@ -409,9 +409,9 @@ function ReviewScreen({
           style={{
             height: 54,
             borderRadius: 16,
-            background: shot.quality.ok ? "#F6F5F2" : "rgba(246,245,242,0.7)",
+            background: shot.quality.ok ? "#0B0B0B" : "rgba(246,245,242,0.7)",
             border: "none",
-            color: "#0A0A0C",
+            color: "#FFFFFF",
             fontSize: 14.5,
             fontWeight: 500,
           }}
