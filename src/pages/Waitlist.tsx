@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import "@/features/features.css";
+import "@/features/auth.css";
 
 export default function Waitlist() {
   const navigate = useNavigate();
@@ -11,32 +13,20 @@ export default function Waitlist() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-      <main className="max-w-lg w-full text-center space-y-8">
-        <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#888]">Catalyst</p>
-          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">
-            Welcome, you're on the list!
-          </h1>
-          <p className="text-[15px] text-[#999] leading-relaxed">
-            We're reviewing applications now for early access.
-          </p>
+    <div className="cf cf-ob">
+      <div className="ob ob-auth ob-waitlist">
+        <div className="ob-body">
+          <div className="ob-head">
+            <div className="ob-mark" aria-hidden><i /></div>
+            <h1>Welcome, you're on the list!</h1>
+            <p>We're reviewing applications now for early access.</p>
+          </div>
+          <div className="au-form">
+            <button type="button" className="btn" onClick={() => navigate("/app/signup")}>Sign up</button>
+            <button type="button" className="btn ghost" onClick={() => navigate("/auth")}>Already have an account</button>
+          </div>
         </div>
-
-        <button
-          onClick={() => navigate("/app/signup")}
-          className="w-full py-[15px] rounded-2xl bg-white text-black font-semibold text-[15px] tracking-tight active:opacity-85 transition-opacity"
-        >
-          Sign up
-        </button>
-
-        <button
-          onClick={() => navigate("/auth")}
-          className="w-full py-3 text-[13px] text-[#666] active:text-[#999]"
-        >
-          Already have an account
-        </button>
-      </main>
+      </div>
     </div>
   );
 }

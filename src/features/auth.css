@@ -20,3 +20,4 @@
 .cf .au-social .btn:hover:not([disabled]){border-color:var(--ink)}
 .au-swap{margin-top:22px;text-align:center;font-size:14px;color:var(--dim)}
 .au-swap .ob-link{color:var(--ink);padding:8px 4px}
+.ob-waitlist .ob-body{justify-content:center;padding-top:0}
