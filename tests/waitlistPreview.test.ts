@@ -35,6 +35,14 @@ test("editorial concept replaces all character art with controllable connection 
   expect(preview).toContain("Reg CF crowdfunding");
 });
 
+test("small copy is high contrast and editorial card uses a soft shadow", () => {
+  expect(css).toContain("--dim:#52524e");
+  expect(css).toContain("box-shadow:0 8px 28px rgb(11 11 11 / .06)");
+  expect(css).not.toContain("0 var(--ink)");
+  expect(preview).not.toContain("Connections begin with an introduction.");
+  expect(preview).toContain('viewBox="0 0 600 365"');
+});
+
 test("motion is finite, reduced-motion disables it, and the form manages focus", () => {
   expect(css).not.toContain("infinite");
   expect(css).toContain("@media(prefers-reduced-motion:reduce)");

@@ -21,7 +21,7 @@ function ConnectionMap() {
     <section className="wl-network" aria-label="Illustrative founder and investor connection map">
       <div className="wl-map" data-motion={moving ? "animated" : "static"}>
         <div className="wl-map-top mono"><span>One introduction. New possibilities.</span><span>Founders ↔ Investors</span></div>
-        <svg key={replay} viewBox="0 0 600 330" role="img" aria-labelledby="network-title network-desc">
+        <svg key={replay} viewBox="0 0 600 365" role="img" aria-labelledby="network-title network-desc">
           <title id="network-title">Founders meet investors through Catalyst</title>
           <desc id="network-desc">An illustrative network connects founders, investors and communities through a central Catalyst node. It does not represent actual members or guaranteed introductions.</desc>
           <g className="wl-map-guides" stroke="currentColor" fill="none"><circle cx="300" cy="164" r="70"/><circle cx="300" cy="164" r="120"/></g>
@@ -38,8 +38,8 @@ function ConnectionMap() {
           </g>
           <g fill="currentColor" className="wl-map-labels">
             <text x="116" y="59" textAnchor="middle">FOUNDERS</text><text x="484" y="59" textAnchor="middle">INVESTORS</text>
-            <text x="100" y="283" textAnchor="middle">Ideas &amp; ambition</text><text x="500" y="283" textAnchor="middle">Capital &amp; experience</text>
-            <text x="300" y="310" textAnchor="middle">A shared community</text>
+            <text x="108" y="287" textAnchor="middle"><tspan x="108">Ideas &amp;</tspan><tspan x="108" dy="23">ambition</tspan></text><text x="492" y="287" textAnchor="middle"><tspan x="492">Capital &amp;</tspan><tspan x="492" dy="23">experience</tspan></text>
+            <text x="300" y="346" textAnchor="middle">A shared community</text>
           </g>
           <g className="wl-map-details" fill="currentColor"><circle cx="217" cy="64" r="2"/><circle cx="384" cy="263" r="2"/><path d="M87 159h10m-5-5v10M501 151h10m-5-5v10" stroke="currentColor"/></g>
         </svg>
@@ -51,7 +51,6 @@ function ConnectionMap() {
           <button type="button" aria-pressed={!moving} onClick={() => setAnimated(false)}>Static</button>
         </div>
         <button type="button" className="wl-replay" disabled={!moving} onClick={() => setReplay(r => r + 1)}><RotateCcw size={14}/>Replay</button>
-        <span className="wl-motion-note">{reduced ? "Reduced motion respected." : "Connections begin with an introduction."}</span>
       </div>
     </section>
   );
