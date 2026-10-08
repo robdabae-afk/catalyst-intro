@@ -1,3 +1,4 @@
+import { canBrowseProfiles } from "@/hooks/useProfileReview";
 import { useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { isDemoMode } from "@/demo/mode";
@@ -71,8 +72,11 @@ async function loadCatalogOnce() {
   requiresSignIn = false;
   notify();
   const db = supabase as any;
+  const { data: { session } } = await supabase.auth.getSession();
+  const approvedViewer = !!session && await canBrowseProfiles(session.user.id);
+  if (gen !== authGen) return;
   const [companies, events] = await Promise.all([
-    db.from("app_companies").select("*").eq("status", "published").order("sort"),
+    approvedViewer ? db.from("app_companies").select("*").eq("status", "published").order("sort") : db.rpc("app_company_teasers"),
     db.from("app_events").select("*").eq("status", "published").order("starts_at"),
   ]);
   if (gen !== authGen) return;
@@ -97,9 +101,8 @@ async function loadCatalogOnce() {
     DETAIL_COMPANIES[id].updates.forEach((u, i) => UPDATES.push({id: `${id}-update-${i}`, company: id, title: text(u.title), body: text(u.body), tag: "Update", ago: text(u.when)}));
   }
   // Existing approved profiles (RLS: authenticated only). Read-only; empty for anon.
-  const { data: { session } } = await supabase.auth.getSession();
   if (gen !== authGen) return;
-  if (session) {
+  if (session && approvedViewer) {
     const [pr, fr, ir] = await Promise.all([
       db.from("profiles").select(PROFILE_COLS).eq("approved", true).eq("is_hidden", false),
       db.from("founder_profiles").select(FOUNDER_COLS),
@@ -132,7 +135,7 @@ async function loadCatalogOnce() {
 }
 // Refresh when auth resolves/changes so RLS-gated profiles appear after login.
 let lastUser: string | null | undefined;
-if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; authGen++; if (legacyIds.size) { clearLegacy(); notify(); } if (started) setTimeout(() => { void loadCatalog(); }, 0); });
+if (!isDemoMode()) supabase.auth.onAuthStateChange((_e, s) => { const u = s?.user?.id ?? null; if (u === lastUser) return; lastUser = u; authGen++; COMPANIES.length = DEALS.length = PEOPLE.length = UPDATES.length = 0; for (const id of Object.keys(DETAIL_COMPANIES)) delete DETAIL_COMPANIES[id]; for (const id of Object.keys(MATCH)) delete MATCH[id]; clearLegacy(); notify(); if (started) setTimeout(() => { void loadCatalog(); }, 0); });
 export function useCatalog() {
   useSyncExternalStore(subscribe, snapshot, snapshot);
   useEffect(() => { if (!started) { started = true; void loadCatalog(); } }, []);

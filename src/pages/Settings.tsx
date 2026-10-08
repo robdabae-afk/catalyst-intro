@@ -1,5 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { SignupChecklist } from "@/components/ProfileReviewGate";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -77,6 +79,8 @@ const inputCls = "flex-1 min-w-0 bg-transparent outline-none text-[14px]";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const routeLocation = useLocation();
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const { isAdmin } = useIsAdmin();
   const [loading, setLoading] = useState(true);
@@ -335,19 +339,25 @@ const Settings = () => {
   // (used by the onboarding checklist to jump straight to the relevant field group).
   useEffect(() => {
     if (loading) return;
-    const hash = window.location.hash.replace("#", "");
+    const hash = routeLocation.hash.replace("#", "");
     if (!hash) return;
     const el = document.getElementById(hash);
     if (!el) return;
 
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const field = new URLSearchParams(routeLocation.search).get("field");
+    const label = field ? Array.from(el.querySelectorAll("[data-setting-label]")).find(node => node.textContent?.trim() === field) : null;
+    const target = label?.nextElementSibling ?? el;
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    const selector = "input:not([type=hidden]):not([disabled]), textarea, button";
+    const input = target.matches(selector) ? target as HTMLElement : target.querySelector<HTMLElement>(selector);
+    input?.focus({ preventScroll: true });
     el.style.transition = "box-shadow 0.3s ease";
     el.style.boxShadow = `0 0 0 2px ${GOLD}`;
     const timer = setTimeout(() => {
       el.style.boxShadow = "";
     }, 2000);
     return () => clearTimeout(timer);
-  }, [loading]);
+  }, [loading, routeLocation.hash, routeLocation.search]);
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -592,6 +602,7 @@ const Settings = () => {
         if (investorError) throw investorError;
       }
 
+      await queryClient.invalidateQueries({ queryKey: ["profile-review", userId] });
       toast({ title: "Profile updated successfully" });
     } catch (error: any) {
       toast({ variant: "destructive", title: "Save failed", description: error.message });
@@ -657,6 +668,7 @@ const Settings = () => {
         </div>
 
         <div className="space-y-3.5">
+          <div style={{ color: TEXT }}><SignupChecklist /></div>
           {/* Share my profile */}
           <Section icon={<Share2 size={16} color={GOLD} strokeWidth={1.8} />} title="Share my profile">
             <p style={descCls}>Copy your unique CATALYST profile link to share with investors, founders, or anyone.</p>
@@ -843,7 +855,7 @@ const Settings = () => {
           </Section>
 
           {/* Basic information */}
-          <Section title="Basic information">
+          <Section id="section-basic" title="Basic information">
             <TextField label="Full name" value={name} onChange={setName} />
             <TextField label="LinkedIn profile URL" value={linkedinUrl} onChange={setLinkedinUrl} placeholder="linkedin.com/in/..." />
             <TextField label="Email" value={email} onChange={() => {}} disabled />
@@ -1504,11 +1516,11 @@ function Section({
 }
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <p style={{ color: TEXT_LABEL, fontSize: 12 }}>{children}</p>;
+  return <p data-setting-label style={{ color: TEXT_LABEL, fontSize: 12 }}>{children}</p>;
 }
 
 function SubTitle({ children }: { children: React.ReactNode }) {
-  return <h3 style={{ color: TEXT, fontSize: 15, fontWeight: 600 }}>{children}</h3>;
+  return <h3 data-setting-label style={{ color: TEXT, fontSize: 15, fontWeight: 600 }}>{children}</h3>;
 }
 
 function Divider() {

@@ -1,3 +1,4 @@
+import { SignupChecklist } from "@/components/ProfileReviewGate";
 import { supabase } from "@/integrations/supabase/client";
 import { isDemoMode } from "@/demo/mode";
 import { useEffect, useState } from "react";
@@ -115,6 +116,7 @@ export default function Me() {
     <div className="g-side">
       <div>
         <Head title="Me" />
+        <SignupChecklist />
         {accountName && <p className="mono dim" style={{ margin: "0 0 12px" }} data-account-name>{accountName}</p>}
         <nav className="me-more" aria-label="More">
           {MORE.map(({ to, t, d, I }) => (
@@ -126,7 +128,7 @@ export default function Me() {
         <Hud className="me-hero in" scan>
           <div className="cf-ring" style={{ ["--p" as string]: pct }}><span><CountUp to={pct} suffix="%" /></span></div>
           <div className="grow">
-            <b style={{ fontSize: 18 }}>{pct === 100 ? "You're all set" : "Finish your profile"}</b>
+            <b style={{ fontSize: 18 }}>{pct === 100 ? "You're all set" : "Get more from Catalyst"}</b>
             <p style={{ fontSize: 13.5, marginTop: 4, opacity: .7 }}>{done} of {STEPS.length} done. Complete profiles get event invites first.</p>
           </div>
         </Hud>
@@ -135,7 +137,7 @@ export default function Me() {
           <div><span className="mono dim">Watching</span><CountUp to={Object.keys(s.watch).length} /></div>
           <div><span className="mono dim">Learned</span><CountUp to={Object.values(s.learned).filter(Boolean).length} suffix="/5" /></div>
         </div>
-        <div className="sec"><h2><span className="ix">01</span>Checklist</h2></div>
+        <div className="sec"><h2><span className="ix">01</span>Getting started</h2></div>
         <div className="st">
           {STEPS.map((x) => {
             const d = auto.has(x.id);

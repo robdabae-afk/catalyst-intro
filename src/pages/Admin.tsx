@@ -222,15 +222,18 @@ const Admin = () => {
       if (roleErr) throw roleErr;
 
       // Clear stale review flags so the row leaves Pending / Needs Re-Review cleanly
-      await supabase
+      const { error: approvalError } = await supabase
         .from('profiles')
         .update({
+          approved: true,
           has_pending_update: false,
           admin_edit_suggestion: null,
           admin_edit_message: null,
           rejection_reason: null,
         } as any)
         .eq('id', userId);
+
+      if (approvalError) throw approvalError;
 
       // Send approval email
       await sendNotification(userId, 'approved');
@@ -367,6 +370,7 @@ const Admin = () => {
           has_pending_update: false,
           admin_edit_suggestion: null,
           admin_edit_message: null,
+          approved: false,
           rejection_reason: rejectionReason || "Your profile does not meet our platform criteria at this time."
         } as any)
         .eq('id', userId);

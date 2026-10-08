@@ -26,6 +26,7 @@ interface ReviewUser {
   rejection_reason: string | null;
   is_flagged: boolean | null;
   roles: string[];
+  approved: boolean;
 }
 
 interface Props {
@@ -54,7 +55,7 @@ export function AdminProfileReviewsPanel({
       const [{ data: profiles }, { data: roles }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("id, name, email, user_type, avatar_url, created_at, has_pending_update, rejection_reason, is_flagged")
+          .select("id, name, email, user_type, avatar_url, created_at, approved, has_pending_update, rejection_reason, is_flagged")
           .order("created_at", { ascending: false }),
         supabase.from("user_roles").select("user_id, role"),
       ]);
@@ -83,7 +84,7 @@ export function AdminProfileReviewsPanel({
 
   const status = (u: ReviewUser): "pending" | "approved" | "admin" | "rejected" => {
     if (u.roles.includes("admin")) return "admin";
-    if (u.roles.includes("user")) return "approved";
+    if (u.approved) return "approved";
     if (u.rejection_reason) return "rejected";
     return "pending";
   };
@@ -243,7 +244,7 @@ function ReviewTable({
           {users.map((u) => {
             const s = u.roles.includes("admin")
               ? "admin"
-              : u.roles.includes("user")
+              : u.approved
               ? "approved"
               : u.rejection_reason
               ? "rejected"

@@ -1,3 +1,4 @@
+import { ProfileReviewGate } from "@/components/ProfileReviewGate";
 import { Toaster } from "@/components/ui/toaster";
 import InviteLanding from "./pages/InviteLanding";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -101,8 +102,8 @@ const App = () => (
           <Route path="/app/onboarding/founder" element={<AppSignup />} />
           <Route path="/onboarding/investor" element={<AppSignup />} />
           <Route path="/app/onboarding/investor" element={<AppSignup />} />
-          <Route path="/profile/:id" element={<ProfileView />} />
-          <Route path="/app/profile/:id" element={<ProfileView />} />
+          <Route path="/profile/:id" element={<ProfileReviewGate><ProfileView /></ProfileReviewGate>} />
+          <Route path="/app/profile/:id" element={<ProfileReviewGate><ProfileView /></ProfileReviewGate>} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
           <Route path="/app/catalystdeck" element={<CatalystDeck />} />
           <Route path="/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
