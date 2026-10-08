@@ -26,3 +26,11 @@ test("frame flags nested pages so legacy navs hide (no double nav)", () => {
 test("auth pages stay outside the frame", () => {
   for (const r of ["/auth", "/signup", "/forgot-password", "/onboarding"]) expect(app).toContain('<Route path="' + r + '" element');
 });
+
+test("Today tab targets /feed (not marketing /) and is active on /feed", () => {
+  expect(fa).toContain('{ to: "feed", label: "Today", I: "discover" as IconName, end: true }');
+  expect(fa).not.toContain('{ to: "", label: "Today"');
+  expect(fa).toContain('const BASE = "";');
+  expect(fa).toContain('<Route path="feed" element=');
+  expect(app).toContain('<Route path="/" element={<Landing />} />');
+});
