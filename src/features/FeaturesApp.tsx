@@ -32,7 +32,8 @@ function Tabs({ cls }: { cls: string }) {
   const n = unreadCount(s);
   const items = [
     { to: "", label: "Today", I: "discover" as IconName, end: true },
-    { to: "swipe", label: "Swipe", I: "swipe" as IconName },
+    { to: "swipe", label: "Companies", I: "swipe" as IconName },
+    { to: "/dashboard", label: "People", I: "mutual" as IconName },
     { to: "search", label: "Search", I: "search" as IconName },
     { to: "inbox", label: "Inbox", I: "bell" as IconName, badge: n },
     { to: "me", label: "Me", I: "profile" as IconName },
@@ -41,20 +42,21 @@ function Tabs({ cls }: { cls: string }) {
     { to: "watchlist", label: "Watchlist", I: "save" as IconName },
     { to: "portfolio", label: "Portfolio", I: "holdings" as IconName },
     { to: "events", label: "Events", I: "events" as IconName },
-    { to: "people", label: "People", I: "mutual" as IconName },
+    { to: "people", label: "Directory", I: "mutual" as IconName },
+    { to: "/matches", label: "Messages", I: "send" as IconName },
     { to: "learn", label: "Learn", I: "edu" as IconName },
   ];
   return (
     <nav className={cls} aria-label="Main">
       {cls === "cf-side" && <div className="cf-logo"><i />catalyst</div>}
       {items.map(({ to, label, I, end, badge }) => (
-        <NavLink key={label} to={`${BASE}/${to}`} end={end} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}
+        <NavLink key={label} to={to.startsWith("/") ? to : `${BASE}/${to}`} end={end} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}
           aria-label={badge ? `${label}, ${badge} unread` : label}>
           <Icon name={I} size={22} />{label}{badge ? <span className="cf-badge">{badge}</span> : null}
         </NavLink>
       ))}
       {cls === "cf-side" && <div className="cf-more">{more.map(({ to, label, I }) => (
-        <NavLink key={label} to={`${BASE}/${to}`} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}><Icon name={I} size={20} />{label}</NavLink>
+        <NavLink key={label} to={to.startsWith("/") ? to : `${BASE}/${to}`} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}><Icon name={I} size={20} />{label}</NavLink>
       ))}</div>}
     </nav>
   );

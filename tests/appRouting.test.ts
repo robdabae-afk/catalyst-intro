@@ -33,3 +33,21 @@ test("person swiping (swipes/matches tables) keeps its original route; new /swip
   expect(readFileSync("src/components/app/BottomNav.tsx", "utf8")).toContain('label: "People"');
   expect(readFileSync("src/features/screens/Me.tsx", "utf8")).toContain('to: "/dashboard"');
 });
+const read = (p: string) => readFileSync(p, "utf8");
+test("data-source guard: person DMs and person swipe keep legacy tables, never app_messages", () => {
+  const m = read("src/pages/Matches.tsx"), d = read("src/pages/Dashboard.tsx");
+  expect(m).toContain('.from("matches")'); expect(m).toContain('.from("messages")'); expect(m).not.toContain("app_messages");
+  expect(d).not.toContain("app_messages");
+  expect(app).not.toMatch(/path="\/(app\/)?matches" element=\{<Navigate/);
+  expect(app).not.toMatch(/path="\/(app\/)?dashboard" element=\{<Navigate/);
+});
+test("new shell nav exposes people swipe and person messages distinct from companies/inbox", () => {
+  expect(fa).toContain('{ to: "/dashboard", label: "People"');
+  expect(fa).toContain('{ to: "/matches", label: "Messages"');
+  expect(fa).toContain('{ to: "swipe", label: "Companies"');
+});
+test("features palette applies only to person swipe + DMs", () => {
+  const t = read("src/components/CatalystLightTheme.tsx");
+  expect(t).toContain('const BOTH = ["/dashboard", "/matches"];');
+  expect(app).toContain("<CatalystLightTheme />");
+});

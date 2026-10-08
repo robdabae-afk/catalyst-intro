@@ -32,11 +32,8 @@ interface MenuDrawerProps {
   isPro?: boolean;
 }
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
-const TEXT = "#E9E7E1";
-const TEXT_MUTED = "#94908A";
-const RED = "#C98D8D";
+const GOLD = "#0B0B0B";
+const RED = "#B42318";
 
 export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawerProps) {
   const navigate = useNavigate();
@@ -77,10 +74,9 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
         className="p-0 border-0"
         style={{
           width: 224,
-          background:
-            "linear-gradient(138deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-          outline: "1px solid rgba(255,255,255,0.12)",
-          backdropFilter: "blur(10px)",
+          background: "#FFFFFF",
+          borderLeft: "1px solid #E6E6E3",
+          fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
         }}
       >
         <nav className="flex flex-col h-full py-2">
@@ -170,12 +166,11 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
                 onClick={() => go("/settings")}
                 className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors"
                 style={{
-                  background:
-                    "radial-gradient(ellipse 120% 120% at 30% 20%, #E7CB7E 0%, #C6A02C 100%)",
+                  background: "#0B0B0B",
                 }}
               >
-                <Star size={17} color="#2A2005" />
-                <span style={{ color: "#2A2005", fontSize: 13.5, fontWeight: 700 }}>
+                <Star size={17} color="#FFFFFF" />
+                <span style={{ color: "#FFFFFF", fontSize: 13.5, fontWeight: 700 }}>
                   Get Pro
                 </span>
               </button>
@@ -212,10 +207,10 @@ function MenuItem({
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-white/5 transition-colors text-left"
+      className="flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl hover:bg-[#F4F4F2] transition-colors text-left"
     >
       {icon}
-      <span style={{ fontSize: 13.5, color: labelColor ?? "#E9E7E1", fontWeight: 400, flex: 1 }}>
+      <span style={{ fontSize: 13.5, color: labelColor ?? "#0B0B0B", fontWeight: 500, flex: 1 }}>
         {label}
       </span>
       {badge ? (
@@ -225,8 +220,8 @@ function MenuItem({
             minWidth: 18,
             height: 18,
             padding: "0 5px",
-            background: "#C6A02C",
-            color: "#2A2005",
+            background: "#0B0B0B",
+            color: "#FFFFFF",
           }}
         >
           {badge > 9 ? "9+" : badge}
@@ -240,7 +235,7 @@ function Divider() {
   return (
     <div
       className="mx-4 my-1"
-      style={{ height: 1, background: "rgba(255,255,255,0.09)" }}
+      style={{ height: 1, background: "#E6E6E3" }}
     />
   );
 }
