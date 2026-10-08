@@ -1271,7 +1271,7 @@ export default function Matches() {
               Conversations start once a connection is accepted. Head to Discover and send a few requests.
             </p>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/swipe")}
               className="mt-6 flex items-center justify-center"
               style={{
                 width: 210,

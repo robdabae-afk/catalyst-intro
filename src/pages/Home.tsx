@@ -135,7 +135,7 @@ export default function Home() {
         {/* Latest Events */}
         <SectionHeader
           label="Latest events"
-          onViewAll={() => navigate("/app/home")}
+          onViewAll={() => navigate("/feed")}
         />
 
         {loading ? (

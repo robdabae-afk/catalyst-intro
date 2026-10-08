@@ -117,8 +117,8 @@ const App = () => (
           <Route path="/app/home" element={<Navigate replace to="/feed" />} />
           <Route path="/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
           <Route path="/app/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
-          <Route path="/matches" element={<Navigate replace to="/inbox" />} />
-          <Route path="/app/matches" element={<Navigate replace to="/inbox" />} />
+          <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
+          <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
           <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
           <Route path="/app/connections" element={<AuthGuard><Connections /></AuthGuard>} />
           <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />

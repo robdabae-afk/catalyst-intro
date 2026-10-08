@@ -81,7 +81,7 @@ export default function InvestorMarketPulse() {
         .eq("id", user.id)
         .single();
       if (profile?.user_type !== "investor") {
-        navigate("/dashboard");
+        navigate("/swipe");
         return;
       }
 
