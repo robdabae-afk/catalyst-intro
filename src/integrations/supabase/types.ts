@@ -2594,8 +2594,19 @@ export type Database = {
       }
     }
     Functions: {
+      app_company_teasers: {
+        Args: never
+        Returns: {
+          created_at: string
+          data: Json
+          id: string
+          sort: number
+        }[]
+      }
       app_is_admin: { Args: never; Returns: boolean }
       app_owns_company: { Args: { cid: string }; Returns: boolean }
+      approval_exception: { Args: { _profile_id: string }; Returns: boolean }
+      can_view_member: { Args: { _profile_id: string }; Returns: boolean }
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
       get_active_ad_profiles: {
         Args: never
