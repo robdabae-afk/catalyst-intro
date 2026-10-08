@@ -58,3 +58,6 @@ test("new-shell people swipe and DMs mount the real legacy components (same swip
   expect(app).toContain('<Route path="/discover" element={<Navigate replace to="/people/swipe" />} />');
   expect(readFileSync("src/components/CatalystLightTheme.tsx", "utf8")).toContain('"/people/swipe", "/messages"');
 });
+test("new /people directory links to person swipe", () => {
+  expect(readFileSync("src/live/embed.tsx", "utf8")).toContain('<Link to="/people/swipe"');
+});
