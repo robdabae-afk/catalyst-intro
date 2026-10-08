@@ -1,10 +1,11 @@
+import { useProfileReview } from "@/hooks/useProfileReview";
 import { ProfileReviewGate } from "@/components/ProfileReviewGate";
 import { isDemoMode } from "@/demo/mode";
 import { onWriteError } from "./store";
 import { Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import { isAppShell } from "@/lib/platform";
 import { startSync } from "./sync";
-import { catalogStatus, COMPANIES, useCatalog } from "./catalog";
+import { catalogStatus, COMPANIES, useCatalog, loadCatalog } from "./catalog";
 
 export const catalogLoading = () => String(typeof catalogStatus === "function" ? (catalogStatus as () => unknown)() : catalogStatus) === "loading";
 import { useEffect, useState } from "react";
@@ -78,6 +79,8 @@ function WriteError() {
 }
 
 export default function FeaturesApp() {
+  const review = useProfileReview();
+  useEffect(() => { if (!review.loading) void loadCatalog(); }, [review.approved, review.loading]);
   useEffect(() => { startSync(); }, []);
   useCatalog();
   const [st] = useStore();

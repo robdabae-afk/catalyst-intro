@@ -13,7 +13,7 @@ export function signupChecklist(p: Row, r: Row, verification: string): SignupIte
   ];
   const add = (id: string, title: string, done: boolean, section: string, field?: string) => items.push({ id, title, done, to: link(section, field) });
   if (p.user_type === "founder") {
-    add("startup", "Startup name and HQ location", filled(r?.startup_name) && filled(r?.location), "startup", "Startup name");
+    add("startup", "Startup name and HQ location", filled(r?.startup_name) && filled(r?.location), "startup", filled(r?.startup_name) ? "Location (HQ)" : "Startup name");
     add("oneliner", "One-liner", filled(r?.one_liner), "startup", "One-liner");
     add("stage", "Company stage", filled(r?.stage), "startup", "Company stage");
     add("industries", "Industries", array(r?.industry), "startup", "Industries");

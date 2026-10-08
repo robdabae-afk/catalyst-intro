@@ -1,0 +1,38 @@
+-- Run after fixture + migration on disposable LOCAL database only.
+CREATE FUNCTION public.test_assert(ok boolean,msg text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN IF ok IS DISTINCT FROM true THEN RAISE EXCEPTION 'ASSERT: %',msg; END IF; END $$;
+CREATE FUNCTION public.test_denied(stmt text) RETURNS void LANGUAGE plpgsql AS $$ BEGIN
+ BEGIN EXECUTE stmt; EXCEPTION WHEN insufficient_privilege OR check_violation THEN RETURN; END;
+ RAISE EXCEPTION 'Unexpectedly permitted: %',stmt;
+END $$;
+SET ROLE authenticated;
+SELECT set_config('request.jwt.claim.role','authenticated',false);
+SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000001',false);
+SELECT test_assert((SELECT count(*) FROM profiles)=1,'pending founder sees self only');
+SELECT test_assert((SELECT count(*) FROM investor_profiles)=0,'pending founder cannot read investors');
+SELECT test_denied($s$UPDATE profiles SET approved=true WHERE id=auth.uid()$s$);
+SELECT test_denied($s$INSERT INTO identity_verifications(profile_id,status) VALUES(auth.uid(),'approved')$s$);
+SELECT test_denied($s$INSERT INTO identity_verifications(profile_id,status,reviewed_by) VALUES(auth.uid(),'pending',auth.uid())$s$);
+INSERT INTO identity_verifications(profile_id,status) VALUES(auth.uid(),'pending');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000002',false);
+SELECT test_assert((SELECT count(*) FROM founder_profiles)=0,'pending investor cannot read founders');
+SELECT test_assert((SELECT count(*) FROM app_companies)=0,'pending investor cannot read full catalog');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000003',false);
+SELECT test_assert((SELECT count(*) FROM investor_profiles)=1,'approved founder sees investor');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000004',false);
+SELECT test_assert((SELECT count(*) FROM founder_profiles)=1,'approved investor sees founder');
+SELECT test_assert((SELECT count(*) FROM app_companies)=1,'approved investor sees company');
+SELECT set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000005',false);
+SELECT test_assert((SELECT count(*) FROM profiles)=5,'admin sees pending profiles');
+INSERT INTO user_roles VALUES('00000000-0000-0000-0000-000000000001','user');
+SELECT test_assert((SELECT approved FROM profiles WHERE id='00000000-0000-0000-0000-000000000001'),'role grant syncs approval');
+DELETE FROM user_roles WHERE user_id='00000000-0000-0000-0000-000000000001';
+SELECT test_assert(NOT (SELECT approved FROM profiles WHERE id='00000000-0000-0000-0000-000000000001'),'role revoke syncs approval');
+RESET ROLE;
+SET ROLE anon;
+SELECT set_config('request.jwt.claim.role','anon',false);
+SELECT set_config('request.jwt.claim.sub','',false);
+SELECT test_assert((SELECT count(*) FROM profiles)=0,'anonymous cannot read full profiles');
+SELECT test_assert((SELECT count(*) FROM app_companies)=0,'anonymous cannot read full catalog');
+SELECT test_assert((SELECT count(*) FROM app_company_teasers())=1,'public teaser preserved');
+SELECT test_assert((SELECT NOT (data ? 'team') AND NOT (data ? 'docs') FROM app_company_teasers()),'teaser strips private JSON');
+RESET ROLE;

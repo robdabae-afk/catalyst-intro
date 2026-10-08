@@ -346,9 +346,10 @@ const Settings = () => {
 
     const field = new URLSearchParams(routeLocation.search).get("field");
     const label = field ? Array.from(el.querySelectorAll("[data-setting-label]")).find(node => node.textContent?.trim() === field) : null;
-    const target = label?.parentElement ?? el;
+    const target = label?.nextElementSibling ?? el;
     target.scrollIntoView({ behavior: "smooth", block: "center" });
-    const input = target.querySelector<HTMLElement>("input:not([type=hidden]):not([disabled]), textarea, button");
+    const selector = "input:not([type=hidden]):not([disabled]), textarea, button";
+    const input = target.matches(selector) ? target as HTMLElement : target.querySelector<HTMLElement>(selector);
     input?.focus({ preventScroll: true });
     el.style.transition = "box-shadow 0.3s ease";
     el.style.boxShadow = `0 0 0 2px ${GOLD}`;

@@ -1,3 +1,5 @@
+import { signupChecklist } from "@/lib/signup-checklist";
+import { useProfileReview } from "@/hooks/useProfileReview";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,11 +39,12 @@ type ChecklistItem = {
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const review = useProfileReview();
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<UserType>("founder");
   const [profile, setProfile] = useState<any>(null);
   const [roleProfile, setRoleProfile] = useState<any>(null);
-  const [showPreBetaNotice, setShowPreBetaNotice] = useState(true);
+  const [showPreBetaNotice, setShowPreBetaNotice] = useState(false);
   const [verificationCaptureOpen, setVerificationCaptureOpen] = useState(false);
   const { status: idVerificationStatus, refetch: refetchIdVerification } = useIdentityVerification(profile?.id ?? null);
 
@@ -90,173 +93,10 @@ export default function Onboarding() {
 
   useEffect(() => { load(); }, []);
 
-  const founderItems = (): ChecklistItem[] => [
-    {
-      id: "account",
-      title: "Account created",
-      desc: "Name, email, password",
-      icon: <UserCheck size={15} className="text-[#C6A02C]" />,
-      done: true,
-    },
-    {
-      id: "startup",
-      title: "Startup basics",
-      desc: "Startup name, HQ location",
-      icon: <Building2 size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.startup_name && roleProfile.startup_name !== "Untitled",
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "avatar",
-      title: "Profile photo",
-      desc: "Add one — recommended",
-      icon: <Camera size={15} className="text-[#C6A02C]" />,
-      done: !!profile?.avatar_url,
-      onClick: () => navigate("/settings#section-photos"),
-    },
-    {
-      id: "oneliner",
-      title: "One-liner",
-      desc: "One line on what you do",
-      icon: <MessageSquare size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.one_liner,
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "stage",
-      title: "Company stage",
-      desc: "Pre-seed to Series B",
-      icon: <TrendingUp size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.stage,
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "industries",
-      title: "Industries",
-      desc: "Pick your sectors",
-      icon: <Grid2X2 size={15} className="text-[#C6A02C]" />,
-      done: Array.isArray(roleProfile?.industry) && roleProfile.industry.length > 0,
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "traction",
-      title: "Traction & metrics",
-      desc: "MRR, growth, burn",
-      icon: <BarChart2 size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.traction || !!roleProfile?.mrr,
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "team",
-      title: "Team",
-      desc: "Member names, titles, headcount",
-      icon: <Users size={15} className="text-[#C6A02C]" />,
-      done: (Array.isArray(roleProfile?.team_members) && roleProfile.team_members.length > 0) || roleProfile?.headcount != null,
-      onClick: () => navigate("/settings#section-startup"),
-    },
-    {
-      id: "identity",
-      title: "Verify identity",
-      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Government ID + selfie, manually reviewed",
-      icon: <IdCard size={15} className="text-[#C6A02C]" />,
-      done: idVerificationStatus === "approved",
-      onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),
-    },
-  ];
-
-  const investorItems = (): ChecklistItem[] => [
-    {
-      id: "account",
-      title: "Account created",
-      desc: "Name, email, password, location",
-      icon: <UserCheck size={15} className="text-[#C6A02C]" />,
-      done: true,
-    },
-    {
-      id: "avatar",
-      title: "Profile photo",
-      desc: "Add one — recommended",
-      icon: <Camera size={15} className="text-[#C6A02C]" />,
-      done: !!profile?.avatar_url,
-      onClick: () => navigate("/settings#section-photos"),
-    },
-    {
-      id: "investor_type",
-      title: "Investor type",
-      desc: "Angel, VC, syndicate…",
-      icon: <Briefcase size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.investor_type,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "accreditation",
-      title: "Accreditation status",
-      desc: "Required by law",
-      icon: <FileCheck2 size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.accreditation_status,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "sectors",
-      title: "Sectors of interest",
-      desc: "Pick your focus",
-      icon: <Grid2X2 size={15} className="text-[#C6A02C]" />,
-      done: Array.isArray(roleProfile?.sectors_of_interest) && roleProfile.sectors_of_interest.length > 0,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "check_size",
-      title: "Check size",
-      desc: "Typical ticket range",
-      icon: <DollarSign size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.typical_check_size,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "thesis",
-      title: "Investment thesis",
-      desc: "What you back & why",
-      icon: <FileText size={15} className="text-[#C6A02C]" />,
-      done: !!roleProfile?.investment_thesis,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "responsiveness",
-      title: "Responsiveness",
-      desc: "Response rate & reply time",
-      icon: <Clock size={15} className="text-[#C6A02C]" />,
-      done: roleProfile?.response_rate != null || !!roleProfile?.avg_reply_time,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "portfolio_stats",
-      title: "Portfolio stats",
-      desc: "Deals, total invested, exits",
-      icon: <DollarSign size={15} className="text-[#C6A02C]" />,
-      done: roleProfile?.deals_last_12mo != null || !!roleProfile?.total_invested || roleProfile?.notable_exits != null,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "portfolio_companies",
-      title: "Portfolio companies",
-      desc: "Logos of recent investments",
-      icon: <Users size={15} className="text-[#C6A02C]" />,
-      done: Array.isArray(roleProfile?.portfolio_companies) && roleProfile.portfolio_companies.length > 0,
-      onClick: () => navigate("/settings#section-investor"),
-    },
-    {
-      id: "identity",
-      title: "Verify identity",
-      desc: idVerificationStatus === "pending" ? "Pending review" : idVerificationStatus === "rejected" ? "Not approved — tap to resubmit" : "Government ID + selfie, manually reviewed",
-      icon: <IdCard size={15} className="text-[#C6A02C]" />,
-      done: idVerificationStatus === "approved",
-      onClick: idVerificationStatus === "approved" ? undefined : () => setVerificationCaptureOpen(true),
-    },
-  ];
-
-  const items = profile
-    ? userType === "founder" ? founderItems() : investorItems()
-    : [];
+  const items: ChecklistItem[] = signupChecklist(review.data?.profile ?? profile, review.data?.role ?? roleProfile, review.data?.verification ?? idVerificationStatus).map(item => ({
+    ...item, desc: item.note ?? "Saved from your profile settings", icon: <UserCheck size={15} className="text-[#C6A02C]" />,
+    onClick: item.done ? undefined : () => navigate(item.to),
+  }));
 
   const total = items.length;
   const doneCount = items.filter((i) => i.done).length;
@@ -458,7 +298,7 @@ export default function Onboarding() {
               Finish your profile
             </h1>
             <p style={{ color: "#94908A", fontSize: 13, fontFamily: "Inter", fontWeight: 400, lineHeight: 1.5 }}>
-              You did the basics at sign-up. Complete the rest to go live.
+              {review.approved ? "Your profile is approved. You can keep your details up to date here." : "Your profile is under review. Please check back later. Complete any missing items below."}
             </p>
           </div>
 
@@ -509,7 +349,7 @@ export default function Onboarding() {
               <p style={{ fontSize: 12.5, fontFamily: "Inter", lineHeight: "17.5px" }}>
                 <span style={{ color: "#CFCCC5" }}>Reach </span>
                 <span style={{ color: "#E7CB7E", fontWeight: 600 }}>100%</span>
-                <span style={{ color: "#CFCCC5" }}> to unlock full platform access.</span>
+                <span style={{ color: "#CFCCC5" }}>. Admin approval is required for platform access.</span>
               </p>
             </div>
           </div>
