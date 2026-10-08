@@ -389,12 +389,12 @@ const CapTable = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30 py-12 px-4">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <Button variant="ghost" onClick={() => navigate('/dashboard')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => navigate('/safe')}>
               Download SAFE Template
             </Button>

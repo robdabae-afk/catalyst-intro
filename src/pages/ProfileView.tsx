@@ -398,7 +398,7 @@ function FounderView({
 
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-1 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-36 px-5 pt-1 space-y-4 no-scrollbar">
         {isOwn && !val(fp?.one_liner) && (
           <a
             href="/onboarding"
@@ -637,7 +637,7 @@ function InvestorView({
       </div>
 
       {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto pb-28 px-5 pt-5 space-y-4 no-scrollbar">
+      <div className="flex-1 overflow-y-auto pb-36 px-5 pt-5 space-y-4 no-scrollbar">
         {isOwn && !val(ip?.investment_thesis) && (
           <a
             href="/onboarding"
@@ -819,7 +819,7 @@ function ActionBar({
         }}
         aria-label="Connect"
       >
-        <Send size={24} color="#FFFFFF" strokeWidth={2} />
+        <Send size={24} color="#0B0B0B" strokeWidth={2} />
       </button>
       <button
         onClick={onLike}
@@ -985,7 +985,7 @@ function TractionStat({
     >
       <span
         className="text-center"
-        style={{ color: "#74746D", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
+        style={{ color: "#5C5C56", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
       >
         {label}
       </span>
@@ -999,7 +999,7 @@ function TractionStat({
       >
         {v ?? "—"}
       </span>
-      {sub && <span style={{ color: "#7D7972", fontSize: 9.5, marginTop: 1 }}>{sub}</span>}
+      {sub && <span style={{ color: "#5C5C56", fontSize: 9.5, marginTop: 1 }}>{sub}</span>}
     </div>
   );
 }
