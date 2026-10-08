@@ -1,3 +1,4 @@
+import { isBrowseAdmin } from "@/lib/browse-access";
 import { canBrowseProfiles } from "@/hooks/useProfileReview";
 import { useEffect, useSyncExternalStore } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,10 +74,15 @@ async function loadCatalogOnce() {
   notify();
   const db = supabase as any;
   const { data: { session } } = await supabase.auth.getSession();
-  const approvedViewer = !!session && await canBrowseProfiles(session.user.id);
+  const [adminViewer, approvedViewer] = session
+    ? await Promise.all([isBrowseAdmin(), canBrowseProfiles(session.user.id)])
+    : [false, false];
+  const memberViewer = adminViewer || approvedViewer;
   if (gen !== authGen) return;
   const [companies, events] = await Promise.all([
-    approvedViewer ? db.from("app_companies").select("*").eq("status", "published").order("sort") : db.rpc("app_company_teasers"),
+    memberViewer ? (adminViewer
+      ? db.from("app_companies").select("*").order("sort")
+      : db.from("app_companies").select("*").eq("status", "published").order("sort")) : db.rpc("app_company_teasers"),
     db.from("app_events").select("*").eq("status", "published").order("starts_at"),
   ]);
   if (gen !== authGen) return;
@@ -102,22 +108,23 @@ async function loadCatalogOnce() {
   }
   // Existing approved profiles (RLS: authenticated only). Read-only; empty for anon.
   if (gen !== authGen) return;
-  if (session && approvedViewer) {
+  if (session && memberViewer) {
     const [pr, fr, ir] = await Promise.all([
-      db.from("profiles").select(PROFILE_COLS).eq("approved", true).eq("is_hidden", false),
+      adminViewer ? db.from("profiles").select(PROFILE_COLS)
+        : db.from("profiles").select(PROFILE_COLS).eq("approved", true).eq("is_hidden", false),
       db.from("founder_profiles").select(FOUNDER_COLS),
       db.from("investor_profiles").select(INVESTOR_COLS),
     ]);
     if (gen !== authGen) return;
     const legacyError = pr.error || fr.error || ir.error;
     if (legacyError) { console.warn("legacy profiles read failed", legacyError); if (catalogStatus === "ready") catalogStatus = "error"; }
-    const legacy = mapLegacy(pr.data ?? [], fr.data ?? [], ir.data ?? []);
+    const legacy = mapLegacy(pr.data ?? [], fr.data ?? [], ir.data ?? [], adminViewer);
     const seen = new Set(PEOPLE.map(p => p.id));
     const publishedByOwner = new Map(Object.values(DETAIL_COMPANIES).filter(d => d.ownerId).map(d => [d.ownerId, d.id]));
     for (const p of legacy.people) if (!seen.has(p.id)) { PEOPLE.push({ ...p, at: publishedByOwner.get(p.id) ?? p.at }); legacyIds.add(p.id); }
     const owners = new Set(Object.values(DETAIL_COMPANIES).map(d => d.ownerId).filter(Boolean));
     for (const l of legacy.companies) {
-      if (DETAIL_COMPANIES[l.id] || owners.has(l.ownerId)) continue;
+      if (DETAIL_COMPANIES[l.id] || (!adminViewer && owners.has(l.ownerId))) continue;
       owners.add(l.ownerId); legacyIds.add(l.id);
       const trac = l.traction[0] ?? "";
       COMPANIES.push({ id: l.id, name: l.name, tagline: l.line, sector: l.sector as FeatureCompany["sector"], stage: l.stage as FeatureCompany["stage"], city: l.city, raising: l.raising, traction: trac, founder: l.founderName, img: l.cover, face: l.founderPhoto, pitch: l.pitch });
