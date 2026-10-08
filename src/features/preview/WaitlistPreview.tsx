@@ -57,7 +57,7 @@ function ConnectionMap() {
 }
 
 /** Isolated concept. Reuses the production waitlist form without changing its submit flow. */
-export default function WaitlistPreview() {
+export default function WaitlistPreview({ mock = false }: { mock?: boolean }) {
   const [joining, setJoining] = useState(false);
   const cta = useRef<HTMLButtonElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -73,7 +73,7 @@ export default function WaitlistPreview() {
   };
   return (
     <div className="cf wl-preview">
-      <header className="wl-nav"><Link to="/" aria-label="Catalyst home" className="wl-logo"><i aria-hidden="true"/>catalyst</Link><span className="wl-concept mono">Early access · Concept preview</span></header>
+      <header className="wl-nav"><Link to="/" aria-label="Catalyst home" className="wl-logo"><i aria-hidden="true"/>catalyst</Link><span className="wl-concept mono">{mock ? "Interactive demo · No data collected" : "Early access · Concept preview"}</span></header>
       <main className="wl-stage">
         <div className="wl-editorial">
           <span className="wl-eyebrow mono">Good founders. Thoughtful investors.</span>
@@ -82,7 +82,15 @@ export default function WaitlistPreview() {
           <ConnectionMap />
         </div>
         <section className="wl-card" aria-labelledby="wl-heading">
-          {joining ? (
+          {joining && mock ? (
+            <div className="wl-form-view">
+              <span className="wl-eyebrow mono">Preview confirmation</span>
+              <h2 id="wl-heading" tabIndex={-1} ref={heading}>You're on the list.</h2>
+              <p className="wl-card-subhead">Your next great introduction starts here.</p>
+              <p className="wl-fine">This is a mock confirmation. No information was collected, no account was created, and you have not joined the real waitlist.</p>
+              <button type="button" className="btn wl-cta" onClick={back}>Back to the preview<ArrowLeft size={17}/></button>
+            </div>
+          ) : joining ? (
             <div className="wl-form-view">
               <button className="wl-back" type="button" onClick={back}><ArrowLeft size={16}/>Back</button>
               <span className="wl-eyebrow mono">Your first introduction</span>
