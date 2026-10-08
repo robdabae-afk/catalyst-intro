@@ -33,6 +33,23 @@ const port = 43000 + Math.floor(Math.random() * 6000);
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(4400); // All entrance motion finishes in under five seconds.
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+      const geometry = await page.evaluate(() => {
+        const h = document.querySelector(".wl-copy h1");
+        const pill = document.querySelector(".wl-mascot svg rect:nth-of-type(2)").getBoundingClientRect();
+        const topCard = document.querySelector(".wl-note-top").getBoundingClientRect();
+        const bottomCard = document.querySelector(".wl-note-bottom").getBoundingClientRect();
+        const svg = document.querySelector(".wl-mascot svg");
+        const foot = svg.createSVGPoint();
+        foot.x = 249; foot.y = 326;
+        return {
+          leading: parseFloat(getComputedStyle(h).lineHeight) / parseFloat(getComputedStyle(h).fontSize),
+          pillClear: topCard.bottom < pill.top,
+          feetClear: bottomCard.top > foot.matrixTransform(svg.getScreenCTM()).y,
+        };
+      });
+      assert.ok(geometry.leading >= 1.1, "Headline descenders need breathing room");
+      assert.ok(geometry.pillClear, "Top card must not cover the access pill");
+      assert.ok(geometry.feetClear, "Bottom card must not hide either foot");
       const label = width === 1440 ? "desktop" : width === 390 ? "mobile" : "small-mobile";
       await page.screenshot({ path: "/tmp/shots/waitlist-" + label + ".png", fullPage: true });
       await page.getByRole("button", {name:"Join the waitlist"}).click();
