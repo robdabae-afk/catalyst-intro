@@ -1,5 +1,7 @@
+import { collectDiscoverPage } from "@/lib/discover-pagination";
+import { isBrowseAdmin } from "@/lib/browse-access";
 import { canBrowseProfiles } from "./useProfileReview";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface DiscoverProfile {
@@ -34,10 +36,12 @@ export function useDiscoverFeed(
   filters: DiscoverFilters,
   excludedIds: Set<string>
 ) {
+  const requestGeneration = useRef(0);
   const [profiles, setProfiles] = useState<DiscoverProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(false);
   const [page, setPage] = useState(0);
+  const [adminViewer, setAdminViewer] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   // Target type is opposite of viewer
@@ -62,78 +66,85 @@ export function useDiscoverFeed(
 
   const fetchPage = useCallback(
     async (nextPage: number) => {
-      if (!currentUserId || !targetType || !await canBrowseProfiles(currentUserId)) {
+      const generation = ++requestGeneration.current;
+      if (!currentUserId) {
+        setAdminViewer(false); setProfiles([]); setHasMore(false); setLoading(false); return;
+      }
+      const [isAdmin, approved] = await Promise.all([isBrowseAdmin(), canBrowseProfiles(currentUserId)]);
+      if (generation !== requestGeneration.current) return;
+      setAdminViewer(isAdmin);
+      if (!isAdmin && (!targetType || !approved)) {
         setProfiles([]); setHasMore(false); setLoading(false); return;
       }
       setLoading(true);
 
-      const from = nextPage * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      // Fill a page AFTER client filters. A sparse/empty raw page is not exhaustion.
+      try {
+      const result = await collectDiscoverPage<DiscoverProfile>(nextPage, PAGE_SIZE, async (rawPage) => {
+        const from = rawPage * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
 
-      let query: any = supabase
-        .from("profiles")
-        .select(`*, founder_profiles(*), investor_profiles(*)`, { count: "exact" })
-        .neq("id", currentUserId)
-        .eq("user_type", targetType)
-        .eq("approved", true)
-        .eq("is_hidden", false)
-        .eq("is_test_account", false);
-
-      if (filters.search && filters.search.trim()) {
-        query = query.ilike("name", `%${filters.search.trim()}%`);
-      }
-
-      if (filters.view === "new") {
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 14);
-        query = query.gte("created_at", sevenDaysAgo.toISOString());
-      }
-      if (filters.view === "featured") {
-        query = query.eq("is_featured", true);
-      }
-      if (filters.verifiedOnly) {
-        query = query.eq("is_verified", true);
-      }
-      if (filters.view === "saved") {
-        const ids = Array.from(savedIds);
-        if (ids.length === 0) {
-          setProfiles([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
+        let query: any = supabase
+          .from("profiles")
+          .select(`*, founder_profiles(*), investor_profiles(*)`, { count: "exact" });
+        if (!isAdmin) {
+          query = query.neq("id", currentUserId)
+            .eq("user_type", targetType)
+            .eq("approved", true)
+            .eq("is_hidden", false)
+            .eq("is_test_account", false);
         }
-        query = query.in("id", ids);
-      }
 
-      query = query
-        .order("is_featured", { ascending: false })
-        .order("created_at", { ascending: false })
-        .range(from, to);
+        if (filters.search && filters.search.trim()) {
+          query = query.ilike("name", `%${filters.search.trim()}%`);
+        }
 
-      const { data, error, count } = await query;
-      if (error) {
-        console.error("Discover fetch error", error);
-        setLoading(false);
-        return;
-      }
+        if (filters.view === "new") {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 14);
+          query = query.gte("created_at", sevenDaysAgo.toISOString());
+        }
+        if (filters.view === "featured") {
+          query = query.eq("is_featured", true);
+        }
+        if (filters.verifiedOnly) {
+          query = query.eq("is_verified", true);
+        }
+        if (filters.view === "saved") {
+          const ids = Array.from(savedIds);
+          if (ids.length === 0) {
+            return { rows: [], count: 0 };
+          }
+          query = query.in("id", ids);
+        }
 
-      let rows = (data ?? []) as DiscoverProfile[];
+        query = query
+          .order("is_featured", { ascending: false })
+          .order("created_at", { ascending: false })
+          .range(from, to);
 
-      // Client-side filters that need the joined detail rows
-      rows = rows.filter((p) => !excludedIds.has(p.id));
+        const { data, error, count } = await query;
+        if (error) {
+          throw error;
+        }
 
-      // Phase D: hide founders who paused, closed, shut down, or are in stealth from discovery
-      if (targetType === "founder") {
-        rows = rows.filter((p) => {
-          const d = Array.isArray(p.founder_profiles) ? p.founder_profiles[0] : p.founder_profiles;
-          const status = (d as any)?.fundraising_status;
-          // Null status (legacy rows) treated as actively_raising
-          return !status || status === "actively_raising";
+        let rows = (data ?? []) as DiscoverProfile[];
+
+        // Client-side filters that need the joined detail rows
+        if (!isAdmin) rows = rows.filter((p) => !excludedIds.has(p.id));
+
+        // Phase D: hide founders who paused, closed, shut down, or are in stealth from discovery
+        if (!isAdmin && targetType === "founder") {
+          rows = rows.filter((p) => {
+            const d = Array.isArray(p.founder_profiles) ? p.founder_profiles[0] : p.founder_profiles;
+            const status = (d as any)?.fundraising_status;
+            // Null status (legacy rows) treated as actively_raising
+            return !status || status === "actively_raising";
         });
       }
 
       const detail = (p: DiscoverProfile) =>
-        targetType === "founder"
+        p.user_type === "founder"
           ? Array.isArray(p.founder_profiles)
             ? p.founder_profiles[0]
             : p.founder_profiles
@@ -144,14 +155,14 @@ export function useDiscoverFeed(
       if (filters.industries && filters.industries.length) {
         rows = rows.filter((p) => {
           const d = detail(p);
-          const tags: string[] = targetType === "founder" ? d?.industry ?? [] : d?.sectors_of_interest ?? [];
+          const tags: string[] = p.user_type === "founder" ? d?.industry ?? [] : d?.sectors_of_interest ?? [];
           return tags?.some((t) => filters.industries!.includes(t));
         });
       }
       if (filters.stages && filters.stages.length) {
         rows = rows.filter((p) => {
           const d = detail(p);
-          const stage = targetType === "founder" ? d?.stage : d?.preferred_stage;
+          const stage = p.user_type === "founder" ? d?.stage : d?.preferred_stage;
           return stage && filters.stages!.includes(stage);
         });
       }
@@ -160,7 +171,7 @@ export function useDiscoverFeed(
         rows = rows.filter((p) => {
           const d = detail(p);
           const loc = (
-            targetType === "founder"
+            p.user_type === "founder"
               ? `${d?.preferred_city ?? ""} ${d?.company_state ?? ""}`
               : `${d?.location ?? ""}`
           ).toLowerCase();
@@ -174,10 +185,18 @@ export function useDiscoverFeed(
         rows = rows.filter((p) => (detail(p)?.typical_check_size ?? "") === filters.checkBand);
       }
 
-      setProfiles((prev) => (nextPage === 0 ? rows : [...prev, ...rows]));
-      setHasMore((count ?? 0) > to + 1);
-      setPage(nextPage);
-      setLoading(false);
+      return { rows, count: count ?? 0 };
+      });
+      if (generation !== requestGeneration.current) return;
+      setProfiles((prev) => (nextPage === 0 ? result.rows : [...prev, ...result.rows]));
+      setHasMore(result.hasMore);
+      setPage(result.lastPage);
+      } catch (error) {
+        console.error("Discover fetch error", error);
+        if (generation === requestGeneration.current) setHasMore(false);
+      } finally {
+        if (generation === requestGeneration.current) setLoading(false);
+      }
     },
     [currentUserId, targetType, filters, excludedIds, savedIds]
   );
@@ -185,16 +204,20 @@ export function useDiscoverFeed(
   useEffect(() => {
     setProfiles([]);
     setPage(0);
-    fetchPage(0);
+    void fetchPage(0);
+    return () => { requestGeneration.current++; };
   }, [fetchPage]);
+
+  const loadMore = useCallback(() => fetchPage(page + 1), [fetchPage, page]);
 
   return {
     profiles,
     loading,
     hasMore,
-    loadMore: () => fetchPage(page + 1),
+    loadMore,
     savedIds,
     refetchSaved: fetchSaved,
     targetType,
+    adminViewer,
   };
 }

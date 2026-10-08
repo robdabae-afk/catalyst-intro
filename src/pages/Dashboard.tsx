@@ -33,13 +33,20 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
 
   const { excludedIds } = useSwipeHistory(user?.id);
   const [filters] = useState<DiscoverFilters>({ view: "all" });
-  const { profiles, loading, targetType } = useDiscoverFeed(
+  const { profiles, loading, hasMore, loadMore, adminViewer } = useDiscoverFeed(
     user?.id,
     (user?.user_type as "founder" | "investor" | null) ?? null,
     filters,
     excludedIds
   );
   const { expressInterest } = useExpressInterest(user?.id);
+
+  // Continue through every raw page, including pages emptied by client filters.
+  useEffect(() => {
+    if (!loading && hasMore && cardIndex >= profiles.length) void loadMore();
+  }, [loading, hasMore, cardIndex, profiles.length, loadMore]);
+
+  useEffect(() => { setCardIndex(0); }, [user?.id, adminViewer]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -67,7 +74,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
 
   const getDetail = (p: any) => {
     if (!p) return null;
-    return targetType === "founder"
+    return p.user_type === "founder"
       ? Array.isArray(p.founder_profiles) ? p.founder_profiles[0] : p.founder_profiles
       : Array.isArray(p.investor_profiles) ? p.investor_profiles[0] : p.investor_profiles;
   };
@@ -150,8 +157,8 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
   };
 
   const detail = currentProfile ? getDetail(currentProfile) : null;
-  const isFounderCard = targetType === "founder";
-  const isInvestorCard = targetType === "investor";
+  const isFounderCard = currentProfile?.user_type === "founder";
+  const isInvestorCard = currentProfile?.user_type === "investor";
 
   const bgImage = currentProfile?.avatar_url ?? null;
   const name = currentProfile?.name ?? "";
@@ -175,7 +182,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
   const investorThesis: string = detail?.investment_thesis ?? "";
   const isVerified = currentProfile?.is_verified ?? false;
 
-  const outOfCards = !loading && cardIndex >= profiles.length;
+  const outOfCards = !loading && !hasMore && cardIndex >= profiles.length;
   const swipeOpacity = Math.min(Math.abs(dragX) / 120, 1);
   const swipeColor = dragX > 0 ? `rgba(11,11,11,${swipeOpacity * 0.35})` : `rgba(180,60,60,${swipeOpacity * 0.4})`;
 
@@ -201,7 +208,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
           CATALYST
         </span>
         <div className="flex items-center gap-3">
-          {swipesRemaining !== null && !isPro && (
+          {swipesRemaining !== null && !isPro && !adminViewer && (
             <span style={{ color: "#74746D", fontSize: 12 }}>
               {swipesRemaining} right swipes left
             </span>
@@ -227,7 +234,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
         className="flex-1 flex flex-col px-3"
         style={{ minHeight: 0, paddingBottom: "calc(84px + env(safe-area-inset-bottom))" }}
       >
-        {loading ? (
+        {loading || (hasMore && cardIndex >= profiles.length) ? (
           <div className="flex-1 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#E6E6E3] border-t-[#0B0B0B] rounded-full animate-spin" />
           </div>
