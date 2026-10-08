@@ -1276,7 +1276,7 @@ export default function Matches({ embedded: embeddedProp = false }: { embedded?:
               Conversations start once a connection is accepted. Head to Discover and send a few requests.
             </p>
             <button
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/people/swipe")}
               className="mt-6 flex items-center justify-center"
               style={{
                 width: 210,

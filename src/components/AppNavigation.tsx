@@ -95,7 +95,7 @@ const AppNavigationInner = ({
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/people/swipe')}
               className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -163,7 +163,7 @@ const AppNavigationInner = ({
           <div className="flex items-center gap-2">
             <h1 
               className="text-sm sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/people/swipe')}
             >
               CATALYST
             </h1>
@@ -185,11 +185,11 @@ const AppNavigationInner = ({
               />
             )}
             
-            <NavLink to="/home">
+            <NavLink to="/feed">
               <HomeIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Home</span>
             </NavLink>
-            <NavLink to="/dashboard">
+            <NavLink to="/people/swipe">
               <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Discover</span>
             </NavLink>

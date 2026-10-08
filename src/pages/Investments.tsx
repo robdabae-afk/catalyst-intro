@@ -65,7 +65,7 @@ const Investments = () => {
         .single();
 
       if (profile?.user_type !== 'investor') {
-        navigate('/dashboard');
+        navigate('/people/swipe');
         return;
       }
 

@@ -85,13 +85,13 @@ export function MenuDrawer({ open, onClose, userType, userId, isPro }: MenuDrawe
             icon={<Users size={17} color={GOLD} />}
             label="Matches"
             badge={totalBadge}
-            onClick={() => go("/matches")}
+            onClick={() => go("/messages")}
           />
           <MenuItem
             icon={<Inbox size={17} color={GOLD} />}
             label="Inbox"
             badge={unreadMessages}
-            onClick={() => go("/matches")}
+            onClick={() => go("/messages")}
           />
           {userType === "founder" ? (
             <>

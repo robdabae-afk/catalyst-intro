@@ -61,7 +61,7 @@ const SafeGenerator = () => {
         title: "Access Denied",
         description: "Only founders can generate SAFE templates.",
       });
-      navigate('/dashboard');
+      navigate('/people/swipe');
       return;
     }
     
@@ -226,7 +226,7 @@ Date: ${date}
       <div className="max-w-2xl mx-auto">
         <Button 
           variant="ghost" 
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/people/swipe')}
           className="mb-6"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

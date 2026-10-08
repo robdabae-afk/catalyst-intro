@@ -14,11 +14,11 @@ const BottomNavigationInner = ({ userType }: BottomNavigationProps) => {
     const isActive = (path: string) => location.pathname === path;
 
     const navItems = [
-        { name: "Home", icon: LayoutDashboard, path: "/dashboard" },
+        { name: "Home", icon: LayoutDashboard, path: "/feed" },
         userType === 'investor'
             ? { name: "Portal", icon: DollarSign, path: "/portal" }
             : { name: "Inbox", icon: Mail, path: "/requests" },
-        { name: "Matches", icon: MessageSquare, path: "/matches" },
+        { name: "Messages", icon: MessageSquare, path: "/messages" },
         { name: "Settings", icon: SettingsIcon, path: "/settings" },
     ];
 

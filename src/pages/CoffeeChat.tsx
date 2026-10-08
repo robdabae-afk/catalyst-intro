@@ -444,7 +444,7 @@ const CoffeeChat = () => {
               <p className="text-muted-foreground">
                 You need matches before you can send coffee chat invites.
               </p>
-              <Button variant="outline" className="mt-4" onClick={() => navigate('/dashboard')}>
+              <Button variant="outline" className="mt-4" onClick={() => navigate('/people/swipe')}>
                 Find Matches
               </Button>
             </CardContent>

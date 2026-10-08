@@ -212,7 +212,7 @@ export default function ProfileView() {
         .single();
 
       if (error || !profileData) {
-        navigate("/dashboard");
+        navigate("/people/swipe");
         return;
       }
 

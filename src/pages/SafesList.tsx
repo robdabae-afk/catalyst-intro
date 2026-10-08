@@ -105,7 +105,7 @@ const SafesList = () => {
         <div className="flex items-center justify-between mb-6">
           <Button 
             variant="ghost" 
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/people/swipe')}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
