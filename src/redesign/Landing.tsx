@@ -151,7 +151,7 @@ export default function Landing() {
             <h2 id="proof">Built on a real New York community.</h2>
             <p className="lede">A community of 28,000 people and 30+ founder and investor events across NYC.</p>
           </div>
-          <div><Link className="btn ghost" to="/community">Explore the community</Link></div>
+          
         </div>
       </section>
 
