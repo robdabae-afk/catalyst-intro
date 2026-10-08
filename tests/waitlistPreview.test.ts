@@ -25,11 +25,22 @@ test("preview route is lazy and existing waitlist routes remain unchanged", () =
   expect(app).toContain('path="/app/waitlist" element={<Waitlist />}');
 });
 
+test("editorial concept replaces all character art with controllable connection map", () => {
+  for (const removed of ["wl-mascot", "wl-confetti", "wl-note", "EARLY ACCESS</text>"]) expect(preview).not.toContain(removed);
+  expect(preview).toContain("function ConnectionMap()");
+  expect(preview).toContain("Animated</button>");
+  expect(preview).toContain("Static</button>");
+  expect(preview).toContain("Replay</button>");
+  expect(preview).toContain('to="/auth"');
+  expect(preview).toContain("Reg CF crowdfunding");
+});
+
 test("motion is finite, reduced-motion disables it, and the form manages focus", () => {
   expect(css).not.toContain("infinite");
   expect(css).toContain("@media(prefers-reduced-motion:reduce)");
   expect(css).toContain("animation:none!important");
-  expect(css).toContain(".wl-confetti{display:none}");
+  expect(css).toContain(".wl-lines path{stroke-dashoffset:0!important}");
+  expect(preview).toContain("media.addEventListener(\"change\", sync)");
   expect(preview).toContain("heading.current?.focus()");
   expect(preview).toContain("cta.current?.focus()");
 });

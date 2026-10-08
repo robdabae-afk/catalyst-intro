@@ -33,23 +33,14 @@ const port = 43000 + Math.floor(Math.random() * 6000);
       await page.evaluate(() => document.fonts.ready);
       await page.waitForTimeout(4400); // All entrance motion finishes in under five seconds.
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
-      const geometry = await page.evaluate(() => {
-        const h = document.querySelector(".wl-copy h1");
-        const pill = document.querySelector(".wl-mascot svg rect:nth-of-type(2)").getBoundingClientRect();
-        const topCard = document.querySelector(".wl-note-top").getBoundingClientRect();
-        const bottomCard = document.querySelector(".wl-note-bottom").getBoundingClientRect();
-        const svg = document.querySelector(".wl-mascot svg");
-        const foot = svg.createSVGPoint();
-        foot.x = 249; foot.y = 326;
-        return {
-          leading: parseFloat(getComputedStyle(h).lineHeight) / parseFloat(getComputedStyle(h).fontSize),
-          pillClear: topCard.bottom < pill.top,
-          feetClear: bottomCard.top > foot.matrixTransform(svg.getScreenCTM()).y,
-        };
-      });
-      assert.ok(geometry.leading >= 1.1, "Headline descenders need breathing room");
-      assert.ok(geometry.pillClear, "Top card must not cover the access pill");
-      assert.ok(geometry.feetClear, "Bottom card must not hide either foot");
+      assert.ok(await page.locator(".wl-editorial h1").evaluate(el => parseFloat(getComputedStyle(el).lineHeight) / parseFloat(getComputedStyle(el).fontSize) >= 1.1));
+      await page.getByRole("button", {name:"Static", exact:true}).click();
+      assert.equal(await page.locator(".wl-map").getAttribute("data-motion"), "static");
+      assert.equal(await page.getByRole("button", {name:"Replay",exact:true}).isDisabled(), true);
+      await page.getByRole("button", {name:"Animated",exact:true}).click();
+      assert.equal(await page.locator(".wl-map").getAttribute("data-motion"), "animated");
+      await page.getByRole("button", {name:"Replay",exact:true}).click();
+      await page.waitForTimeout(4600);
       const label = width === 1440 ? "desktop" : width === 390 ? "mobile" : "small-mobile";
       await page.screenshot({ path: "/tmp/shots/waitlist-" + label + ".png", fullPage: true });
       await page.getByRole("button", {name:"Join the waitlist"}).click();
@@ -75,8 +66,10 @@ const port = 43000 + Math.floor(Math.random() * 6000);
       await page.getByRole("button", {name:"Back",exact:true}).click();
       await page.waitForFunction(() => document.activeElement.textContent.includes("Join the waitlist"));
       await page.emulateMedia({reducedMotion:"reduce"});
-      assert.equal(await page.locator(".wl-mascot").evaluate(el => getComputedStyle(el).animationName), "none");
-      assert.equal(await page.locator(".wl-confetti").evaluate(el => getComputedStyle(el).display), "none");
+      await page.waitForFunction(() => document.querySelector('.wl-map').dataset.motion === 'static');
+      assert.equal(await page.getByRole("button", {name:"Animated",exact:true}).isDisabled(), true);
+      assert.equal(await page.getByRole("button", {name:"Replay",exact:true}).isDisabled(), true);
+      assert.equal(await page.locator(".wl-lines path").first().evaluate(el => getComputedStyle(el).animationName), "none");
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
       assert.deepEqual(errors, []);
       console.log("PASS", width, "layout, focus, validation, backend error,", mode, "referral, reduced motion");
