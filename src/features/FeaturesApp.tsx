@@ -9,6 +9,9 @@ import { catalogStatus, COMPANIES, useCatalog, loadCatalog } from "./catalog";
 
 export const catalogLoading = () => String(typeof catalogStatus === "function" ? (catalogStatus as () => unknown)() : catalogStatus) === "loading";
 import { useEffect, useState } from "react";
+import { AuthGuard } from "@/components/AuthGuard";
+import Dashboard from "@/pages/Dashboard";
+import Matches from "@/pages/Matches";
 import { LiveSwipe, LiveCompany, LiveInbox, LiveThread, LivePeople, LiveEvents, LivePortfolio, LiveAdmin } from "@/live/embed";
 import "./features.css";
 import { IBack } from "./icons";
@@ -27,13 +30,25 @@ import Legal from "./screens/Legal";
 
 const BASE = "";
 
+/** Mobile bar fits 5 slots at 390px: 4 primary tabs + More. Every desktop destination stays reachable via More. */
+export const MOBILE_PRIMARY = ["Today", "Companies", "People", "Inbox"];
+
 function Tabs({ cls }: { cls: string }) {
+  const loc = useLocation();
+  const [open, setOpen] = useState(false);
+  useEffect(() => { setOpen(false); }, [loc.pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open]);
   const [s] = useStore();
   const n = unreadCount(s);
   const items = [
     { to: "", label: "Today", I: "discover" as IconName, end: true },
     { to: "swipe", label: "Companies", I: "swipe" as IconName },
-    { to: "/dashboard", label: "People", I: "mutual" as IconName },
+    { to: "people/swipe", label: "People", I: "mutual" as IconName },
     { to: "search", label: "Search", I: "search" as IconName },
     { to: "inbox", label: "Inbox", I: "bell" as IconName, badge: n },
     { to: "me", label: "Me", I: "profile" as IconName },
@@ -43,23 +58,44 @@ function Tabs({ cls }: { cls: string }) {
     { to: "portfolio", label: "Portfolio", I: "holdings" as IconName },
     { to: "events", label: "Events", I: "events" as IconName },
     { to: "people", label: "Directory", I: "mutual" as IconName },
-    { to: "/matches", label: "Messages", I: "send" as IconName },
+    { to: "messages", label: "Messages", I: "send" as IconName },
+    { to: "/settings", label: "Settings", I: "settings" as IconName },
     { to: "learn", label: "Learn", I: "edu" as IconName },
   ];
-  return (
+  const rest = [...items.filter((i) => !MOBILE_PRIMARY.includes(i.label)), ...more];
+  const href = (to: string) => (to.startsWith("/") ? to : `${BASE}/${to}`);
+  return (<>
     <nav className={cls} aria-label="Main">
       {cls === "cf-side" && <div className="cf-logo"><i />catalyst</div>}
-      {items.map(({ to, label, I, end, badge }) => (
+      {items.filter((i) => cls !== "cf-tabs" || MOBILE_PRIMARY.includes(i.label)).map(({ to, label, I, end, badge }) => (
         <NavLink key={label} to={to.startsWith("/") ? to : `${BASE}/${to}`} end={end} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}
           aria-label={badge ? `${label}, ${badge} unread` : label}>
           <Icon name={I} size={22} />{label}{badge ? <span className="cf-badge">{badge}</span> : null}
         </NavLink>
       ))}
+      {cls === "cf-tabs" && (() => {
+        const under = (h: string) => loc.pathname === h || loc.pathname.startsWith(h + "/");
+        const primaryOn = items.some((i) => MOBILE_PRIMARY.includes(i.label) && (i.end ? loc.pathname === href(i.to) || loc.pathname === "/" : under(href(i.to))));
+        const moreOn = !primaryOn && rest.some(({ to }) => { const h = href(to); return loc.pathname === h || loc.pathname.startsWith(h + "/"); });
+        return (<>
+          <button type="button" className={`cf-tab${moreOn || open ? " on" : ""}`} aria-haspopup="true" aria-expanded={open} aria-controls="cf-more-sheet" onClick={() => setOpen((o) => !o)}>
+            <Icon name="more" size={22} />More
+          </button>
+        </>);
+      })()}
       {cls === "cf-side" && <div className="cf-more">{more.map(({ to, label, I }) => (
         <NavLink key={label} to={to.startsWith("/") ? to : `${BASE}/${to}`} className={({ isActive }) => `cf-tab${isActive ? " on" : ""}`}><Icon name={I} size={20} />{label}</NavLink>
       ))}</div>}
     </nav>
-  );
+    {cls === "cf-tabs" && <>
+          {open && <div className="cf-sheet-bg" onClick={() => setOpen(false)} aria-hidden="true" />}
+          {open && <div id="cf-more-sheet" className="cf-sheet" role="menu" aria-label="More">
+            {rest.map(({ to, label, I }) => (
+              <NavLink key={label} role="menuitem" to={href(to)} className={({ isActive }) => `cf-sheet-i${isActive ? " on" : ""}`}><Icon name={I} size={20} />{label}</NavLink>
+            ))}
+          </div>}
+    </>}
+  </>);
 }
 
 export function Head({ title, right, back }: { title: string; right?: React.ReactNode; back?: boolean }) {
@@ -108,6 +144,8 @@ export default function FeaturesApp() {
             <Route path="inbox/t/:id" element={<ProfileReviewGate><LiveThread /></ProfileReviewGate>} />
             <Route path="portfolio" element={<LivePortfolio />} />
             <Route path="events" element={<LiveEvents />} />
+            <Route path="people/swipe" element={<AuthGuard><Dashboard embedded /></AuthGuard>} />
+            <Route path="messages" element={<AuthGuard><Matches embedded /></AuthGuard>} />
             <Route path="people" element={<ProfileReviewGate><LivePeople /></ProfileReviewGate>} />
             <Route path="manage" element={<LiveAdmin />} />
             <Route path="invite" element={<Invite />} />

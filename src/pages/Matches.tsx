@@ -186,7 +186,8 @@ function GlassAvatar({
   );
 }
 
-export default function Matches() {
+/** embedded: rendered inside the features shell column; uses the single-column view at every width. Data logic unchanged. */
+export default function Matches({ embedded = false }: { embedded?: boolean } = {}) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [matches, setMatches] = useState<Match[]>([]);
@@ -687,7 +688,7 @@ export default function Matches() {
   const otherMatches = filteredMatches.filter((m) => !isPriority(m));
 
   // ---------- Desktop ----------
-  if (!isMobile) {
+  if (!isMobile && !embedded) {
     const currentUser = {
       id: currentUserId,
       user_type: currentUserType,
@@ -1311,7 +1312,7 @@ export default function Matches() {
         )}
       </div>
 
-      <BottomNav userType={currentUserType} />
+      {!embedded && <BottomNav userType={currentUserType} />}
       <MenuDrawer
         open={menuOpen}
         onClose={() => setMenuOpen(false)}

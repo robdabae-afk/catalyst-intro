@@ -21,13 +21,13 @@ export function BottomNav({ inboxBadge = 0 }: BottomNavProps) {
       icon: Search,
       label: "People",
       paths: ["/dashboard"],
-      onClick: () => navigate("/dashboard"),
+      onClick: () => navigate("/people/swipe"),
     },
     {
       icon: MessageSquare,
       label: "Messages",
       paths: ["/matches", "/requests"],
-      onClick: () => navigate("/matches"),
+      onClick: () => navigate("/messages"),
       badge: inboxBadge,
     },
     {

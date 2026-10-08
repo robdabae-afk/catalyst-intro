@@ -13,7 +13,8 @@ import { MatchModal } from "@/components/MatchModal";
 import { supabase } from "@/integrations/supabase/client";
 import { Send, X, BadgeCheck, MapPin, Settings } from "lucide-react";
 
-export default function Dashboard() {
+/** embedded: rendered inside the features shell (its tabs replace the legacy BottomNav). Data logic unchanged. */
+export default function Dashboard({ embedded = false }: { embedded?: boolean } = {}) {
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
   const { toast } = useToast();
@@ -525,7 +526,7 @@ export default function Dashboard() {
       )}
 
       {/* Bottom Nav */}
-      <BottomNav userType={userType} inboxBadge={inboxBadge} />
+      {!embedded && <BottomNav userType={userType} inboxBadge={inboxBadge} />}
 
       {/* Menu Drawer */}
       <MenuDrawer
