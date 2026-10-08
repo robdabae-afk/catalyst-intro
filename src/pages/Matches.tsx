@@ -71,7 +71,7 @@ const PAGE_BG =
 
 const glassCard = {
   background: "rgba(11,11,11,0.054)",
-  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
+  boxShadow: "0px 14px 34px -18px rgba(0,0,0,0.12), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
   outline: "1px solid rgba(11,11,11,0.12)",
   backdropFilter: "blur(9px)",
 } as const;
@@ -782,7 +782,7 @@ export default function Matches() {
                   align="end"
                   className="w-56 border-0"
                   style={{
-                    background: "linear-gradient(138deg, rgba(255,255,255,0.98) 0%, rgba(16,15,14,0.98) 100%)",
+                    background: "#FFFFFF",
                     outline: "1px solid rgba(11,11,11,0.108)",
                     color: TEXT,
                   }}

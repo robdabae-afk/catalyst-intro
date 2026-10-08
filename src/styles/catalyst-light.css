@@ -75,3 +75,8 @@ html.cl-light .cl-keep :is(.text-white, .text-white\/90, .text-white\/80, .text-
 html.cl-light .cl-keep :is(.text-white\/70, .text-white\/60, .text-zinc-400, .text-gray-300) { color: rgb(255 255 255 / .75); }
 html.cl-light .cl-keep :is(.bg-black\/40, .bg-black\/50, .bg-black\/30, .bg-white\/10, .bg-white\/20) { background-color: rgb(0 0 0 / .35); }
 html.cl-light .cl-keep :is(.border-white\/10, .border-white\/20, .border-white\/30) { border-color: rgb(255 255 255 / .25); }
+
+/* sticky headers / old nav bars (dialog overlays use fixed inset-0 and stay dim) */
+html.cl-light :is(.bg-black\/80, .bg-black\/70, .bg-black\/60):not(.inset-0) { background-color: rgb(255 255 255 / .92); }
+html.cl-light .drop-shadow-\[0_0_8px_rgba\(255\2c 255\2c 255\2c 0\.4\)\] { filter: none; }
+html.cl-light .bg-white:is(.rounded-full.w-1, .w-1.h-1) { background-color: #0b0b0b; }

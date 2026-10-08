@@ -354,7 +354,7 @@ function FounderView({
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.85) 70%, rgba(6,6,6,1) 100%)",
+              "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.85) 70%, rgba(255,255,255,1) 100%)",
           }}
         />
 
@@ -587,7 +587,7 @@ function InvestorView({
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(6,6,6,0.4) 0%, rgba(6,6,6,0) 35%, rgba(6,6,6,0.8) 80%, rgba(6,6,6,1) 100%)",
+              "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0.8) 80%, rgba(255,255,255,1) 100%)",
           }}
         />
 

@@ -18,7 +18,7 @@ const PAGE_BG =
 
 const glass = {
   background: "rgba(11,11,11,0.054)",
-  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
+  boxShadow: "0px 14px 34px -18px rgba(0,0,0,0.12), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
   outline: "1px solid rgba(11,11,11,0.12)",
   backdropFilter: "blur(9px)",
 } as const;
@@ -207,7 +207,7 @@ export default function FounderAnalytics() {
       {/* Header */}
       <div
         className="sticky top-0 z-20 flex items-center gap-3 px-4 pt-12 pb-4"
-        style={{ background: "rgba(11,10,7,0.85)", backdropFilter: "blur(12px)" }}
+        style={{ background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)" }}
       >
         <button onClick={() => navigate(-1)} className="p-1.5">
           <ArrowLeft size={20} color={TEXT} />
