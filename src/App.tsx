@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import InviteLanding from "./pages/InviteLanding";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -41,6 +42,8 @@ import { AuthGuard } from "./components/AuthGuard";
 import { adminRoutes } from "./admin/routes";
 import AppLogin from "./admin/Login";
 
+
+const WaitlistPreview = lazy(() => import("./features/preview/WaitlistPreview"));
 
 const queryClient = new QueryClient();
 
@@ -138,6 +141,7 @@ const App = () => (
           <Route path="/exitfund/contact" element={<ExitFundContact />} />
 
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/preview/waitlist" element={<Suspense fallback={<div className="cf" role="status">Loading preview…</div>}><WaitlistPreview /></Suspense>} />
           <Route path="/waitlist" element={<Waitlist />} />
           <Route path="/app/waitlist" element={<Waitlist />} />
           <Route path="/onboarding" element={<Onboarding />} />
