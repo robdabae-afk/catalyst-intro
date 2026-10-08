@@ -61,8 +61,8 @@ interface DealTerms {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
+const GOLD = "#0B0B0B";
+const GOLD_LIGHT = "#0B0B0B";
 const COLORS = [GOLD, GOLD_LIGHT, "#A0785A", "#D4AF37", "#8B7355", "#CD853F", "#DEB887", "#BC8F8F"];
 
 const fmt$ = (n: number | null | undefined) => {

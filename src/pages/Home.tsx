@@ -59,14 +59,14 @@ export default function Home() {
       className="relative min-h-[100dvh] overflow-hidden flex flex-col"
       style={{
         background:
-          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(120,92,30,0.16) 0%, rgba(120,92,30,0) 62%), linear-gradient(139deg, #0B0A07 0%, #060606 55%, #080709 100%)",
+          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 62%), linear-gradient(139deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)",
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-10 pb-2">
         <div>
-          <p style={{ color: "#94908A", fontSize: 13 }}>Welcome back,</p>
-          <h1 style={{ color: "#F6F5F2", fontSize: 24, fontWeight: 700, lineHeight: 1.2 }}>
+          <p style={{ color: "#74746D", fontSize: 13 }}>Welcome back,</p>
+          <h1 style={{ color: "#0B0B0B", fontSize: 24, fontWeight: 700, lineHeight: 1.2 }}>
             {firstName || "…"}
           </h1>
         </div>
@@ -77,14 +77,14 @@ export default function Home() {
             width: 46,
             height: 46,
             background:
-              "linear-gradient(155deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-            boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-            outline: "1px solid rgba(255,255,255,0.12)",
+              "linear-gradient(155deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+            boxShadow: "inset 0px 1px 0px 1px rgba(11,11,11,0.12)",
+            outline: "1px solid rgba(11,11,11,0.108)",
             backdropFilter: "blur(10px)",
           }}
           aria-label="Open menu"
         >
-          <Settings size={20} color="#C6A02C" strokeWidth={1.5} />
+          <Settings size={20} color="#0B0B0B" strokeWidth={1.5} />
         </button>
       </div>
 
@@ -94,7 +94,7 @@ export default function Home() {
         <GlassCard className="relative px-6 py-4">
           <p
             style={{
-              color: "#E7CB7E",
+              color: "#0B0B0B",
               fontSize: 11,
               fontWeight: 400,
               textTransform: "uppercase",
@@ -103,10 +103,10 @@ export default function Home() {
           >
             Priority match
           </p>
-          <p style={{ color: "#F6F5F2", fontSize: 28, fontWeight: 700, marginTop: 4 }}>
+          <p style={{ color: "#0B0B0B", fontSize: 28, fontWeight: 700, marginTop: 4 }}>
             {newMatchCount > 0 ? `${newMatchCount} new` : "0 new"}
           </p>
-          <p style={{ color: "#94908A", fontSize: 13, maxWidth: 210 }}>{matchLabel}</p>
+          <p style={{ color: "#74746D", fontSize: 13, maxWidth: 210 }}>{matchLabel}</p>
           <button
             onClick={() => navigate("/matches")}
             className="absolute flex items-center justify-center rounded-full"
@@ -116,7 +116,7 @@ export default function Home() {
               transform: "translateY(-50%)",
               width: 46,
               height: 46,
-              background: "#C6A02C",
+              background: "#0B0B0B",
             }}
             aria-label="View matches"
           >
@@ -139,11 +139,11 @@ export default function Home() {
         />
 
         {loading ? (
-          <div style={{ color: "#94908A", fontSize: 13, textAlign: "center", padding: 16 }}>
+          <div style={{ color: "#74746D", fontSize: 13, textAlign: "center", padding: 16 }}>
             Loading…
           </div>
         ) : events.length === 0 ? (
-          <p style={{ color: "#94908A", fontSize: 13 }}>No upcoming events.</p>
+          <p style={{ color: "#74746D", fontSize: 13 }}>No upcoming events.</p>
         ) : (
           events.slice(0, 1).map((event) => <EventCard key={event.id} event={event} />)
         )}
@@ -215,10 +215,10 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
       className={`relative ${className}`}
       style={{
         background:
-          "linear-gradient(169deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
+          "linear-gradient(169deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+        boxShadow: "inset 0px 1px 0px 1px rgba(11,11,11,0.12)",
         borderRadius: 22,
-        outline: "1px solid rgba(255,255,255,0.12)",
+        outline: "1px solid rgba(11,11,11,0.108)",
         backdropFilter: "blur(10px)",
       }}
     >
@@ -232,7 +232,7 @@ function SectionHeader({ label, onViewAll }: { label: string; onViewAll: () => v
     <div className="flex items-center justify-between pt-1">
       <p
         style={{
-          color: "#94908A",
+          color: "#74746D",
           fontSize: 11.5,
           fontWeight: 400,
           textTransform: "uppercase",
@@ -241,7 +241,7 @@ function SectionHeader({ label, onViewAll }: { label: string; onViewAll: () => v
       >
         {label}
       </p>
-      <button onClick={onViewAll} style={{ color: "#E7CB7E", fontSize: 12 }}>
+      <button onClick={onViewAll} style={{ color: "#0B0B0B", fontSize: 12 }}>
         View all
       </button>
     </div>
@@ -264,14 +264,14 @@ function EventCard({ event }: { event: any }) {
           width: 52,
           paddingTop: 6,
           paddingBottom: 6,
-          background: "rgba(198,160,44,0.14)",
+          background: "rgba(11,11,11,0.14)",
           borderRadius: 13,
-          outline: "1px solid rgba(198,160,44,0.25)",
+          outline: "1px solid rgba(11,11,11,0.25)",
         }}
       >
         <span
           style={{
-            color: "#E7CB7E",
+            color: "#0B0B0B",
             fontSize: 9.5,
             textTransform: "uppercase",
             letterSpacing: "0.95px",
@@ -279,23 +279,23 @@ function EventCard({ event }: { event: any }) {
         >
           {month}
         </span>
-        <span style={{ color: "#F6F5F2", fontSize: 19, fontWeight: 700, lineHeight: 1.2 }}>
+        <span style={{ color: "#0B0B0B", fontSize: 19, fontWeight: 700, lineHeight: 1.2 }}>
           {day}
         </span>
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p style={{ color: "#F6F5F2", fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>
+        <p style={{ color: "#0B0B0B", fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>
           {event.name}
         </p>
-        <p style={{ color: "#94908A", fontSize: 11.5, marginTop: 2 }}>
+        <p style={{ color: "#74746D", fontSize: 11.5, marginTop: 2 }}>
           {time} · {event.code || "Virtual"}
         </p>
         {isToday && (
           <span
             className="inline-block mt-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold uppercase tracking-[0.57px]"
-            style={{ background: "#C6A02C", color: "#2A2005" }}
+            style={{ background: "#0B0B0B", color: "#FFFFFF" }}
           >
             Today
           </span>
@@ -306,7 +306,7 @@ function EventCard({ event }: { event: any }) {
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0">
         <path
           d="M6.75 4.5l4.5 4.5-4.5 4.5"
-          stroke="#94908A"
+          stroke="#74746D"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"

@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Building2, ExternalLink, Newspaper, Pencil, TrendingUp } from "lucide-react";
 
-const GOLD = "#C6A02C";
-const TEXT = "#F6F5F2";
-const TEXT_DIM = "#94908A";
+const GOLD = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const TEXT_DIM = "#74746D";
 const glass = {
-  background: "linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-  boxShadow: "inset 0px 1px 0px 1px rgba(255,255,255,0.24)",
-  outline: "1px solid rgba(255,255,255,0.10)",
+  background: "linear-gradient(165deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+  boxShadow: "inset 0px 1px 0px 1px rgba(11,11,11,0.12)",
+  outline: "1px solid rgba(11,11,11,0.09)",
   backdropFilter: "blur(10px)",
 } as const;
 
@@ -115,7 +115,7 @@ export default function InvestorPortfolio() {
       className="relative min-h-[100dvh] flex flex-col"
       style={{
         background:
-          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(120,92,30,0.16) 0%, rgba(120,92,30,0) 62%), linear-gradient(139deg, #0B0A07 0%, #060606 55%, #080709 100%)",
+          "radial-gradient(ellipse 100% 80% at 28% 12%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 58%), radial-gradient(ellipse 95% 90% at 88% 96%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 62%), linear-gradient(139deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)",
       }}
     >
       {/* Header */}
@@ -145,7 +145,7 @@ export default function InvestorPortfolio() {
       </div>
 
       <div className="px-6 pb-2">
-        <h1 style={{ color: TEXT, fontSize: 24, fontWeight: 700, fontFamily: "Fraunces, serif" }}>
+        <h1 style={{ color: TEXT, fontSize: 24, fontWeight: 700, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif" }}>
           Portfolio
         </h1>
         <p style={{ color: TEXT_DIM, fontSize: 13, marginTop: 2 }}>
@@ -156,7 +156,7 @@ export default function InvestorPortfolio() {
       <div className="flex-1 overflow-y-auto px-5 pb-12 space-y-4 no-scrollbar pt-3">
         {loading ? (
           <div className="flex items-center justify-center pt-16">
-            <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#0B0B0B]/30 border-t-[#0B0B0B] rounded-full animate-spin" />
           </div>
         ) : (
           <>
@@ -179,7 +179,7 @@ export default function InvestorPortfolio() {
                 <button
                   onClick={() => navigate("/settings#section-portfolio")}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.06)" }}
+                  style={{ background: "rgba(11,11,11,0.054)" }}
                 >
                   <Pencil size={11} color={TEXT_DIM} />
                   <span style={{ color: TEXT_DIM, fontSize: 11.5 }}>Manage</span>
@@ -205,10 +205,10 @@ export default function InvestorPortfolio() {
                         onClick={() => setSelectedCompany(active ? null : key)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-left"
                         style={{
-                          background: active ? "rgba(198,160,44,0.12)" : "rgba(255,255,255,0.04)",
+                          background: active ? "rgba(11,11,11,0.12)" : "rgba(11,11,11,0.036)",
                           outline: active
-                            ? "1px solid rgba(198,160,44,0.5)"
-                            : "1px solid rgba(255,255,255,0.07)",
+                            ? "1px solid rgba(11,11,11,0.5)"
+                            : "1px solid rgba(11,11,11,0.063)",
                         }}
                       >
                         {c.logo_url ? (
@@ -220,9 +220,9 @@ export default function InvestorPortfolio() {
                         ) : (
                           <div
                             className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-                            style={{ background: "rgba(255,255,255,0.06)" }}
+                            style={{ background: "rgba(11,11,11,0.054)" }}
                           >
-                            <Building2 size={15} color="#6F6B63" />
+                            <Building2 size={15} color="#74746D" />
                           </div>
                         )}
                         <span className="flex-1 truncate" style={{ color: TEXT, fontSize: 13.5, fontWeight: 500 }}>
@@ -236,7 +236,7 @@ export default function InvestorPortfolio() {
                               height: 18,
                               padding: "0 5px",
                               background: GOLD,
-                              color: "#2A2005",
+                              color: "#FFFFFF",
                             }}
                           >
                             {count}
@@ -260,7 +260,7 @@ export default function InvestorPortfolio() {
                   <button
                     onClick={() => setSelectedCompany(null)}
                     className="ml-auto px-2.5 py-1 rounded-full"
-                    style={{ background: "rgba(255,255,255,0.06)" }}
+                    style={{ background: "rgba(11,11,11,0.054)" }}
                   >
                     <span style={{ color: TEXT_DIM, fontSize: 11 }}>Show all</span>
                   </button>
@@ -280,8 +280,8 @@ export default function InvestorPortfolio() {
                       key={u.id}
                       className="rounded-2xl p-3.5"
                       style={{
-                        background: "rgba(255,255,255,0.04)",
-                        outline: "1px solid rgba(255,255,255,0.07)",
+                        background: "rgba(11,11,11,0.036)",
+                        outline: "1px solid rgba(11,11,11,0.063)",
                       }}
                     >
                       <div className="flex items-center gap-2 mb-1.5">
@@ -291,13 +291,13 @@ export default function InvestorPortfolio() {
                         <span style={{ color: GOLD, fontSize: 11.5, fontWeight: 600 }}>
                           {u.startup_name}
                         </span>
-                        <span style={{ color: "#6F6B63", fontSize: 11 }} className="ml-auto">
+                        <span style={{ color: "#74746D", fontSize: 11 }} className="ml-auto">
                           {formatDate(u.created_at)}
                         </span>
                       </div>
                       <p style={{ color: TEXT, fontSize: 13.5, fontWeight: 600 }}>{u.title}</p>
                       {u.body && (
-                        <p style={{ color: "#CFCCC5", fontSize: 12.5, marginTop: 4, lineHeight: 1.5 }}>
+                        <p style={{ color: "#3A3A36", fontSize: 12.5, marginTop: 4, lineHeight: 1.5 }}>
                           {u.body}
                         </p>
                       )}

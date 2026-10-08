@@ -5,9 +5,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useExpressInterest } from "@/hooks/useExpressInterest";
 import { glass } from "@/components/app/StartupUpdateCard";
 
-const GOLD = "#C6A02C";
-const TEXT = "#F6F5F2";
-const MUTED = "#94908A";
+const GOLD = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const MUTED = "#74746D";
 
 export type IntroTarget = {
   founderId: string;
@@ -85,7 +85,7 @@ export function RequestIntroBanner({
         <div className="flex items-start gap-3">
           <Heart size={18} color={GOLD} strokeWidth={1.6} className="mt-0.5" />
           <div className="flex-1">
-            <p style={{ color: TEXT, fontSize: 16, fontFamily: "Fraunces, serif", fontWeight: 600 }}>
+            <p style={{ color: TEXT, fontSize: 16, fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", fontWeight: 600 }}>
               Request an intro
             </p>
             <p style={{ color: MUTED, fontSize: 12.5, marginTop: 2 }}>
@@ -112,7 +112,7 @@ export function RequestIntroBanner({
           onClick={send}
           disabled={sending}
           className="h-11 rounded-full inline-flex items-center justify-center gap-2 disabled:opacity-60"
-          style={{ background: GOLD, color: "#2A2005", fontSize: 14, fontWeight: 600 }}
+          style={{ background: GOLD, color: "#FFFFFF", fontSize: 14, fontWeight: 600 }}
         >
           <Send size={15} strokeWidth={1.8} />
           {sending ? "Sending…" : "Send intro request"}

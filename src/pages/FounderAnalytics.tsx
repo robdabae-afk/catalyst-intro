@@ -7,19 +7,19 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
-const TEXT = "#F6F5F2";
-const TEXT_DIM = "#94908A";
+const GOLD = "#0B0B0B";
+const GOLD_LIGHT = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const TEXT_DIM = "#74746D";
 const PAGE_BG =
-  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(212,176,86,0.13) 0%, rgba(212,176,86,0) 46%), " +
-  "radial-gradient(ellipse 90% 50% at 88% 100%, rgba(120,92,30,0.15) 0%, rgba(120,92,30,0) 52%), " +
-  "linear-gradient(137deg, #0B0A07 0%, #060606 55%, #080709 100%)";
+  "radial-gradient(ellipse 100% 60% at 28% 6%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 46%), " +
+  "radial-gradient(ellipse 90% 50% at 88% 100%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 52%), " +
+  "linear-gradient(137deg, #FFFFFF 0%, #FFFFFF 55%, #FFFFFF 100%)";
 
 const glass = {
-  background: "rgba(255,255,255,0.06)",
-  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(255,255,255,0.24) inset",
-  outline: "1px solid rgba(255,255,255,0.14)",
+  background: "rgba(11,11,11,0.054)",
+  boxShadow: "0px 14px 34px -16px rgba(0,0,0,0.85), 0px 1px 0px 1px rgba(11,11,11,0.12) inset",
+  outline: "1px solid rgba(11,11,11,0.12)",
   backdropFilter: "blur(9px)",
 } as const;
 
@@ -281,12 +281,12 @@ export default function FounderAnalytics() {
                 <XAxis dataKey="label" tick={{ fontSize: 9, fill: TEXT_DIM }} />
                 <YAxis tick={{ fontSize: 9, fill: TEXT_DIM }} allowDecimals={false} />
                 <Tooltip
-                  contentStyle={{ background: "#111", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, fontSize: 12 }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                  contentStyle={{ background: "#111", border: "1px solid rgba(11,11,11,0.108)", borderRadius: 8, fontSize: 12 }}
+                  cursor={{ fill: "rgba(11,11,11,0.036)" }}
                 />
                 <Bar dataKey="views" name="Views" radius={[3, 3, 0, 0]}>
                   {weeklyBuckets.map((_, i) => (
-                    <Cell key={i} fill={i === weeklyBuckets.length - 1 ? GOLD : "rgba(198,160,44,0.35)"} />
+                    <Cell key={i} fill={i === weeklyBuckets.length - 1 ? GOLD : "rgba(11,11,11,0.35)"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -294,7 +294,7 @@ export default function FounderAnalytics() {
           ) : (
             <div
               className="h-24 flex items-center justify-center text-sm rounded-xl"
-              style={{ color: TEXT_DIM, background: "rgba(255,255,255,0.03)" }}
+              style={{ color: TEXT_DIM, background: "rgba(11,11,11,0.027)" }}
             >
               No views yet — data appears as your profile gets discovered
             </div>
@@ -318,7 +318,7 @@ export default function FounderAnalytics() {
           {!cohort || cohort.cohortSize < 3 ? (
             <div
               className="flex items-center gap-2 rounded-xl p-3 text-sm"
-              style={{ background: "rgba(255,255,255,0.04)", color: TEXT_DIM }}
+              style={{ background: "rgba(11,11,11,0.036)", color: TEXT_DIM }}
             >
               <Lock size={14} color={GOLD} />
               Cohort data accumulating — need 3+ peers at the same stage &amp; sector
@@ -356,7 +356,7 @@ export default function FounderAnalytics() {
                       )}
                     </div>
                   </div>
-                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(11,11,11,0.072)" }}>
                     <div
                       className="h-full rounded-full"
                       style={{

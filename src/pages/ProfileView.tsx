@@ -173,7 +173,7 @@ const resolveTractionTiles = (fp: FounderProfile | undefined, isPostRevenue: boo
 
 function PlaceholderText({ children }: { children: React.ReactNode }) {
   return (
-    <p style={{ color: "#6E6B66", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
+    <p style={{ color: "#74746D", fontSize: 14, lineHeight: 1.6, fontStyle: "italic" }}>
       {children}
     </p>
   );
@@ -181,7 +181,7 @@ function PlaceholderText({ children }: { children: React.ReactNode }) {
 
 function EmptyLine({ children = "Not added yet" }: { children?: React.ReactNode }) {
   return (
-    <span style={{ color: "#6E6B66", fontSize: 13.5, fontStyle: "italic" }}>{children}</span>
+    <span style={{ color: "#74746D", fontSize: 13.5, fontStyle: "italic" }}>{children}</span>
   );
 }
 
@@ -270,9 +270,9 @@ export default function ProfileView() {
     return (
       <div
         className="min-h-[100dvh] flex items-center justify-center"
-        style={{ background: "#060606" }}
+        style={{ background: "#FFFFFF" }}
       >
-        <div className="w-8 h-8 border-2 border-[#C6A02C]/30 border-t-[#C6A02C] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#0B0B0B]/30 border-t-[#0B0B0B] rounded-full animate-spin" />
       </div>
     );
   }
@@ -288,7 +288,7 @@ export default function ProfileView() {
   return (
     <div
       className="relative min-h-[100dvh] flex flex-col"
-      style={{ background: "#060606" }}
+      style={{ background: "#FFFFFF" }}
     >
       <Helmet>
         <title>{ogTitle}</title>
@@ -348,7 +348,7 @@ function FounderView({
             className="absolute inset-0 w-full h-full object-cover object-top"
           />
         ) : (
-          <div className="absolute inset-0" style={{ background: "#1A1916" }} />
+          <div className="absolute inset-0" style={{ background: "#F4F4F2" }} />
         )}
         <div
           className="absolute inset-0"
@@ -361,10 +361,10 @@ function FounderView({
         {/* Back + Share */}
         <div className="absolute top-14 left-5 right-5 flex justify-between">
           <button onClick={onBack} className="icon-btn">
-            <ArrowLeft size={18} color="#F6F5F2" strokeWidth={2} />
+            <ArrowLeft size={18} color="#0B0B0B" strokeWidth={2} />
           </button>
           <button onClick={onShare} className="icon-btn">
-            <Share2 size={17} color="#F6F5F2" strokeWidth={2} />
+            <Share2 size={17} color="#0B0B0B" strokeWidth={2} />
           </button>
         </div>
 
@@ -372,24 +372,24 @@ function FounderView({
         <div className="absolute left-5 right-5 bottom-3">
           <h1
             style={{
-              fontFamily: "Fraunces, serif",
+              fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
               fontSize: 34,
               fontWeight: 700,
-              color: "#F6F5F2",
+              color: "#0B0B0B",
               lineHeight: 1.1,
             }}
           >
             {profile.name}
           </h1>
-          <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
+          <p style={{ color: "#3A3A36", fontSize: 13.5, marginTop: 3 }}>
             Founder ·{" "}
-            <span style={companyName ? undefined : { color: "#8E8B84", fontStyle: "italic" }}>
+            <span style={companyName ? undefined : { color: "#74746D", fontStyle: "italic" }}>
               {companyName ?? "Startup not added"}
             </span>
           </p>
           <div className="flex gap-2 flex-wrap mt-2">
             <InfoChip muted={!location}>
-              <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+              <MapPin size={10} color={location ? "#0B0B0B" : "#74746D"} strokeWidth={2} />
               {location ?? "Location not set"}
             </InfoChip>
           </div>
@@ -403,9 +403,9 @@ function FounderView({
           <a
             href="/onboarding"
             className="block px-4 py-3 rounded-2xl"
-            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+            style={{ background: "rgba(11,11,11,0.12)", border: "1px solid rgba(11,11,11,0.3)" }}
           >
-            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+            <span style={{ color: "#0B0B0B", fontSize: 13.5, fontWeight: 600 }}>
               Complete your profile →
             </span>
           </a>
@@ -416,10 +416,10 @@ function FounderView({
           {val(fp?.one_liner) ? (
             <p
               style={{
-                fontFamily: "Fraunces, serif",
+                fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
                 fontSize: 22,
                 fontWeight: 600,
-                color: "#F6F5F2",
+                color: "#0B0B0B",
                 lineHeight: 1.3,
               }}
             >
@@ -428,10 +428,10 @@ function FounderView({
           ) : (
             <p
               style={{
-                fontFamily: "Fraunces, serif",
+                fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
                 fontSize: 22,
                 fontWeight: 600,
-                color: "#6E6B66",
+                color: "#74746D",
                 lineHeight: 1.3,
                 fontStyle: "italic",
               }}
@@ -451,7 +451,7 @@ function FounderView({
           <div className="space-y-3">
             <div>
               {val(fp?.traction) ? (
-                <p style={{ fontFamily: "Fraunces, serif", color: "#F6F5F2", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
+                <p style={{ fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", color: "#0B0B0B", fontSize: 14, lineHeight: 1.6 }}>{fp?.traction}</p>
               ) : (
                 <PlaceholderText>No traction details yet</PlaceholderText>
               )}
@@ -520,22 +520,22 @@ function FounderView({
             onClick={() => logEvent("deck_open", profile?.id)}
             className="flex items-center justify-between px-4 py-4 rounded-2xl"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              background: "rgba(11,11,11,0.045)",
+              border: "1px solid rgba(11,11,11,0.09)",
             }}
           >
-            <span style={{ color: "#E9E7E1", fontSize: 14 }}>View Pitch Deck</span>
-            <ArrowLeft size={16} color="#94908A" style={{ transform: "rotate(180deg)" }} />
+            <span style={{ color: "#0B0B0B", fontSize: 14 }}>View Pitch Deck</span>
+            <ArrowLeft size={16} color="#74746D" style={{ transform: "rotate(180deg)" }} />
           </a>
         ) : (
           <div
             className="flex items-center justify-between px-4 py-4 rounded-2xl"
             style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px dashed rgba(255,255,255,0.12)",
+              background: "rgba(11,11,11,0.027)",
+              border: "1px dashed rgba(11,11,11,0.108)",
             }}
           >
-            <span style={{ color: "#6E6B66", fontSize: 14, fontStyle: "italic" }}>
+            <span style={{ color: "#74746D", fontSize: 14, fontStyle: "italic" }}>
               No pitch deck yet
             </span>
           </div>
@@ -581,7 +581,7 @@ function InvestorView({
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
-          <div className="absolute inset-0" style={{ background: "#1A1916" }} />
+          <div className="absolute inset-0" style={{ background: "#F4F4F2" }} />
         )}
         <div
           className="absolute inset-0"
@@ -594,10 +594,10 @@ function InvestorView({
         {/* Back + Share */}
         <div className="absolute top-14 left-5 right-5 flex justify-between">
           <button onClick={onBack} className="icon-btn">
-            <ArrowLeft size={18} color="#F6F5F2" strokeWidth={2} />
+            <ArrowLeft size={18} color="#0B0B0B" strokeWidth={2} />
           </button>
           <button onClick={onShare} className="icon-btn">
-            <Share2 size={17} color="#F6F5F2" strokeWidth={2} />
+            <Share2 size={17} color="#0B0B0B" strokeWidth={2} />
           </button>
         </div>
 
@@ -605,12 +605,12 @@ function InvestorView({
         <div className="absolute left-5 right-5 flex gap-2 flex-wrap" style={{ bottom: 72 }}>
           {profile.is_verified && (
             <InfoChip gold>
-              <BadgeCheck size={11} color="#2A2005" strokeWidth={2.5} />
+              <BadgeCheck size={11} color="#FFFFFF" strokeWidth={2.5} />
               Verified investor
             </InfoChip>
           )}
           <InfoChip muted={!location}>
-            <MapPin size={10} color={location ? "#F6F5F2" : "#8E8B84"} strokeWidth={2} />
+            <MapPin size={10} color={location ? "#0B0B0B" : "#74746D"} strokeWidth={2} />
             {location ?? "Location not set"}
           </InfoChip>
         </div>
@@ -619,18 +619,18 @@ function InvestorView({
         <div className="absolute left-5 right-5 bottom-5">
           <h1
             style={{
-              fontFamily: "Fraunces, serif",
+              fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
               fontSize: 34,
               fontWeight: 700,
-              color: "#F6F5F2",
+              color: "#0B0B0B",
               lineHeight: 1.1,
             }}
           >
             {profile.name}
           </h1>
-          <p style={{ color: "#CFCCC5", fontSize: 13.5, marginTop: 3 }}>
+          <p style={{ color: "#3A3A36", fontSize: 13.5, marginTop: 3 }}>
             {subtitle || (
-              <span style={{ color: "#8E8B84", fontStyle: "italic" }}>Firm not added</span>
+              <span style={{ color: "#74746D", fontStyle: "italic" }}>Firm not added</span>
             )}
           </p>
         </div>
@@ -642,9 +642,9 @@ function InvestorView({
           <a
             href="/onboarding"
             className="block px-4 py-3 rounded-2xl"
-            style={{ background: "rgba(198,160,44,0.12)", border: "1px solid rgba(198,160,44,0.3)" }}
+            style={{ background: "rgba(11,11,11,0.12)", border: "1px solid rgba(11,11,11,0.3)" }}
           >
-            <span style={{ color: "#E7CB7E", fontSize: 13.5, fontWeight: 600 }}>
+            <span style={{ color: "#0B0B0B", fontSize: 13.5, fontWeight: 600 }}>
               Complete your profile →
             </span>
           </a>
@@ -662,9 +662,9 @@ function InvestorView({
           {val(ip?.investment_thesis) ? (
             <p
               style={{
-                fontFamily: "Fraunces, serif",
+                fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
                 fontStyle: "italic",
-                color: "#E9E7E1",
+                color: "#0B0B0B",
                 fontSize: 16,
                 lineHeight: 1.6,
               }}
@@ -698,7 +698,7 @@ function InvestorView({
             />
             <FundingRow label="Avg. reply time" value={val(ip?.avg_reply_time)} />
             <div className="flex items-center justify-between py-2">
-              <span style={{ color: "#94908A", fontSize: 13.5 }}>Active</span>
+              <span style={{ color: "#74746D", fontSize: 13.5 }}>Active</span>
               {val(ip?.responsiveness_status) ? (
                 <span style={{ color: "#5EC98E", fontSize: 13.5, fontWeight: 500 }}>{ip?.responsiveness_status}</span>
               ) : (
@@ -713,18 +713,18 @@ function InvestorView({
           {ip?.portfolio_companies && ip.portfolio_companies.length > 0 ? (
             <div className="flex flex-wrap gap-3">
               {ip.portfolio_companies.map((c, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div key={i} className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ background: "rgba(11,11,11,0.045)", border: "1px solid rgba(11,11,11,0.072)" }}>
                   {c.logo_url ? (
                     <img src={c.logo_url} alt={c.name} className="w-7 h-7 rounded-full object-cover" />
                   ) : (
                     <div
                       className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
-                      style={{ background: "rgba(198,160,44,0.15)", border: "1px solid #C6A02C" }}
+                      style={{ background: "rgba(11,11,11,0.15)", border: "1px solid #0B0B0B" }}
                     >
-                      <span style={{ color: "#C6A02C", fontSize: 11, fontWeight: 700 }}>{c.name.charAt(0).toUpperCase()}</span>
+                      <span style={{ color: "#0B0B0B", fontSize: 11, fontWeight: 700 }}>{c.name.charAt(0).toUpperCase()}</span>
                     </div>
                   )}
-                  <span style={{ color: "#F6F5F2", fontSize: 13 }}>{c.name}</span>
+                  <span style={{ color: "#0B0B0B", fontSize: 13 }}>{c.name}</span>
                 </div>
               ))}
             </div>
@@ -745,9 +745,9 @@ function InvestorView({
             value={ip?.notable_exits != null ? String(ip.notable_exits) : undefined}
           />
           <div className="flex justify-between py-2">
-            <span style={{ color: "#94908A", fontSize: 13.5 }}>Notable portfolio</span>
+            <span style={{ color: "#74746D", fontSize: 13.5 }}>Notable portfolio</span>
             {val(ip?.notable_portfolio) ? (
-              <span style={{ color: "#F6F5F2", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
+              <span style={{ color: "#0B0B0B", fontSize: 13.5, fontWeight: 600, textAlign: "right", maxWidth: "55%" }}>
                 {ip?.notable_portfolio}
               </span>
             ) : (
@@ -760,10 +760,10 @@ function InvestorView({
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between mt-2 pt-3"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
+              style={{ borderTop: "1px solid rgba(11,11,11,0.063)" }}
             >
-              <span style={{ color: "#E7CB7E", fontSize: 13.5 }}>View portfolio</span>
-              <ArrowLeft size={16} color="#E7CB7E" style={{ transform: "rotate(180deg)" }} />
+              <span style={{ color: "#0B0B0B", fontSize: 13.5 }}>View portfolio</span>
+              <ArrowLeft size={16} color="#0B0B0B" style={{ transform: "rotate(180deg)" }} />
             </a>
           )}
         </SectionCard>
@@ -801,12 +801,12 @@ function ActionBar({
         style={{
           width: 58,
           height: 58,
-          background: "rgba(255,255,255,0.07)",
-          border: "1.5px solid rgba(255,255,255,0.18)",
+          background: "rgba(11,11,11,0.063)",
+          border: "1.5px solid rgba(11,11,11,0.12)",
         }}
         aria-label="Pass"
       >
-        <X size={23} color="#8E8B84" strokeWidth={2} />
+        <X size={23} color="#74746D" strokeWidth={2} />
       </button>
       <button
         onClick={onSend}
@@ -815,7 +815,7 @@ function ActionBar({
           width: 70,
           height: 70,
           background: "#FFFFFF",
-          boxShadow: "0 8px 24px rgba(255,255,255,0.2)",
+          boxShadow: "0 8px 24px rgba(11,11,11,0.12)",
         }}
         aria-label="Connect"
       >
@@ -827,15 +827,15 @@ function ActionBar({
         style={{
           width: 58,
           height: 58,
-          background: "#C6A02C",
-          boxShadow: "0 8px 20px rgba(198,160,44,0.4)",
+          background: "#0B0B0B",
+          boxShadow: "0 8px 20px rgba(11,11,11,0.4)",
         }}
         aria-label="Like"
       >
         <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
           <path
             d="M12 21C12 21 3 13.5 3 8.5C3 5.46 5.46 3 8.5 3C10.24 3 11.91 3.81 13 5.08C14.09 3.81 15.76 3 17.5 3C20.54 3 23 5.46 23 8.5C23 13.5 14 21 12 21Z"
-            fill="#2A2005"
+            fill="#FFFFFF"
           />
         </svg>
       </button>
@@ -857,19 +857,19 @@ function InfoChip({
       className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-medium"
       style={
         gold
-          ? { background: "#C6A02C", color: "#2A2005" }
+          ? { background: "#0B0B0B", color: "#FFFFFF" }
           : muted
           ? {
-              background: "rgba(255,255,255,0.05)",
-              color: "#8E8B84",
-              border: "1px dashed rgba(255,255,255,0.18)",
+              background: "rgba(11,11,11,0.045)",
+              color: "#74746D",
+              border: "1px dashed rgba(11,11,11,0.12)",
               fontStyle: "italic",
               backdropFilter: "blur(8px)",
             }
           : {
-              background: "rgba(255,255,255,0.14)",
-              color: "#E9E7E1",
-              border: "1px solid rgba(255,255,255,0.22)",
+              background: "rgba(11,11,11,0.12)",
+              color: "#0B0B0B",
+              border: "1px solid rgba(11,11,11,0.12)",
               backdropFilter: "blur(8px)",
             }
       }
@@ -897,14 +897,14 @@ function SectionCard({
       className="px-4 py-4 rounded-2xl"
       style={{
         background:
-          "linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-        border: "1px solid rgba(255,255,255,0.1)",
+          "linear-gradient(165deg, rgba(11,11,11,0.054) 0%, rgba(11,11,11,0.018) 100%)",
+        border: "1px solid rgba(11,11,11,0.09)",
       }}
     >
       <div className="flex items-center justify-between gap-2 mb-3">
         <p
           style={{
-            color: "#94908A",
+            color: "#74746D",
             fontSize: 10.5,
             textTransform: "uppercase",
             letterSpacing: "1px",
@@ -917,7 +917,7 @@ function SectionCard({
           {extraBadge && (
             <span
               className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
-              style={{ border: "1px solid rgba(198,160,44,0.45)", color: "#C6A02C" }}
+              style={{ border: "1px solid rgba(11,11,11,0.45)", color: "#0B0B0B" }}
             >
               {extraBadge}
             </span>
@@ -927,8 +927,8 @@ function SectionCard({
               className="px-2.5 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap"
               style={
                 badgeActive
-                  ? { background: "#C6A02C", color: "#2A2005" }
-                  : { border: "1px solid rgba(255,255,255,0.18)", color: "#CFCCC5" }
+                  ? { background: "#0B0B0B", color: "#FFFFFF" }
+                  : { border: "1px solid rgba(11,11,11,0.12)", color: "#3A3A36" }
               }
             >
               {badge}
@@ -947,14 +947,14 @@ function FundingRow({ label, value, last }: { label: string; value?: string | nu
   return (
     <div
       className="flex items-center justify-between py-2"
-      style={last ? undefined : { borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+      style={last ? undefined : { borderBottom: "1px solid rgba(11,11,11,0.063)" }}
     >
-      <span style={{ color: "#94908A", fontSize: 13.5 }}>{label}</span>
+      <span style={{ color: "#74746D", fontSize: 13.5 }}>{label}</span>
       <span
         style={
           v
-            ? { color: "#F6F5F2", fontSize: 13.5, fontWeight: 500 }
-            : { color: "#6E6B66", fontSize: 13.5, fontWeight: 500 }
+            ? { color: "#0B0B0B", fontSize: 13.5, fontWeight: 500 }
+            : { color: "#74746D", fontSize: 13.5, fontWeight: 500 }
         }
       >
         {v ?? "—"}
@@ -979,19 +979,19 @@ function TractionStat({
     <div
       className="flex flex-col items-center px-3 py-3 rounded-xl"
       style={{
-        background: v ? "rgba(255,255,255,0.05)" : "rgba(255,255,255,0.03)",
-        border: v ? "1px solid rgba(255,255,255,0.08)" : "1px dashed rgba(255,255,255,0.12)",
+        background: v ? "rgba(11,11,11,0.045)" : "rgba(11,11,11,0.027)",
+        border: v ? "1px solid rgba(11,11,11,0.072)" : "1px dashed rgba(11,11,11,0.108)",
       }}
     >
       <span
         className="text-center"
-        style={{ color: "#94908A", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
+        style={{ color: "#74746D", fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.6px" }}
       >
         {label}
       </span>
       <span
         style={{
-          color: !v ? "#6E6B66" : positive ? "#5EC98E" : "#F6F5F2",
+          color: !v ? "#74746D" : positive ? "#5EC98E" : "#0B0B0B",
           fontSize: 18,
           fontWeight: 700,
           marginTop: 2,
@@ -1020,23 +1020,23 @@ function BigStatChip({
       className="inline-flex flex-col px-4 py-3 rounded-2xl"
       style={{
         background: !v
-          ? "rgba(255,255,255,0.03)"
+          ? "rgba(11,11,11,0.027)"
           : gold
-          ? "rgba(198,160,44,0.12)"
-          : "rgba(255,255,255,0.06)",
+          ? "rgba(11,11,11,0.12)"
+          : "rgba(11,11,11,0.054)",
         border: !v
-          ? "1px dashed rgba(255,255,255,0.12)"
+          ? "1px dashed rgba(11,11,11,0.108)"
           : gold
-          ? "1px solid rgba(198,160,44,0.3)"
-          : "1px solid rgba(255,255,255,0.12)",
+          ? "1px solid rgba(11,11,11,0.3)"
+          : "1px solid rgba(11,11,11,0.108)",
       }}
     >
-      <span style={{ color: "#94908A", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.7px" }}>
+      <span style={{ color: "#74746D", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.7px" }}>
         {label}
       </span>
       <span
         style={{
-          color: !v ? "#6E6B66" : gold ? "#E7CB7E" : "#F6F5F2",
+          color: !v ? "#74746D" : gold ? "#0B0B0B" : "#0B0B0B",
           fontSize: 17,
           fontWeight: 700,
           marginTop: 2,
@@ -1053,9 +1053,9 @@ function Tag({ children }: { children: React.ReactNode }) {
     <span
       className="inline-block px-3 py-1.5 rounded-full text-[12px]"
       style={{
-        background: "rgba(255,255,255,0.08)",
-        border: "1px solid rgba(255,255,255,0.14)",
-        color: "#E9E7E1",
+        background: "rgba(11,11,11,0.072)",
+        border: "1px solid rgba(11,11,11,0.12)",
+        color: "#0B0B0B",
       }}
     >
       {children}

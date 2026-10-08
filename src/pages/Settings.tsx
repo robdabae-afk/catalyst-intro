@@ -64,16 +64,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-const GOLD = "#C6A02C";
-const GOLD_LIGHT = "#E7CB7E";
-const TEXT = "#F6F5F2";
-const TEXT_DIM = "#94908A";
-const TEXT_LABEL = "#CFCCC5";
+const GOLD = "#0B0B0B";
+const GOLD_LIGHT = "#0B0B0B";
+const TEXT = "#0B0B0B";
+const TEXT_DIM = "#74746D";
+const TEXT_LABEL = "#3A3A36";
 const TEXT_VALUE = "#F2F0EA";
-const TEXT_DISABLED = "#5F5C57";
-const DARK_ON_GOLD = "#2A2005";
+const TEXT_DISABLED = "#74746D";
+const DARK_ON_GOLD = "#FFFFFF";
 
-const glass = "bg-white/[0.06] shadow-[inset_0_1px_0_1px_rgba(255,255,255,0.24)] outline outline-1 outline-white/[0.10] backdrop-blur-[10px]";
+const glass = "bg-white/[0.06] shadow-[inset_0_1px_0_1px_rgba(11,11,11,0.12)] outline outline-1 outline-white/[0.10] backdrop-blur-[10px]";
 const fieldCls = `w-full h-[46px] px-[14px] rounded-[14px] ${glass} flex items-center gap-2 text-[14px]`;
 const inputCls = "flex-1 min-w-0 bg-transparent outline-none text-[14px]";
 
@@ -646,7 +646,7 @@ const Settings = () => {
       className="min-h-[100dvh] flex justify-center"
       style={{
         background:
-          "radial-gradient(ellipse 100% 55% at 26% 4%, rgba(198,160,44,0.10) 0%, rgba(198,160,44,0) 44%), radial-gradient(ellipse 90% 45% at 88% 100%, rgba(198,160,44,0.07) 0%, rgba(198,160,44,0) 50%), #0A0A0C",
+          "radial-gradient(ellipse 100% 55% at 26% 4%, rgba(11,11,11,0.1) 0%, rgba(11,11,11,0.0) 44%), radial-gradient(ellipse 90% 45% at 88% 100%, rgba(11,11,11,0.07) 0%, rgba(11,11,11,0.0) 50%), #0A0A0C",
       }}
     >
       <div className="w-full max-w-[422px] px-4 pb-16">
@@ -655,7 +655,7 @@ const Settings = () => {
           <button onClick={() => navigate(-1)} className="shrink-0" aria-label="Back">
             <ArrowLeft size={22} color={TEXT} strokeWidth={1.7} />
           </button>
-          <h1 className="flex-1" style={{ fontFamily: "Fraunces, serif", fontSize: 26, fontWeight: 600, color: TEXT }}>
+          <h1 className="flex-1" style={{ fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", fontSize: 26, fontWeight: 600, color: TEXT }}>
             Profile Settings
           </h1>
           <button
@@ -749,7 +749,7 @@ const Settings = () => {
                         className={`h-9 px-4 rounded-full ${active ? "" : glass}`}
                         style={
                           active
-                            ? { background: GOLD, color: "#2A2005", fontSize: 12.5, fontWeight: 600 }
+                            ? { background: GOLD, color: "#FFFFFF", fontSize: 12.5, fontWeight: 600 }
                             : { color: TEXT_DIM, fontSize: 12.5 }
                         }
                       >
@@ -988,9 +988,9 @@ const Settings = () => {
                         className="px-3 py-1.5 rounded-full transition-colors"
                         style={{
                           fontSize: 12,
-                          border: `1px solid ${selected ? "#C6A02C" : "rgba(255,255,255,0.12)"}`,
-                          background: selected ? "rgba(198,160,44,0.12)" : "transparent",
-                          color: selected ? "#C6A02C" : atCap ? TEXT_DISABLED : TEXT_VALUE,
+                          border: `1px solid ${selected ? "#0B0B0B" : "rgba(11,11,11,0.108)"}`,
+                          background: selected ? "rgba(11,11,11,0.12)" : "transparent",
+                          color: selected ? "#0B0B0B" : atCap ? TEXT_DISABLED : TEXT_VALUE,
                           opacity: atCap ? 0.5 : 1,
                           cursor: atCap ? "not-allowed" : "pointer",
                         }}
@@ -1217,7 +1217,7 @@ const Settings = () => {
                 onClick={() => setCcpaDoNotSell((v) => !v)}
                 className="shrink-0 relative inline-flex h-6 w-11 items-center rounded-full transition-colors"
                 style={{
-                  background: ccpaDoNotSell ? GOLD : "rgba(255,255,255,0.15)",
+                  background: ccpaDoNotSell ? GOLD : "rgba(11,11,11,0.12)",
                 }}
                 aria-pressed={ccpaDoNotSell}
               >
@@ -1371,7 +1371,7 @@ const Settings = () => {
                   </div>
                 ))}
                 <div className="flex items-baseline gap-1.5 pt-1">
-                  <span style={{ fontFamily: "Fraunces, serif", fontSize: 28, fontWeight: 600, color: TEXT }}>{planDetails.displayPrice.split("/")[0]}</span>
+                  <span style={{ fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", fontSize: 28, fontWeight: 600, color: TEXT }}>{planDetails.displayPrice.split("/")[0]}</span>
                   <span style={{ color: TEXT_DIM, fontSize: 13 }}>/ month</span>
                 </div>
                 <PillPrimary onClick={handleSubscribe} disabled={subscribing} icon={subscribing ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} strokeWidth={2} />}>
@@ -1436,7 +1436,7 @@ const Settings = () => {
           {/* Important notice */}
           <div
             className="rounded-[22px] p-[17px] flex flex-col gap-2"
-            style={{ background: "rgba(198,160,44,0.07)", outline: "1px solid rgba(198,160,44,0.32)", outlineOffset: -1 }}
+            style={{ background: "rgba(11,11,11,0.07)", outline: "1px solid rgba(11,11,11,0.32)", outlineOffset: -1 }}
           >
             <div className="flex items-center gap-2">
               <AlertTriangle size={16} color={GOLD_LIGHT} strokeWidth={1.8} />
@@ -1524,7 +1524,7 @@ function SubTitle({ children }: { children: React.ReactNode }) {
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: "rgba(255,255,255,0.09)" }} />;
+  return <div style={{ height: 1, background: "rgba(11,11,11,0.081)" }} />;
 }
 
 function TextField({
@@ -1575,7 +1575,7 @@ function SelectField({
     <div className="flex flex-col gap-1.5">
       <FieldLabel>{label}</FieldLabel>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className={`${fieldCls} justify-between [&>svg]:opacity-100 [&>svg]:text-[#94908A]`}>
+        <SelectTrigger className={`${fieldCls} justify-between [&>svg]:opacity-100 [&>svg]:text-[#74746D]`}>
           <SelectValue placeholder={placeholder} style={{ color: value ? TEXT_VALUE : TEXT_DISABLED }} />
         </SelectTrigger>
         <SelectContent>
@@ -1600,7 +1600,7 @@ function IndustryGrid({ selected, onToggle }: { selected: string[]; onToggle: (i
             <Checkbox
               checked={checked}
               onCheckedChange={() => onToggle(ind)}
-              className="w-[15px] h-[15px] rounded-full border-white/[0.24] data-[state=checked]:bg-[var(--gold)] data-[state=checked]:border-[var(--gold)] data-[state=checked]:text-[#2A2005]"
+              className="w-[15px] h-[15px] rounded-full border-white/[0.24] data-[state=checked]:bg-[var(--gold)] data-[state=checked]:border-[var(--gold)] data-[state=checked]:text-[#FFFFFF]"
               style={{ ["--gold" as any]: GOLD }}
             />
             <span style={{ color: checked ? GOLD_LIGHT : TEXT_LABEL, fontSize: 12.5 }}>{ind}</span>

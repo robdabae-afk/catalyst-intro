@@ -94,7 +94,7 @@ export default function Onboarding() {
   useEffect(() => { load(); }, []);
 
   const items: ChecklistItem[] = signupChecklist(review.data?.profile ?? profile, review.data?.role ?? roleProfile, review.data?.verification ?? idVerificationStatus).map(item => ({
-    ...item, desc: item.note ?? "Saved from your profile settings", icon: <UserCheck size={15} className="text-[#C6A02C]" />,
+    ...item, desc: item.note ?? "Saved from your profile settings", icon: <UserCheck size={15} className="text-[#0B0B0B]" />,
     onClick: item.done ? undefined : () => navigate(item.to),
   }));
 
@@ -105,7 +105,7 @@ export default function Onboarding() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#0A0A0D" }}>
-        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#C6A02C" }} />
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#0B0B0B" }} />
       </div>
     );
   }
@@ -126,7 +126,7 @@ export default function Onboarding() {
               left: 130,
               top: 90,
               opacity: 0.24,
-              background: "#C6A02C",
+              background: "#0B0B0B",
               borderRadius: "50%",
               filter: "blur(60px)",
               pointerEvents: "none",
@@ -140,7 +140,7 @@ export default function Onboarding() {
               left: -70,
               top: 470,
               opacity: 0.28,
-              background: "#C6A02C",
+              background: "#0B0B0B",
               borderRadius: "50%",
               filter: "blur(60px)",
               pointerEvents: "none",
@@ -153,19 +153,19 @@ export default function Onboarding() {
                 width: 64,
                 height: 64,
                 borderRadius: "50%",
-                background: "rgba(198, 160, 44, 0.12)",
+                background: "rgba(11,11,11,0.12)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 marginBottom: 22,
               }}
             >
-              <Clock size={28} style={{ color: "#C6A02C" }} />
+              <Clock size={28} style={{ color: "#0B0B0B" }} />
             </div>
 
             <p
               style={{
-                color: "#C6A02C",
+                color: "#0B0B0B",
                 fontSize: 11.5,
                 fontFamily: "Inter",
                 fontWeight: 400,
@@ -179,9 +179,9 @@ export default function Onboarding() {
 
             <h1
               style={{
-                color: "#F6F5F2",
+                color: "#0B0B0B",
                 fontSize: 26,
-                fontFamily: "Fraunces, serif",
+                fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
                 fontWeight: 600,
                 lineHeight: 1.25,
                 marginBottom: 12,
@@ -193,7 +193,7 @@ export default function Onboarding() {
 
             <p
               style={{
-                color: "#94908A",
+                color: "#74746D",
                 fontSize: 14,
                 fontFamily: "Inter",
                 fontWeight: 400,
@@ -211,7 +211,7 @@ export default function Onboarding() {
                 width: "100%",
                 maxWidth: 330,
                 height: 54,
-                background: "#F6F5F2",
+                background: "#0B0B0B",
                 borderRadius: 16,
                 border: "none",
                 cursor: "pointer",
@@ -247,7 +247,7 @@ export default function Onboarding() {
             left: 130,
             top: 90,
             opacity: 0.24,
-            background: "#C6A02C",
+            background: "#0B0B0B",
             borderRadius: "50%",
             filter: "blur(60px)",
             pointerEvents: "none",
@@ -261,7 +261,7 @@ export default function Onboarding() {
             left: -70,
             top: 470,
             opacity: 0.28,
-            background: "#C6A02C",
+            background: "#0B0B0B",
             borderRadius: "50%",
             filter: "blur(60px)",
             pointerEvents: "none",
@@ -274,7 +274,7 @@ export default function Onboarding() {
           <div className="pt-12 pb-4">
             <p
               style={{
-                color: "#C6A02C",
+                color: "#0B0B0B",
                 fontSize: 11.5,
                 fontFamily: "Inter",
                 fontWeight: 400,
@@ -287,9 +287,9 @@ export default function Onboarding() {
             </p>
             <h1
               style={{
-                color: "#F6F5F2",
+                color: "#0B0B0B",
                 fontSize: 26,
-                fontFamily: "Fraunces, serif",
+                fontFamily: "'Schibsted Grotesk', system-ui, sans-serif",
                 fontWeight: 600,
                 lineHeight: 1.15,
                 marginBottom: 6,
@@ -297,7 +297,7 @@ export default function Onboarding() {
             >
               Finish your profile
             </h1>
-            <p style={{ color: "#94908A", fontSize: 13, fontFamily: "Inter", fontWeight: 400, lineHeight: 1.5 }}>
+            <p style={{ color: "#74746D", fontSize: 13, fontFamily: "Inter", fontWeight: 400, lineHeight: 1.5 }}>
               {review.approved ? "Your profile is approved. You can keep your details up to date here." : "Your profile is under review. Please check back later. Complete any missing items below."}
             </p>
           </div>
@@ -305,7 +305,7 @@ export default function Onboarding() {
           {/* Progress card */}
           <div style={glassCard({ borderRadius: 18, padding: "15px 18px", marginBottom: 12 })}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-              <span style={{ color: "#CFCCC5", fontSize: 13, fontFamily: "Inter" }}>Profile strength</span>
+              <span style={{ color: "#3A3A36", fontSize: 13, fontFamily: "Inter" }}>Profile strength</span>
               <span style={{ color: "#fff", fontSize: 26, fontFamily: "Inter", fontWeight: 700, letterSpacing: "0.03em" }}>
                 {pct}%
               </span>
@@ -314,7 +314,7 @@ export default function Onboarding() {
               style={{
                 width: "100%",
                 height: 8,
-                background: "rgba(255,255,255,0.08)",
+                background: "rgba(11,11,11,0.072)",
                 borderRadius: 99,
                 overflow: "hidden",
                 marginBottom: 8,
@@ -324,13 +324,13 @@ export default function Onboarding() {
                 style={{
                   width: `${pct}%`,
                   height: "100%",
-                  background: "linear-gradient(90deg, #E7CB7E 0%, #C6A02C 100%)",
+                  background: "linear-gradient(90deg, #0B0B0B 0%, #0B0B0B 100%)",
                   borderRadius: 99,
                   transition: "width 0.6s ease",
                 }}
               />
             </div>
-            <p style={{ color: "#94908A", fontSize: 11.5, fontFamily: "Inter" }}>
+            <p style={{ color: "#74746D", fontSize: 11.5, fontFamily: "Inter" }}>
               {doneCount} of {total} complete
             </p>
           </div>
@@ -345,11 +345,11 @@ export default function Onboarding() {
           {/* Incentive footer */}
           <div style={glassCard({ borderRadius: 14, padding: "12px 16px" })}>
             <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-              <Trophy size={18} style={{ color: "#C6A02C", flexShrink: 0 }} />
+              <Trophy size={18} style={{ color: "#0B0B0B", flexShrink: 0 }} />
               <p style={{ fontSize: 12.5, fontFamily: "Inter", lineHeight: "17.5px" }}>
-                <span style={{ color: "#CFCCC5" }}>Reach </span>
-                <span style={{ color: "#E7CB7E", fontWeight: 600 }}>100%</span>
-                <span style={{ color: "#CFCCC5" }}>. Admin approval is required for platform access.</span>
+                <span style={{ color: "#3A3A36" }}>Reach </span>
+                <span style={{ color: "#0B0B0B", fontWeight: 600 }}>100%</span>
+                <span style={{ color: "#3A3A36" }}>. Admin approval is required for platform access.</span>
               </p>
             </div>
           </div>
@@ -368,10 +368,10 @@ export default function Onboarding() {
 
 function glassCard(style: React.CSSProperties): React.CSSProperties {
   return {
-    background: "rgba(255, 255, 255, 0.06)",
-    boxShadow: "inset 0px 1px 0px 1px rgba(255, 255, 255, 0.25)",
+    background: "rgba(11,11,11,0.054)",
+    boxShadow: "inset 0px 1px 0px 1px rgba(11,11,11,0.12)",
     borderRadius: 14,
-    outline: "1px solid rgba(255, 255, 255, 0.14)",
+    outline: "1px solid rgba(11,11,11,0.12)",
     backdropFilter: "blur(9px)",
     WebkitBackdropFilter: "blur(9px)",
     ...style,
@@ -393,8 +393,8 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
             height: 34,
             borderRadius: 10,
             background: item.done
-              ? "rgba(198, 160, 44, 0.10)"
-              : "rgba(198, 160, 44, 0.12)",
+              ? "rgba(11,11,11,0.1)"
+              : "rgba(11,11,11,0.12)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -408,7 +408,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <p
             style={{
-              color: item.done ? "#94908A" : "#F6F5F2",
+              color: item.done ? "#74746D" : "#0B0B0B",
               fontSize: 13.5,
               fontFamily: "Inter",
               fontWeight: 500,
@@ -417,7 +417,7 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
           >
             {item.title}
           </p>
-          <p style={{ color: "#94908A", fontSize: 11.5, fontFamily: "Inter" }}>
+          <p style={{ color: "#74746D", fontSize: 11.5, fontFamily: "Inter" }}>
             {item.desc}
           </p>
         </div>
@@ -429,17 +429,17 @@ function ChecklistRow({ item }: { item: ChecklistItem }) {
               width: 25,
               height: 25,
               borderRadius: "50%",
-              background: "#C6A02C",
+              background: "#0B0B0B",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            <Check size={13} style={{ color: "#2A2005", strokeWidth: 2.5 }} />
+            <Check size={13} style={{ color: "#FFFFFF", strokeWidth: 2.5 }} />
           </div>
         ) : (
-          <ChevronRight size={18} style={{ color: "#94908A", flexShrink: 0 }} />
+          <ChevronRight size={18} style={{ color: "#74746D", flexShrink: 0 }} />
         )}
       </div>
     </Wrapper>
