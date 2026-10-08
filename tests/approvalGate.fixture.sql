@@ -1,12 +1,13 @@
 -- Disposable local PostgreSQL ONLY. Creates a minimal Supabase-compatible policy fixture.
 CREATE ROLE anon; CREATE ROLE authenticated; CREATE SCHEMA auth;
+CREATE TABLE auth.users(id uuid PRIMARY KEY, email text, email_confirmed_at timestamptz);
 CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 CREATE FUNCTION auth.role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.role',true),'') $$;
 GRANT USAGE ON SCHEMA auth TO anon,authenticated;
 CREATE TYPE public.app_role AS ENUM ('admin','user');
 CREATE TABLE public.user_roles(user_id uuid, role public.app_role, UNIQUE(user_id,role));
 CREATE FUNCTION public.has_role(uuid, public.app_role) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER AS $$ SELECT EXISTS(SELECT 1 FROM public.user_roles WHERE user_id=$1 AND role=$2) $$;
-CREATE TABLE public.profiles(id uuid PRIMARY KEY, approved boolean NOT NULL DEFAULT false, is_verified boolean DEFAULT false, is_flagged boolean DEFAULT false, is_hidden boolean DEFAULT false, is_test_account boolean DEFAULT false, is_test_mode boolean DEFAULT false, rejection_reason text, user_type text, name text);
+CREATE TABLE public.profiles(id uuid PRIMARY KEY, approved boolean NOT NULL DEFAULT false, is_verified boolean DEFAULT false, is_flagged boolean DEFAULT false, is_hidden boolean DEFAULT false, is_test_account boolean DEFAULT false, is_test_mode boolean DEFAULT false, rejection_reason text, user_type text, name text, email text);
 CREATE TABLE public.founder_profiles(profile_id uuid, startup_name text);
 CREATE TABLE public.investor_profiles(profile_id uuid, investment_thesis text);
 CREATE TABLE public.app_companies(id text PRIMARY KEY, owner_id uuid, status text, data jsonb, sort integer, created_at timestamptz DEFAULT now());
