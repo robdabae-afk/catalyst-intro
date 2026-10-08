@@ -90,7 +90,7 @@ const App = () => (
 
 
           {/* Protected Routes */}
-          <Route path="/home" element={<AppSignup />} />
+          <Route path="/home" element={<Navigate replace to="/feed" />} />
           <Route path="/app/home" element={<Navigate replace to="/feed" />} />
           <Route path="/app/portfolio" element={<Navigate replace to="/portfolio" />} />
 

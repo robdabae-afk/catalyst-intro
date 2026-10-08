@@ -149,7 +149,7 @@ export const CaughtUpState = ({
           )}
           
           <Button 
-            onClick={() => navigate('/matches')} 
+            onClick={() => navigate('/messages')} 
             variant="ghost" 
             className="w-full"
           >

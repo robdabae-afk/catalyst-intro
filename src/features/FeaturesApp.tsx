@@ -64,7 +64,7 @@ function Tabs({ cls }: { cls: string }) {
   const [s] = useStore();
   const n = unreadCount(s);
   const items = [
-    { to: "", label: "Today", I: "discover" as IconName, end: true },
+    { to: "feed", label: "Today", I: "discover" as IconName, end: true },
     { to: "swipe", label: "Companies", I: "swipe" as IconName },
     { to: "people/swipe", label: "People", I: "mutual" as IconName },
     { to: "search", label: "Search", I: "search" as IconName },

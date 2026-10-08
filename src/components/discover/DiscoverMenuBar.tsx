@@ -95,7 +95,7 @@ export function DiscoverMenuBar({
   const NavItems = (
     <>
       <Link
-        to="/matches"
+        to="/messages"
         onClick={() => setMenuOpen(false)}
         className="flex items-center gap-2 px-3 py-2 rounded-md text-sm hover:bg-muted relative"
       >
@@ -190,7 +190,7 @@ export function DiscoverMenuBar({
       <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1.5 sm:gap-3 h-11 sm:h-12">
           <h1
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/people/swipe")}
             className="text-sm sm:text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent cursor-pointer shrink-0"
           >
             CATALYST
@@ -268,7 +268,7 @@ export function DiscoverMenuBar({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate("/matches")}>
+              <DropdownMenuItem onClick={() => navigate("/messages")}>
                 <MessageSquare className="w-4 h-4 mr-2" /> Matches
                 {newMatches > 0 && <Badge className="ml-auto h-5">{newMatches}</Badge>}
               </DropdownMenuItem>

@@ -108,7 +108,7 @@ export default function Home() {
           </p>
           <p style={{ color: "#94908A", fontSize: 13, maxWidth: 210 }}>{matchLabel}</p>
           <button
-            onClick={() => navigate("/matches")}
+            onClick={() => navigate("/messages")}
             className="absolute flex items-center justify-center rounded-full"
             style={{
               right: 22,
@@ -153,7 +153,7 @@ export default function Home() {
           <>
             <SectionHeader
               label="Latest updates"
-              onViewAll={() => navigate("/app/updates")}
+              onViewAll={() => navigate("/updates")}
             />
             <div
               className="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x snap-mandatory"

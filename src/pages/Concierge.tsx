@@ -290,7 +290,7 @@ export default function Concierge() {
       <div className="max-w-7xl mx-auto">
         <Button
           variant="ghost"
-          onClick={() => navigate('/')}
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/feed'))}
           className="mb-8 hover:bg-neutral-900 text-neutral-400 hover:text-white"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />

@@ -125,7 +125,7 @@ export default function LatestUpdates() {
     >
       {/* Header */}
       <div className="flex items-start gap-3 px-4 pt-12 pb-1">
-        <button onClick={() => navigate("/app/home")} aria-label="Back" className="mt-1 shrink-0">
+        <button onClick={() => navigate("/feed")} aria-label="Back" className="mt-1 shrink-0">
           <ArrowLeft size={22} color={TEXT} strokeWidth={1.6} />
         </button>
         <div className="flex-1">
