@@ -16,7 +16,9 @@ test("no viewport-based routing", () => {
   expect(app).not.toMatch(/useIsMobile|matchMedia|innerWidth/);
 });
 test("legacy person-to-person messages stay reachable (new inbox uses app_messages, a different table)", () => {
-  expect(app).toContain('<Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />');
+  const fa = readFileSync("src/features/FeaturesApp.tsx", "utf8");
+  expect(fa).toContain('<Route path="messages" element={<AuthGuard><Matches embedded /></AuthGuard>} />');
+  expect(fa).toContain('<Route path="matches" element={<LegacyAlias to="/messages" />} />');
 });
 test("legacy nav points at new screens where they exist", () => {
   const nav = readFileSync("src/components/app/BottomNav.tsx", "utf8");
@@ -28,8 +30,10 @@ test("new app links legacy DMs and settings instead of dropping them", () => {
   expect(me).toContain('to: "/messages"'); expect(me).toContain('to: "/settings"'); expect(emb).toContain('to="/messages"');
 });
 test("person swiping (swipes/matches tables) keeps its original route; new /swipe is companies", () => {
-  expect(app).toContain('<Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
-  expect(app).toContain('<Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />');
+  const fa = readFileSync("src/features/FeaturesApp.tsx", "utf8");
+  expect(fa).toContain('<Route path="people/swipe" element={<AuthGuard><Dashboard embedded /></AuthGuard>} />');
+  expect(fa).toContain('<Route path="dashboard" element={<Navigate replace to="/people/swipe" />} />');
+  expect(app).toContain('<Route path="/app/dashboard" element={<RootRedirect from="/app" />} />');
   expect(readFileSync("src/components/app/BottomNav.tsx", "utf8")).toContain('label: "People"');
   expect(readFileSync("src/features/screens/Me.tsx", "utf8")).toContain('to: "/people/swipe"');
 });

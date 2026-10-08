@@ -1,3 +1,4 @@
+import { useInAppFrame } from "@/components/AppFrameContext";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -187,7 +188,8 @@ function GlassAvatar({
 }
 
 /** embedded: rendered inside the features shell column; uses the single-column view at every width. Data logic unchanged. */
-export default function Matches({ embedded = false }: { embedded?: boolean } = {}) {
+export default function Matches({ embedded: embeddedProp = false }: { embedded?: boolean } = {}) {
+  const embedded = useInAppFrame() || embeddedProp;
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [matches, setMatches] = useState<Match[]>([]);
@@ -1168,6 +1170,7 @@ export default function Matches({ embedded = false }: { embedded?: boolean } = {
           <span style={{ color: GOLD }}>A</span>
           <span style={{ color: TEXT }}>LYST</span>
         </span>
+        {!embedded && (
         <button
           onClick={() => setMenuOpen(true)}
           aria-label="Menu"
@@ -1189,6 +1192,7 @@ export default function Matches({ embedded = false }: { embedded?: boolean } = {
             <Settings size={18} color={GOLD} strokeWidth={1.6} />
           )}
         </button>
+        )}
       </div>
 
       {/* Title */}
@@ -1313,13 +1317,13 @@ export default function Matches({ embedded = false }: { embedded?: boolean } = {
       </div>
 
       {!embedded && <BottomNav userType={currentUserType} />}
-      <MenuDrawer
+      {!embedded && <MenuDrawer
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         userType={currentUserType}
         userId={currentUserId ?? undefined}
         isPro={isPro}
-      />
+      />}
 
       {/* Chat limit modal */}
       <AlertDialog open={showChatLimitModal} onOpenChange={setShowChatLimitModal}>

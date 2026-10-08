@@ -1,4 +1,3 @@
-import { ProfileReviewGate } from "@/components/ProfileReviewGate";
 import { Toaster } from "@/components/ui/toaster";
 import InviteLanding from "./pages/InviteLanding";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -13,31 +12,12 @@ import AppSignup from "./pages/app/AppSignup";
 import AppSignupForm from "./pages/app/AppSignupForm";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
-import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
-import LatestUpdates from "./pages/LatestUpdates";
-import Matches from "./pages/Matches";
-import Connections from "./pages/Connections";
-import CoffeeChat from "./pages/CoffeeChat";
-import Requests from "./pages/Requests";
-import SafesList from "./pages/SafesList";
-import SafeDetail from "./pages/SafeDetail";
-import SafeGenerator from "./pages/SafeGenerator";
-import CapTable from "./pages/CapTable";
-import Investments from "./pages/Investments";
 import InvestorPortfolio from "./pages/InvestorPortfolio";
 import Admin from "./pages/Admin";
-import FounderAnalytics from "./pages/FounderAnalytics";
-import InvestorMarketPulse from "./pages/InvestorMarketPulse";
 
-import ProfileView from "./pages/ProfileView";
-import Settings from "./pages/Settings";
-import FilterPreferences from "./pages/FilterPreferences";
-import ReferralDashboard from "./pages/ReferralDashboard";
 import CatalystDeck from "./pages/CatalystDeck";
 import CatalystDeckEditor from "./pages/CatalystDeckEditor";
-import InvestorPortal from "./pages/InvestorPortal";
-import Concierge from "./pages/Concierge";
 import EventSignIn from "./pages/EventSignIn";
 import MatchLanding from "./pages/match/MatchLanding";
 import MatchAuth from "./pages/match/MatchAuth";
@@ -104,8 +84,6 @@ const App = () => (
           <Route path="/app/onboarding/founder" element={<AppSignup />} />
           <Route path="/onboarding/investor" element={<AppSignup />} />
           <Route path="/app/onboarding/investor" element={<AppSignup />} />
-          <Route path="/profile/:id" element={<ProfileReviewGate><ProfileView /></ProfileReviewGate>} />
-          <Route path="/app/profile/:id" element={<ProfileReviewGate><ProfileView /></ProfileReviewGate>} />
           <Route path="/catalystdeck" element={<CatalystDeck />} />
           <Route path="/app/catalystdeck" element={<CatalystDeck />} />
           <Route path="/catalystdeck/edit" element={<AuthGuard><CatalystDeckEditor /></AuthGuard>} />
@@ -113,47 +91,32 @@ const App = () => (
 
 
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
-          <Route path="/app/dashboard" element={<AuthGuard><Dashboard /></AuthGuard>} />
           <Route path="/home" element={<AppSignup />} />
           <Route path="/app/home" element={<Navigate replace to="/feed" />} />
-          <Route path="/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
-          <Route path="/app/updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
-          <Route path="/matches" element={<AuthGuard><Matches /></AuthGuard>} />
-          <Route path="/app/matches" element={<AuthGuard><Matches /></AuthGuard>} />
-          <Route path="/connections" element={<AuthGuard><Connections /></AuthGuard>} />
-          <Route path="/app/connections" element={<AuthGuard><Connections /></AuthGuard>} />
-          <Route path="/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
-          <Route path="/app/coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
-          <Route path="/safes" element={<AuthGuard><SafesList /></AuthGuard>} />
-          <Route path="/app/safes" element={<AuthGuard><SafesList /></AuthGuard>} />
-          <Route path="/safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
-          <Route path="/app/safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
-          <Route path="/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
-          <Route path="/app/safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
-          <Route path="/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
-          <Route path="/app/captable" element={<AuthGuard><CapTable /></AuthGuard>} />
           <Route path="/app/portfolio" element={<Navigate replace to="/portfolio" />} />
-          <Route path="/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
-          <Route path="/app/founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
-          <Route path="/market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />
-          <Route path="/app/market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />
-          <Route path="/investments" element={<AuthGuard><Investments /></AuthGuard>} />
-          <Route path="/app/investments" element={<AuthGuard><Investments /></AuthGuard>} />
-          <Route path="/requests" element={<AuthGuard><Requests /></AuthGuard>} />
-          <Route path="/app/requests" element={<AuthGuard><Requests /></AuthGuard>} />
+
+          {/* Legacy /app/* member URLs now live in the single app frame at the root (params + query preserved). */}
+          <Route path="/app/dashboard" element={<RootRedirect from="/app" />} />
+          <Route path="/app/updates" element={<RootRedirect from="/app" />} />
+          <Route path="/app/matches" element={<RootRedirect from="/app" />} />
+          <Route path="/app/connections" element={<RootRedirect from="/app" />} />
+          <Route path="/app/coffeechat" element={<RootRedirect from="/app" />} />
+          <Route path="/app/safes" element={<RootRedirect from="/app" />} />
+          <Route path="/app/safe" element={<RootRedirect from="/app" />} />
+          <Route path="/app/safe/:id" element={<RootRedirect from="/app" />} />
+          <Route path="/app/captable" element={<RootRedirect from="/app" />} />
+          <Route path="/app/founder-analytics" element={<RootRedirect from="/app" />} />
+          <Route path="/app/market-pulse" element={<RootRedirect from="/app" />} />
+          <Route path="/app/investments" element={<RootRedirect from="/app" />} />
+          <Route path="/app/requests" element={<RootRedirect from="/app" />} />
+          <Route path="/app/settings" element={<RootRedirect from="/app" />} />
+          <Route path="/app/filters" element={<RootRedirect from="/app" />} />
+          <Route path="/app/referrals" element={<RootRedirect from="/app" />} />
+          <Route path="/app/portal" element={<RootRedirect from="/app" />} />
+          <Route path="/app/concierge" element={<RootRedirect from="/app" />} />
+          <Route path="/app/profile/:id" element={<RootRedirect from="/app" />} />
           {adminRoutes}
           <Route path="/app/admin" element={<AuthGuard><Admin /></AuthGuard>} />
-          <Route path="/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
-          <Route path="/app/settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
-          <Route path="/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
-          <Route path="/app/filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
-          <Route path="/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
-          <Route path="/app/referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
-          <Route path="/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
-          <Route path="/app/portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
-          <Route path="/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
-          <Route path="/app/concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
 
           {/* /match — Live event matching platform (separate accounts) */}
           <Route path="/match" element={<MatchLanding />} />

@@ -12,6 +12,24 @@ import { useEffect, useState } from "react";
 import { AuthGuard } from "@/components/AuthGuard";
 import Dashboard from "@/pages/Dashboard";
 import Matches from "@/pages/Matches";
+import { AppFrameContext } from "@/components/AppFrameContext";
+import LatestUpdates from "@/pages/LatestUpdates";
+import Connections from "@/pages/Connections";
+import CoffeeChat from "@/pages/CoffeeChat";
+import SafesList from "@/pages/SafesList";
+import SafeGenerator from "@/pages/SafeGenerator";
+import SafeDetail from "@/pages/SafeDetail";
+import CapTable from "@/pages/CapTable";
+import FounderAnalytics from "@/pages/FounderAnalytics";
+import InvestorMarketPulse from "@/pages/InvestorMarketPulse";
+import Investments from "@/pages/Investments";
+import Requests from "@/pages/Requests";
+import Settings from "@/pages/Settings";
+import FilterPreferences from "@/pages/FilterPreferences";
+import ReferralDashboard from "@/pages/ReferralDashboard";
+import InvestorPortal from "@/pages/InvestorPortal";
+import Concierge from "@/pages/Concierge";
+import ProfileView from "@/pages/ProfileView";
 import { LiveSwipe, LiveCompany, LiveInbox, LiveThread, LivePeople, LiveEvents, LivePortfolio, LiveAdmin } from "@/live/embed";
 import "./features.css";
 import { IBack } from "./icons";
@@ -116,6 +134,12 @@ function WriteError() {
   return m ? <div role="alert" style={{ position: "fixed", left: "50%", bottom: 88, transform: "translateX(-50%)", zIndex: 1000, background: "#111", color: "#fff", border: "1px solid #444", borderRadius: 12, padding: "10px 16px", fontSize: 14 }}>{m}</div> : null;
 }
 
+/** Old /matches links: same query/hash, new frame route. */
+function LegacyAlias({ to }: { to: string }) {
+  const loc = useLocation();
+  return <Navigate replace to={to + loc.search + loc.hash} />;
+}
+
 export default function FeaturesApp() {
   const review = useProfileReview();
   useEffect(() => { if (!review.loading) void loadCatalog(); }, [review.approved, review.loading]);
@@ -132,6 +156,7 @@ export default function FeaturesApp() {
       <div className="cf-shell">
         <Tabs cls="cf-side" />
         <main className="cf-main">
+          <AppFrameContext.Provider value={true}>
           <Routes>
             <Route index element={<ProfileReviewGate><Home /></ProfileReviewGate>} />
             <Route path="feed" element={<ProfileReviewGate><Home /></ProfileReviewGate>} />
@@ -152,8 +177,29 @@ export default function FeaturesApp() {
             <Route path="ticket" element={<Ticket />} />
             <Route path="learn" element={<Learn />} />
             <Route path="legal/:doc" element={<Legal />} />
+            {/* Legacy member pages, rendered inside this frame; their own navs hide via AppFrameContext. */}
+            <Route path="dashboard" element={<Navigate replace to="/people/swipe" />} />
+            <Route path="updates" element={<AuthGuard><LatestUpdates /></AuthGuard>} />
+            <Route path="matches" element={<LegacyAlias to="/messages" />} />
+            <Route path="connections" element={<AuthGuard><Connections /></AuthGuard>} />
+            <Route path="coffeechat" element={<AuthGuard><CoffeeChat /></AuthGuard>} />
+            <Route path="safes" element={<AuthGuard><SafesList /></AuthGuard>} />
+            <Route path="safe" element={<AuthGuard><SafeGenerator /></AuthGuard>} />
+            <Route path="safe/:id" element={<AuthGuard><SafeDetail /></AuthGuard>} />
+            <Route path="captable" element={<AuthGuard><CapTable /></AuthGuard>} />
+            <Route path="founder-analytics" element={<AuthGuard><FounderAnalytics /></AuthGuard>} />
+            <Route path="market-pulse" element={<AuthGuard><InvestorMarketPulse /></AuthGuard>} />
+            <Route path="investments" element={<AuthGuard><Investments /></AuthGuard>} />
+            <Route path="requests" element={<AuthGuard><Requests /></AuthGuard>} />
+            <Route path="settings" element={<AuthGuard allowNonAdmin><Settings /></AuthGuard>} />
+            <Route path="filters" element={<AuthGuard><FilterPreferences /></AuthGuard>} />
+            <Route path="referrals" element={<AuthGuard><ReferralDashboard /></AuthGuard>} />
+            <Route path="portal" element={<AuthGuard><InvestorPortal /></AuthGuard>} />
+            <Route path="concierge" element={<AuthGuard><Concierge /></AuthGuard>} />
+            <Route path="profile/:id" element={<ProfileReviewGate><ProfileView /></ProfileReviewGate>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </AppFrameContext.Provider>
         </main>
         <Tabs cls="cf-tabs" />
       </div>

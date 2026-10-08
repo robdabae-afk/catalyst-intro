@@ -1,3 +1,4 @@
+import { useInAppFrame } from "@/components/AppFrameContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,7 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, X, BadgeCheck, MapPin, Settings } from "lucide-react";
 
 /** embedded: rendered inside the features shell (its tabs replace the legacy BottomNav). Data logic unchanged. */
-export default function Dashboard({ embedded = false }: { embedded?: boolean } = {}) {
+export default function Dashboard({ embedded: embeddedProp = false }: { embedded?: boolean } = {}) {
+  const embedded = useInAppFrame() || embeddedProp;
   const navigate = useNavigate();
   const { user, isPro } = useAuth();
   const { toast } = useToast();
@@ -213,6 +215,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
               {swipesRemaining} right swipes left
             </span>
           )}
+          {!embedded && (
           <button
             onClick={() => setMenuOpen(true)}
             className="flex items-center justify-center rounded-full"
@@ -226,6 +229,7 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
           >
             <Settings size={16} color="#0B0B0B" strokeWidth={1.5} />
           </button>
+          )}
         </div>
       </div>
 
@@ -536,13 +540,13 @@ export default function Dashboard({ embedded = false }: { embedded?: boolean } =
       {!embedded && <BottomNav userType={userType} inboxBadge={inboxBadge} />}
 
       {/* Menu Drawer */}
-      <MenuDrawer
+      {!embedded && <MenuDrawer
         open={menuOpen}
         onClose={() => setMenuOpen(false)}
         userType={userType}
         userId={user?.id}
         isPro={isPro}
-      />
+      />}
 
       <MatchModal
         isOpen={!!matchedProfile}
