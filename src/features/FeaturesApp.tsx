@@ -99,11 +99,11 @@ export default function FeaturesApp() {
             <Route path="feed" element={<ProfileReviewGate><Home /></ProfileReviewGate>} />
             <Route path="search" element={<ProfileReviewGate><Search /></ProfileReviewGate>} />
             <Route path="watchlist" element={<ProfileReviewGate><Watchlist /></ProfileReviewGate>} />
-            <Route path="inbox" element={<LiveInbox updates={<Notifications />} />} />
+            <Route path="inbox" element={<ProfileReviewGate><LiveInbox updates={<Notifications />} /></ProfileReviewGate>} />
             <Route path="me" element={<Me />} />
             <Route path="swipe" element={<ProfileReviewGate><LiveSwipe /></ProfileReviewGate>} />
             <Route path="company/:id" element={<ProfileReviewGate><CompanyRoute /></ProfileReviewGate>} />
-            <Route path="inbox/t/:id" element={<LiveThread />} />
+            <Route path="inbox/t/:id" element={<ProfileReviewGate><LiveThread /></ProfileReviewGate>} />
             <Route path="portfolio" element={<LivePortfolio />} />
             <Route path="events" element={<LiveEvents />} />
             <Route path="people" element={<ProfileReviewGate><LivePeople /></ProfileReviewGate>} />
