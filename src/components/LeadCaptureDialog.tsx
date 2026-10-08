@@ -101,10 +101,10 @@ export function LeadCaptureDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md bg-[#0A0A0A] border-[#333333] text-[#FFFFFF]">
+            <DialogContent className="sm:max-w-md bg-white border-[#E6E6E3] text-[#0B0B0B]">
                 <DialogHeader>
                     <DialogTitle className="text-xl font-bold">Download Full Deck</DialogTitle>
-                    <DialogDescription className="text-[#AAAAAA]">
+                    <DialogDescription className="text-[#74746D]">
                         Please provide your contact details to verify access and download the PDF.
                     </DialogDescription>
                 </DialogHeader>
@@ -116,9 +116,9 @@ export function LeadCaptureDialog({
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#FFFFFF]">Full Name</FormLabel>
+                                    <FormLabel className="text-[#0B0B0B]">Full Name</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="John Doe" {...field} className="bg-[#111111] border-[#333333] text-[#FFFFFF] placeholder:text-[#444444]" />
+                                        <Input placeholder="John Doe" {...field} className="bg-[#F4F4F2] border-[#E6E6E3] text-[#0B0B0B] placeholder:text-[#74746D]" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -130,9 +130,9 @@ export function LeadCaptureDialog({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#FFFFFF]">Email Address</FormLabel>
+                                    <FormLabel className="text-[#0B0B0B]">Email Address</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="john@example.com" {...field} className="bg-[#111111] border-[#333333] text-[#FFFFFF] placeholder:text-[#444444]" />
+                                        <Input placeholder="john@example.com" {...field} className="bg-[#F4F4F2] border-[#E6E6E3] text-[#0B0B0B] placeholder:text-[#74746D]" />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -144,20 +144,20 @@ export function LeadCaptureDialog({
                             name="phone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-[#FFFFFF]">Phone Number</FormLabel>
+                                    <FormLabel className="text-[#0B0B0B]">Phone Number</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input
                                                 placeholder="+1 (555) 000-0000"
                                                 {...field}
-                                                className={`bg-[#111111] border-[#333333] text-[#FFFFFF] placeholder:text-[#444444] ${verified ? "border-green-500 text-green-500" : ""}`}
+                                                className={`bg-[#F4F4F2] border-[#E6E6E3] text-[#0B0B0B] placeholder:text-[#74746D] ${verified ? "border-green-500 text-green-500" : ""}`}
                                             />
                                             {verified && (
                                                 <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
                                             )}
                                         </div>
                                     </FormControl>
-                                    <p className="text-[10px] text-[#555555]">
+                                    <p className="text-[10px] text-[#74746D]">
                                         We verify numbers to prevent spam.
                                     </p>
                                     <FormMessage />
@@ -172,7 +172,7 @@ export function LeadCaptureDialog({
                             </Alert>
                         )}
 
-                        <Button type="submit" className="w-full bg-[#FFFFFF] text-[#000000] hover:bg-[#AAAAAA] font-bold mt-4" disabled={verifying || verified}>
+                        <Button type="submit" className="w-full bg-[#0B0B0B] text-white hover:bg-[#2A2A27] font-bold mt-4" disabled={verifying || verified}>
                             {verifying ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

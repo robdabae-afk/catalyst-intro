@@ -216,7 +216,7 @@ export const FeaturedCard = ({
             {isFeatured && (
                 <div className="px-6 pb-2">
                     <h1 className="text-2xl font-serif font-bold tracking-tight text-white">Featured</h1>
-                    <p className="text-[#C5A059] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
+                    <p className="text-[#0B0B0B] text-[10px] font-bold tracking-[0.2em] uppercase mt-0.5">Top 1% Founders</p>
                 </div>
             )}
             {/* Profile Header Section - Redesigned */}
@@ -273,7 +273,7 @@ export const FeaturedCard = ({
 
                     {/* Role & Company */}
                     <div className="flex items-center gap-2 text-gray-200 text-sm font-medium">
-                        <Briefcase size={14} className="text-[#C5A059]" />
+                        <Briefcase size={14} className="text-[#0B0B0B]" />
                         <span>
                             {organicProfile?.user_type === 'founder' ? "Founder" : "Investor"} @ <span className="text-white border-b border-white/30 pb-0.5">{company}</span>
                         </span>

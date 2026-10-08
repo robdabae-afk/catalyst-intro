@@ -13,8 +13,8 @@ interface AnalyticsData {
   foundersBackedBefore: number;
 }
 
-const STAGE_COLORS = ["#C5A059", "#D4AF37", "#FFD700", "#F5DEB3"];
-const INDUSTRY_COLORS = ["#C5A059", "#8B7355", "#A0522D", "#CD853F", "#DEB887", "#D2B48C", "#BC8F8F", "#F4A460"];
+const STAGE_COLORS = ["#0B0B0B", "#0B0B0B", "#0B0B0B", "#F5DEB3"];
+const INDUSTRY_COLORS = ["#0B0B0B", "#8B7355", "#A0522D", "#CD853F", "#DEB887", "#D2B48C", "#BC8F8F", "#F4A460"];
 
 export const AdminAnalyticsPanel = () => {
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -198,7 +198,7 @@ export const AdminAnalyticsPanel = () => {
                     dataKey="value"
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
-                    <Cell fill="#C5A059" />
+                    <Cell fill="#0B0B0B" />
                     <Cell fill="#6B7280" />
                   </Pie>
                   <Tooltip />
@@ -207,7 +207,7 @@ export const AdminAnalyticsPanel = () => {
             </div>
             <div className="flex justify-center gap-6 mt-4">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#C5A059]" />
+                <div className="w-3 h-3 rounded-full bg-[#0B0B0B]" />
                 <span className="text-sm">Founders ({data.totalFounders})</span>
               </div>
               <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export const AdminAnalyticsPanel = () => {
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="count" fill="#C5A059" radius={[0, 4, 4, 0]}>
+                <Bar dataKey="count" fill="#0B0B0B" radius={[0, 4, 4, 0]}>
                   {data.industryBreakdown.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={INDUSTRY_COLORS[index % INDUSTRY_COLORS.length]} />
                   ))}
