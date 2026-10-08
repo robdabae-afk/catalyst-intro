@@ -1,0 +1,75 @@
+/* Catalyst unified light theme for legacy app routes (dashboard, matches,
+   settings, profiles, billing dialogs...). Mirrors src/features/features.css
+   (.cf: white, ink #0b0b0b, line #e6e6e3, soft #f4f4f2, dim #74746d,
+   Schibsted Grotesk). Enabled by <CatalystLightTheme/> toggling
+   html.cl-light, so Radix portals (dialogs, sheets, toasts) match too.
+   Photo overlays opt out with .cl-keep. Semantic colors (red/green,
+   amber-600+/yellow warnings) are intentionally left alone. */
+html.cl-light {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 4%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 4%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 4%;
+  --primary: 0 0% 4%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 60 9% 95%;
+  --secondary-foreground: 0 0% 4%;
+  --muted: 60 9% 95%;
+  --muted-foreground: 57 4% 44%;
+  --accent: 60 9% 95%;
+  --accent-foreground: 0 0% 4%;
+  --border: 60 6% 90%;
+  --input: 60 6% 90%;
+  --ring: 0 0% 4%;
+  --shadow-elegant: 0 10px 30px -14px hsl(0 0% 0% / 0.25);
+  color-scheme: light;
+}
+html.cl-light, html.cl-light body { background: #fff; color: #0b0b0b; }
+html.cl-light body,
+html.cl-light .font-sans,
+html.cl-light .font-serif,
+html.cl-light .font-inter { font-family: 'Schibsted Grotesk', system-ui, sans-serif; }
+html.cl-light .font-serif { font-style: normal; letter-spacing: -0.02em; }
+
+/* dark surfaces -> white / soft */
+html.cl-light :is(.bg-black, .bg-zinc-950, .bg-neutral-950, .bg-\[\#0A0A0A\], .bg-\[\#000000\], .bg-\[\#050505\], .bg-gray-950, .bg-background) { background-color: #fff; }
+html.cl-light :is(.bg-zinc-900, .bg-zinc-800, .bg-neutral-900, .bg-neutral-800, .bg-gray-900, .bg-gray-800, .bg-\[\#111111\], .bg-\[\#111\], .bg-\[\#1A1A1A\], .bg-\[\#141414\],
+  .bg-zinc-900\/50, .bg-zinc-900\/30, .bg-zinc-900\/80, .bg-zinc-800\/50, .bg-neutral-900\/50, .bg-black\/40, .bg-black\/50, .bg-black\/30, .bg-black\/20,
+  .bg-white\/5, .bg-white\/10, .bg-white\/\[0\.03\], .bg-white\/\[0\.05\]) { background-color: #f4f4f2; }
+html.cl-light :is(.from-black, .from-zinc-900, .from-zinc-950, .from-neutral-900) { --tw-gradient-from: #fff var(--tw-gradient-from-position); --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+html.cl-light :is(.to-black, .to-zinc-900, .to-zinc-950, .via-zinc-900, .via-black) { --tw-gradient-to: #f4f4f2 var(--tw-gradient-to-position); }
+
+/* text on dark -> ink scale */
+html.cl-light :is(.text-white, .text-\[\#FFFFFF\], .text-white\/90, .text-white\/80, .text-zinc-100, .text-zinc-200, .text-gray-100, .text-gray-200, .text-neutral-100, .text-neutral-200, .text-foreground) { color: #0b0b0b; }
+html.cl-light :is(.text-white\/70, .text-white\/60, .text-zinc-300, .text-gray-300, .text-neutral-300) { color: #3a3a36; }
+html.cl-light :is(.text-white\/50, .text-white\/40, .text-zinc-400, .text-zinc-500, .text-gray-400, .text-gray-500, .text-neutral-400, .text-neutral-500, .text-\[\#94908A\]) { color: #74746d; }
+
+/* borders on dark -> line */
+html.cl-light :is(.border-zinc-800, .border-zinc-700, .border-zinc-900, .border-neutral-800, .border-neutral-700, .border-gray-800, .border-gray-700, .border-white\/5, .border-white\/10, .border-white\/20, .border-white\/30, .border-\[\#333333\], .border-\[\#2A2A2A\], .border-\[\#222\], .border-\[\#222222\]) { border-color: #e6e6e3; }
+
+/* legacy gold brand -> ink */
+html.cl-light :is(.text-luxury-gold, .text-luxury-gold-light, .text-amber-400, .text-amber-500, .text-yellow-400, .text-\[\#C5A059\], .text-\[\#C6A02C\], .text-\[\#E7CB7E\]) { color: #0b0b0b; }
+html.cl-light :is(.border-luxury-gold, .border-amber-500, .border-amber-400, .border-\[\#C5A059\], .border-\[\#C6A02C\]) { border-color: #0b0b0b; }
+html.cl-light :is(.border-luxury-gold\/50, .border-luxury-gold\/30, .border-luxury-gold\/20, .border-amber-500\/50, .border-amber-500\/30, .border-amber-500\/20, .border-amber-500\/40, .border-\[\#C6A02C\]\/30, .border-yellow-500\/50) { border-color: #e6e6e3; }
+html.cl-light :is(.bg-luxury-gold\/10, .bg-luxury-gold\/20, .bg-amber-500\/10, .bg-amber-500\/20, .bg-amber-500\/5, .bg-yellow-500\/10, .bg-\[\#C6A02C\]\/10) { background-color: #f4f4f2; }
+html.cl-light :is(.bg-luxury-gold, .bg-amber-500, .bg-amber-400, .bg-amber-600, .bg-\[\#C5A059\], .bg-\[\#C6A02C\]) { background-color: #0b0b0b; color: #fff; }
+html.cl-light :is(.from-amber-500, .from-amber-600, .from-amber-400, .from-luxury-gold, .from-yellow-500) { --tw-gradient-from: #0b0b0b var(--tw-gradient-from-position); --tw-gradient-to: #0b0b0b var(--tw-gradient-to-position); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); color: #fff; }
+html.cl-light :is(.to-amber-600, .to-amber-500, .to-amber-700, .to-yellow-600, .to-luxury-gold-light, .via-amber-500, .via-yellow-500) { --tw-gradient-to: #0b0b0b var(--tw-gradient-to-position); }
+html.cl-light :is(.bg-luxury-gold, .bg-amber-500, .bg-amber-400, .bg-amber-600, .from-amber-500, .from-amber-600, .from-luxury-gold) :is(.text-black, .text-zinc-900, .text-neutral-900),
+html.cl-light :is(.bg-luxury-gold, .bg-amber-500, .bg-amber-400, .bg-amber-600, .from-amber-500, .from-amber-600, .from-luxury-gold):is(.text-black, .text-zinc-900, .text-neutral-900) { color: #fff; }
+html.cl-light .text-gradient-gold { background: none; -webkit-text-fill-color: currentColor; color: #0b0b0b; animation: none; }
+html.cl-light :is(.shadow-gold-glow, .shadow-amber-500\/20, .shadow-amber-500\/30) { box-shadow: 0 6px 18px -8px rgb(0 0 0 / .35); }
+html.cl-light :is(.hover\:bg-zinc-800, .hover\:bg-zinc-900, .hover\:bg-white\/5, .hover\:bg-white\/10, .hover\:bg-neutral-800):hover { background-color: #f4f4f2; }
+html.cl-light :is(.hover\:text-white, .hover\:text-zinc-300):hover { color: #0b0b0b; }
+
+/* old dark primary buttons: white pill on black -> ink pill */
+html.cl-light .bg-white.text-black { background-color: #0b0b0b; color: #fff; }
+html.cl-light .icon-btn { background: #fff; border-color: #e6e6e3; color: #0b0b0b; backdrop-filter: none; }
+
+/* photo overlays keep light-on-dark text */
+html.cl-light .cl-keep :is(.text-white, .text-white\/90, .text-white\/80, .text-zinc-200, .text-zinc-300) { color: #fff; }
+html.cl-light .cl-keep :is(.text-white\/70, .text-white\/60, .text-zinc-400, .text-gray-300) { color: rgb(255 255 255 / .75); }
+html.cl-light .cl-keep :is(.bg-black\/40, .bg-black\/50, .bg-black\/30, .bg-white\/10, .bg-white\/20) { background-color: rgb(0 0 0 / .35); }
+html.cl-light .cl-keep :is(.border-white\/10, .border-white\/20, .border-white\/30) { border-color: rgb(255 255 255 / .25); }
