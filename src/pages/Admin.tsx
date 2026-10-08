@@ -49,6 +49,7 @@ interface UserWithStatus {
   user_type: 'founder' | 'investor';
   created_at: string;
   roles: { role: string }[];
+  approved: boolean | null;
   subscription_status: string | null;
   subscription_plan: string | null;
   subscription_expires_at: string | null;
@@ -315,7 +316,7 @@ const Admin = () => {
         toast({ variant: "destructive", title: "User not found", description: `No account with email ${email}. They must sign up first.` });
         return;
       }
-      // Ensure they have base 'user' role too (so they're approved)
+      // Base 'user' role for permissions; approval is tracked separately via profiles.approved
       await supabase.from('user_roles').insert({ user_id: profile.id, role: 'user' });
       const { error } = await supabase
         .from('user_roles')
@@ -341,6 +342,13 @@ const Admin = () => {
         .eq('role', 'user');
 
       if (error) throw error;
+
+      const { error: profileErr } = await supabase
+        .from('profiles')
+        .update({ approved: false })
+        .eq('id', userId);
+
+      if (profileErr) throw profileErr;
 
       toast({
         title: "Access revoked",
@@ -507,7 +515,7 @@ const Admin = () => {
 
   const getStatus = (user: UserWithStatus) => {
     if (user.roles.some(r => r.role === 'admin')) return 'admin';
-    if (user.roles.some(r => r.role === 'user')) return 'approved';
+    if (user.approved) return 'approved';
     if (user.rejection_reason) return 'rejected';
     return 'pending';
   };
