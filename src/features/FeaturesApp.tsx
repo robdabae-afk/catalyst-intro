@@ -45,6 +45,9 @@ import Ticket from "./screens/Ticket";
 import Learn from "./screens/Learn";
 import Onboarding from "./screens/Onboarding";
 import Legal from "./screens/Legal";
+import Pricing from "./screens/Pricing";
+import ProLikes from "./screens/ProLikes";
+import ConciergeQueue from "./screens/ConciergeQueue";
 
 const BASE = "";
 
@@ -77,6 +80,7 @@ function Tabs({ cls }: { cls: string }) {
     { to: "events", label: "Events", I: "events" as IconName },
     { to: "people", label: "Directory", I: "mutual" as IconName },
     { to: "messages", label: "Messages", I: "send" as IconName },
+    { to: "/pricing", label: "Plans & purchases", I: "settings" as IconName },
     { to: "/settings", label: "Settings", I: "settings" as IconName },
     { to: "learn", label: "Learn", I: "edu" as IconName },
   ];
@@ -164,6 +168,10 @@ export default function FeaturesApp() {
             <Route path="watchlist" element={<ProfileReviewGate><Watchlist /></ProfileReviewGate>} />
             <Route path="inbox" element={<ProfileReviewGate><LiveInbox updates={<Notifications />} /></ProfileReviewGate>} />
             <Route path="me" element={<Me />} />
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="preview/pricing" element={<Pricing preview />} />
+            <Route path="pro/likes" element={<ProfileReviewGate><ProLikes /></ProfileReviewGate>} />
+            <Route path="manage/concierge" element={<ConciergeQueue />} />
             <Route path="swipe" element={<ProfileReviewGate><LiveSwipe /></ProfileReviewGate>} />
             <Route path="company/:id" element={<ProfileReviewGate><CompanyRoute /></ProfileReviewGate>} />
             <Route path="inbox/t/:id" element={<ProfileReviewGate><LiveThread /></ProfileReviewGate>} />

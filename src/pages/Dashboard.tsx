@@ -1,3 +1,5 @@
+import { useBilling } from "@/hooks/useBilling";
+import { SwipeLimit } from "@/features/screens/Pricing";
 import { useInAppFrame } from "@/components/AppFrameContext";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,14 +20,19 @@ import { Send, X, BadgeCheck, MapPin, Settings } from "lucide-react";
 export default function Dashboard({ embedded: embeddedProp = false }: { embedded?: boolean } = {}) {
   const embedded = useInAppFrame() || embeddedProp;
   const navigate = useNavigate();
-  const { user, isPro } = useAuth();
+  const { user } = useAuth();
+  const billing = useBilling();
+  const { isPro } = billing.entitlement;
+  const [swipeBusy, setSwipeBusy] = useState(false);
+  const swipeLock = useRef(false);
+  const [limit, setLimit] = useState(false);
   const { toast } = useToast();
   const unread = useUnreadMessages();
   const pending = usePendingRequests();
   const [menuOpen, setMenuOpen] = useState(false);
   const [cardIndex, setCardIndex] = useState(0);
   const [matchedProfile, setMatchedProfile] = useState<any>(null);
-  const [swipesRemaining, setSwipesRemaining] = useState<number | null>(null);
+  const swipesRemaining = billing.loading ? null : billing.entitlement.remaining;
   const [dragX, setDragX] = useState(0);
   const [passReasonTarget, setPassReasonTarget] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,7 +41,7 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { excludedIds } = useSwipeHistory(user?.id);
-  const [filters] = useState<DiscoverFilters>({ view: "all" });
+  const [filters, setFilters] = useState<DiscoverFilters>({ view: "all" });
   const { profiles, loading, hasMore, loadMore, adminViewer } = useDiscoverFeed(
     user?.id,
     (user?.user_type as "founder" | "investor" | null) ?? null,
@@ -50,18 +57,6 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
 
   useEffect(() => { setCardIndex(0); }, [user?.id, adminViewer]);
 
-  useEffect(() => {
-    if (!user?.id) return;
-    (async () => {
-      const { count } = await supabase
-        .from("swipes")
-        .select("*", { count: "exact", head: true })
-        .eq("swiper_id", user.id)
-        .eq("action", "like")
-        .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-      setSwipesRemaining(Math.max(0, 5 - (count ?? 0)));
-    })();
-  }, [user?.id]);
 
   // Auto-dismiss the pass-reason prompt if ignored
   useEffect(() => {
@@ -87,18 +82,24 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
   };
 
   const handleLike = async () => {
-    if (!currentProfile || !user) return;
-    const res = await expressInterest(currentProfile.id);
-    if (!res.ok) {
-      toast({ variant: "destructive", title: "Could not send interest" });
-    } else if (res.matched) {
-      setMatchedProfile(currentProfile);
-    }
-    if (!isPro && swipesRemaining !== null) setSwipesRemaining((s) => Math.max(0, (s ?? 0) - 1));
-    advance();
+    if (!currentProfile || !user || swipeLock.current) return;
+    if (!isPro && swipesRemaining === 0) { setLimit(true); setDragX(0); return; }
+    swipeLock.current = true; setSwipeBusy(true);
+    try {
+      const res = await expressInterest(currentProfile.id);
+      await billing.refresh();
+      if (!res.ok) {
+        if (res.error?.includes("DAILY_SWIPE_LIMIT")) setLimit(true);
+        else toast({ variant: "destructive", title: "Could not send interest", description: res.error });
+        setDragX(0); return;
+      }
+      if (res.matched) setMatchedProfile(currentProfile);
+      advance();
+    } finally { swipeLock.current = false; setSwipeBusy(false); }
   };
 
   const handlePass = async () => {
+    if (swipeLock.current) return;
     if (!currentProfile || !user) {
       advance();
       return;
@@ -233,6 +234,12 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
         </div>
       </div>
 
+      {isPro ? <div className="price-filter">
+        <label>Sector<input className="price-input" placeholder="e.g. Fintech" onChange={e=>{setCardIndex(0);setFilters(f=>({...f,industries:e.target.value?[e.target.value]:[]}));}} /></label>
+        <label>Stage<select onChange={e=>{setCardIndex(0);setFilters(f=>({...f,stages:e.target.value?[e.target.value]:[]}));}}><option value="">All stages</option>{["pre_seed","seed","series_a","series_b","growth"].map(x=><option key={x}>{x}</option>)}</select></label>
+        <label>Check size<select onChange={e=>{setCardIndex(0);setFilters(f=>({...f,checkBand:e.target.value as DiscoverFilters["checkBand"]}));}}><option value="">All checks</option>{["0-100k","100k-500k","500k-2m","2m+"].map(x=><option key={x}>{x}</option>)}</select></label>
+      </div> : <button className="price-filter" onClick={()=>navigate("/pricing")}>Advanced filters with Pro</button>}
+      {limit && !isPro && <div className="cf" style={{padding:16}}><SwipeLimit resetsAt={billing.entitlement.resetsAt}/><button className="btn ghost" onClick={()=>setLimit(false)}>Keep browsing</button></div>}
       {/* Card area */}
       <div
         className="flex-1 flex flex-col px-3"
@@ -247,11 +254,11 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
             <p style={{ color: "#74746D", fontSize: 15 }}>You've seen everyone for now.</p>
             {!isPro && (
               <button
-                onClick={() => navigate("/settings")}
+                onClick={() => navigate("/pricing")}
                 className="px-6 py-3 rounded-full text-sm font-semibold"
                 style={{ background: "#0B0B0B", color: "#FFFFFF" }}
               >
-                Go Pro — unlock the full directory
+                Go Pro for unlimited right swipes
               </button>
             )}
           </div>
@@ -460,6 +467,7 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
             {/* Like */}
             <button
               onClick={handleLike}
+              disabled={swipeBusy || billing.loading}
               className="flex items-center justify-center rounded-full"
               style={{
                 width: 52,
@@ -483,12 +491,12 @@ export default function Dashboard({ embedded: embeddedProp = false }: { embedded
         {!isPro && !outOfCards && !loading && (
           <div className="mt-1 text-center">
             <button
-              onClick={() => navigate("/settings")}
+              onClick={() => navigate("/pricing")}
               style={{ color: "#74746D", fontSize: 11.5 }}
             >
               Out of swipes?{" "}
               <span style={{ color: "#0B0B0B", fontWeight: 600, textDecoration: "underline" }}>
-                Go Pro to search the full directory
+                Go Pro for unlimited right swipes
               </span>
             </button>
           </div>
