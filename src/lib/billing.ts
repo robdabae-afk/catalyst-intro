@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { isAppShell } from "@/lib/platform";
 import { Capacitor } from "@capacitor/core";
 export type Product = "pro" | "concierge_one" | "concierge_two" | "messages_three" | "messages_six";
+export type BillingInterval = "month" | "year";
 export interface Entitlements { role?: "founder" | "investor"; isPro: boolean; credits: number; remaining: number; resetsAt: string; canBoost: boolean; views: number | null }
 export const FREE: Entitlements = { isPro: false, credits: 0, remaining: 5, resetsAt: "", canBoost: false, views: null };
 export const PRO_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_FOUNDER_PRICE || 29);
@@ -13,7 +14,7 @@ export async function billingRpc<T>(name: string, args?: Record<string, unknown>
 }
 // Payment adapter boundary. Native iOS never opens Stripe for digital entitlements.
 // RevenueCat/StoreKit can implement this interface while retaining the server snapshot contract.
-export interface PaymentProvider { checkout(sku: Product): Promise<void>; manage(): Promise<void> }
+export interface PaymentProvider { checkout(sku: Product, interval?: BillingInterval): Promise<void>; manage(): Promise<void> }
 async function stripeRedirect(body: Record<string, string>) {
  if (isAppShell() && Capacitor.getPlatform() === "ios") throw new Error("In-app purchases for iPhone are not connected yet. No payment was taken.");
  const { data, error } = await supabase.functions.invoke("billing-checkout", { body });
@@ -27,4 +28,4 @@ async function stripeRedirect(body: Record<string, string>) {
  if (url.protocol !== "https:" || !["checkout.stripe.com","billing.stripe.com"].includes(url.hostname)) throw new Error("Invalid payment destination");
  window.location.assign(url.href);
 }
-export const payments: PaymentProvider = { checkout: (sku) => stripeRedirect({ sku }), manage: () => stripeRedirect({ action: "portal" }) };
+export const payments: PaymentProvider = { checkout: (sku, interval = "month") => stripeRedirect({ sku, interval }), manage: () => stripeRedirect({ action: "portal" }) };

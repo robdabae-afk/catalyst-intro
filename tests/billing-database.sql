@@ -38,3 +38,15 @@ do $$begin insert into messages(sender_id,receiver_id,content) values(auth.uid()
 do $$begin perform billing_sync_subscription('evil',auth.uid(),'evil','active',now()+interval '1 year','evil');raise exception 'Client can mint Pro';exception when insufficient_privilege then null;end$$;
 reset role;
 select 'billing database assertions passed';
+
+set request.jwt.claim.sub='00000000-0000-0000-0000-000000000050';
+select billing_sync_subscription('annual-start',auth.uid(),'sub_annual','active',now()+interval '10 months','annual-1','year',now()-interval '2 months 1 day');
+select assert_true((billing_snapshot()->>'credits')::int=3,'Annual earns one credit per elapsed month');
+select billing_sync_subscription('annual-retry',auth.uid(),'sub_annual','active',now()+interval '10 months','annual-1','year',now()-interval '2 months 1 day');
+select assert_true((billing_snapshot()->>'credits')::int=3,'Annual retries and snapshots do not mint credits');
+select billing_sync_subscription('annual-unpaid-update',auth.uid(),'sub_annual','past_due',now()+interval '10 months',null,'year',now()-interval '4 months');
+select assert_true((billing_snapshot()->>'credits')::int=3,'Unpaid annual state cannot accrue credits');
+set role authenticated;
+do $$begin perform billing_accrue_annual(auth.uid());raise exception 'Client can accrue arbitrary credits';exception when insufficient_privilege then null;end$$;
+reset role;
+select 'annual credit assertions passed';

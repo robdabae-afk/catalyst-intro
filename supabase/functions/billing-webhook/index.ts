@@ -1,4 +1,5 @@
 import Stripe from "npm:stripe@22.2.0";
+import { isBillingInterval, proPriceConfig } from "../_shared/billing-catalog.ts";
 import { services, json, check } from "../_shared/billing.ts";
 Deno.serve(async (req) => {
  if (req.method !== "POST") return json({ error: "POST required" }, 405);
@@ -42,7 +43,11 @@ Deno.serve(async (req) => {
    const { data: order, error: oe } = await db.from("billing_orders").select("user_id,sku,stripe_session_id").eq("id",sub.metadata.order_id).single(); check(oe);
    if (!order || order.sku !== "pro" || order.user_id !== sub.metadata.user_id || !order.stripe_session_id) throw new Error("Subscription order mismatch");
    const checkout = await stripe.checkout.sessions.retrieve(order.stripe_session_id);
-   if (checkout.subscription !== sub.id || sub.items.data.length !== 1 || ![Deno.env.get("STRIPE_PRICE_PRO_FOUNDER"), Deno.env.get("STRIPE_PRICE_PRO_INVESTOR")].includes(sub.items.data[0].price.id)) throw new Error("Subscription product mismatch");
+   const interval = checkout.metadata?.interval;
+   const role = checkout.metadata?.role;
+   if(!isBillingInterval(interval) || (role !== "founder" && role !== "investor")) throw new Error("Invalid subscription metadata");
+   const config = proPriceConfig(role,interval);
+   if (checkout.subscription !== sub.id || sub.items.data.length !== 1 || sub.items.data[0].quantity !== 1 || sub.items.data[0].price.id !== Deno.env.get(config.priceEnv) || sub.items.data[0].price.unit_amount !== config.amount || sub.items.data[0].price.currency !== "usd" || sub.items.data[0].price.recurring?.interval !== interval || sub.items.data[0].price.recurring.interval_count !== 1) throw new Error("Subscription product mismatch");
    const item = sub.items.data[0];
    const invoice = typeof sub.latest_invoice === "object" ? sub.latest_invoice : null;
    const paid = invoice?.status === "paid";
@@ -51,6 +56,7 @@ Deno.serve(async (req) => {
     p_event: event.id, p_user: order.user_id, p_subscription: sub.id, p_status: sub.status,
     p_expires: new Date(item.current_period_end * 1000).toISOString(),
     p_period: paid ? String(item.current_period_start) : null,
+    p_interval: interval, p_start: new Date(item.current_period_start * 1000).toISOString(),
    }); check(error);
    const {error:paidError}=await db.from("billing_orders").update({status:paid ? "paid" : "pending"}).eq("id",sub.metadata.order_id).eq("status","pending"); check(paidError);
   }

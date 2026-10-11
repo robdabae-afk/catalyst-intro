@@ -10,3 +10,13 @@ export function isSku(value: unknown): value is Sku { return typeof value === "s
 export function purchaseAmount(sku: Sku, isPro: boolean, proAmount = 2900) {
  return sku === "pro" ? proAmount : Math.round(PRODUCTS[sku].amount * (isPro && PRODUCTS[sku].matches ? 0.8 : 1));
 }
+
+export type BillingInterval = "month" | "year";
+export type MemberRole = "founder" | "investor";
+export function isBillingInterval(value: unknown): value is BillingInterval { return value === "month" || value === "year"; }
+export function proPriceConfig(role: MemberRole, interval: BillingInterval) {
+ const monthly = role === "investor" ? 1900 : 2900;
+ return { amount: interval === "year" ? monthly * 10 : monthly,
+  priceEnv: "STRIPE_PRICE_PRO_" + role.toUpperCase() + "_" + (interval === "year" ? "YEARLY" : "MONTHLY"),
+  interval };
+}

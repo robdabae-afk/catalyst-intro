@@ -1,7 +1,8 @@
 begin;
 create table public.billing_entitlements (
  user_id uuid not null references auth.users(id) on delete cascade, provider text not null check(provider in ('stripe','apple','google','revenuecat')),
- external_id text not null, status text not null, expires_at timestamptz, period_key text, updated_at timestamptz default now(),
+ external_id text not null, status text not null, expires_at timestamptz, period_key text,
+ billing_interval text not null default 'month' check(billing_interval in ('month','year')), credit_anchor timestamptz, updated_at timestamptz default now(),
  primary key(user_id,provider), unique(provider,external_id)
 );
 create table public.billing_wallets (
@@ -42,13 +43,31 @@ create function public.billing_is_pro(p_user uuid) returns boolean language sql 
  select exists(select 1 from billing_entitlements where user_id=p_user and status in ('active','trialing') and expires_at>now())
 $$;
 create function public.billing_my_pro() returns boolean language sql stable security definer set search_path=public,pg_temp as $$ select billing_is_pro(auth.uid()) $$;
-create function public.billing_snapshot() returns jsonb language sql stable security definer set search_path=public,pg_temp as $$
- select jsonb_build_object('isPro',billing_is_pro(auth.uid()),'role',(select user_type from profiles where id=auth.uid()),'credits',coalesce((select credits from billing_wallets where user_id=auth.uid()),0),
+-- Annual payments retain the monthly credit benefit. Accrue earned months lazily,
+-- under the same per-member transaction lock; never grant all 12 up front.
+create function public.billing_accrue_annual(p_user uuid) returns void language plpgsql security definer set search_path=public,pg_temp as $$
+ declare e billing_entitlements; i integer; due timestamptz; k text; begin
+ if p_user is null then return; end if;
+ perform pg_advisory_xact_lock(hashtextextended(p_user::text,871));
+ select * into e from billing_entitlements where user_id=p_user and provider='stripe' and billing_interval='year' and status='active' and expires_at>now() and credit_anchor is not null;
+ if not found then return; end if;
+ for i in 0..11 loop
+ due:=((e.credit_anchor at time zone 'UTC')+make_interval(months=>i)) at time zone 'UTC';
+ if due>now() or due>=e.expires_at then exit; end if;
+ k:='stripe:'||e.external_id||':'||e.period_key||case when i=0 then '' else ':month-'||i::text end;
+ insert into billing_credit_grants values(p_user,k) on conflict do nothing;
+ if found then insert into billing_wallets(user_id,credits) values(p_user,1) on conflict(user_id) do update set credits=billing_wallets.credits+1; end if;
+ end loop;
+ end $$;
+create function public.billing_snapshot() returns jsonb language plpgsql security definer set search_path=public,pg_temp as $$
+ begin
+ perform billing_accrue_annual(auth.uid());
+ return jsonb_build_object('isPro',billing_is_pro(auth.uid()),'role',(select user_type from profiles where id=auth.uid()),'credits',coalesce((select credits from billing_wallets where user_id=auth.uid()),0),
  'remaining',greatest(0,5-(select count(*) from billing_swipe_usage where user_id=auth.uid() and day=(now() at time zone 'UTC')::date)),
  'resetsAt',(((now() at time zone 'UTC')::date+1)::timestamp at time zone 'UTC'),
  'canBoost',billing_is_pro(auth.uid()) and not exists(select 1 from billing_wallets where user_id=auth.uid() and boost_used_at>now()-interval '7 days'),
- 'views',case when billing_is_pro(auth.uid()) then (select count(*) from billing_profile_views where profile_id=auth.uid() and day>=((now() at time zone 'UTC')::date-30)) else null end)
-$$;
+ 'views',case when billing_is_pro(auth.uid()) then (select count(*) from billing_profile_views where profile_id=auth.uid() and day>=((now() at time zone 'UTC')::date-30)) else null end);
+ end $$;
 create function public.billing_charge_swipe(p_user uuid,p_kind text,p_target text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
  declare d date:=(now() at time zone 'UTC')::date; begin
  perform pg_advisory_xact_lock(hashtextextended(p_user::text,871));
@@ -104,6 +123,7 @@ create function public.billing_send_instant(p_target uuid,p_content text,p_reque
  if u is null or u=p_target or p_request is null or length(btrim(p_content)) not between 1 and 4000 then raise exception 'Invalid message'; end if;
  if not public.is_approved(u) or not exists(select 1 from profiles where id=p_target and approved and not coalesce(is_hidden,false) and not coalesce(is_test_account,false) and not coalesce(is_flagged,false)) then raise exception 'Profile unavailable'; end if;
  perform pg_advisory_xact_lock(hashtextextended(u::text,871));
+ perform billing_accrue_annual(u);
  select message_id into m from billing_instant_sends where user_id=u and request_id=p_request;
  if m is not null then return m; end if;
  if exists(select 1 from matches where user_1_id=least(u,p_target) and user_2_id=greatest(u,p_target) and status='unmatched') then raise exception 'This connection was closed'; end if;
@@ -141,12 +161,15 @@ create function public.billing_apply_purchase(p_event text,p_order uuid,p_sessio
  else
  insert into concierge_jobs(order_id,user_id,match_count) values(o.id,o.user_id,case o.sku when 'concierge_one' then 1 else 2 end);
  end if; end $$;
-create function public.billing_sync_subscription(p_event text,p_user uuid,p_subscription text,p_status text,p_expires timestamptz,p_period text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
+create function public.billing_sync_subscription(p_event text,p_user uuid,p_subscription text,p_status text,p_expires timestamptz,p_period text,p_interval text default 'month',p_start timestamptz default null) returns void language plpgsql security definer set search_path=public,pg_temp as $$
  begin
  perform pg_advisory_xact_lock(hashtextextended(p_user::text,871));
  insert into billing_events values('stripe',p_event,now()) on conflict do nothing; if not found then return; end if;
- insert into billing_entitlements(user_id,provider,external_id,status,expires_at,period_key) values(p_user,'stripe',p_subscription,p_status,p_expires,p_period)
- on conflict(user_id,provider) do update set external_id=excluded.external_id,status=excluded.status,expires_at=excluded.expires_at,period_key=excluded.period_key,updated_at=now();
+ if p_interval not in ('month','year') or (p_interval='year' and p_period is not null and p_start is null) then raise exception 'Invalid billing interval or annual anchor'; end if;
+ insert into billing_entitlements(user_id,provider,external_id,status,expires_at,period_key,billing_interval,credit_anchor) values(p_user,'stripe',p_subscription,p_status,p_expires,p_period,p_interval,case when p_period is not null then p_start end)
+ on conflict(user_id,provider) do update set external_id=excluded.external_id,status=excluded.status,expires_at=excluded.expires_at,period_key=case when excluded.external_id=billing_entitlements.external_id then coalesce(excluded.period_key,billing_entitlements.period_key) else excluded.period_key end,billing_interval=excluded.billing_interval,
+ credit_anchor=case when excluded.period_key is not null then excluded.credit_anchor when excluded.external_id=billing_entitlements.external_id then billing_entitlements.credit_anchor else null end,updated_at=now();
+ if p_interval='year' then perform billing_accrue_annual(p_user); return; end if;
  if p_status='active' and p_expires>now() and p_period is not null then
  insert into billing_credit_grants values(p_user,'stripe:'||p_subscription||':'||p_period) on conflict do nothing;
  if found then insert into billing_wallets(user_id,credits) values(p_user,1) on conflict(user_id) do update set credits=billing_wallets.credits+1; end if;

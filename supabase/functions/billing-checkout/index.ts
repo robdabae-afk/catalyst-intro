@@ -1,5 +1,5 @@
 import { services, cors, json, check } from "../_shared/billing.ts";
-import { isSku, PRODUCTS, purchaseAmount } from "../_shared/billing-catalog.ts";
+import { isSku, PRODUCTS, purchaseAmount, isBillingInterval, proPriceConfig } from "../_shared/billing-catalog.ts";
 Deno.serve(async (req) => {
  if (req.method === "OPTIONS") return new Response(null, { headers: cors });
  if (req.method !== "POST") return json({ error: "POST required" }, 405);
@@ -7,7 +7,7 @@ Deno.serve(async (req) => {
   const { stripe, db } = services();
   const { data: { user }, error } = await db.auth.getUser((req.headers.get("Authorization") ?? "").replace(/^Bearer /, ""));
   if (error || !user) return json({ error: "Sign in to continue" }, 401);
-  const { sku, action } = await req.json();
+  const { sku, action, interval = "month" } = await req.json();
   const app = Deno.env.get("APP_URL");
   if (!app || new URL(app).protocol !== "https:") return json({ error: "APP_URL must be configured with HTTPS" }, 503);
   if (action === "portal") {
@@ -28,17 +28,23 @@ Deno.serve(async (req) => {
    const { data: ent, error: e } = await db.from("billing_entitlements").select("external_id").eq("user_id", user.id).eq("provider","stripe").maybeSingle(); check(e);
    if (ent) { const sub = await stripe.subscriptions.retrieve(ent.external_id); if (!["canceled","incomplete_expired"].includes(sub.status)) return json({ error: "Manage your existing subscription" }, 409); }
   }
-  const product = PRODUCTS[sku], priceId = Deno.env.get(sku === "pro" ? (profile.user_type === "investor" ? "STRIPE_PRICE_PRO_INVESTOR" : "STRIPE_PRICE_PRO_FOUNDER") : product.priceEnv);
+  if (sku === "pro" && (!isBillingInterval(interval) || !["founder","investor"].includes(profile.user_type))) return json({error:"Invalid subscription interval or member role"},400);
+  const product = PRODUCTS[sku];
+  const proConfig = proPriceConfig(profile.user_type === "investor" ? "investor" : "founder", isBillingInterval(interval) ? interval : "month");
+  const priceId = Deno.env.get(sku === "pro" ? proConfig.priceEnv : product.priceEnv);
   if (!priceId) return json({ error: "This product is not configured yet" }, 503);
   const price = await stripe.prices.retrieve(priceId);
-  if (!price.active || price.currency !== "usd" || !price.unit_amount || price.type !== (sku === "pro" ? "recurring" : "one_time") || (sku === "pro" && (price.recurring?.interval !== "month" || price.recurring.interval_count !== 1))) return json({ error: "Price configuration mismatch" }, 503);
-  if (sku !== "pro" && price.unit_amount !== product.amount) return json({ error: "Price does not match the advertised product" }, 503);
+  if (!price.active || price.currency !== "usd" || !price.unit_amount || price.type !== (sku === "pro" ? "recurring" : "one_time") || (sku === "pro" && (price.recurring?.interval !== proConfig.interval || price.recurring.interval_count !== 1))) return json({ error: "Price configuration mismatch" }, 503);
+  if (price.unit_amount !== (sku === "pro" ? proConfig.amount : product.amount)) return json({ error: "Price does not match the advertised product" }, 503);
   const amount = purchaseAmount(sku, pro === true, price.unit_amount);
   if (sku === "pro") {
    const { data: pending, error: pendingError } = await db.from("billing_orders").select("id,stripe_session_id").eq("user_id",user.id).eq("sku","pro").eq("status","pending").maybeSingle(); check(pendingError);
    if (pending?.stripe_session_id) {
     const previous = await stripe.checkout.sessions.retrieve(pending.stripe_session_id);
-    if(previous.status === "open" && previous.url) return json({url:previous.url});
+    if(previous.status === "open" && previous.url) {
+     if(previous.metadata?.interval === interval) return json({url:previous.url});
+     await stripe.checkout.sessions.expire(previous.id);
+    }
     if(previous.status === "complete") return json({error:"Your subscription is awaiting confirmation. Please refresh shortly."},409);
     const {error:expireError}=await db.from("billing_orders").update({status:"expired"}).eq("id",pending.id); check(expireError);
    } else if (pending) return json({error:"A checkout is already being prepared. Please retry shortly."},409);
@@ -51,7 +57,7 @@ Deno.serve(async (req) => {
    if (!c.valid || c.percent_off !== 20 || c.amount_off || c.applies_to) return json({ error: "Discount must be an unrestricted 20% coupon" }, 503);
   }
   const { data: order, error: oe } = await db.from("billing_orders").insert({ user_id: user.id, sku, amount }).select("id").single(); check(oe);
-  const metadata = { order_id: order!.id, user_id: user.id, sku, billing_version: "1" };
+  const metadata = { order_id: order!.id, user_id: user.id, sku, interval: sku === "pro" ? interval : "one_time", role: profile.user_type, billing_version: "1" };
   let session;
   try { session = await stripe.checkout.sessions.create({
    mode: product.mode, customer_email: user.email, client_reference_id: user.id,

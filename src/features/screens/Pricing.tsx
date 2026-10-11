@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useBilling } from "@/hooks/useBilling";
-import { billingRpc, FREE, payments, PRO_DISPLAY_PRICE, INVESTOR_DISPLAY_PRICE, type Product } from "@/lib/billing";
+import { billingRpc, FREE, payments, PRO_DISPLAY_PRICE, INVESTOR_DISPLAY_PRICE, type Product, type BillingInterval } from "@/lib/billing";
 
 import "./pricing.css";
 
@@ -13,6 +13,7 @@ export default function Pricing({ preview = false }: { preview?: boolean }) {
  const billing = useBilling(!preview);
  const [demo, setDemo] = useState<"free"|"pro"|"limit">("free");
  const [demoRole, setDemoRole] = useState<"founder"|"investor">("founder");
+ const [interval, setInterval] = useState<BillingInterval>("month");
  const [busy, setBusy] = useState<string|null>(null);
  const [notice, setNotice] = useState("");
  const [params] = useSearchParams();
@@ -21,7 +22,7 @@ export default function Pricing({ preview = false }: { preview?: boolean }) {
   if (preview) { setNotice("Preview only. Checkout will use Stripe test mode once the prices and keys are configured."); return; }
   if (!billing.uid) { setNotice("Sign in to purchase a plan or a pack."); return; }
   setBusy(sku); setNotice("");
-  try { await payments.checkout(sku); } catch(e) { setNotice(e instanceof Error ? e.message : "Checkout unavailable"); } finally { setBusy(null); }
+  try { await payments.checkout(sku, interval); } catch(e) { setNotice(e instanceof Error ? e.message : "Checkout unavailable"); } finally { setBusy(null); }
  };
  const action = async (kind: "boost"|"manage") => {
   if (preview) { setNotice(kind === "boost" ? "Preview boost activated. Your profile moves higher for 24 hours." : "Preview only. Billing management opens in Stripe."); return; }
@@ -31,6 +32,7 @@ export default function Pricing({ preview = false }: { preview?: boolean }) {
  const discount = ent.isPro;
  const role = preview ? demoRole : ent.role;
  const monthlyPrice = role === "investor" ? INVESTOR_DISPLAY_PRICE : PRO_DISPLAY_PRICE;
+ const displayedPrice = interval === "year" ? monthlyPrice * 10 : monthlyPrice;
  return <div className="pricing">
   {preview && <div className="price-preview"><span className="mono">Interactive preview · no payments</span><div role="group" aria-label="Preview account state">{(["free","pro","limit"] as const).map(x=><button key={x} className={"chip"+(demo===x?" on":"")} onClick={()=>{setDemo(x);setNotice("");}}>{x === "limit" ? "Swipe limit" : x === "pro" ? "Pro member" : "Free member"}</button>)}</div></div>}
   {preview && <div className="row" role="group" aria-label="Preview member type">{(["founder","investor"] as const).map(r=><button className={"chip"+(demoRole===r?" on":"")} key={r} onClick={()=>setDemoRole(r)}>{r}</button>)}</div>}
@@ -43,7 +45,7 @@ export default function Pricing({ preview = false }: { preview?: boolean }) {
   {preview && demo === "limit" && <SwipeLimit />}
   <div className="price-plans">
    <section className="card price-plan"><span className="mono">Start here</span><h2>Free</h2><div className="price-number">$0<span> / always</span></div><p className="dim">Find your people, one considered connection at a time.</p><div className="price-benefits"><p>5 right swipes each day</p><p>Browse approved profiles</p><p>Chat with your connections</p><p>Purchase a pack when you need it</p></div><Link to={preview?"/preview/pricing":"/people/swipe"} className="btn ghost">{ent.isPro ? "Browse profiles" : "Your starting point"}</Link></section>
-   <section className="card price-plan price-pro"><div className="row"><span className="mono">Catalyst Pro</span><span className="sample">{ent.isPro ? "YOUR PLAN" : "MORE POSSIBILITIES"}</span></div><h2>Build momentum.</h2><div className="price-number">${monthlyPrice}<span> / month</span></div><p className="dim">Less waiting. More useful introductions.</p><div className="price-benefits">{benefits.map(b=><p key={b}>{b}</p>)}</div><button className="btn" disabled={!!busy || (!preview && billing.loading)} onClick={()=>void (ent.isPro?action("manage"):buy("pro"))}>{busy === "pro" ? "Opening checkout…" : ent.isPro ? "Manage subscription" : "Get Pro"}</button><p className="note">Monthly subscription. Cancel in billing settings. Founder Pro $29/month. Investor Pro $19/month.</p></section>
+   <section className="card price-plan price-pro"><div className="row"><span className="mono">Catalyst Pro</span><span className="sample">{ent.isPro ? "YOUR PLAN" : "MORE POSSIBILITIES"}</span></div><h2>Build momentum.</h2><div className="row" role="group" aria-label="Subscription billing interval">{(["month","year"] as const).map(i=><button key={i} aria-pressed={interval===i} disabled={!!busy} className={"chip"+(interval===i?" on":"")} onClick={()=>setInterval(i)}>{i==="year"?"Yearly · 2 months free":"Monthly"}</button>)}</div><div className="price-number">${displayedPrice}<span> / {interval==="year"?"year":"month"}</span></div><p className="dim">Less waiting. More useful introductions.</p><div className="price-benefits">{benefits.map(b=><p key={b}>{b}</p>)}</div><button className="btn" disabled={!!busy || (!preview && billing.loading)} onClick={()=>void (ent.isPro?action("manage"):buy("pro"))}>{busy === "pro" ? "Opening checkout…" : ent.isPro ? "Manage subscription" : "Get Pro"}</button><p className="note">{interval==="year" ? "Billed annually. Founder Pro $290/year. Investor Pro $190/year. Two months free." : "Billed monthly. Founder Pro $29/month. Investor Pro $19/month."} Cancel renewal in billing settings.</p></section>
   </div>
   {ent.isPro && <section className="price-member card"><div><span className="mono">Your Pro tools</span><h2>{ent.views ?? 0} profile views</h2><p className="note">Last 30 days · one view per member per day</p></div><div><p>{ent.credits} instant message {ent.credits===1?"credit":"credits"}</p><div className="row"><Link className="btn ghost sm" to={preview?"/preview/pricing":"/pro/likes"}>See your likes</Link><button className="btn sm" disabled={!!busy || !ent.canBoost} onClick={()=>void action("boost")}>{ent.canBoost ? "Use weekly boost" : "Boost used this week"}</button></div></div></section>}
   <div className="sec"><h2>A personal introduction.</h2><span className="mono">Concierge</span></div><p className="dim">Our team finds a fit and connects you. These are introductions, not investment guarantees.</p>
