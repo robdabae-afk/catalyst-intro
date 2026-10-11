@@ -12,6 +12,13 @@ Deno.serve(async (req) => {
  if (event.livemode) return json({ error: "Live payments are disabled" }, 400);
  try {
   const object = event.data.object;
+  if(event.type === "checkout.session.expired") {
+   const session=object as Stripe.Checkout.Session;
+   if(session.metadata?.billing_version==="1") {
+    const {error}=await db.from("billing_orders").update({status:"expired"}).eq("stripe_session_id",session.id).eq("status","pending");check(error);
+   }
+   return json({received:true});
+  }
   let subId: string | null = null;
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
    const session = await stripe.checkout.sessions.retrieve((object as Stripe.Checkout.Session).id);
@@ -35,7 +42,7 @@ Deno.serve(async (req) => {
    const { data: order, error: oe } = await db.from("billing_orders").select("user_id,sku,stripe_session_id").eq("id",sub.metadata.order_id).single(); check(oe);
    if (!order || order.sku !== "pro" || order.user_id !== sub.metadata.user_id || !order.stripe_session_id) throw new Error("Subscription order mismatch");
    const checkout = await stripe.checkout.sessions.retrieve(order.stripe_session_id);
-   if (checkout.subscription !== sub.id || sub.items.data.length !== 1 || sub.items.data[0].price.id !== Deno.env.get("STRIPE_PRICE_PRO")) throw new Error("Subscription product mismatch");
+   if (checkout.subscription !== sub.id || sub.items.data.length !== 1 || ![Deno.env.get("STRIPE_PRICE_PRO_FOUNDER"), Deno.env.get("STRIPE_PRICE_PRO_INVESTOR")].includes(sub.items.data[0].price.id)) throw new Error("Subscription product mismatch");
    const item = sub.items.data[0];
    const invoice = typeof sub.latest_invoice === "object" ? sub.latest_invoice : null;
    const paid = invoice?.status === "paid";
@@ -45,6 +52,7 @@ Deno.serve(async (req) => {
     p_expires: new Date(item.current_period_end * 1000).toISOString(),
     p_period: paid ? String(item.current_period_start) : null,
    }); check(error);
+   const {error:paidError}=await db.from("billing_orders").update({status:paid ? "paid" : "pending"}).eq("id",sub.metadata.order_id).eq("status","pending"); check(paidError);
   }
   return json({ received: true });
  } catch (e) { console.error("billing-webhook", event.id, e); return json({ error: "Fulfillment failed; retry required" }, 500); }

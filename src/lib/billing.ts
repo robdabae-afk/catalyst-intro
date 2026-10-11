@@ -2,9 +2,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { isAppShell } from "@/lib/platform";
 import { Capacitor } from "@capacitor/core";
 export type Product = "pro" | "concierge_one" | "concierge_two" | "messages_three" | "messages_six";
-export interface Entitlements { isPro: boolean; credits: number; remaining: number; resetsAt: string; canBoost: boolean; views: number | null }
+export interface Entitlements { role?: "founder" | "investor"; isPro: boolean; credits: number; remaining: number; resetsAt: string; canBoost: boolean; views: number | null }
 export const FREE: Entitlements = { isPro: false, credits: 0, remaining: 5, resetsAt: "", canBoost: false, views: null };
-export const PRO_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_MONTHLY_PRICE || 29);
+export const PRO_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_FOUNDER_PRICE || 29);
+export const INVESTOR_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_INVESTOR_PRICE || 19);
 export async function billingRpc<T>(name: string, args?: Record<string, unknown>): Promise<T> {
  const { data, error } = await (supabase as any).rpc(name, args);
  if (error) throw new Error(error.message);
