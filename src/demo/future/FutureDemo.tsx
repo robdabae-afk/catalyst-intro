@@ -152,7 +152,93 @@ function Disclosure({
     </details>
   );
 }
-function Detail() {
+type Followup = { text: string; status: "pending" | "approved" | "declined" };
+function FollowupQuestion({
+  question,
+  onChange,
+}: {
+  question?: Followup;
+  onChange: (q: Followup) => void;
+}) {
+  const [draft, setDraft] = useState("");
+  return (
+    <Disclosure title="One follow-up question">
+      <p>
+        One question per investor, per company. It reaches the founder only
+        after founder approval. No chat, calls or ongoing conversation.
+      </p>
+      {question ? (
+        <>
+          <p role="status">
+            {question.status === "pending"
+              ? "Awaiting founder approval. Not delivered."
+              : question.status === "approved"
+                ? "Founder approved. Demo question delivered."
+                : "Founder declined. Question not delivered."}
+          </p>
+          <blockquote>{question.text}</blockquote>
+          {question.status === "pending" && (
+            <details className="fd-founder-preview">
+              <summary>Preview founder review (demo only)</summary>
+              <p>
+                Simulate the founder approving or declining this one question.
+                This control is not an investor permission in a real product.
+              </p>
+              <div className="fd-review-actions">
+                <button
+                  className="fd-button"
+                  onClick={() => onChange({ ...question, status: "approved" })}
+                >
+                  Simulate founder approval
+                </button>
+                <button
+                  className="fd-button fd-secondary"
+                  onClick={() => onChange({ ...question, status: "declined" })}
+                >
+                  Simulate founder decline
+                </button>
+              </div>
+            </details>
+          )}
+          <p className="fd-small">
+            Your one question is used. Demo only; nothing is sent to a real
+            person.
+          </p>
+        </>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!question && draft.trim())
+              onChange({ text: draft.trim(), status: "pending" });
+          }}
+        >
+          <label htmlFor="followup">Your single follow-up</label>
+          <input
+            id="followup"
+            maxLength={500}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="One clarification about the disclosures"
+          />
+          <button className="fd-button" disabled={!draft.trim()}>
+            Submit for founder approval
+          </button>
+          <p className="fd-small">
+            Not delivered unless approved. No second question.
+          </p>
+        </form>
+      )}
+    </Disclosure>
+  );
+}
+function Detail({
+  questions,
+  onQuestion,
+}: {
+  questions: Record<string, Followup>;
+  onQuestion: (id: string, q: Followup) => void;
+}) {
   const { id } = useParams();
   const s = startups.find((s) => s.id === id);
   if (!s) return <Missing />;
@@ -401,6 +487,11 @@ function Detail() {
           Founder-published answers. No open messaging.
         </span>
       </Disclosure>
+      <FollowupQuestion
+        key={s.id}
+        question={questions[s.id]}
+        onChange={(q) => onQuestion(s.id, q)}
+      />
       <Link className="fd-button" to={"/invest/" + s.id}>
         Invest in {s.name}
         <ArrowUpRight size={18} />
@@ -660,6 +751,7 @@ function ScrollTop() {
 }
 export default function FutureDemo() {
   const [holdings, setHoldings] = useState(initial);
+  const [questions, setQuestions] = useState<Record<string, Followup>>({});
   return (
     <BrowserRouter basename="/demo">
       <ScrollTop />
@@ -685,7 +777,27 @@ export default function FutureDemo() {
           <main className="fd-main">
             <Routes>
               <Route path="/" element={<Discover />} />
-              <Route path="/startup/:id" element={<Detail />} />
+              <Route
+                path="/startup/:id"
+                element={
+                  <Detail
+                    questions={questions}
+                    onQuestion={(id, q) =>
+                      setQuestions((old) => {
+                        const existing = old[id];
+                        if (existing && existing.status !== "pending")
+                          return old;
+                        return {
+                          ...old,
+                          [id]: existing
+                            ? { ...existing, status: q.status }
+                            : q,
+                        };
+                      })
+                    }
+                  />
+                }
+              />
               <Route
                 path="/invest/:id"
                 element={

@@ -670,3 +670,30 @@
 .fd-terms {
   gap: 14px;
 }
+.fd-founder-preview {
+  background: var(--soft);
+  padding: 14px;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+.fd-founder-preview summary {
+  font-size: 11px;
+  padding: 4px 0;
+}
+.fd blockquote {
+  margin: 16px 0;
+  padding: 16px;
+  border-left: 2px solid var(--ink);
+  background: var(--soft);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.fd-review-actions {
+  display: flex;
+  gap: 8px;
+}
+.fd-review-actions .fd-button {
+  font-size: 11px;
+  margin-top: 0;
+}
