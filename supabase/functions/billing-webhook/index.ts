@@ -21,6 +21,17 @@ Deno.serve(async (req) => {
    }
    return json({received:true});
   }
+  if(event.type==="charge.refunded") {
+   const charge=await stripe.charges.retrieve((object as Stripe.Charge).id);assertMode(charge,live);
+   const pi=typeof charge.payment_intent==="string"?charge.payment_intent:charge.payment_intent?.id;
+   if(!pi) return json({received:true});
+   const sessions=await stripe.checkout.sessions.list({payment_intent:pi,limit:2});
+   if(sessions.data.length!==1) return json({received:true,manualReview:true});
+   const session=sessions.data[0];assertMode(session,live);
+   if(session.metadata?.billing_version!=="1") return json({received:true});
+   const {error}=await db.rpc("billing_refund",{p_event:event.id,p_order:session.metadata.order_id,p_session:session.id,p_charge:charge.id,p_amount:charge.amount,p_refunded:charge.amount_refunded,p_currency:charge.currency});check(error);
+   return json({received:true});
+  }
   let subId: string | null = null;
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
    const session = await stripe.checkout.sessions.retrieve((object as Stripe.Checkout.Session).id);

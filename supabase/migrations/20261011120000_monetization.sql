@@ -15,6 +15,7 @@ create policy billing_token_read on token_transactions for select to authenticat
 create policy billing_token_admin_write on token_transactions for all to authenticated using(public.has_role(auth.uid(),'admin')) with check(public.has_role(auth.uid(),'admin'));
 create policy billing_instant_read on instant_messages for select to authenticated using(sender_id=auth.uid() or receiver_id=auth.uid() or public.has_role(auth.uid(),'admin'));
 grant select on token_transactions,instant_messages to authenticated;
+grant insert,update,delete on token_transactions to authenticated; -- RLS restricts all writes to admins
 grant all on token_transactions,instant_messages to service_role;
 -- Only read-state changes are client writable, never sender/content/cost.
 grant update(read,read_at) on instant_messages to authenticated;
@@ -74,7 +75,7 @@ create table public.billing_events (provider text not null,event_id text not nul
 create table public.billing_credit_grants (user_id uuid references auth.users(id) on delete cascade,grant_key text not null,primary key(user_id,grant_key));
 create table public.concierge_jobs (
  id uuid primary key default gen_random_uuid(),order_id uuid not null unique references public.billing_orders(id),user_id uuid not null references auth.users(id) on delete cascade,
- match_count integer not null check(match_count in (1,2)),status text not null default 'queued' check(status in ('queued','fulfilled')),
+ match_count integer not null check(match_count in (1,2)),status text not null default 'queued' check(status in ('queued','fulfilled','cancelled')),
  fulfilled_profiles uuid[],note text,fulfilled_by uuid references auth.users(id),fulfilled_at timestamptz,created_at timestamptz not null default now()
 );
 create table public.billing_swipe_usage (
@@ -232,6 +233,44 @@ create function public.billing_apply_purchase(p_event text,p_order uuid,p_sessio
  else
  insert into concierge_jobs(order_id,user_id,match_count) values(o.id,o.user_id,case o.sku when 'concierge_one' then 1 else 2 end);
  end if; end $$;
+create table public.billing_refund_adjustments(
+ charge_id text primary key,order_id uuid not null references billing_orders(id),
+ refunded_amount integer not null,revoked_credits integer not null default 0,
+ unrecovered_credits integer not null default 0,manual_review boolean not null default false,updated_at timestamptz not null default now());
+alter table billing_refund_adjustments enable row level security;
+revoke all on billing_refund_adjustments from public,anon,authenticated;
+grant all on billing_refund_adjustments to service_role;
+create function public.billing_refund(p_event text,p_order uuid,p_session text,p_charge text,p_amount integer,p_refunded integer,p_currency text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
+ declare o billing_orders; a billing_refund_adjustments; n integer:=0; taken integer:=0; j concierge_jobs;
+ begin
+ select * into o from billing_orders where id=p_order;
+ if not found or o.stripe_session_id is distinct from p_session or o.amount<>p_amount or o.currency<>p_currency or p_refunded<=0 or p_refunded>p_amount then raise exception 'Refund order mismatch';end if;
+ perform pg_advisory_xact_lock(hashtextextended(o.user_id::text,871));
+ select * into o from billing_orders where id=p_order for update;
+ insert into billing_events values('stripe',p_event,now()) on conflict do nothing;if not found then return;end if;
+ select * into a from billing_refund_adjustments where charge_id=p_charge for update;
+ if found and (a.order_id<>p_order or a.refunded_amount>=p_refunded) then return;end if;
+ if o.status='refunded' then return;end if;
+ -- Partial and subscription refunds are audited for manual review, not accidental full revocation.
+ if p_refunded<p_amount or o.sku='pro' then
+ insert into billing_refund_adjustments(charge_id,order_id,refunded_amount,manual_review) values(p_charge,p_order,p_refunded,true)
+ on conflict(charge_id) do update set refunded_amount=excluded.refunded_amount,manual_review=true,updated_at=now();
+ return;end if;
+ if o.status<>'paid' then raise exception 'Refund before fulfillment; retry';end if;
+ if o.sku in ('messages_three','messages_six') then
+ n:=case o.sku when 'messages_three' then 3 else 6 end;
+ insert into billing_wallets(user_id) values(o.user_id) on conflict do nothing;
+ select least(credits,n) into taken from billing_wallets where user_id=o.user_id for update;
+ update billing_wallets set credits=credits-taken where user_id=o.user_id;
+ else
+ select * into j from concierge_jobs where order_id=o.id for update;
+ if j.status='queued' then update concierge_jobs set status='cancelled' where id=j.id;end if;
+ end if;
+ update billing_orders set status='refunded' where id=o.id;
+ insert into billing_refund_adjustments(charge_id,order_id,refunded_amount,revoked_credits,unrecovered_credits,manual_review)
+ values(p_charge,p_order,p_refunded,taken,n-taken,(n>taken or j.status='fulfilled'))
+ on conflict(charge_id) do update set refunded_amount=excluded.refunded_amount,revoked_credits=excluded.revoked_credits,unrecovered_credits=excluded.unrecovered_credits,manual_review=excluded.manual_review,updated_at=now();
+ end $$;
 create function public.billing_sync_subscription(p_event text,p_user uuid,p_subscription text,p_status text,p_expires timestamptz,p_period text,p_interval text default 'month',p_start timestamptz default null) returns void language plpgsql security definer set search_path=public,pg_temp as $$
  begin
  perform pg_advisory_xact_lock(hashtextextended(p_user::text,871));
@@ -248,7 +287,7 @@ create function public.billing_sync_subscription(p_event text,p_user uuid,p_subs
 do $$ declare r record; begin for r in select p.oid::regprocedure sig,p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname like 'billing_%' loop
  execute format('revoke all on function %s from public,anon,authenticated',r.sig);
  if r.proname in ('billing_enforced','billing_snapshot','billing_my_pro','billing_like','billing_use_boost','billing_boosted_profiles','billing_record_view','billing_send_instant','billing_fulfill_concierge') then execute format('grant execute on function %s to authenticated',r.sig); end if;
- if r.proname in ('billing_apply_purchase','billing_sync_subscription','billing_is_pro') then execute format('grant execute on function %s to service_role',r.sig); end if;
+ if r.proname in ('billing_apply_purchase','billing_sync_subscription','billing_is_pro','billing_refund') then execute format('grant execute on function %s to service_role',r.sig); end if;
  end loop; end $$;
 -- Protect both ledger minting and direct profile balance edits, regardless of rollout flag.
 create policy billing_token_ledger_insert on public.token_transactions as restrictive for insert to authenticated with check(public.has_role(auth.uid(),'admin'));
@@ -262,6 +301,7 @@ create function public.billing_profile_balance_guard() returns trigger language 
   if (tg_op='INSERT' and coalesce(new.tokens,0)<>0) or (tg_op='UPDATE' and new.tokens is distinct from old.tokens)
     or (tg_op='INSERT' and (new.subscription_status is not null or new.subscription_expires_at is not null or new.stripe_customer_id is not null))
     or (tg_op='UPDATE' and (new.subscription_status is distinct from old.subscription_status or new.subscription_expires_at is distinct from old.subscription_expires_at or new.stripe_customer_id is distinct from old.stripe_customer_id))
+    or (tg_op='INSERT' and ((to_jsonb(new)->>'subscription_plan') is not null or (to_jsonb(new)->>'stripe_subscription_id') is not null))
     or (tg_op='UPDATE' and ((to_jsonb(new)->>'subscription_plan') is distinct from (to_jsonb(old)->>'subscription_plan') or (to_jsonb(new)->>'stripe_subscription_id') is distinct from (to_jsonb(old)->>'stripe_subscription_id')))
     then raise exception 'Token balances are server managed' using errcode='42501'; end if;
  end if;
