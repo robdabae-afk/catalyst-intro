@@ -16,5 +16,9 @@ select billing_refund('evt_con_partial','00000000-0000-0000-0000-000000000091','
 select assert_true((select status='review_hold' from concierge_jobs where order_id='00000000-0000-0000-0000-000000000091'),'partial concierge held');
 select billing_refund('evt_con_full','00000000-0000-0000-0000-000000000091','cs_concierge_refund','ch_con',1000,1000,'usd');
 select assert_true((select status='cancelled' from concierge_jobs where order_id='00000000-0000-0000-0000-000000000091'),'full queued cancelled');
+select assert_true(exists(select 1 from billing_refund_reviews where event_id='evt_partial' and charge_id='ch_fixture' and order_id is not null),'partial durable review');
+select assert_true(exists(select 1 from billing_refund_reviews where event_id='evt_con_partial'),'concierge durable review');
+insert into billing_refund_reviews(event_id,charge_id,reason) values('evt_ambiguous','ch_unknown','Ambiguous payment mapping');
+select assert_true(exists(select 1 from billing_refund_reviews where event_id='evt_ambiguous' and order_id is null),'unmapped durable review nullable order');
 rollback;
 
