@@ -49,6 +49,11 @@ insert into public.billing_rollout_flags values(true,false);
 revoke all on public.billing_rollout_flags from public,anon,authenticated;
 grant select,update on public.billing_rollout_flags to service_role;
 create function public.billing_enforced() returns boolean language sql stable security definer set search_path=public,pg_temp as $$ select coalesce((select enforce_v2 from billing_rollout_flags where id),false) $$;
+-- Temporary cached upsert compatibility. V2 server RPC is the sole update path after publish activation.
+grant update(action,pass_reason) on public.swipes to authenticated;
+create policy billing_cached_swipe_update on public.swipes for update to authenticated
+ using(swiper_id=auth.uid() and not public.billing_enforced())
+ with check(swiper_id=auth.uid() and not public.billing_enforced());
 create table public.billing_entitlements (
  user_id uuid not null references auth.users(id) on delete cascade, provider text not null check(provider in ('stripe','apple','google','revenuecat')),
  external_id text not null, status text not null, expires_at timestamptz, period_key text,

@@ -10,7 +10,7 @@ create function auth.role() returns text language sql stable as $$select current
 create table profiles(id uuid primary key references auth.users,name text,user_type text,approved boolean default true,is_hidden boolean default false,is_test_account boolean default false,is_flagged boolean default false,rejection_reason text);
 create function has_role(u uuid,r text) returns boolean language sql stable as $$select u='00000000-0000-0000-0000-000000000099'::uuid and r='admin'$$;
 create function is_approved(u uuid) returns boolean language sql stable as $$select coalesce((select approved and not is_flagged from profiles where id=u),false)$$;
-create table swipes(id uuid primary key default gen_random_uuid(),swiper_id uuid references auth.users,swiped_id uuid references auth.users,action text,created_at timestamptz default now(),unique(swiper_id,swiped_id));
+create table swipes(id uuid primary key default gen_random_uuid(),swiper_id uuid references auth.users,swiped_id uuid references auth.users,action text,pass_reason text,created_at timestamptz default now(),unique(swiper_id,swiped_id));
 create table matches(id uuid primary key default gen_random_uuid(),user_1_id uuid references auth.users,user_2_id uuid references auth.users,status text default 'active',unique(user_1_id,user_2_id));
 create table messages(id uuid primary key default gen_random_uuid(),sender_id uuid references auth.users,receiver_id uuid references auth.users,content text,read boolean default false);
 create table app_companies(id text primary key,owner_id uuid references profiles,status text);
