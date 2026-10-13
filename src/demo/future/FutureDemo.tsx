@@ -13,13 +13,10 @@ import {
   ArrowUpRight,
   Compass,
   BriefcaseBusiness,
-  Users,
-  BookOpen,
   ArrowLeft,
   Check,
-  MessageCircle,
 } from "lucide-react";
-import { startups, lessons, money, type Startup } from "./data";
+import { startups, money, type Startup } from "./data";
 import "./future.css";
 
 type Holding = { id: string; amount: number };
@@ -30,8 +27,6 @@ const initial: Holding[] = [
 const nav = [
   { to: "/", label: "Discover", Icon: Compass },
   { to: "/portfolio", label: "Portfolio", Icon: BriefcaseBusiness },
-  { to: "/people", label: "Connect", Icon: Users },
-  { to: "/learn", label: "Learn", Icon: BookOpen },
 ];
 function Heading({
   eyebrow,
@@ -82,81 +77,84 @@ function Progress({ s }: { s: Startup }) {
   );
 }
 function Discover() {
-  const [category, setCategory] = useState("All");
   return (
     <>
       <Heading
-        eyebrow="A stake in what comes next"
-        title="Start small. Own a little of the future."
+        eyebrow="Startup investing, for everyone"
+        title="Pick a startup. Send the check."
       >
         <p>
-          Discover startups raising from everyday people.
+          Read the public disclosures. Invest from $100.
           <br />
-          Explore your first investment from $100.
+          No introductions. No calls. Just your decision.
         </p>
       </Heading>
-      <div className="fd-filters" aria-label="Startup sectors">
-        {["All", "Climate", "Consumer", "Health"].map((c) => (
-          <button
-            key={c}
-            className={category === c ? "selected" : ""}
-            onClick={() => setCategory(c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
       <div className="fd-between fd-section">
-        <h2>Open raises</h2>
-        <span className="fd-small">Illustrative companies</span>
+        <h2>Startups raising</h2>
+        <span className="fd-small">Fictional offerings</span>
       </div>
       <div className="fd-grid">
-        {startups
-          .filter((s) => category === "All" || s.sector === category)
-          .map((s, i) => (
-            <Link className="fd-startup" key={s.id} to={"/startup/" + s.id}>
-              <div className="fd-art" style={{ background: s.tone }}>
-                <span className="fd-eyebrow">
-                  {s.sector} / 0{i + 1}
-                </span>
-                <b>{s.mark}</b>
-                <span className="fd-art-bottom">
-                  Ideas worth getting behind.
-                  <ArrowUpRight size={20} />
-                </span>
-              </div>
-              <div className="fd-card-body">
-                <div className="fd-between">
+        {startups.map((s) => (
+          <Link
+            className="fd-startup fd-simple-card"
+            key={s.id}
+            to={"/startup/" + s.id}
+          >
+            <div className="fd-card-body">
+              <div className="fd-company">
+                <Logo s={s} />
+                <div>
                   <h2>{s.name}</h2>
-                  <span className="fd-pill">{s.days} days left</span>
+                  <span className="fd-small">{s.sector}</span>
                 </div>
-                <p>{s.line}</p>
-                <Progress s={s} />
-                <div className="fd-terms">
-                  <span>
-                    Minimum<strong>$100</strong>
-                  </span>
-                  <span>
-                    Valuation cap<strong>{money(s.cap)}</strong>
-                  </span>
-                </div>
+                <ArrowUpRight size={20} />
               </div>
-            </Link>
-          ))}
+              <p>{s.line}</p>
+              <Progress s={s} />
+              <div className="fd-terms">
+                <span>
+                  Minimum<strong>$100</strong>
+                </span>
+                <span>
+                  SAFE cap<strong>{money(s.cap)}</strong>
+                </span>
+                <span>
+                  Deadline<strong>{s.deadlineShort}</strong>
+                </span>
+              </div>
+              <span className="fd-profile-link">
+                View disclosures <ArrowUpRight size={14} />
+              </span>
+            </div>
+          </Link>
+        ))}
       </div>
       <p className="fd-footnote">
-        Startup investments are high risk and illiquid. You could lose your
-        entire investment. All companies and numbers here are fictional.
+        Fictional companies and financials. Startup investments are high risk
+        and illiquid. You could lose your entire investment.
       </p>
     </>
+  );
+}
+function Disclosure({
+  title,
+  children,
+  open = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  open?: boolean;
+}) {
+  return (
+    <details className="fd-disclosure" open={open}>
+      <summary>{title}</summary>
+      <div className="fd-disclosure-body">{children}</div>
+    </details>
   );
 }
 function Detail() {
   const { id } = useParams();
   const s = startups.find((s) => s.id === id);
-  const [tab, setTab] = useState("Overview");
-  const [question, setQuestion] = useState("");
-  const [questions, setQuestions] = useState<string[]>([]);
   if (!s) return <Missing />;
   return (
     <>
@@ -167,7 +165,7 @@ function Detail() {
       <div className="fd-company">
         <Logo s={s} />
         <div>
-          <span className="fd-eyebrow">{s.sector} / Open raise</span>
+          <span className="fd-eyebrow">Public offering disclosures / Demo</span>
           <h1>{s.name}</h1>
         </div>
       </div>
@@ -176,123 +174,241 @@ function Detail() {
         <Progress s={s} />
         <div className="fd-terms">
           <span>
-            Investors<strong>{s.investors}</strong>
+            Target<strong>{money(s.target)}</strong>
+          </span>
+          <span>
+            Maximum<strong>{money(s.goal)}</strong>
           </span>
           <span>
             Minimum<strong>$100</strong>
           </span>
-          <span>
-            Closes in<strong>{s.days} days</strong>
-          </span>
         </div>
         <Link className="fd-button" to={"/invest/" + s.id}>
-          Invest in {s.name}
+          Invest from $100
           <ArrowUpRight size={18} />
         </Link>
         <p className="fd-small">
-          Simulated Reg CF offering · SAFE · No real money
+          SAFE · {money(s.cap)} cap · 20% discount · No real money
         </p>
       </div>
-      <div className="fd-filters">
-        {["Overview", "Terms & risks", "Q&A", "Updates"].map((t) => (
-          <button
-            className={tab === t ? "selected" : ""}
-            onClick={() => setTab(t)}
-            key={t}
-          >
-            {t}
-          </button>
-        ))}
+      <div className="fd-between fd-section">
+        <h2>The disclosures</h2>
+        <span className="fd-small">Form C-style illustration</span>
       </div>
-      {tab === "Overview" ? (
-        <>
-          <h2>The pitch</h2>
-          <p className="fd-copy">{s.pitch}</p>
-          <div className="fd-panel">
-            <span className="fd-eyebrow">Traction</span>
-            <h2>{s.traction}</h2>
-            <p className="fd-small">
-              Fictional operating metrics, not independently verified.
-            </p>
+      <p className="fd-small">
+        This fictional summary is not a filed Form C or a complete legal
+        offering. No SEC or intermediary approval is represented.
+      </p>
+      <Disclosure title="Company & business" open>
+        <p>{s.pitch}</p>
+        <dl className="fd-list">
+          <div>
+            <dt>Legal name</dt>
+            <dd>{s.name} Inc.</dd>
           </div>
-          <h2>Meet the team</h2>
-          <p className="fd-copy">{s.team}</p>
-        </>
-      ) : tab === "Terms & risks" ? (
-        <>
-          <h2>The investment</h2>
-          <dl className="fd-list">
-            <div>
-              <dt>Instrument</dt>
-              <dd>SAFE</dd>
-            </div>
-            <div>
-              <dt>Valuation cap</dt>
-              <dd>{money(s.cap)}</dd>
-            </div>
-            <div>
-              <dt>Discount</dt>
-              <dd>20%</dd>
-            </div>
-            <div>
-              <dt>Minimum investment</dt>
-              <dd>$100</dd>
-            </div>
-          </dl>
-          <h2>Understand the risks</h2>
-          <p className="fd-copy">
-            You could lose all your money. There is no ready resale market,
-            returns are not guaranteed, and future rounds can dilute your
-            ownership. A SAFE may never convert. Execution, competition and
-            funding risks apply. Illustrative terms only; a real offering
-            requires complete disclosures and eligibility checks.
-          </p>
-        </>
-      ) : tab === "Updates" ? (
-        <div className="fd-panel">
-          <span className="fd-eyebrow">Founder update / October 2026</span>
-          <h2>Building the next chapter</h2>
-          <p className="fd-copy">{s.update}</p>
+          <div>
+            <dt>Entity / formation</dt>
+            <dd>Delaware C-corp · 2024</dd>
+          </div>
+          <div>
+            <dt>Principal office</dt>
+            <dd>{s.address}</dd>
+          </div>
+          <div>
+            <dt>Website</dt>
+            <dd>{s.id}.example</dd>
+          </div>
+          <div>
+            <dt>Employees</dt>
+            <dd>{s.employees}</dd>
+          </div>
+        </dl>
+      </Disclosure>
+      <Disclosure title="Team, officers & ownership">
+        <p>{s.team}</p>
+        <p>{s.teamExperience}</p>
+        <p>
+          Directors are the two listed founders. They hold 60% and 30% of voting
+          equity, respectively. Each is a beneficial owner above 20%.
+        </p>
+      </Disclosure>
+      <Disclosure title="Offering terms & deadline">
+        <dl className="fd-list">
+          <div>
+            <dt>Security / price</dt>
+            <dd>SAFE · $1 per $1 committed</dd>
+          </div>
+          <div>
+            <dt>Valuation cap</dt>
+            <dd>{money(s.cap)}</dd>
+          </div>
+          <div>
+            <dt>Discount</dt>
+            <dd>20%</dd>
+          </div>
+          <div>
+            <dt>Target / maximum</dt>
+            <dd>
+              {money(s.target)} / {money(s.goal)}
+            </dd>
+          </div>
+          <div>
+            <dt>Deadline</dt>
+            <dd>{s.deadline}</dd>
+          </div>
+          <div>
+            <dt>Minimum</dt>
+            <dd>$100</dd>
+          </div>
+        </dl>
+        <p>
+          The SAFE may convert on a qualifying future equity financing at the
+          lower of the cap-based or discounted price. It has no interest or
+          maturity date. The cap is a conversion term, not a current valuation.
+          Conversion is not guaranteed.
+        </p>
+        <p>
+          Commitments above the target are accepted up to the maximum, allocated
+          first come, first served. If the target is not met by the deadline,
+          commitments are cancelled and funds returned. No securities are issued
+          before closing.
+        </p>
+        <p>
+          Investors may cancel until 48 hours before the offering deadline.
+          Material changes require reconfirmation; without it, the commitment is
+          cancelled and funds returned. An early close would require applicable
+          advance notice.
+        </p>
+      </Disclosure>
+      <Disclosure title="Use of proceeds">
+        <p>
+          At the target, proceeds support {s.use}. At the maximum, the same
+          allocation funds a longer operating runway and expanded operations.
+        </p>
+        <dl className="fd-list">
+          <div>
+            <dt>Product & development</dt>
+            <dd>50%</dd>
+          </div>
+          <div>
+            <dt>Operations & hiring</dt>
+            <dd>30%</dd>
+          </div>
+          <div>
+            <dt>Offering & legal costs</dt>
+            <dd>10%</dd>
+          </div>
+          <div>
+            <dt>Working capital</dt>
+            <dd>10%</dd>
+          </div>
+        </dl>
+      </Disclosure>
+      <Disclosure title="Financials & financial condition">
+        <p>
+          Selected fictional year-end figures, USD. Illustrative only; no
+          accountant has reviewed or audited these figures. A real offering
+          includes required financial statements and the appropriate
+          certification, review or audit.
+        </p>
+        <div className="fd-table-wrap">
+          <table className="fd-financials">
+            <caption>Fiscal years ended December 31</caption>
+            <thead>
+              <tr>
+                <th scope="col">Metric</th>
+                <th scope="col">2025</th>
+                <th scope="col">2024</th>
+              </tr>
+            </thead>
+            <tbody>
+              {s.financials.map(([label, current, prior]) => (
+                <tr key={label}>
+                  <th scope="row">{label}</th>
+                  <td>{money(Number(current))}</td>
+                  <td>{money(Number(prior))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      ) : (
-        <>
-          <div className="fd-panel">
-            <h3>What will this round fund?</h3>
-            <p className="fd-copy">
-              Product development, pilot expansion and our next key hires.
-            </p>
-          </div>
-          {questions.map((q, i) => (
-            <div className="fd-panel" key={i}>
-              <h3>{q}</h3>
-              <p className="fd-small">
-                Demo question added locally. Not sent to anyone.
-              </p>
-            </div>
-          ))}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (question.trim()) {
-                setQuestions((q) => [...q, question.trim()]);
-                setQuestion("");
-              }
-            }}
-          >
-            <label htmlFor="question">Ask the founders</label>
-            <input
-              id="question"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What would you like to know?"
-              maxLength={500}
-            />
-            <button className="fd-button" disabled={!question.trim()}>
-              Add demo question
-            </button>
-          </form>
-        </>
-      )}
+        <p>
+          The company is loss-making and relies on new capital. Existing cash
+          supports approximately six months of operations at current spending. A
+          failed raise could force a reduction or cessation of operations.
+        </p>
+      </Disclosure>
+      <Disclosure title="Risks">
+        <p>
+          You could lose your entire investment. Securities are illiquid and
+          subject to transfer restrictions. There is no public market or
+          guaranteed return. Future issuances may dilute your ownership; you
+          have no ordinary voting rights under this SAFE.
+        </p>
+        <p>{s.risk}</p>
+        <p>
+          The company depends on its founders, continued financing and execution
+          of an unproven business model. Minority investors cannot control
+          corporate actions, related-party decisions, or a sale. A SAFE may
+          never convert, and a sale or dissolution may produce no payout.
+        </p>
+      </Disclosure>
+      <Disclosure title="Capital structure & prior financing">
+        <p>
+          10,000,000 authorized common shares; 1,000,000 issued and outstanding.
+          Founders hold 900,000 voting shares and early employees hold 100,000.
+          No preferred shares are outstanding. Common shares have one vote per
+          share; this SAFE does not confer current voting rights.
+        </p>
+        <p>
+          Prior financing consists of $150,000 of SAFEs issued in 2025 at a $4
+          million cap. These and this offering may convert and dilute each other
+          and common stock. Valuation and conversion depend on the SAFE terms
+          and future financing. No repurchase or resale facility is promised.
+        </p>
+        <p>
+          Debt consists of a $25,000 unsecured working-capital loan at 8%
+          interest, due December 2027. No material related-party transactions
+          are assumed in this fictional illustration.
+        </p>
+      </Disclosure>
+      <Disclosure title="Intermediary, reporting & other disclosures">
+        <p>
+          Catalyst is presented here solely as an illustrative future funding
+          portal. No actual registration number or SEC approval is claimed.
+          Fictional issuer offering costs include a 5% intermediary cash fee at
+          closing and no intermediary equity compensation.
+        </p>
+        <p>
+          No prior Reg CF offerings, disqualifying events or reporting failures
+          are assumed. No testing-the-waters materials are included. In a real
+          offering, the issuer files annual reports and makes them available on
+          its website, subject to applicable reporting termination rules.
+        </p>
+      </Disclosure>
+      <Disclosure title="Most asked by investors">
+        <h3>What happens if the target isn't reached?</h3>
+        <p>
+          Commitments are cancelled and funds are returned. The company must
+          meet the disclosed target before closing.
+        </p>
+        <h3>Am I buying shares today?</h3>
+        <p>
+          No. This offering uses a SAFE, which may convert into equity later
+          under its terms. A return or conversion is not guaranteed.
+        </p>
+        <span className="fd-small">
+          Founder-published answers. No open messaging.
+        </span>
+      </Disclosure>
+      <Link className="fd-button" to={"/invest/" + s.id}>
+        Invest in {s.name}
+        <ArrowUpRight size={18} />
+      </Link>
+      <p className="fd-footnote">
+        All company details, disclosures and financials are fictional. This demo
+        is not an offer to sell securities.
+      </p>
     </>
   );
 }
@@ -321,10 +437,10 @@ function Invest({ onInvest }: { onInvest: (h: Holding) => void }) {
         eyebrow={"Demo investment / Step " + (step + 1) + " of 4"}
         title={
           [
-            "Make your first move.",
-            "Know what you're backing.",
-            "Choose a demo payment.",
-            "You're part of the story.",
+            "Send the check.",
+            "Review your investment.",
+            "Pay. You're almost done.",
+            "Check sent.",
           ][step]
         }
       />
@@ -464,7 +580,7 @@ function Invest({ onInvest }: { onInvest: (h: Holding) => void }) {
               setStep(3);
             }}
           >
-            Confirm demo investment
+            Send demo check
           </button>
           <button className="fd-text-button" onClick={() => setStep(1)}>
             Back to review
@@ -496,8 +612,8 @@ function Invest({ onInvest }: { onInvest: (h: Holding) => void }) {
 function Portfolio({ holdings }: { holdings: Holding[] }) {
   return (
     <>
-      <Heading eyebrow="Your piece of tomorrow" title="Portfolio">
-        <p>Follow the companies you're backing.</p>
+      <Heading eyebrow="Your demo portfolio" title="Your investments.">
+        <p>What you've invested in. Nothing more.</p>
       </Heading>
       <div className="fd-balance">
         <span className="fd-eyebrow">Total demo commitments</span>
@@ -518,175 +634,10 @@ function Portfolio({ holdings }: { holdings: Holding[] }) {
           </Link>
         );
       })}
-      <h2 className="fd-section">From your founders</h2>
-      {startups
-        .filter((s) => holdings.some((h) => h.id === s.id))
-        .map((s) => (
-          <Link
-            to={"/startup/" + s.id}
-            className="fd-panel fd-update"
-            key={s.id}
-          >
-            <span className="fd-eyebrow">{s.name} / October update</span>
-            <h3>{s.update}</h3>
-            <span className="fd-small">
-              Read company profile <ArrowUpRight size={13} />
-            </span>
-          </Link>
-        ))}
       <p className="fd-footnote">
         Commitments are illustrative, not actual holdings. No returns or
         liquidity are promised.
       </p>
-    </>
-  );
-}
-function Learn() {
-  const [active, setActive] = useState(0);
-  return (
-    <>
-      <Heading
-        eyebrow="A little knowledge. A better start."
-        title="Learn before you invest."
-      >
-        <p>Plain-language startup investing, one term at a time.</p>
-      </Heading>
-      <div className="fd-lesson">
-        <span className="fd-eyebrow">Startup term of the day / 01</span>
-        <h2>{lessons[active].term}</h2>
-        <h3>{lessons[active].subtitle}</h3>
-        <p>{lessons[active].text}</p>
-        <Link className="fd-button" to="/">
-          Explore demo startups
-          <ArrowUpRight size={18} />
-        </Link>
-      </div>
-      <h2 className="fd-section">The essentials</h2>
-      {lessons.map((l, i) => (
-        <button
-          className="fd-lesson-link"
-          key={l.term}
-          aria-pressed={active === i}
-          onClick={() => setActive(i)}
-        >
-          <span>0{i + 1}</span>
-          <div>
-            <strong>{l.term}</strong>
-            <p>{l.subtitle}</p>
-          </div>
-          <ArrowUpRight size={18} />
-        </button>
-      ))}
-      <p className="fd-footnote">
-        Educational illustrations, not investment advice.
-      </p>
-    </>
-  );
-}
-function People() {
-  const [index, setIndex] = useState(0);
-  const [matched, setMatched] = useState(false);
-  const [inbox, setInbox] = useState(false);
-  const [draft, setDraft] = useState("");
-  const [messages, setMessages] = useState([
-    "Thanks for connecting! Happy to answer questions about our raise.",
-  ]);
-  const s = startups[index % startups.length];
-  return (
-    <>
-      <Heading
-        eyebrow="People behind the pitch"
-        title={inbox ? "Your conversation." : "Find your next connection."}
-      >
-        <p>Meet founders. Ask questions. Build conviction.</p>
-      </Heading>
-      {inbox ? (
-        <>
-          <Link
-            className="fd-back"
-            to="/people"
-            onClick={() => setInbox(false)}
-          >
-            <ArrowLeft size={16} />
-            Back to connections
-          </Link>
-          <div className="fd-panel">
-            <div className="fd-company">
-              <Logo s={s} />
-              <h2>{s.team.split(" · ")[0]}</h2>
-            </div>
-            <p className="fd-small">Founder at {s.name} · Demo conversation</p>
-            {messages.map((m, i) => (
-              <p className={"fd-message " + (i ? "outgoing" : "")} key={i}>
-                {m}
-              </p>
-            ))}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (draft.trim()) {
-                  setMessages((m) => [...m, draft.trim()]);
-                  setDraft("");
-                }
-              }}
-            >
-              <label htmlFor="message">Message</label>
-              <input
-                id="message"
-                value={draft}
-                maxLength={1000}
-                onChange={(e) => setDraft(e.target.value)}
-                placeholder="Ask about their next milestone"
-              />
-              <button className="fd-button" disabled={!draft.trim()}>
-                Send demo message
-              </button>
-            </form>
-          </div>
-          <p className="fd-small">
-            Local only. No message is delivered to a real person.
-          </p>
-        </>
-      ) : (
-        <>
-          <div className="fd-person" style={{ background: s.tone }}>
-            <span className="fd-eyebrow">Founder / Raising now</span>
-            <span className="fd-person-initial">{s.team.charAt(0)}</span>
-            <h2>{s.team.split(" · ")[0]}</h2>
-            <p>Building {s.name}</p>
-            <p>{s.line}</p>
-            <span className="fd-pill">Open to everyday investors</span>
-          </div>
-          {matched ? (
-            <div className="fd-panel" role="status">
-              <h2>It's a demo match.</h2>
-              <p className="fd-copy">
-                You and {s.team.split(" ")[0]} connected. Start a conversation
-                before exploring the raise.
-              </p>
-              <button className="fd-button" onClick={() => setInbox(true)}>
-                <MessageCircle size={18} />
-                Message founder
-              </button>
-            </div>
-          ) : (
-            <div className="fd-actions">
-              <button
-                className="fd-button fd-secondary"
-                onClick={() => setIndex((i) => i + 1)}
-              >
-                Pass
-              </button>
-              <button className="fd-button" onClick={() => setMatched(true)}>
-                Connect
-              </button>
-            </div>
-          )}
-          <Link className="fd-text-button" to={"/startup/" + s.id}>
-            Explore {s.name}'s raise <ArrowUpRight size={16} />
-          </Link>
-        </>
-      )}
     </>
   );
 }
@@ -745,8 +696,6 @@ export default function FutureDemo() {
                 path="/portfolio"
                 element={<Portfolio holdings={holdings} />}
               />
-              <Route path="/people" element={<People />} />
-              <Route path="/learn" element={<Learn />} />
               <Route path="*" element={<Missing />} />
             </Routes>
           </main>
