@@ -1,8 +1,8 @@
 from playwright.sync_api import sync_playwright
 import os
-# Run with a local Vite server and Python Playwright installed.
+# Local Vite server plus Python Playwright required.
 base = os.environ.get('DEMO_BASE_URL', 'http://localhost:48763')
-os.makedirs('/tmp/shots',exist_ok=True)
+os.makedirs('/tmp/shots', exist_ok=True)
 with sync_playwright() as p:
  b=p.chromium.launch(executable_path='/opt/hako/bin/google-chrome',headless=True,args=['--no-sandbox'])
  page=b.new_page(viewport={'width':390,'height':844},device_scale_factor=1)
@@ -14,56 +14,51 @@ with sync_playwright() as p:
   assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
   page.screenshot(path='/tmp/shots/demo-'+name+'.png',full_page=False,animations='disabled')
  page.goto(base+'/demo',wait_until='networkidle')
- page.get_by_role('heading',name='Start small. Own a little of the future.').wait_for()
+ page.get_by_role('heading',name='Pick a startup. Send the check.').wait_for()
+ assert page.locator('.fd-nav a').count()==2
+ assert page.locator('.fd-startup').count()==3
  shot('discover')
- page.get_by_role('button',name='Climate',exact=True).click()
- assert page.locator('.fd-startup').count()==1
- page.get_by_role('button',name='All',exact=True).click()
  page.locator('.fd-startup').first.click()
  shot('startup')
- for tab in ['Terms & risks','Q&A','Updates']:
-  page.get_by_role('button',name=tab,exact=True).click()
-  shot('startup-'+tab.replace(' & ','-').replace('&','').replace(' ','-').lower())
- page.get_by_role('button',name='Overview',exact=True).click()
- page.get_by_role('link',name='Invest in Morrow').click()
+ assert page.locator('details').count()==9
+ for label,name in [('Company & business','company'),('Team, officers & ownership','team'),('Offering terms & deadline','terms'),('Use of proceeds','proceeds'),('Financials & financial condition','financials'),('Risks','risks'),('Capital structure & prior financing','capital'),('Intermediary, reporting & other disclosures','reporting'),('Most asked by investors','faq')]:
+  page.locator('summary',has_text=label).click() if label!='Company & business' else None
+  page.locator('summary',has_text=label).evaluate('(el) => el.scrollIntoView({block: \"start\"})')
+  page.evaluate('window.scrollBy(0,-64)')
+  shot('disclosure-'+name)
+ assert page.locator('table tbody tr').count()==9
+ assert page.locator('input, textarea').count()==0
+ page.get_by_role('link',name='Invest from $100',exact=True).click()
  shot('invest-amount')
- page.locator('#amount').fill('50')
- assert page.get_by_role('button',name='Review investment').is_disabled()
+ for invalid in ['50','100.5','10001','']:
+  page.locator('#amount').fill(invalid)
+  assert page.get_by_role('button',name='Review investment').is_disabled()
  page.locator('#amount').fill('250')
  page.get_by_role('button',name='Review investment').click()
  assert page.get_by_role('button',name='Continue to demo payment').is_disabled()
  shot('invest-review')
  page.get_by_role('checkbox').check()
  page.get_by_role('button',name='Continue to demo payment').click()
+ page.get_by_role('radio').nth(1).check()
  shot('invest-payment')
- page.get_by_role('button',name='Confirm demo investment').click()
+ page.get_by_role('button',name='Send demo check').click()
  shot('invest-success')
  page.get_by_role('button',name='View your portfolio').click()
- assert page.locator('.fd-balance').inner_text().find('$1,000')>=0
+ assert '$1,000' in page.locator('.fd-balance').inner_text()
+ assert page.locator('.fd-holding').count()==3
  shot('portfolio')
- page.get_by_role('link',name='Connect',exact=True).click()
- shot('connect')
- page.get_by_role('button',name='Pass',exact=True).click()
- page.get_by_role('button',name='Connect',exact=True).click()
- shot('match')
- page.get_by_role('button',name='Message founder').click()
- page.locator('#message').fill('What is your next milestone?')
- page.get_by_role('button',name='Send demo message').click()
- assert page.locator('.fd-message').count()==2
- shot('messages')
- page.get_by_role('link',name='Learn',exact=True).click()
- shot('learn')
- for term in ['Valuation cap','Dilution','Reg CF']:
-  page.get_by_role('button',name=term,exact=False).click()
-  assert page.locator('.fd-lesson h2').inner_text()==term
  page.reload(wait_until='networkidle')
- assert page.locator('.fd-lesson h2').inner_text()=='SAFE'
- page.goto(base+'/demo/portfolio',wait_until='networkidle')
  assert '$750' in page.locator('.fd-balance').inner_text()
+ page.goto(base+'/demo/people',wait_until='networkidle')
+ assert page.get_by_role('heading',name="That page isn't here.").is_visible()
+ page.goto(base+'/demo/startup/common',wait_until='networkidle')
+ assert page.get_by_role('heading',name='Common Ground',exact=True).is_visible()
  page.set_viewport_size({'width':1440,'height':1000})
  page.goto(base+'/demo',wait_until='networkidle')
  shot('desktop')
+ page.goto(base+'/demo/startup/morrow',wait_until='networkidle')
+ shot('startup-desktop')
  assert not writes,writes
  assert not errors,errors
- print('PASS end-to-end demo, validation, local-only messaging, no writes, reload, mobile/desktop overflow')
+ print('PASS minimal loop, full disclosures, amount/risk validation, local-only portfolio, no chat/routes/writes, mobile/desktop')
  b.close()

@@ -3,7 +3,7 @@
   --ink: #0b0b0b;
   --line: #e6e6e3;
   --soft: #f4f4f2;
-  --dim: #74746d;
+  --dim: #66665f;
   min-height: 100vh;
   background: #fff;
   color: var(--ink);
@@ -494,91 +494,6 @@
   align-items: center;
   gap: 8px;
 }
-.fd-lesson {
-  background: #f0efe9;
-  border-radius: 18px;
-  padding: 28px;
-  margin: 28px 0;
-}
-.fd-lesson h2 {
-  font-size: 70px;
-  font-weight: 500;
-  letter-spacing: -3px;
-  margin: 24px 0;
-}
-.fd-lesson h3 {
-  font-size: 20px;
-  line-height: 1.4;
-}
-.fd-lesson p {
-  font-size: 14px;
-  line-height: 1.9;
-  color: #575750;
-  margin-top: 18px;
-}
-.fd-lesson-link {
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  background: #fff;
-  color: var(--ink);
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  width: 100%;
-  text-align: left;
-  padding: 20px 0;
-}
-.fd-lesson-link > span {
-  font-size: 11px;
-  color: var(--dim);
-}
-.fd-lesson-link > div {
-  flex: 1;
-}
-.fd-lesson-link p {
-  font-size: 11px;
-  color: var(--dim);
-  margin-top: 5px;
-  line-height: 1.5;
-}
-.fd-person {
-  border-radius: 18px;
-  padding: 26px;
-  min-height: 370px;
-}
-.fd-person-initial {
-  display: block;
-  text-align: center;
-  font-size: 120px;
-  font-weight: 500;
-  line-height: 1.5;
-}
-.fd-person h2 {
-  font-size: 28px;
-}
-.fd-person p {
-  font-size: 13px;
-  line-height: 1.6;
-  margin: 8px 0 14px;
-}
-.fd-actions {
-  display: flex;
-  gap: 12px;
-}
-.fd-message {
-  background: var(--soft);
-  border-radius: 14px;
-  padding: 15px;
-  font-size: 13px;
-  line-height: 1.6;
-  margin: 15px 0 !important;
-  max-width: 90%;
-}
-.fd-message.outgoing {
-  background: var(--ink);
-  color: white;
-  margin-left: auto !important;
-}
 @media (min-width: 900px) {
   .fd-top {
     padding: 24px 40px;
@@ -629,8 +544,7 @@
     font-size: 16px;
   }
   .fd-panel,
-  .fd-list,
-  .fd-lesson {
+  .fd-list {
     max-width: 720px;
   }
   .fd-main > .fd-button,
@@ -652,4 +566,107 @@
     transition: none !important;
     animation: none !important;
   }
+}
+.fd-simple-card .fd-company {
+  margin: 0 0 18px;
+}
+.fd-simple-card .fd-company > svg {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.fd-simple-card .fd-card-body > p {
+  margin-bottom: 24px;
+}
+.fd-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 22px;
+}
+.fd-disclosure {
+  border-bottom: 1px solid var(--line);
+  padding: 0;
+  max-width: 720px;
+}
+.fd-disclosure summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 21px 0;
+  list-style: none;
+}
+.fd-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+.fd-disclosure summary::after {
+  content: "+";
+  font-size: 22px;
+  font-weight: 400;
+  flex-shrink: 0;
+}
+.fd-disclosure[open] summary::after {
+  content: "−";
+}
+.fd-disclosure-body {
+  padding: 0 0 22px;
+}
+.fd-disclosure-body p {
+  font-size: 13px;
+  color: #575750;
+  line-height: 1.9;
+  margin: 0 0 16px;
+}
+.fd-disclosure-body h3 {
+  margin: 16px 0 8px;
+}
+.fd-table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+.fd-financials {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  text-align: left;
+}
+.fd-financials caption {
+  text-align: left;
+  color: var(--dim);
+  font-size: 11px;
+  margin-bottom: 14px;
+}
+.fd-financials th,
+.fd-financials td {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 4px;
+  font-weight: 400;
+}
+.fd-financials thead th {
+  font-weight: 600;
+}
+.fd-financials td,
+.fd-financials thead th:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+.fd-nav a {
+  width: 50%;
+}
+@media (min-width: 900px) {
+  .fd-nav a {
+    width: 100%;
+  }
+}
+
+.fd-disclosure {
+  scroll-margin-top: 64px;
+}
+.fd-terms {
+  gap: 14px;
 }
