@@ -1,3 +1,6 @@
+import { lazy, Suspense } from "react";
+const FutureDemo = lazy(() => import("./demo/future/FutureDemo"));
+
 import { Toaster } from "@/components/ui/toaster";
 import InviteLanding from "./pages/InviteLanding";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -44,7 +47,7 @@ import AppLogin from "./admin/Login";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => isDemoMode() ? <Suspense fallback={<div style={{padding:24,background:"#fff",color:"#111"}}>Loading Catalyst demo…</div>}><FutureDemo /></Suspense> : (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
