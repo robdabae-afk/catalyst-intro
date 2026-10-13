@@ -1,4 +1,5 @@
 \set ON_ERROR_STOP on
+update billing_rollout_flags set enforce_v2=true;
 -- Test helper raises on failed assertions.
 create function public.assert_true(v boolean,description text) returns void language plpgsql as $$begin if v is distinct from true then raise exception '%',description;end if;end$$;
 set request.jwt.claim.sub='00000000-0000-0000-0000-000000000001';

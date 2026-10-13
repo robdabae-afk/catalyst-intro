@@ -27,3 +27,11 @@ grant select on profiles,app_companies to authenticated;
 insert into auth.users select ('00000000-0000-0000-0000-'||lpad(i::text,12,'0'))::uuid from generate_series(1,100) i;
 insert into profiles select id,'Member','investor',true,false,false,false from auth.users;
 insert into app_companies values('company-one','00000000-0000-0000-0000-000000000002','published');
+
+alter table profiles add column tokens integer not null default 0, add column subscription_status text, add column subscription_expires_at timestamptz, add column stripe_customer_id text;
+create table token_transactions(id uuid primary key default gen_random_uuid(),user_id uuid,transaction_type text,amount integer,product_type text,description text);
+create function update_token_balance() returns trigger language plpgsql security definer as $$ begin
+ update profiles set tokens=tokens+case when new.transaction_type='spend' then -abs(new.amount) else new.amount end where id=new.user_id;
+ return new; end $$;
+create trigger update_token_balance_trigger after insert on token_transactions for each row execute function update_token_balance();
+create table instant_messages(id uuid primary key default gen_random_uuid(),sender_id uuid,receiver_id uuid,content text,tokens_spent integer);
