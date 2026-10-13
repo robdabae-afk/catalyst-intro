@@ -11,44 +11,9 @@ export function useExpressInterest(currentUserId: string | undefined) {
     async (targetId: string): Promise<{ ok: boolean; matched: boolean; error?: string }> => {
       if (!currentUserId) return { ok: false, matched: false, error: "Not signed in" };
 
-      // Insert swipe (idempotent-ish: ignore duplicates)
-      const { error: swipeErr } = await supabase
-        .from("swipes")
-        .insert({ swiper_id: currentUserId, swiped_id: targetId, action: "like" });
-
-      if (swipeErr && !swipeErr.message?.includes("duplicate")) {
-        return { ok: false, matched: false, error: swipeErr.message };
-      }
-
-      // Check for mutual interest
-      const { data: reciprocal } = await supabase
-        .from("swipes")
-        .select("id")
-        .eq("swiper_id", targetId)
-        .eq("swiped_id", currentUserId)
-        .eq("action", "like")
-        .maybeSingle();
-
-      const matched = !!reciprocal;
-
-      if (matched) {
-        // Create match row if it doesn't exist
-        const [u1, u2] =
-          currentUserId < targetId ? [currentUserId, targetId] : [targetId, currentUserId];
-        const { data: existing } = await supabase
-          .from("matches")
-          .select("id")
-          .eq("user_1_id", u1)
-          .eq("user_2_id", u2)
-          .maybeSingle();
-        if (!existing) {
-          await supabase
-            .from("matches")
-            .insert({ user_1_id: u1, user_2_id: u2, status: "active" });
-        }
-      }
-
-      return { ok: true, matched };
+      const { data, error } = await (supabase as any).rpc("billing_like", { p_target: targetId });
+      if (error) return { ok: false, matched: false, error: error.message };
+      return { ok: true, matched: !!data?.matched };
     },
     [currentUserId]
   );

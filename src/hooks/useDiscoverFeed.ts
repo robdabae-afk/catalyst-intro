@@ -70,7 +70,8 @@ export function useDiscoverFeed(
       if (!currentUserId) {
         setAdminViewer(false); setProfiles([]); setHasMore(false); setLoading(false); return;
       }
-      const [isAdmin, approved] = await Promise.all([isBrowseAdmin(), canBrowseProfiles(currentUserId)]);
+      const [isAdmin, approved, boosts] = await Promise.all([isBrowseAdmin(), canBrowseProfiles(currentUserId), (supabase as any).rpc("billing_boosted_profiles")]);
+      const boosted = new Set<string>(boosts.data ?? []);
       if (generation !== requestGeneration.current) return;
       setAdminViewer(isAdmin);
       if (!isAdmin && (!targetType || !approved)) {
@@ -185,6 +186,7 @@ export function useDiscoverFeed(
         rows = rows.filter((p) => (detail(p)?.typical_check_size ?? "") === filters.checkBand);
       }
 
+      rows.sort((a,b)=>Number(boosted.has(b.id))-Number(boosted.has(a.id)));
       return { rows, count: count ?? 0 };
       });
       if (generation !== requestGeneration.current) return;

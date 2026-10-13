@@ -60,93 +60,14 @@ serve(async (req) => {
       );
     }
 
-    // Get user type and token balance
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('user_type, tokens')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError) throw profileError;
-    if (!profile) {
-      return new Response(
-        JSON.stringify({ error: 'Profile not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const currentBalance = profile.tokens || 0;
-
-    logStep('Determined token cost', { tokenCost: TOKEN_COST, currentBalance });
-
-    // Check if user has sufficient tokens
-    if (currentBalance < TOKEN_COST) {
-      return new Response(
-        JSON.stringify({
-          error: 'Insufficient tokens',
-          required: TOKEN_COST,
-          balance: currentBalance
-        }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Deduct tokens
-    const { data: transaction, error: transactionError } = await supabaseAdmin
-      .from('token_transactions')
-      .insert({
-        user_id: user.id,
-        transaction_type: 'spend',
-        amount: TOKEN_COST,
-        product_type: 'instant_message',
-        description: `Instant message to user`,
-      })
-      .select()
-      .single();
-
-    if (transactionError) throw transactionError;
-
-    // Create instant message
-    const { data: instantMessage, error: messageError } = await supabaseAdmin
-      .from('instant_messages')
-      .insert({
-        sender_id: user.id,
-        receiver_id: receiverId,
-        content: content.trim(),
-        tokens_spent: TOKEN_COST,
-      })
-      .select()
-      .single();
-
-    if (messageError) {
-      // Refund tokens if message creation fails
-      await supabaseAdmin
-        .from('token_transactions')
-        .insert({
-          user_id: user.id,
-          transaction_type: 'refund',
-          amount: TOKEN_COST,
-          product_type: 'instant_message',
-          description: 'Refund for failed instant message',
-        });
-      throw messageError;
-    }
-
-    logStep('Instant message sent', {
-      messageId: instantMessage.id,
-      tokensSpent: TOKEN_COST,
-      newBalance: currentBalance - TOKEN_COST
+    // Shared atomic wallet debit + legacy inbox insert. Cached clients keep their shape.
+    const {data, error} = await supabaseAdmin.rpc("billing_legacy_instant", {
+      p_user:user.id, p_target:receiverId, p_content:content,
+      p_request:body.requestId || crypto.randomUUID(),
     });
+    if (error) throw error;
+    return new Response(JSON.stringify(data), {status:200,headers:{...corsHeaders,'Content-Type':'application/json'}});
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        messageId: instantMessage.id,
-        tokensSpent: TOKEN_COST,
-        newBalance: currentBalance - TOKEN_COST
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
   } catch (error: any) {
     logStep('Error', { error: error.message });
     return new Response(

@@ -45,6 +45,7 @@ import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
 import { useSubscription } from "@/hooks/useSubscription";
+import { payments } from "@/lib/billing";
 import { getProPrice } from "@/lib/stripe-constants";
 import { SpotlightManager } from "@/components/SpotlightManager";
 import { AdminRevenueAdjustment } from "@/components/AdminRevenueAdjustment";
@@ -103,25 +104,7 @@ const Settings = () => {
   const handleSubscribe = async () => {
     setSubscribing(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({ variant: "destructive", title: "Please sign in to subscribe" });
-        return;
-      }
-      const targetPlan = userType === "founder" ? "startup_pro" : "investor_pro";
-      const { data, error } = await supabase.functions.invoke("manage-subscription", {
-        body: { action: "create_checkout", plan: targetPlan },
-      });
-      if (error) throw error;
-      if (data?.error?.includes("not configured")) {
-        toast({ variant: "destructive", title: "Stripe not configured", description: "Payment processing is not yet available." });
-        return;
-      }
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error("No checkout URL returned");
-      }
+      await payments.checkout("pro");
     } catch (error: any) {
       toast({ variant: "destructive", title: "Subscription error", description: error.message || "Failed to start checkout" });
     } finally {
@@ -132,9 +115,7 @@ const Settings = () => {
   const handleManageBilling = async () => {
     setSubscribing(true);
     try {
-      const { data, error } = await supabase.functions.invoke("manage-subscription", { body: { action: "create_portal" } });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
+      await payments.manage();
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message || "Failed to open billing portal" });
     } finally {
@@ -1363,15 +1344,15 @@ const Settings = () => {
               </>
             ) : (
               <>
-                <p style={descCls}>Upgrade to Pro for an ad-free experience and a weekly spotlight.</p>
-                {["No ad profiles in your swipe feed", "No 3-second delay on ads", "One weekly spotlight (8 hours) to promote yourself", "Priority visibility to matches"].map((b) => (
+                <p style={descCls}>Upgrade to Pro for unlimited right swipes and more ways to connect.</p>
+                {["Unlimited right swipes", "See who liked you", "One 24-hour boost each week", "One instant message credit each month", "20% off concierge matches"].map((b) => (
                   <div key={b} className="flex items-center gap-2.5">
                     <Check size={13} color={GOLD} strokeWidth={2} className="shrink-0" />
                     <span style={{ color: TEXT_VALUE, fontSize: 13 }}>{b}</span>
                   </div>
                 ))}
                 <div className="flex items-baseline gap-1.5 pt-1">
-                  <span style={{ fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", fontSize: 28, fontWeight: 600, color: TEXT }}>{planDetails.displayPrice.split("/")[0]}</span>
+                  <span style={{ fontFamily: "'Schibsted Grotesk', system-ui, sans-serif", fontSize: 28, fontWeight: 600, color: TEXT }}>{userType === "investor" ? "$19" : "$29"}</span>
                   <span style={{ color: TEXT_DIM, fontSize: 13 }}>/ month</span>
                 </div>
                 <PillPrimary onClick={handleSubscribe} disabled={subscribing} icon={subscribing ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} strokeWidth={2} />}>
@@ -1381,7 +1362,7 @@ const Settings = () => {
             )}
           </Section>
 
-          {userId && userType && <SpotlightManager userId={userId} userType={userType} />}
+          <button onClick={() => navigate("/pricing")} style={descCls}>View packs, profile stats and weekly boost</button>
 
           {/* Tokens */}
           {userId && (

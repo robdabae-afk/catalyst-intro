@@ -1,3 +1,4 @@
+import { useBilling } from "@/hooks/useBilling";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useRef, useState, type PointerEvent as RPE } from "react";
@@ -35,6 +36,9 @@ export function SwipeView({ onOpen, topRight }: { onOpen: (id: string) => void; 
   return <SwipeDeck onOpen={onOpen} topRight={topRight} />;
 }
 function SwipeDeck({ onOpen, topRight }: { onOpen: (id: string) => void; topRight?: ReactNode }) {
+  const billing = useBilling();
+  const [saveError,setSaveError] = useState("");
+  const busy = useRef(false);
   const reduced = useReducedMotion();
   const [i, setI] = useState(0);
   const [dx, setDx] = useState(0);
@@ -45,12 +49,22 @@ function SwipeDeck({ onOpen, topRight }: { onOpen: (id: string) => void; topRigh
   const d = DEALS[i % DEALS.length], next = DEALS[(i + 1) % DEALS.length];
 
   const [burst, setBurst] = useState<{ k: "save" | "pass" | null; n: number }>({ k: null, n: 0 });
-  const commit = (dir: 1 | -1) => {
+  const commit = async (dir: 1 | -1) => {
+    if(busy.current || fly) return;
     if (dir > 0 && !requireAccount()) { setDx(0); setDy(0); return; }
+    if (dir > 0) {
+      busy.current=true;
+      try {
+        if(!billing.entitlement.isPro && billing.entitlement.remaining===0) { setSaveError("You’ve used today’s five free right swipes.");setDx(0);setDy(0);return; }
+        if(!(await watchAdd(d.id))) {setSaveError("Could not save. Check your daily allowance or try again.");setDx(0);setDy(0);return;}
+        await billing.refresh();
+      } finally {busy.current=false;}
+    }
+    setSaveError("");
     setFly(dir);
     setBurst((b) => ({ k: dir > 0 ? "save" : "pass", n: b.n + 1 }));
     setLog((l) => (dir > 0 ? { ...l, save: l.save + 1 } : { ...l, pass: l.pass + 1 }));
-    if (dir > 0) watchAdd(d.id);
+
     setTimeout(() => { setI((v) => v + 1); setDx(0); setDy(0); setFly(0); }, reduced ? 0 : 320);
   };
   const down = (e: RPE) => {
@@ -76,6 +90,7 @@ function SwipeDeck({ onOpen, topRight }: { onOpen: (id: string) => void; topRigh
         <div className="lv-top-t">Discover</div>
         {topRight}
       </header>
+      {saveError && <div role="status" className="lv-fine">{saveError} <Link to="/pricing">Explore Pro</Link></div>}
       <div className="lv-deck">
         <article className="lv-card under" key={"u" + i} aria-hidden style={{ transform: `scale(${0.94 + Math.abs(p) * 0.06})` }}>
           <LiveImage src={next.img} intro={false} />

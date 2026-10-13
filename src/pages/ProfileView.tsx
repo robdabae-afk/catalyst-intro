@@ -1,3 +1,5 @@
+import { billingRpc } from "@/lib/billing";
+import { InstantMessageDialog } from "@/components/InstantMessageDialog";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { logEvent } from "@/lib/analytics";
@@ -189,7 +191,8 @@ export default function ProfileView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, isPro } = useAuth();
+  const { user } = useAuth();
+  const [instantOpen,setInstantOpen] = useState(false);
   const { expressInterest } = useExpressInterest(user?.id);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -216,7 +219,7 @@ export default function ProfileView() {
         return;
       }
 
-      if (authUser.id !== id) logEvent("profile_view", id);
+      if (authUser.id !== id) { logEvent("profile_view", id); void billingRpc("billing_record_view", { p_target: id }).catch(()=>{}); }
 
       let founderProfile = null;
       let investorProfile = null;
@@ -262,7 +265,7 @@ export default function ProfileView() {
     if (res.ok) {
       toast({ title: "Interest sent!" });
     } else {
-      toast({ variant: "destructive", title: "Could not send interest" });
+      toast({ variant: "destructive", title: res.error?.includes("DAILY_SWIPE_LIMIT") ? "Today’s five free swipes are used" : "Could not send interest", description: res.error });
     }
   };
 
@@ -300,6 +303,7 @@ export default function ProfileView() {
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
 
+      {user && user.id !== profile.id && <div className="cf" style={{padding:16}}><button className="btn ghost" onClick={()=>setInstantOpen(true)}>Send instant message</button><InstantMessageDialog open={instantOpen} onOpenChange={setInstantOpen} senderId={user.id} receiverId={profile.id} receiverName={profile.name} userType={user.user_type === "investor" ? "investor" : "founder"} /></div>}
       {isFounder ? (
         <FounderView profile={profile} isOwn={user?.id === profile.id} onBack={() => navigate(-1)} onShare={handleShare} onLike={handleLike} onPass={() => navigate(-1)} />
       ) : (

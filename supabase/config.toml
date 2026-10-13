@@ -31,3 +31,8 @@ project_id = "cpwykexuejexnpygfhlt"
     verify_jwt = false
   [functions.verify-concierge-payment]
     verify_jwt = true
+
+[functions.billing-checkout]
+verify_jwt = true
+[functions.billing-webhook]
+verify_jwt = false
