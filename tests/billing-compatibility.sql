@@ -24,3 +24,8 @@ set role authenticated;
 insert into messages(sender_id,receiver_id,content) values(auth.uid(),'00000000-0000-0000-0000-000000000071','Reverse match works');
 reset role;
 select 'billing compatibility assertions passed';
+
+set role authenticated;
+do $$begin update profiles set tokens=999 where id=auth.uid();raise exception 'Direct mint allowed';exception when insufficient_privilege then null;end$$;
+do $$begin insert into token_transactions(user_id,transaction_type,amount) values(auth.uid(),'grant',999);raise exception 'Ledger mint allowed';exception when insufficient_privilege then null;end$$;
+reset role;

@@ -201,6 +201,21 @@ do $$ declare r record; begin for r in select p.oid::regprocedure sig,p.proname 
  if r.proname in ('billing_enforced','billing_snapshot','billing_my_pro','billing_like','billing_use_boost','billing_boosted_profiles','billing_record_view','billing_send_instant','billing_fulfill_concierge') then execute format('grant execute on function %s to authenticated',r.sig); end if;
  if r.proname in ('billing_apply_purchase','billing_sync_subscription','billing_is_pro') then execute format('grant execute on function %s to service_role',r.sig); end if;
  end loop; end $$;
+-- Protect both ledger minting and direct profile balance edits, regardless of rollout flag.
+create policy billing_token_ledger_insert on public.token_transactions as restrictive for insert to authenticated with check(public.has_role(auth.uid(),'admin'));
+create policy billing_token_ledger_update on public.token_transactions as restrictive for update to authenticated using(public.has_role(auth.uid(),'admin')) with check(public.has_role(auth.uid(),'admin'));
+create policy billing_token_ledger_delete on public.token_transactions as restrictive for delete to authenticated using(public.has_role(auth.uid(),'admin'));
+-- Invoker trigger: trusted SECURITY DEFINER ledger/RPC updates run as their owner.
+-- Ordinary direct profile writes still run as authenticated and cannot mint tokens.
+create function public.billing_profile_balance_guard() returns trigger language plpgsql set search_path=public,pg_temp as $$
+ begin
+ if current_user in ('anon','authenticated') and not public.has_role(auth.uid(),'admin') then
+  if (tg_op='INSERT' and coalesce(new.tokens,0)<>0) or (tg_op='UPDATE' and new.tokens is distinct from old.tokens) then raise exception 'Token balances are server managed' using errcode='42501'; end if;
+ end if;
+ return new;
+ end $$;
+create trigger billing_profile_balance_guard before insert or update on public.profiles for each row execute function public.billing_profile_balance_guard();
+revoke all on function public.billing_profile_balance_guard() from public,anon,authenticated;
 -- Legacy token transaction writers share the same locked profile balance.
 -- Old service-role workers cannot overspend a stale balance.
 create or replace function public.update_token_balance() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$

@@ -35,3 +35,8 @@ create function update_token_balance() returns trigger language plpgsql security
  return new; end $$;
 create trigger update_token_balance_trigger after insert on token_transactions for each row execute function update_token_balance();
 create table instant_messages(id uuid primary key default gen_random_uuid(),sender_id uuid,receiver_id uuid,content text,tokens_spent integer);
+
+alter table token_transactions enable row level security;
+create policy legacy_ledger_own_insert on token_transactions for insert to authenticated with check(user_id=auth.uid());
+grant insert,select,update,delete on token_transactions to authenticated;
+grant update on profiles to authenticated;
