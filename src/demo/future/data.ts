@@ -1,0 +1,13 @@
+export const startups = [
+ {id:"morrow",name:"Morrow",mark:"m.",sector:"Climate",line:"Better batteries. A cleaner everyday.",pitch:"We make modular home batteries that store solar energy when it is abundant and power homes when it isn't. Our next chapter brings dependable energy to more everyday households.",raised:384200,goal:750000,cap:8000000,days:24,investors:312,traction:"148 pilot homes",team:"Maya Chen · CEO / Luis Rivera · CTO",update:"Our second manufacturing pilot is underway, with 40 new homes joining this month.",tone:"#dce6db"},
+ {id:"common",name:"Common Ground",mark:"cg",sector:"Consumer",line:"Your neighborhood grocery, without the markup.",pitch:"A member-owned approach to grocery delivery. We connect local farms and families through weekly neighborhood pickup points.",raised:218500,goal:500000,cap:5000000,days:18,investors:204,traction:"1,200 weekly members",team:"Amara Cole · CEO / Daniel Park · Operations",update:"We opened two new neighborhood pickup locations this month.",tone:"#eee5d7"},
+ {id:"relay",name:"Relay Health",mark:"rh",sector:"Health",line:"Care that follows you home.",pitch:"Simple tools that help independent care teams coordinate follow-up appointments and stay connected with their patients.",raised:612000,goal:1000000,cap:12000000,days:36,investors:487,traction:"26 clinic pilots",team:"Nina Patel · CEO / Sam Brooks · CTO",update:"Six additional clinics have joined our product pilot.",tone:"#dfe5ed"}
+];
+export type Startup = typeof startups[number];
+export const money = (n:number) => new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(n);
+export const lessons = [
+ {term:"SAFE",subtitle:"An investment today. Potential equity tomorrow.",text:"A Simple Agreement for Future Equity may convert into shares at a future financing, subject to its terms. It is not stock today, and conversion or a return is not guaranteed."},
+ {term:"Valuation cap",subtitle:"A ceiling on the conversion price calculation.",text:"A cap can give a SAFE investor a lower conversion price if a later financing values the company above the cap. It is not a current company valuation or a guarantee of a return."},
+ {term:"Dilution",subtitle:"Your percentage can get smaller.",text:"When a company issues new shares, existing investors may own a smaller percentage. The value of your investment can still increase or decrease. Future funding rounds can dilute you."},
+ {term:"Reg CF",subtitle:"Startup investing for everyday people.",text:"Regulation Crowdfunding allows eligible companies to raise from the public through a registered intermediary, subject to offering rules and investor limits. Investments are speculative, often illiquid, and can be lost entirely."}
+];
