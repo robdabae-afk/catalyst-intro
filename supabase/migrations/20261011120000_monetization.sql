@@ -188,6 +188,10 @@ create function public.billing_apply_purchase(p_event text,p_order uuid,p_sessio
  else
  insert into concierge_jobs(order_id,user_id,match_count) values(o.id,o.user_id,case o.sku when 'concierge_one' then 1 else 2 end);
  end if; end $$;
+create table public.billing_refund_reviews(event_id text primary key,charge_id text not null,reason text not null,details jsonb not null default '{}'::jsonb,created_at timestamptz not null default now());
+alter table billing_refund_reviews enable row level security;
+revoke all on billing_refund_reviews from public,anon,authenticated;
+grant all on billing_refund_reviews to service_role;
 create table public.billing_refund_adjustments(
  charge_id text primary key,order_id uuid not null references billing_orders(id),
  refunded_amount integer not null,revoked_credits integer not null default 0,

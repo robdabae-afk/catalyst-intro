@@ -21,15 +21,22 @@ Deno.serve(async (req) => {
    }
    return json({received:true});
   }
-  if(event.type==="charge.refunded") {
-   const charge=await stripe.charges.retrieve((object as Stripe.Charge).id);assertMode(charge,live);
+  if(event.type==="charge.refunded" || event.type==="refund.updated") {
+   const chargeRef=event.type==="charge.refunded"?(object as Stripe.Charge).id:(object as Stripe.Refund).charge;
+   const chargeId=typeof chargeRef==="string"?chargeRef:chargeRef?.id;
+   if(!chargeId) throw new Error("Refund charge unavailable");
+   const charge=await stripe.charges.retrieve(chargeId);assertMode(charge,live);
+   let succeeded=0;
+   for await(const refund of stripe.refunds.list({charge:charge.id,limit:100})) { if(refund.status==="succeeded") succeeded+=refund.amount; }
+   if(!succeeded)return json({received:true});
+   const review=async(reason:string)=>{const {error}=await db.from("billing_refund_reviews").insert({event_id:event.id,charge_id:charge.id,reason,details:{payment_intent:charge.payment_intent,amount:charge.amount,refunded:succeeded}});if(error && error.code!=="23505")check(error);return json({received:true,manualReview:true});};
    const pi=typeof charge.payment_intent==="string"?charge.payment_intent:charge.payment_intent?.id;
-   if(!pi) return json({received:true});
+   if(!pi) return await review("No payment intent");
    const sessions=await stripe.checkout.sessions.list({payment_intent:pi,limit:2});
-   if(sessions.data.length!==1) return json({received:true,manualReview:true});
+   if(sessions.data.length!==1) return await review("Ambiguous or recurring payment Checkout linkage");
    const session=sessions.data[0];assertMode(session,live);
    if(session.metadata?.billing_version!=="1") return json({received:true});
-   const {error}=await db.rpc("billing_refund",{p_event:event.id,p_order:session.metadata.order_id,p_session:session.id,p_charge:charge.id,p_amount:charge.amount,p_refunded:charge.amount_refunded,p_currency:charge.currency});check(error);
+   const {error}=await db.rpc("billing_refund",{p_event:event.id,p_order:session.metadata.order_id,p_session:session.id,p_charge:charge.id,p_amount:charge.amount,p_refunded:succeeded,p_currency:charge.currency});check(error);
    return json({received:true});
   }
   let subId: string | null = null;
