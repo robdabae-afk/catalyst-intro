@@ -79,6 +79,16 @@ serve(async (req) => {
 
     switch (action) {
       case 'create_checkout': {
+        const {data: alreadyPro,error: proError} = await supabase.rpc('billing_is_pro',{p_user:user.id});
+        if(proError) throw proError; // compatibility migration required, fail closed
+        if(alreadyPro) return new Response(JSON.stringify({error:'Manage your existing subscription'}),{status:409,headers:{...corsHeaders,'Content-Type':'application/json'}});
+        if(profile.stripe_customer_id) {
+          const customer = await stripe.customers.retrieve(profile.stripe_customer_id);
+          if(customer.deleted) throw new Error('Legacy customer unavailable');
+          for await (const sub of stripe.subscriptions.list({customer:profile.stripe_customer_id,status:'all',limit:100})) {
+            if(!['canceled','incomplete_expired'].includes(sub.status)) return new Response(JSON.stringify({error:'Manage your existing subscription'}),{status:409,headers:{...corsHeaders,'Content-Type':'application/json'}});
+          }
+        }
         // Determine the correct price based on plan or user type
         let priceId: string;
         let expectedPlan: string;

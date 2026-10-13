@@ -1,18 +1,19 @@
 import Stripe from "npm:stripe@22.2.0";
-import { isBillingInterval, proPriceConfig } from "../_shared/billing-catalog.ts";
-import { services, json, check } from "../_shared/billing.ts";
+import { isBillingInterval, proPriceConfig, isSku, PRODUCTS } from "../_shared/billing-catalog.ts";
+import { services, json, check, assertMode } from "../_shared/billing.ts";
 Deno.serve(async (req) => {
  if (req.method !== "POST") return json({ error: "POST required" }, 405);
- const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+ const secret = Deno.env.get("STRIPE_WEBHOOK_SECRET_V2");
  if (!secret) return json({ error: "Webhook not configured" }, 503);
- let svc; try { svc = services(); } catch { return json({ error: "Test-mode Stripe required" }, 503); }
- const { stripe, db } = svc;
+ let svc; try { svc = services(); } catch { return json({ error: "Stripe V2 configuration required" }, 503); }
+ const { stripe, db, live } = svc;
  let event: Stripe.Event;
  try { event = await stripe.webhooks.constructEventAsync(await req.text(), req.headers.get("stripe-signature") ?? "", secret, undefined, Stripe.createSubtleCryptoProvider()); }
  catch { return json({ error: "Invalid signature" }, 400); }
- if (event.livemode) return json({ error: "Live payments are disabled" }, 400);
+ if (event.livemode !== live) return json({ error: "Stripe event mode mismatch" }, 400);
  try {
   const object = event.data.object;
+  assertMode(object as {livemode:boolean}, live);
   if(event.type === "checkout.session.expired") {
    const session=object as Stripe.Checkout.Session;
    if(session.metadata?.billing_version==="1") {
@@ -23,9 +24,16 @@ Deno.serve(async (req) => {
   let subId: string | null = null;
   if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
    const session = await stripe.checkout.sessions.retrieve((object as Stripe.Checkout.Session).id);
+   assertMode(session, live);
    if (session.metadata?.billing_version !== "1") return json({ received: true });
    if (session.mode === "subscription") subId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id ?? null;
    else if (session.payment_status === "paid") {
+    const sku=session.metadata.sku;
+    if(!isSku(sku) || sku==="pro" || session.mode!=="payment") throw new Error("Invalid one-time product");
+    const lines=await stripe.checkout.sessions.listLineItems(session.id,{limit:2});
+    const price=lines.data[0]?.price;
+    if(lines.data.length!==1 || lines.data[0].quantity!==1 || !price || price.id!==Deno.env.get(PRODUCTS[sku].priceEnv)) throw new Error("One-time price mismatch");
+    assertMode(price,live);
     const { error } = await db.rpc("billing_apply_purchase", {
      p_event: event.id, p_order: session.metadata.order_id, p_session: session.id, p_amount: session.amount_total, p_currency: session.currency,
     }); check(error);
@@ -39,16 +47,19 @@ Deno.serve(async (req) => {
   if (subId) {
    // Retrieve canonical state, rather than trusting potentially out-of-order event payloads.
    const sub = await stripe.subscriptions.retrieve(subId, { expand: ["latest_invoice"] });
+   assertMode(sub, live);
    if (sub.metadata.billing_version !== "1") return json({ received: true });
    const { data: order, error: oe } = await db.from("billing_orders").select("user_id,sku,stripe_session_id").eq("id",sub.metadata.order_id).single(); check(oe);
    if (!order || order.sku !== "pro" || order.user_id !== sub.metadata.user_id || !order.stripe_session_id) throw new Error("Subscription order mismatch");
    const checkout = await stripe.checkout.sessions.retrieve(order.stripe_session_id);
+   assertMode(checkout, live);
    const interval = checkout.metadata?.interval;
    const role = checkout.metadata?.role;
    if(!isBillingInterval(interval) || (role !== "founder" && role !== "investor")) throw new Error("Invalid subscription metadata");
    const config = proPriceConfig(role,interval);
    if (checkout.subscription !== sub.id || sub.items.data.length !== 1 || sub.items.data[0].quantity !== 1 || sub.items.data[0].price.id !== Deno.env.get(config.priceEnv) || sub.items.data[0].price.unit_amount !== config.amount || sub.items.data[0].price.currency !== "usd" || sub.items.data[0].price.recurring?.interval !== interval || sub.items.data[0].price.recurring.interval_count !== 1) throw new Error("Subscription product mismatch");
    const item = sub.items.data[0];
+   assertMode(item.price, live);
    const invoice = typeof sub.latest_invoice === "object" ? sub.latest_invoice : null;
    const paid = invoice?.status === "paid";
    // A paid monthly billing period grants one credit, once; updates/retries cannot mint more.
