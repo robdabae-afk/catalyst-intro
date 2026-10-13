@@ -44,7 +44,7 @@ import {
 import { SupportChat } from "@/components/SupportChat";
 import { IdentityVerificationCapture } from "@/components/verification/IdentityVerificationCapture";
 import { useIdentityVerification } from "@/hooks/useIdentityVerification";
-import { useBilling } from "@/hooks/useBilling";
+import { useSubscription } from "@/hooks/useSubscription";
 import { payments } from "@/lib/billing";
 import { getProPrice } from "@/lib/stripe-constants";
 import { SpotlightManager } from "@/components/SpotlightManager";
@@ -98,9 +98,7 @@ const Settings = () => {
 
   const { resetSwipeHistory } = useSwipeHistory(userId || undefined);
   const { status: idVerificationStatus, record: idVerificationRecord, refetch: refetchIdVerification } = useIdentityVerification(userId);
-  const { entitlement: { isPro } } = useBilling();
-  const expiresAt = null;
-  const hasStripeSubscription = true;
+  const { isPro, expiresAt, hasStripeSubscription } = useSubscription(userId);
   const [subscribing, setSubscribing] = useState(false);
 
   const handleSubscribe = async () => {

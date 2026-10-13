@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { billingRpc, type Entitlements } from '@/lib/billing';
 import { supabase } from '@/integrations/supabase/client';
 
 // Re-export SUBSCRIPTION_PLANS from centralized constants for backward compatibility
@@ -27,10 +28,11 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
 
   useEffect(() => {
     if (!userId) {
-      setSubscriptionData(prev => ({ ...prev, loading: false }));
+      setSubscriptionData({isPro:false,plan:null,status:null,expiresAt:null,canUseSpotlight:false,hasStripeSubscription:false,loading:false});
       return;
     }
 
+    let canceled = false;
     const checkSubscription = async () => {
       try {
         const { data, error } = await supabase
@@ -43,7 +45,9 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
 
         const now = new Date();
         const expiresAt = data?.subscription_expires_at ? new Date(data.subscription_expires_at) : null;
-        const isActive = data?.subscription_status === 'active' && expiresAt && expiresAt > now;
+        let snapshot: Entitlements | null = null;
+        try { snapshot = await billingRpc<Entitlements>('billing_snapshot'); } catch { /* pre-migration legacy fallback */ }
+        const isActive = snapshot?.isPro ?? (data?.subscription_status === 'active' && !!expiresAt && expiresAt > now);
 
         // Check if spotlight can be used (resets weekly)
         const spotlightUsedAt = data?.weekly_spotlight_used_at ? new Date(data.weekly_spotlight_used_at) : null;
@@ -51,24 +55,26 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
         const canUseSpotlight = isActive && (!spotlightUsedAt || spotlightUsedAt < oneWeekAgo);
 
         // Check if user has a Stripe customer ID (indicates Stripe-managed subscription)
-        const hasStripeSubscription = !!data?.stripe_customer_id;
+        const hasStripeSubscription = snapshot?.hasStripeSubscription ?? !!data?.stripe_customer_id;
 
+        if (canceled) return;
         setSubscriptionData({
           isPro: isActive,
-          plan: isActive ? (data?.subscription_plan as 'investor_pro' | 'startup_pro') : null,
-          status: data?.subscription_status,
-          expiresAt,
+          plan: isActive ? ((data?.subscription_plan as 'investor_pro' | 'startup_pro') || (snapshot?.role === 'founder' ? 'startup_pro' : 'investor_pro')) : null,
+          status: isActive ? 'active' : data?.subscription_status,
+          expiresAt: snapshot?.expiresAt ? new Date(snapshot.expiresAt) : expiresAt,
           canUseSpotlight,
           hasStripeSubscription,
           loading: false,
         });
       } catch (error) {
         console.error('Error checking subscription:', error);
-        setSubscriptionData(prev => ({ ...prev, loading: false }));
+        setSubscriptionData({isPro:false,plan:null,status:null,expiresAt:null,canUseSpotlight:false,hasStripeSubscription:false,loading:false});
       }
     };
 
     checkSubscription();
+    const timer = window.setInterval(checkSubscription, 30000);
 
     // Subscribe to realtime updates for subscription changes
     const channel = supabase
@@ -88,6 +94,8 @@ export const useSubscription = (userId: string | null): SubscriptionData => {
       .subscribe();
 
     return () => {
+      canceled = true;
+      window.clearInterval(timer);
       supabase.removeChannel(channel);
     };
   }, [userId]);

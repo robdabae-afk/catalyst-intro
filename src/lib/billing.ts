@@ -3,7 +3,7 @@ import { isAppShell } from "@/lib/platform";
 import { Capacitor } from "@capacitor/core";
 export type Product = "pro" | "concierge_one" | "concierge_two" | "messages_three" | "messages_six";
 export type BillingInterval = "month" | "year";
-export interface Entitlements { role?: "founder" | "investor"; isPro: boolean; credits: number; remaining: number; resetsAt: string; canBoost: boolean; views: number | null }
+export interface Entitlements { hasStripeSubscription?: boolean; expiresAt?: string | null; tokenRemainder?: number; role?: "founder" | "investor"; isPro: boolean; credits: number; remaining: number; resetsAt: string; canBoost: boolean; views: number | null }
 export const FREE: Entitlements = { isPro: false, credits: 0, remaining: 5, resetsAt: "", canBoost: false, views: null };
 export const PRO_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_FOUNDER_PRICE || 29);
 export const INVESTOR_DISPLAY_PRICE = Number(import.meta.env.VITE_PRO_INVESTOR_PRICE || 19);
