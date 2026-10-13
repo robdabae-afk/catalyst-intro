@@ -209,22 +209,22 @@ create function public.billing_refund(p_event text,p_order uuid,p_session text,p
  insert into billing_events values('stripe',p_event,now()) on conflict do nothing;if not found then return;end if;
  if p_refunded<p_amount or o.sku='pro' or o.sku like 'concierge_%' then
  insert into billing_refund_reviews(event_id,charge_id,order_id,reason,details)
- values(p_event,p_charge,p_order,case when o.sku='pro' then 'Subscription refund requires admin review' when p_refunded<p_amount then 'Partial refund reconciled; admin review required' else 'Concierge refund requires fulfillment review' end,
+ values(p_event,p_charge,p_order,case when o.sku='pro' then 'Subscription refund requires admin review' when p_refunded<p_amount then 'Partial refund requires admin review' else 'Concierge refund requires fulfillment review' end,
  jsonb_build_object('amount_paid',p_amount,'refunded',p_refunded,'sku',o.sku)) on conflict do nothing;
  end if;
  select * into a from billing_refund_adjustments where charge_id=p_charge for update;
  if found and (a.order_id<>p_order or a.refunded_amount>=p_refunded) then return;end if;
  if o.status='refunded' then return;end if;
  -- Subscription refunds retain active entitlement; explicit cancellation is separate.
- if o.sku='pro' then
+ if p_refunded<p_amount or o.sku='pro' then
  insert into billing_refund_adjustments(charge_id,order_id,refunded_amount,manual_review) values(p_charge,p_order,p_refunded,true)
  on conflict(charge_id) do update set refunded_amount=excluded.refunded_amount,manual_review=true,updated_at=now();
  insert into billing_refund_reviews(event_id,charge_id,reason,details) values(p_event,p_charge,'Subscription refund requires admin review',jsonb_build_object('order_id',p_order,'refunded',p_refunded)) on conflict do nothing;
  return;end if;
  if o.status<>'paid' then raise exception 'Refund before fulfillment; retry';end if;
  if o.sku in ('messages_three','messages_six') then
- -- Round cumulative fraction down to whole credits; full refunds revoke the entire grant.
- n:=((case o.sku when 'messages_three' then 3 else 6 end)::bigint*p_refunded/p_amount)::integer;
+ -- Only full refunds revoke credits. Partial refunds return above without changing access.
+ n:=case o.sku when 'messages_three' then 3 else 6 end;
  prior:=coalesce(a.revoked_credits,0)+coalesce(a.unrecovered_credits,0);
  n:=greatest(n-prior,0);
  insert into billing_wallets(user_id) values(o.user_id) on conflict do nothing;
@@ -232,7 +232,7 @@ create function public.billing_refund(p_event text,p_order uuid,p_session text,p
  update billing_wallets set credits=credits-taken where user_id=o.user_id;
  else
  select * into j from concierge_jobs where order_id=o.id for update;
- if j.status in ('queued','review_hold') then update concierge_jobs set status=case when p_refunded=p_amount then 'cancelled' else 'review_hold' end where id=j.id;end if;
+ if j.status='queued' then update concierge_jobs set status='cancelled' where id=j.id;end if;
  end if;
  update billing_orders set status='refunded' where id=o.id and p_refunded=p_amount;
  if n>taken then
