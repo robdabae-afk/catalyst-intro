@@ -30,7 +30,7 @@ create table public.billing_events (provider text not null,event_id text not nul
 create table public.billing_credit_grants (user_id uuid references auth.users(id) on delete cascade,grant_key text not null,primary key(user_id,grant_key));
 create table public.concierge_jobs (
  id uuid primary key default gen_random_uuid(),order_id uuid not null unique references public.billing_orders(id),user_id uuid not null references auth.users(id) on delete cascade,
- match_count integer not null check(match_count in (1,2)),status text not null default 'queued' check(status in ('queued','fulfilled','cancelled')),
+ match_count integer not null check(match_count in (1,2)),status text not null default 'queued' check(status in ('queued','fulfilled','cancelled','review_hold')),
  fulfilled_profiles uuid[],note text,fulfilled_by uuid references auth.users(id),fulfilled_at timestamptz,created_at timestamptz not null default now()
 );
 create table public.billing_swipe_usage (
@@ -160,7 +160,7 @@ create function public.billing_send_instant(p_target uuid,p_content text,p_reque
  insert into billing_instant_sends values(u,p_request,p_target,m);
  return m; end $$;
 create function public.billing_fulfill_concierge(p_job uuid,p_targets uuid[],p_note text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
- declare j concierge_jobs; t uuid; begin
+ declare j concierge_jobs; prior integer:=0; t uuid; begin
  if not public.has_role(auth.uid(),'admin') then raise exception 'Admin required'; end if;
  select * into j from concierge_jobs where id=p_job for update;
  if not found or j.status<>'queued' then raise exception 'Job unavailable'; end if;
@@ -200,7 +200,7 @@ alter table billing_refund_adjustments enable row level security;
 revoke all on billing_refund_adjustments from public,anon,authenticated;
 grant all on billing_refund_adjustments to service_role;
 create function public.billing_refund(p_event text,p_order uuid,p_session text,p_charge text,p_amount integer,p_refunded integer,p_currency text) returns void language plpgsql security definer set search_path=public,pg_temp as $$
- declare o billing_orders; a billing_refund_adjustments; n integer:=0; taken integer:=0; j concierge_jobs;
+ declare o billing_orders; a billing_refund_adjustments; n integer:=0; taken integer:=0; j concierge_jobs; prior integer:=0;
  begin
  select * into o from billing_orders where id=p_order;
  if not found or o.stripe_session_id is distinct from p_session or o.amount<>p_amount or o.currency<>p_currency or p_refunded<=0 or p_refunded>p_amount then raise exception 'Refund order mismatch';end if;
@@ -210,24 +210,28 @@ create function public.billing_refund(p_event text,p_order uuid,p_session text,p
  select * into a from billing_refund_adjustments where charge_id=p_charge for update;
  if found and (a.order_id<>p_order or a.refunded_amount>=p_refunded) then return;end if;
  if o.status='refunded' then return;end if;
- -- Partial and subscription refunds are audited for manual review, not accidental full revocation.
- if p_refunded<p_amount or o.sku='pro' then
+ -- Subscription refunds retain active entitlement; explicit cancellation is separate.
+ if o.sku='pro' then
  insert into billing_refund_adjustments(charge_id,order_id,refunded_amount,manual_review) values(p_charge,p_order,p_refunded,true)
  on conflict(charge_id) do update set refunded_amount=excluded.refunded_amount,manual_review=true,updated_at=now();
+ insert into billing_refund_reviews(event_id,charge_id,reason,details) values(p_event,p_charge,'Subscription refund requires admin review',jsonb_build_object('order_id',p_order,'refunded',p_refunded)) on conflict do nothing;
  return;end if;
  if o.status<>'paid' then raise exception 'Refund before fulfillment; retry';end if;
  if o.sku in ('messages_three','messages_six') then
- n:=case o.sku when 'messages_three' then 3 else 6 end;
+ -- Round cumulative fraction down to whole credits; full refunds revoke the entire grant.
+ n:=((case o.sku when 'messages_three' then 3 else 6 end)::bigint*p_refunded/p_amount)::integer;
+ prior:=coalesce(a.revoked_credits,0)+coalesce(a.unrecovered_credits,0);
+ n:=greatest(n-prior,0);
  insert into billing_wallets(user_id) values(o.user_id) on conflict do nothing;
  select least(credits,n) into taken from billing_wallets where user_id=o.user_id for update;
  update billing_wallets set credits=credits-taken where user_id=o.user_id;
  else
  select * into j from concierge_jobs where order_id=o.id for update;
- if j.status='queued' then update concierge_jobs set status='cancelled' where id=j.id;end if;
+ if j.status in ('queued','review_hold') then update concierge_jobs set status=case when p_refunded=p_amount then 'cancelled' else 'review_hold' end where id=j.id;end if;
  end if;
- update billing_orders set status='refunded' where id=o.id;
+ update billing_orders set status='refunded' where id=o.id and p_refunded=p_amount;
  insert into billing_refund_adjustments(charge_id,order_id,refunded_amount,revoked_credits,unrecovered_credits,manual_review)
- values(p_charge,p_order,p_refunded,taken,n-taken,(n>taken or j.status='fulfilled'))
+ values(p_charge,p_order,p_refunded,coalesce(a.revoked_credits,0)+taken,coalesce(a.unrecovered_credits,0)+n-taken,(n>taken or coalesce(j.status='fulfilled',false) or (o.sku like 'concierge_%' and p_refunded<p_amount)))
  on conflict(charge_id) do update set refunded_amount=excluded.refunded_amount,revoked_credits=excluded.revoked_credits,unrecovered_credits=excluded.unrecovered_credits,manual_review=excluded.manual_review,updated_at=now();
  end $$;
 create function public.billing_sync_subscription(p_event text,p_user uuid,p_subscription text,p_status text,p_expires timestamptz,p_period text,p_interval text default 'month',p_start timestamptz default null) returns void language plpgsql security definer set search_path=public,pg_temp as $$
