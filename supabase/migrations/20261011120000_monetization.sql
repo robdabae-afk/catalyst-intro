@@ -1,4 +1,10 @@
 begin;
+do $$ begin
+ if to_regclass('public.token_transactions') is null or to_regclass('public.instant_messages') is null then
+  raise exception 'Billing schema prerequisite missing: token_transactions/instant_messages; review explicit adapter schema before deploying';
+ end if;
+end $$;
+
 -- Default off until both edge adapters and the new client are deployed.
 create table public.billing_rollout_flags(id boolean primary key default true check(id), enforce_v2 boolean not null default false);
 insert into public.billing_rollout_flags values(true,false);
