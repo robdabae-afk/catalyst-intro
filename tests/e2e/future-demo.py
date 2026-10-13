@@ -20,14 +20,31 @@ with sync_playwright() as p:
  shot('discover')
  page.locator('.fd-startup').first.click()
  shot('startup')
- assert page.locator('details').count()==9
+ assert page.locator('details').count()==10
  for label,name in [('Company & business','company'),('Team, officers & ownership','team'),('Offering terms & deadline','terms'),('Use of proceeds','proceeds'),('Financials & financial condition','financials'),('Risks','risks'),('Capital structure & prior financing','capital'),('Intermediary, reporting & other disclosures','reporting'),('Most asked by investors','faq')]:
   page.locator('summary',has_text=label).click() if label!='Company & business' else None
   page.locator('summary',has_text=label).evaluate('(el) => el.scrollIntoView({block: \"start\"})')
   page.evaluate('window.scrollBy(0,-64)')
   shot('disclosure-'+name)
  assert page.locator('table tbody tr').count()==9
- assert page.locator('input, textarea').count()==0
+ page.locator('summary',has_text='One follow-up question').click()
+ page.locator('#followup').fill('What is included in offering costs?')
+ page.get_by_role('button',name='Submit for founder approval').click()
+ assert page.get_by_role('status').inner_text()=='Awaiting founder approval. Not delivered.'
+ assert page.locator('#followup').count()==0
+ page.locator('summary',has_text='One follow-up question').evaluate('(el)=>el.scrollIntoView({block:"start"})')
+ page.evaluate('window.scrollBy(0,-64)')
+ shot('followup-pending')
+ page.locator('summary',has_text='Preview founder review').click()
+ page.get_by_role('button',name='Simulate founder approval').click()
+ assert page.get_by_role('status').inner_text()=='Founder approved. Demo question delivered.'
+ shot('followup-approved')
+ page.get_by_role('link',name='All startups',exact=True).click()
+ page.locator('.fd-startup').first.click()
+ page.locator('summary',has_text='One follow-up question').click()
+ assert page.locator('#followup').count()==0
+ assert page.get_by_role('status').inner_text()=='Founder approved. Demo question delivered.'
+ 
  page.get_by_role('link',name='Invest from $100',exact=True).click()
  shot('invest-amount')
  for invalid in ['50','100.5','10001','']:
@@ -53,6 +70,14 @@ with sync_playwright() as p:
  assert page.get_by_role('heading',name="That page isn't here.").is_visible()
  page.goto(base+'/demo/startup/common',wait_until='networkidle')
  assert page.get_by_role('heading',name='Common Ground',exact=True).is_visible()
+ page.locator('summary',has_text='One follow-up question').click()
+ page.locator('#followup').fill('How are excess proceeds allocated?')
+ page.get_by_role('button',name='Submit for founder approval').click()
+ page.locator('summary',has_text='Preview founder review').click()
+ page.get_by_role('button',name='Simulate founder decline').click()
+ assert page.get_by_role('status').inner_text()=='Founder declined. Question not delivered.'
+ assert page.locator('#followup').count()==0
+ assert page.get_by_role('button',name='Simulate founder approval').count()==0
  page.set_viewport_size({'width':1440,'height':1000})
  page.goto(base+'/demo',wait_until='networkidle')
  shot('desktop')
@@ -60,5 +85,5 @@ with sync_playwright() as p:
  shot('startup-desktop')
  assert not writes,writes
  assert not errors,errors
- print('PASS minimal loop, full disclosures, amount/risk validation, local-only portfolio, no chat/routes/writes, mobile/desktop')
+ print('PASS single gated follow-up and minimal loop, full disclosures, amount/risk validation, local-only portfolio, no chat/routes/writes, mobile/desktop')
  b.close()
