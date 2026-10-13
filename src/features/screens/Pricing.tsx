@@ -58,7 +58,7 @@ export default function Pricing({ preview = false }: { preview?: boolean }) {
    <Pack title="3 instant messages" detail="Three chances to start the conversation." amount={25} label="Get 3 messages" disabled={!!busy} onClick={()=>void buy("messages_three")} />
    <Pack title="6 instant messages" detail="More introductions, with room to follow your instinct." amount={35} label="Get 6 messages" disabled={!!busy} onClick={()=>void buy("messages_six")} />
   </div>
-  <p className="price-footer note">Test-mode build. No live payments are enabled. Packs are one-time purchases. Right swipes share one daily allowance across people and companies, resetting at midnight UTC. Passes don’t use your allowance. Concierge discounts apply automatically for active Pro members.</p>
+  <p className="price-footer note">Packs are one-time purchases. Right swipes share one daily allowance across people and companies, resetting at midnight UTC. Passes don’t use your allowance. Concierge discounts apply automatically for active Pro members.</p>
  </div>;
 }
 function Pack({title,detail,amount,original,label,disabled,onClick}:{title:string;detail:string;amount:number;original?:number;label:string;disabled:boolean;onClick:()=>void}) {
