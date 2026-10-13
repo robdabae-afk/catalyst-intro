@@ -34,7 +34,22 @@ Deno.serve(async (req) => {
   // Never replace a legacy ID when the V2 key belongs to a different account.
   // Retrieve/list errors fail closed before creating an order or customer.
   if (legacy?.stripe_customer_id) {
-   const customer = await stripe.customers.retrieve(legacy.stripe_customer_id);
+   const oldKey = Deno.env.get("STRIPE_SECRET_KEY");
+   if (!oldKey?.startsWith(live ? "sk_live_" : "sk_test_")) throw new Error("Legacy retrieval mode mismatch");
+   const oldStripe = new Stripe(oldKey,{apiVersion:"2026-05-27.dahlia",httpClient:Stripe.createFetchHttpClient()});
+   const oldCustomer = await oldStripe.customers.retrieve(legacy.stripe_customer_id);
+   if(oldCustomer.deleted) throw new Error("Legacy customer unavailable");
+   assertMode(oldCustomer,live);
+   if(oldCustomer.metadata.supabase_user_id && oldCustomer.metadata.supabase_user_id !== user.id) throw new Error("Legacy customer ownership mismatch");
+   if(sku==="pro") {
+    for await(const sub of oldStripe.subscriptions.list({customer:oldCustomer.id,status:"all",limit:100})) {
+     assertMode(sub,live);
+     if(!["canceled","incomplete_expired"].includes(sub.status)) return json({error:"Manage your existing legacy subscription"},409);
+    }
+   }
+   // Reuse only after the V2 account independently resolves the same ID.
+   // A different account fails closed; never replace the profile customer ID.
+   const customer = await stripe.customers.retrieve(oldCustomer.id);
    if (customer.deleted) throw new Error("Legacy customer unavailable");
    assertMode(customer, live);
    if (customer.metadata.supabase_user_id && customer.metadata.supabase_user_id !== user.id) throw new Error("Legacy customer ownership mismatch");
