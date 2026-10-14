@@ -7,9 +7,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 FONT = os.path.join(ROOT, "fonts", "f.ttf")
-VOICE = "en-US-AriaNeural"
+VOICE = "en-US-EmmaMultilingualNeural"
+RATE = "-3%"
 W, H, FPS = 1080, 1920, 24
-PAPER, INK, GREEN, RUST, GREY, RULE, TINT = (246,243,236),(17,17,17),(31,77,58),(181,83,47),(122,118,108),(215,210,198),(236,232,221)
+PAPER, INK, GREEN, RUST, GREY, RULE, TINT = (246,243,236),(17,17,17),(31,77,58),(181,83,47),(39,39,35),(215,210,198),(236,232,221)
 ML = 96  # side margin
 VIS = (ML, 600, W-ML, 1290)  # visual box
 CAP_Y = (1400, 1640)  # caption zone (bottom 280px kept clear for platform UI)
@@ -58,7 +59,7 @@ def fmtv(v, p):
 # ---------------- visuals: each draw(d, img, labels, values, p) with p in 0..1 ----------------
 def v_flow(d, img, labels, values, p):
     x0,y0,x1,y1 = VIS; n = max(1, len(labels)); gap = 54
-    bh = min(150, (y1-y0-gap*(n-1))//n)
+    bh = min(210, (y1-y0-gap*(n-1))//n)
     for i, lab in enumerate(labels):
         a = seg(p, 0.08+i*0.8/n, 0.08+i*0.8/n+0.16)
         if a <= 0: continue
@@ -77,7 +78,7 @@ def v_flow(d, img, labels, values, p):
 
 def v_bars(d, img, labels, values, p):
     x0,y0,x1,y1 = VIS; n = max(1, len(labels)); vals = list(values) + [0]*(n-len(values)); mx = max(vals) or 1
-    rowh = min(150, (y1-y0)//n); bh = 46
+    rowh = min(210, (y1-y0)//n); bh = 64
     for i, lab in enumerate(labels):
         a = seg(p, 0.05+i*0.6/n, 0.05+i*0.6/n+0.3)
         y = y0 + i*rowh
@@ -92,7 +93,7 @@ def v_bars(d, img, labels, values, p):
 def v_pie(d, img, labels, values, p):
     x0,y0,x1,y1 = VIS; n = len(values) or 1; tot = sum(values) or 1
     cols = [GREEN, RUST, (214,170,60), (90,120,150), GREY, (150,180,150)]
-    S = 3; R = 270; cx, cy = (x0+x1)//2, y0+R+10
+    S = 3; R = 220; cx, cy = (x0+x1)//2, y0+R+10
     lay = Image.new("RGBA", (2*R*S+10, 2*R*S+10), (0,0,0,0)); ld = ImageDraw.Draw(lay)
     box = (5, 5, 2*R*S+5, 2*R*S+5); ang = -90; sweep = 360*ease(p/0.7 if p < .7 else 1)
     acc = 0
@@ -113,7 +114,7 @@ def v_pie(d, img, labels, values, p):
         d.text((x1, row+21), f"{pct:.0f}%", font=font(34,700), fill=mix(INK,a), anchor="rm")
 
 def v_timeline(d, img, labels, values, p):
-    x0,y0,x1,y1 = VIS; n = max(1, len(labels)); step = min(190,(y1-y0-40)//n); lx = x0+60
+    x0,y0,x1,y1 = VIS; n = max(1, len(labels)); step = (y1-y0-60)//n; lx = x0+60
     d.line((lx, y0+10, lx, y0+10+(n*step-40)*seg(p,0.02,0.9)), fill=GREY, width=4)
     for i, lab in enumerate(labels):
         a = seg(p, 0.05+i*0.8/n, 0.05+i*0.8/n+0.15); y = y0+10+i*step
@@ -122,31 +123,28 @@ def v_timeline(d, img, labels, values, p):
         f, L, s = fit(d, lab, x1-lx-70, step-30, 42, 24, 600, 3)
         ty = y - len(L)*s*1.15/2 + 14 + (1-a)*24
         draw_lines(d, L, f, lx+60, ty, mix(INK,a), s*1.15)
-        d.text((lx+60, ty-12), f"STEP {i+1}", font=font(24,700), fill=mix(RUST,a), anchor="ls")
+        d.text((lx+60, ty-12), f"STEP {i+1}", font=font(30,700), fill=mix(INK,a), anchor="ls")
 
 def v_document(d, img, labels, values, p):
-    x0,y0,x1,y1 = VIS; dx0 = x0+10; dx1 = x1-10
-    a0 = seg(p, 0, 0.15)
-    d.rounded_rectangle((dx0, y0+(1-a0)*40, dx1, y1), 10, fill=mix((255,255,255),a0), outline=mix(RULE,a0), width=3)
-    if a0 < .9: return
-    n = max(1, len(labels)); y = y0+40; rh = (y1-y0-80)/n
+    """Actual checklist content; never placeholder document/skeleton strokes."""
+    x0,y0,x1,y1 = VIS
+    n = max(1,len(labels)); gap = 16; rh = (y1-y0-gap*(n-1))/n
     for i, lab in enumerate(labels):
-        a = seg(p, 0.15+i*0.7/n, 0.15+i*0.7/n+0.15)
-        f, L, s = fit(d, lab, dx1-dx0-100, 90, 38, 24, 700, 2, 1.1)
-        hw = max(tw(d,l,f) for l in L)+24
-        hh = len(L)*s*1.1+16
-        d.rectangle((dx0+40, y, dx0+40+hw*a, y+hh), fill=mix((226,236,226),1))
-        d.rectangle((dx0+40, y, dx0+46, y+hh), fill=mix(GREEN,a))
-        if a > .5: draw_lines(d, L, f, dx0+52, y+6, mix(INK,(a-.5)*2), s*1.1)
-        for k in range(2):
-            ww = (dx1-dx0-100) * [0.92,0.6][k] * a
-            d.rectangle((dx0+50, y+hh+14+k*22, dx0+50+ww, y+hh+22+k*22), fill=mix(RULE,a))
-        y += rh
+        a = seg(p, .03+i*.7/n, .03+i*.7/n+.16)
+        if a <= 0: continue
+        y = y0+i*(rh+gap)+(1-a)*18
+        d.rounded_rectangle((x0,y,x1,y+rh),18,fill=mix(TINT,a),outline=mix(RULE,a),width=2)
+        # Each labeled row has a numbered check, conveying a review item rather than fake prose.
+        cx,cy=x0+57,y+rh/2
+        d.ellipse((cx-27,cy-27,cx+27,cy+27),fill=mix(GREEN,a))
+        d.text((cx,cy),str(i+1),font=font(30,700),fill=mix(PAPER,a),anchor="mm")
+        f,L,z=fit(d,lab,x1-x0-146,rh-30,46,28,650,3,1.15)
+        draw_lines(d,L,f,x0+112,y+rh/2-len(L)*z*1.15/2,mix(INK,a),z*1.15)
 
 def v_comparison(d, img, labels, values, p):
     x0,y0,x1,y1 = VIS; half = (x1-x0)//2; gap = 16
     n = len(labels); L1 = labels[:(n+1)//2]; L2 = labels[(n+1)//2:]
-    rows = max(len(L1), len(L2), 1); head = 70; rh = min(190, (y1-y0-head)//rows)
+    rows = max(len(L1), len(L2), 1); head = 70; rh = (y1-y0-head)//rows
     d.line(((x0+x1)//2, y0, (x0+x1)//2, y1), fill=RULE, width=3)
     for col, (items, c, tag) in enumerate([(L1, GREEN, "A"), (L2, RUST, "B")]):
         xs = x0 + col*half + (gap if col else 0); xe = xs + half - gap
@@ -160,7 +158,7 @@ def v_comparison(d, img, labels, values, p):
 
 def v_grid(d, img, labels, values, p):
     x0,y0,x1,y1 = VIS; n = max(1, len(labels)); cols = 2 if n <= 6 else 3
-    rows = math.ceil(n/cols); g = 22; cw = (x1-x0-g*(cols-1))/cols; ch = min(300,(y1-y0-g*(rows-1))/rows)
+    rows = math.ceil(n/cols); g = 22; cw = (x1-x0-g*(cols-1))/cols; ch = (y1-y0-g*(rows-1))/rows
     for i, lab in enumerate(labels):
         r, c = divmod(i, cols); a = seg(p, 0.05+i*0.75/n, 0.05+i*0.75/n+0.18)
         xs = x0+c*(cw+g); ys = y0+r*(ch+g)+(1-a)*24
@@ -182,7 +180,7 @@ async def tts(text, mp3, tries=4):
     last = None
     for k in range(tries):
         try:
-            com = edge_tts.Communicate(text, VOICE, boundary="SentenceBoundary") if "boundary" in edge_tts.Communicate.__init__.__code__.co_varnames else edge_tts.Communicate(text, VOICE)
+            com = edge_tts.Communicate(text, VOICE, rate=RATE, boundary="WordBoundary")
             bounds = []
             with open(mp3, "wb") as fh:
                 async for ch in com.stream():
@@ -197,95 +195,50 @@ async def tts(text, mp3, tries=4):
 def probe_dur(path):
     return float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=nw=1:nk=1",path]).decode())
 
+def normalized(text):
+    import html
+    return "".join(re.findall(r"[\w]", html.unescape(text).casefold()))
+
+def alignment(narr, bounds, total):
+    words = [b for b in bounds if b[0] == "WordBoundary"]
+    if not words or normalized(narr) != "".join(normalized(b[3]) for b in words):
+        raise ValueError("TTS word boundary text differs from narration; no guessed timing allowed")
+    positions=[]; pos=0
+    for b in words:
+        positions.append((pos,b[1],b[2]));pos += len(normalized(b[3]))
+    def at(char):
+        if char == 0:return 0.0
+        if char >= pos:return total
+        for c,a,b in positions:
+            if c == char:return a
+        raise ValueError("Text split is inside a spoken word; exact boundary unavailable")
+    return at
+
+def timed_parts(parts, narr, bounds, total):
+    if normalized(" ".join(parts)) != normalized(narr):
+        raise ValueError("Parts do not equal narration")
+    at=alignment(narr,bounds,total); pos=0; starts=[]
+    for part in parts:
+        starts.append(at(pos));pos+=len(normalized(part))
+    return [(a,starts[i+1] if i+1<len(starts) else total,parts[i]) for i,a in enumerate(starts)]
+
 def sentence_times(narr, bounds, total):
-    """Return [(start,end,text)] per sentence; align by character proportion to the audio, anchored to boundary data if present."""
-    sents = split_sentences(narr)
-    sb = [b for b in bounds if b[0] == "SentenceBoundary"]
-    if len(sb) == len(sents):
-        out = [(b[1], b[2], s) for b, s in zip(sb, sents)]
-    else:
-        wb = [b for b in bounds if b[0] == "WordBoundary"]
-        out = None
-        if wb:
-            words = sum(len(s.split()) for s in sents)
-            if len(wb) == words:
-                out, i = [], 0
-                for s in sents:
-                    n = len(s.split()); out.append((wb[i][1], wb[i+n-1][2], s)); i += n
-        if out is None:
-            chars = sum(len(s) for s in sents); t = 0.15; out = []
-            for s in sents:
-                d = (total-0.3)*len(s)/chars; out.append((t, t+d, s)); t += d
-    # make contiguous & clamp
-    res = []
-    for i, (a, b, s) in enumerate(out):
-        a2 = 0.0 if i == 0 else res[-1][1]
-        b2 = total if i == len(out)-1 else (out[i+1][0] + b)/2 if out[i+1][0] > b else out[i+1][0]
-        res.append((a2, max(b2, a2+0.2), s))
-    return res
+    return timed_parts(split_sentences(narr),narr,bounds,total)
 
-def assign_scenes(sent_t, nscenes):
-    """Contiguous assignment of sentences to scenes, minimizing deviation from equal scene lengths; returns scene (start,end) list."""
-    ns = len(sent_t); total = sent_t[-1][1]
-    if ns <= nscenes:
-        cuts = list(range(ns)) + [ns]*(nscenes-ns)
-        starts = [sent_t[i][0] if i < ns else total for i in range(nscenes)]
-    else:
-        starts = []; idx = 0
-        for k in range(nscenes):
-            starts.append(sent_t[idx][0])
-            remaining_sc = nscenes-k-1; target = total*(k+1)/nscenes
-            j = idx
-            while j < ns-1-remaining_sc and sent_t[j][1] < target - 0.35*(sent_t[j][1]-sent_t[j][0]): j += 1
-            idx = min(j+1, ns-remaining_sc) if remaining_sc else ns
-    bounds = []
-    for k in range(nscenes):
-        s = 0.0 if k == 0 else starts[k]; e = starts[k+1] if k+1 < nscenes else total
-        bounds.append((s, max(e, s+1.0)))
-    for k in range(nscenes-1):  # keep monotone
-        if bounds[k][1] > bounds[k+1][0]: bounds[k+1] = (bounds[k][1], max(bounds[k+1][1], bounds[k][1]+1))
-    return bounds
+def assign_by_text(sent_t, parts, narr, bounds, total):
+    return [(a,b) for a,b,_ in timed_parts(parts,narr,bounds,total)]
 
-def assign_by_text(sent_t, parts, narr):
-    """Scene boundaries from scene_narration strings: word-index boundary interpolated inside the sentence containing it."""
-    norm = lambda x: re.sub(r"\s+", " ", x).strip()
-    cat = norm(" ".join(parts))
-    if cat != norm(narr):
-        logging.warning("scene_narration does not equal narration; using best-effort word alignment")
-    sw = [len(x[2].split()) for x in sent_t]; total_w = sum(sw)
-    cum = 0; out = []
-    nw = [len(p.split()) for p in parts]; tw_ = sum(nw) or 1
-    for k, n in enumerate(nw):
-        wi = round(cum*total_w/tw_) if cum else 0
-        acc = 0; t = sent_t[-1][1]
-        for (a, b, _), w in zip(sent_t, sw):
-            if wi < acc + w or w == 0:
-                t = a + (b-a)*(wi-acc)/max(1, w); break
-            acc += w
-        out.append(t); cum += n
-    out[0] = 0.0
-    return [(out[k], out[k+1] if k+1 < len(out) else sent_t[-1][1]) for k in range(len(out))]
-
-def caption_chunks(sent_t, probe_d):
-    """Split sentences into chunks that fit in <=2 lines at caption size; times proportional to characters."""
-    f = font(54, 650); maxw = W - 2*ML; chunks = []
-    for a, b, s in sent_t:
-        words = s.split(); parts, cur = [], []
-        def fits(ws):
-            return len(wrap(probe_d, " ".join(ws), f, maxw)) <= 2
-        for w in words:
-            if fits(cur+[w]): cur.append(w)
-            else: parts.append(cur); cur = [w]
-        if cur: parts.append(cur)
-        # avoid orphan single-word last chunks
-        if len(parts) > 1 and len(parts[-1]) < 3:
-            merged = parts[-2]+parts[-1]
-            if True: 
-                half = len(merged)//2; parts[-2], parts[-1] = merged[:half], merged[half:]
-        tot = sum(len(" ".join(p)) for p in parts) or 1; t = a
-        for p in parts:
-            txt = " ".join(p); dd = (b-a)*len(txt)/tot; chunks.append((t, t+dd, txt)); t += dd
-    return chunks
+def caption_chunks(narr, bounds, total, probe_d):
+    """Readable chunks anchored to actual synthesized word starts, never proportional estimates."""
+    f=font(54,650);maxw=W-2*ML;parts=[]
+    for sentence in split_sentences(narr):
+        cur=[]
+        for word in sentence.split():
+            if cur and len(wrap(probe_d," ".join(cur+[word]),f,maxw))>2:
+                parts.append(" ".join(cur));cur=[]
+            cur.append(word)
+        if cur:parts.append(" ".join(cur))
+    return timed_parts(parts,narr,bounds,total)
 
 def srt_time(t):
     ms = int(round(t*1000)); return f"{ms//3600000:02d}:{ms//60000%60:02d}:{ms//1000%60:02d},{ms%1000:03d}"
@@ -300,12 +253,12 @@ def render_frame(topic, scenes, sbounds, chunks, t, dur, base):
     k = max(i for i in range(len(scenes)) if t >= sbounds[i][0] - 1e-6)
     sc = scenes[k]; s0, s1 = sbounds[k]; lt = t - s0; p = max(0, min(1, lt/max(0.5, (s1-s0)*0.82)))
     # header
-    d.text((ML, 110), "CATALYST  /  INVESTOR EDUCATION", font=font(24,700), fill=GREY, anchor="ls")
+    d.text((ML, 110), "CATALYST  /  INVESTOR EDUCATION", font=font(30,700), fill=INK, anchor="ls")
     d.line((ML, 130, W-ML, 130), fill=RULE, width=2)
-    d.text((W-ML, 110), f"{k+1:02d} / {len(scenes):02d}", font=font(24,700), fill=GREY, anchor="rs")
+    d.text((W-ML, 110), f"{k+1:02d} / {len(scenes):02d}", font=font(30,700), fill=INK, anchor="rs")
     # kicker + headline
     ka = seg(lt, 0, 0.45); ha = seg(lt, 0.1, 0.65)
-    d.text((ML, 200), str(sc.get("kicker","")).upper(), font=font(28,700), fill=mix(RUST,ka), anchor="ls")
+    d.text((ML, 200), str(sc.get("kicker","")).upper(), font=font(36,700), fill=mix(INK,ka), anchor="ls")
     f, L, s = fit(d, sc.get("headline",""), W-2*ML, 330, 80, 44, 700, 3, 1.1)
     draw_lines(d, L, f, ML, 232+(1-ha)*28, mix(INK,ha), s*1.1)
     d.line((ML, 560, ML+120*ha, 560), fill=GREEN, width=6)
@@ -313,8 +266,10 @@ def render_frame(topic, scenes, sbounds, chunks, t, dur, base):
     fn = VISUALS.get(sc.get("visual"), v_grid)
     fn(d, img, [str(x) for x in sc.get("labels", [])], [float(x) for x in sc.get("values", [])], p)
     # progress
-    d.rectangle((ML, 1700, W-ML, 1706), fill=RULE); d.rectangle((ML, 1700, ML+(W-2*ML)*t/dur, 1706), fill=GREEN)
-    d.text((ML, 1752), str(topic["title"]), font=font(26,600), fill=GREY, anchor="ls")
+    global_progress = max(0.0,min(1.0,t/dur))
+    d.rectangle((ML,1700,W-ML,1710),fill=RULE)
+    d.rectangle((ML,1700,ML+(W-2*ML)*global_progress,1710),fill=GREEN)
+    d.text((ML, 1752), str(topic["title"]), font=font(30,600), fill=INK, anchor="ls")
     # caption
     for a, b, txt in chunks:
         if a <= t < b or (t >= b and chunks[-1][1] == b and txt == chunks[-1][2]):
@@ -333,7 +288,7 @@ def paths(i):
     return {k: os.path.join(ROOT, v) for k, v in dict(mp3=f"audio/{i}.mp3", srt=f"captions/{i}.srt", mp4=f"videos/{i}.mp4",
         meta=f"audio/{i}.json", thumb=f"thumbnails/{i}.jpg", frames=f"frames/{i}").items()}
 
-def nhash(topic): return hashlib.sha256((VOICE + "\n" + topic["narration"]).encode()).hexdigest()[:16]
+def nhash(topic): return hashlib.sha256((VOICE + RATE + "|WordBoundary|\n" + topic["narration"]).encode()).hexdigest()[:16]
 def vhash(topic):
     return hashlib.sha256(json.dumps([nhash(topic), topic["scenes"], topic.get("scene_narration"), topic["title"], open(__file__,"rb").read().decode()], sort_keys=True).encode()).hexdigest()[:16]
 
@@ -358,12 +313,11 @@ def do_video(topic):
     probe = ImageDraw.Draw(Image.new("RGB",(10,10)))
     sent_t = sentence_times(topic["narration"], [tuple(b) for b in meta["bounds"]], meta["total"])
     scenes = topic["scenes"]; sn = topic.get("scene_narration")
-    if sn and len(sn) == len(scenes): sb = assign_by_text(sent_t, sn, topic["narration"])
+    if sn and len(sn) == len(scenes): sb = assign_by_text(sent_t, sn, topic["narration"], meta["bounds"], meta["total"])
     else:
-        if sn: logging.warning("%s scene_narration count %d != scenes %d; falling back", i, len(sn), len(scenes))
-        sb = assign_scenes(sent_t, len(scenes))
+        raise ValueError("All scenes require exact scene_narration")
     sb[-1] = (sb[-1][0], total)
-    chunks = caption_chunks(sent_t, probe)
+    chunks = caption_chunks(topic["narration"], meta["bounds"], meta["total"], probe)
     with open(P["srt"], "w") as fh:
         for n, (a, b, txt) in enumerate(chunks, 1):
             fh.write(f"{n}\n{srt_time(a)} --> {srt_time(b)}\n" + "\n".join(wrap(probe, txt, font(54,650), W-2*ML)) + "\n\n")
