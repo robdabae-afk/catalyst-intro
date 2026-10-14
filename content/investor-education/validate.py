@@ -9,9 +9,9 @@ for t in topics:
     assert len(t['scenes'])>=5
     assert t['sources'] and all(x.startswith('https://') for x in t['sources'])
     md=(root/'writing'/f'{slug}.md').read_text()
-    body=re.split(r'(?im)^#+\\s*(?:sources|references)',md)[0]
-    wc=len(re.findall(r"\\b[\\w'-]+\\b",body))
-    assert 200<=wc<=425,(slug,'companion word count',wc)
+    body=re.split(r'(?im)^#+\s*(?:sources|references)',md)[0]
+    wc=len(re.findall(r"\b[\w'-]+\b",body))
+    assert 200<=wc<=400,(slug,'companion word count',wc)
     vid=root/'videos'/f'{slug}.mp4'
     probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(vid)]))
     video=next(s for s in probe['streams'] if s['codec_type']=='video')

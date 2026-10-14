@@ -1,0 +1,87 @@
+1
+00:00:00,000 --> 00:00:03,579
+Equity means you own shares
+now, though the share class
+
+2
+00:00:03,579 --> 00:00:05,075
+determines your rights.
+
+3
+00:00:05,075 --> 00:00:09,095
+A convertible note is usually a
+debt instrument that may convert
+
+4
+00:00:09,095 --> 00:00:10,225
+into shares later.
+
+5
+00:00:10,225 --> 00:00:14,220
+It commonly has a principal
+amount, interest rate, maturity
+
+6
+00:00:14,220 --> 00:00:18,350
+date, and conversion terms, but
+the actual document controls.
+
+7
+00:00:18,350 --> 00:00:22,199
+If a note does not convert, the
+company may owe repayment,
+
+8
+00:00:22,199 --> 00:00:25,650
+yet an early-stage company can
+lack the cash to pay.
+
+9
+00:00:25,650 --> 00:00:29,860
+A SAFE is different: it is generally
+not debt and does not typically
+
+10
+00:00:29,860 --> 00:00:32,212
+accrue interest or mature like a
+note.
+
+11
+00:00:32,212 --> 00:00:37,184
+For a simple illustration, a $1,000
+note at 6% simple annual interest
+
+12
+00:00:37,184 --> 00:00:41,003
+for one year would accrue $60
+before any repayment or
+
+13
+00:00:41,003 --> 00:00:45,037
+conversion, assuming its terms
+and timing work that way.
+
+14
+00:00:45,038 --> 00:00:48,900
+This is not a forecast of what an
+investor will receive.
+
+15
+00:00:48,900 --> 00:00:52,413
+Compare current ownership
+rights, repayment priority,
+
+16
+00:00:52,413 --> 00:00:54,999
+maturity, conversion triggers, and
+what
+
+17
+00:00:54,999 --> 00:00:56,988
+happens in a sale or shutdown.
+
+18
+00:00:56,988 --> 00:01:00,984
+Never assume all convertible
+instruments behave alike.
+

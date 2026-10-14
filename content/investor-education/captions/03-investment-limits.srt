@@ -1,0 +1,91 @@
+1
+00:00:00,000 --> 00:00:04,383
+Reg CF investment limits depend
+on whether you are an accredited
+
+2
+00:00:04,383 --> 00:00:07,327
+investor and, for non-accredited
+investors,
+
+3
+00:00:07,327 --> 00:00:09,450
+on annual income and net worth.
+
+4
+00:00:09,450 --> 00:00:15,103
+If either measure is below
+$124,000, the 12-month limit is the
+
+5
+00:00:15,103 --> 00:00:19,388
+greater of $2,500 or 5% of the
+greater measure.
+
+6
+00:00:19,388 --> 00:00:25,412
+If both are at least $124,000, it is
+10% of the greater measure.
+
+7
+00:00:25,412 --> 00:00:30,501
+Under either formula, the
+aggregate cap is $124,000 across
+
+8
+00:00:30,501 --> 00:00:34,538
+all Reg CF offerings in any rolling
+12 months.
+
+9
+00:00:34,538 --> 00:00:39,949
+For example, with income of
+$50,000 and net worth of
+
+10
+00:00:39,949 --> 00:00:47,025
+$40,000, 5% of the greater figure
+is $2,500, so the limit is $2,500.
+
+11
+00:00:47,025 --> 00:00:52,256
+With income of $150,000 and net
+worth
+
+12
+00:00:52,256 --> 00:00:57,488
+of $80,000, 5% of $150,000 is
+$7,500.
+
+13
+00:00:57,488 --> 00:01:01,162
+Track commitments across
+portals, not one app.
+
+14
+00:01:01,162 --> 00:01:05,184
+Net-worth rules exclude your
+primary residence and treat some
+
+15
+00:01:05,184 --> 00:01:06,700
+related debt specially.
+
+16
+00:01:06,700 --> 00:01:09,576
+Accredited investors are not
+subject
+
+17
+00:01:09,576 --> 00:01:11,812
+to Reg CF investment limits.
+
+18
+00:01:11,812 --> 00:01:14,023
+Verify current rules and how the
+
+19
+00:01:14,023 --> 00:01:17,616
+intermediary calculates your limit
+before investing.
+

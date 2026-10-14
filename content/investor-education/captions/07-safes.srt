@@ -1,0 +1,86 @@
+1
+00:00:00,000 --> 00:00:04,414
+A SAFE, or Simple Agreement for
+Future Equity, is a contract that
+
+2
+00:00:04,414 --> 00:00:08,625
+may give an investor equity later
+if a specified event occurs.
+
+3
+00:00:08,625 --> 00:00:12,250
+It is not the same as owning
+common stock today, and it is
+
+4
+00:00:12,250 --> 00:00:15,938
+generally not a loan that promises
+repayment with interest.
+
+5
+00:00:15,938 --> 00:00:18,862
+The SAFE’s exact terms control.
+
+6
+00:00:18,862 --> 00:00:23,365
+Some convert during a qualifying
+equity financing; others describe
+
+7
+00:00:23,365 --> 00:00:26,025
+what happens during a sale or
+shutdown.
+
+8
+00:00:26,025 --> 00:00:30,200
+A trigger may never occur, so a
+SAFE may never convert.
+
+9
+00:00:30,200 --> 00:00:34,427
+Even if it converts, the number
+and class of shares depend on the
+
+10
+00:00:34,427 --> 00:00:36,638
+contract and later capitalization.
+
+11
+00:00:36,638 --> 00:00:40,304
+Read the triggering events,
+valuation cap, discount,
+
+12
+00:00:40,304 --> 00:00:44,888
+conversion mechanics, and any
+treatment in a sale or dissolution.
+
+13
+00:00:44,888 --> 00:00:46,506
+Do not translate a cap
+
+14
+00:00:46,506 --> 00:00:49,375
+into a guaranteed ownership
+percentage.
+
+15
+00:00:49,375 --> 00:00:51,282
+A SAFE can be simple in name
+
+16
+00:00:51,282 --> 00:00:54,825
+but still have important legal and
+economic details.
+
+17
+00:00:54,825 --> 00:00:58,129
+Compare it with other
+outstanding SAFEs and future
+
+18
+00:00:58,129 --> 00:01:02,688
+financing plans, and get qualified
+advice if the language is unclear.
+

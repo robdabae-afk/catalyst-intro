@@ -1,0 +1,11 @@
+Catalyst investor education content draft
+
+This is an offline content package, not an application integration or a live investment offering. Twenty fictional-example lessons expand the five existing Reg CF text cards. No application code is changed.
+
+Each video is vertical 1080x1920 H.264/AAC with animated editorial diagrams and burned-in captions. The narrator is Microsoft Edge neural Aria. Caption files are also provided separately. Every lesson has five narration-aligned visual scenes and a sourced companion of about 230–265 words.
+
+Run python3 render.py to resume rendering. It hashes content and renderer code to prevent stale cached assets. Run python3 validate.py to check lesson coverage, companion length, captions, duration, dimensions, audio and file hashes. Install Python packages from requirements.txt and provide ffmpeg/ffprobe. Schibsted Grotesk is included under the SIL Open Font License.
+
+These are editorial drafts requiring legal/compliance review before public use. Sources were checked October 13, 2026. Rules, limits and tax treatment can change. Neither the lessons nor SEC filings promise returns or endorse any issuer. The content does not substitute for a registered intermediary's required investor materials.
+
+The source curriculum.json stores the narration, scene_narration timing passages, visual structure and source URLs. Writing is in writing/, videos in videos/, subtitles in captions/, voice tracks in audio/ and preview images in thumbnails/. The inventory explains the old-to-new topic mapping.

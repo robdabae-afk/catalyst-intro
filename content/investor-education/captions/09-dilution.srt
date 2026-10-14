@@ -1,0 +1,92 @@
+1
+00:00:00,000 --> 00:00:03,211
+Dilution happens when a
+company issues new shares or
+
+2
+00:00:03,211 --> 00:00:06,792
+securities that convert into
+shares, so an existing holder
+
+3
+00:00:06,792 --> 00:00:09,200
+owns a smaller percentage of the
+total.
+
+4
+00:00:09,200 --> 00:00:13,150
+It does not automatically mean
+the company is worth less.
+
+5
+00:00:13,150 --> 00:00:18,112
+Imagine you own 100 shares out
+of 1,000, or 10%.
+
+6
+00:00:18,112 --> 00:00:23,018
+If the company later issues 500
+new shares and you receive none,
+
+7
+00:00:23,018 --> 00:00:27,387
+you still hold 100 shares, but now
+there are 1,500 total.
+
+8
+00:00:27,388 --> 00:00:31,575
+Your percentage becomes about
+6.67%.
+
+9
+00:00:31,575 --> 00:00:35,018
+Those new shares might help
+fund growth, but the outcome
+
+10
+00:00:35,018 --> 00:00:36,678
+depends on how the money is
+
+11
+00:00:36,678 --> 00:00:39,138
+used and what the company
+becomes worth.
+
+12
+00:00:39,138 --> 00:00:42,769
+SAFEs, convertible notes,
+employee options, and new
+
+13
+00:00:42,769 --> 00:00:46,188
+financing rounds can all affect the
+share count.
+
+14
+00:00:46,188 --> 00:00:48,215
+Some preferred shares may carry
+
+15
+00:00:48,215 --> 00:00:50,700
+rights that differ from common
+shares.
+
+16
+00:00:50,700 --> 00:00:54,746
+When reviewing an offering, look
+at the current capitalization table
+
+17
+00:00:54,746 --> 00:00:58,138
+and ask what securities could
+convert or be issued later.
+
+18
+00:00:58,138 --> 00:00:59,895
+A percentage today is not
+
+19
+00:00:59,895 --> 00:01:03,480
+necessarily your percentage after
+future financing.
+

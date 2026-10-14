@@ -1,0 +1,202 @@
+[
+  {
+    "id": "01-startup-investing",
+    "title": "Startup investing basics",
+    "seconds": 61.46,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 232,
+    "bytes": 1651027,
+    "sha256": "78ee23b846d58d0e3508f29af7a776bb1699ce34a59dea977855c461ba766450"
+  },
+  {
+    "id": "02-reg-cf-basics",
+    "title": "Regulation Crowdfunding basics",
+    "seconds": 70.54,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 243,
+    "bytes": 1850843,
+    "sha256": "cd63d0dfb9c36d38a9d8d969b332fb6c12c2d1abae9b0c5e04b814ec5ffa514b"
+  },
+  {
+    "id": "03-investment-limits",
+    "title": "Reg CF investment limits",
+    "seconds": 78.21,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 282,
+    "bytes": 2026203,
+    "sha256": "8be31e71cf5da8c644a65e2c952d69b409bb6c4b8331ac3ee398d99e37428059"
+  },
+  {
+    "id": "04-total-loss-risk",
+    "title": "You can lose the entire investment",
+    "seconds": 61.62,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 251,
+    "bytes": 1654944,
+    "sha256": "594176ba88a5de173eda9b9f0c5cb498fcac25ffb36def9a4013bda133be7afa"
+  },
+  {
+    "id": "05-illiquidity",
+    "title": "Startup investments can be illiquid",
+    "seconds": 62.29,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 237,
+    "bytes": 1709486,
+    "sha256": "b23ba6a1486d290c8cd13a6057858f3dd8d72905408728988fe854b0cfc43332"
+  },
+  {
+    "id": "06-form-c",
+    "title": "How to read a Form C",
+    "seconds": 67.38,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 254,
+    "bytes": 1870978,
+    "sha256": "0b3acfdb8019410fcdbc2631f8daaf0f1f69a834b51e54a6238318de6f285ea6"
+  },
+  {
+    "id": "07-safes",
+    "title": "What a SAFE does and does not mean",
+    "seconds": 63.25,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 257,
+    "bytes": 1678402,
+    "sha256": "136a437d1f03b39eeb2f62b73c912d53ac95fbe2e4fa7093cd1b36de1e11f101"
+  },
+  {
+    "id": "08-valuation-caps-discounts",
+    "title": "Valuation caps and discounts",
+    "seconds": 67.62,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 252,
+    "bytes": 1764354,
+    "sha256": "9691274faf53f0172dfab03143a85ed13efd8b8024d0ac351d8a84a0bf3e4509"
+  },
+  {
+    "id": "09-dilution",
+    "title": "Dilution when a company issues more shares",
+    "seconds": 64.04,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 251,
+    "bytes": 1702170,
+    "sha256": "182807c4b58ac40eb63c157fc16f924e6d59b60e8d33ee50294deff8155e380c"
+  },
+  {
+    "id": "10-equity-vs-convertible-notes",
+    "title": "Equity versus convertible notes",
+    "seconds": 61.58,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 257,
+    "bytes": 1591687,
+    "sha256": "a94d101869b90bec2dc9028ab3ccff9b0f522532fcedeacbea0d2d42b85cefea"
+  },
+  {
+    "id": "11-valuation-pre-post-money",
+    "title": "Pre-money and post-money valuation",
+    "seconds": 65.17,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 240,
+    "bytes": 1755293,
+    "sha256": "9ba651428338bdefbaeb85a28d11e65ee48a282f177b59bbe96757f9f20fe550"
+  },
+  {
+    "id": "12-diversification",
+    "title": "Diversification and startup risk",
+    "seconds": 73.79,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 239,
+    "bytes": 2108592,
+    "sha256": "33e0230c44b62fcc074e1c9882e48dcd7248c3f2c2c112534c8985d44544fae3"
+  },
+  {
+    "id": "13-due-diligence",
+    "title": "A practical due-diligence routine",
+    "seconds": 67.0,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 264,
+    "bytes": 1890087,
+    "sha256": "84c5ae500a64b9f1da5c90998021290ae2f6294a18573d8b10d7ebcb7add372a"
+  },
+  {
+    "id": "14-financials-burn-runway",
+    "title": "Financials, burn, and runway",
+    "seconds": 65.5,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 249,
+    "bytes": 1846039,
+    "sha256": "7a7898b2ea3200b74acb428a27b441aa9696291615d08cb0df52b53f1ce97e33"
+  },
+  {
+    "id": "15-exits-liquidation-preferences",
+    "title": "Exits and liquidation preferences",
+    "seconds": 71.92,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 251,
+    "bytes": 1909444,
+    "sha256": "dbcf0270f57d5e668df593d3a2b22aa8b10cd0e24d4e917e75189d4e4a9925e5"
+  },
+  {
+    "id": "16-fees",
+    "title": "Fees and how they change the math",
+    "seconds": 65.08,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 245,
+    "bytes": 1760696,
+    "sha256": "eb8ad95284052cdcd7edfc203c61dc46033be4033b78a87237e2126ea19f6c0c"
+  },
+  {
+    "id": "17-us-tax-basics",
+    "title": "U.S. tax basics for startup securities",
+    "seconds": 68.96,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 266,
+    "bytes": 1915248,
+    "sha256": "cf2faf155505eaff3ea0ea6fabf3b6e1fa68fdf239ebd93d3e612c27a36f6c73"
+  },
+  {
+    "id": "18-red-flags",
+    "title": "Red flags and claims worth checking",
+    "seconds": 65.08,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 256,
+    "bytes": 1893952,
+    "sha256": "b9fb0a6342d4e6799a0ff89a8ad8f37203bedb747b19b93c0a0d0c24097cfe5d"
+  },
+  {
+    "id": "19-founder-updates",
+    "title": "Reading founder updates",
+    "seconds": 69.38,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 248,
+    "bytes": 1947122,
+    "sha256": "ce7581e5546810999f49d79b5c6cc95a96270addeb69eca3b84a19d9e4e60aba"
+  },
+  {
+    "id": "20-commitment-cancellation",
+    "title": "Investment commitment and cancellation",
+    "seconds": 64.33,
+    "width": 1080,
+    "height": 1920,
+    "companion_words": 265,
+    "bytes": 1867430,
+    "sha256": "22d0f5a4cdf202d92f0b2921d41cf5230b537b8c85cee16de833bb45a775dc9b"
+  }
+]

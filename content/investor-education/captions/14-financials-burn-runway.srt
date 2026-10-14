@@ -1,0 +1,86 @@
+1
+00:00:00,000 --> 00:00:04,290
+A startup’s financials help you
+understand what it has earned,
+
+2
+00:00:04,290 --> 00:00:05,812
+spent, and still owes.
+
+3
+00:00:05,812 --> 00:00:10,443
+Revenue is not the same as profit,
+and cash on hand is not the same
+
+4
+00:00:10,443 --> 00:00:11,825
+as available runway.
+
+5
+00:00:11,825 --> 00:00:15,500
+Burn rate describes cash being
+used over time.
+
+6
+00:00:15,500 --> 00:00:19,354
+Gross burn looks at cash
+operating outflows; net burn
+
+7
+00:00:19,354 --> 00:00:22,262
+subtracts cash inflows such as
+receipts.
+
+8
+00:00:22,262 --> 00:00:26,147
+Runway is a rough estimate of
+how long current cash might last
+
+9
+00:00:26,147 --> 00:00:27,650
+at the current net burn.
+
+10
+00:00:27,650 --> 00:00:33,233
+In a fictional example, a company
+has $180,000 in cash, spends
+
+11
+00:00:33,233 --> 00:00:38,725
+$60,000 each month, and collects
+$30,000 in monthly receipts.
+
+12
+00:00:38,725 --> 00:00:44,288
+Its net burn is $30,000 per month,
+so simple runway is six months.
+
+13
+00:00:44,288 --> 00:00:48,790
+That assumes the pace stays
+constant and ignores timing, debt,
+
+14
+00:00:48,790 --> 00:00:50,388
+and one-time expenses.
+
+15
+00:00:50,388 --> 00:00:54,047
+Check the period covered by
+statements, unpaid bills,
+
+16
+00:00:54,047 --> 00:00:57,638
+customer concentration, and
+planned use of proceeds.
+
+17
+00:00:57,638 --> 00:01:01,559
+A runway estimate is a snapshot,
+not a promise that the company
+
+18
+00:01:01,559 --> 00:01:04,920
+will raise more money or survive
+until the date shown.
+
