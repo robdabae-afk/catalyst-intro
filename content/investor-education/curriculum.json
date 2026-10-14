@@ -1,0 +1,1571 @@
+[
+  {
+    "id": "01-startup-investing",
+    "title": "Startup investing basics",
+    "narration": "Startup investing means putting money into a young private company in exchange for a security, such as shares or an agreement that may convert into shares later. You are not buying a guaranteed piece of a future success story. The company may grow, stay small, change direction, or close, and your investment can lose all its value. Unlike a public stock, a private startup investment usually has no active market where you can sell whenever you want. Before deciding, identify exactly what security is offered, what rights it gives, how the business plans to use the money, and what could go wrong. Think of the money as money you may not see again for a long time. A compelling founder or product is only one part of the decision. Read the actual offering documents, compare the price and terms, and decide whether the risk fits your finances. Education is not a recommendation to invest, and no platform can promise a startup’s outcome.",
+    "scenes": [
+      {
+        "headline": "A security, not a promise",
+        "kicker": "Shares now or a contract",
+        "visual": "grid",
+        "labels": [
+          "Equity shares",
+          "Agreement for future shares"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Possible paths",
+        "kicker": "Alternatives, not a sequence",
+        "visual": "grid",
+        "labels": [
+          "Grow",
+          "Stay small",
+          "Change direction",
+          "Close"
+        ],
+        "values": []
+      },
+      {
+        "headline": "No instant sale",
+        "kicker": "Private is not public",
+        "visual": "comparison",
+        "labels": [
+          "Public stock: active market",
+          "Private startup: often no market"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Read before deciding",
+        "kicker": "Money may be tied up for years",
+        "visual": "document",
+        "labels": [
+          "Security and rights",
+          "Use of proceeds",
+          "Company risks",
+          "Long holding period"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Judge the terms",
+        "kicker": "Education is not a recommendation",
+        "visual": "document",
+        "labels": [
+          "Founder and product",
+          "Price and offering terms",
+          "Your finances",
+          "No promised outcome"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/investing-basics/what-risk",
+      "https://www.investor.gov/introduction-investing/getting-started/five-questions-ask-you-invest",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "Startup investing means putting money into a young private company in exchange for a security, such as shares or an agreement that may convert into shares later. You are not buying a guaranteed piece of a future success story. ",
+      "The company may grow, stay small, change direction, or close, and your investment can lose all its value. ",
+      "Unlike a public stock, a private startup investment usually has no active market where you can sell whenever you want. ",
+      "Before deciding, identify exactly what security is offered, what rights it gives, how the business plans to use the money, and what could go wrong. Think of the money as money you may not see again for a long time. ",
+      "A compelling founder or product is only one part of the decision. Read the actual offering documents, compare the price and terms, and decide whether the risk fits your finances. Education is not a recommendation to invest, and no platform can promise a startup’s outcome."
+    ]
+  },
+  {
+    "id": "02-reg-cf-basics",
+    "title": "Regulation Crowdfunding basics",
+    "narration": "Regulation Crowdfunding, often called Reg CF, is a U.S. securities exemption that lets eligible companies raise money from the public online. An offering must be conducted through an SEC-registered broker-dealer or funding portal. It is not simply a company posting a payment link and calling it an investment. The company files disclosures, usually on Form C, and investors review those documents through the intermediary. Non-accredited investors are subject to aggregate investment limits across Reg CF offerings during a rolling twelve-month period. The company may raise up to five million dollars under the exemption in a twelve-month period, subject to the rules. Securities bought in a Reg CF offering generally cannot be resold for one year, with limited exceptions. The SEC filing is not an endorsement of the company or a prediction that it will succeed. Read the offering carefully, verify the intermediary, and understand that startup losses and long holding periods are possible. These rules describe Reg CF, not every kind of startup fundraising.",
+    "scenes": [
+      {
+        "headline": "What Reg CF is",
+        "kicker": "A U.S. securities exemption",
+        "visual": "flow",
+        "labels": [
+          "Eligible company",
+          "Reg CF exemption",
+          "Online public raise"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Use a registered intermediary",
+        "kicker": "Disclosures, not just a payment link",
+        "visual": "document",
+        "labels": [
+          "SEC-registered broker or portal",
+          "Form C disclosures",
+          "Review through intermediary"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Investor and issuer limits",
+        "kicker": "Different limits apply",
+        "visual": "bars",
+        "labels": [
+          "Reg CF maximum ($ millions)"
+        ],
+        "values": [
+          5
+        ]
+      },
+      {
+        "headline": "Resale restriction",
+        "kicker": "Generally one year; exceptions apply",
+        "visual": "timeline",
+        "labels": [
+          "Purchase",
+          "Restricted for one year",
+          "Transfer may be possible"
+        ],
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "headline": "Filing is not endorsement",
+        "kicker": "Review risks and verify the intermediary",
+        "visual": "grid",
+        "labels": [
+          "Read the offering",
+          "Verify intermediary",
+          "Loss and illiquidity risk",
+          "Reg CF rules only"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Regulation Crowdfunding, often called Reg CF, is a U.S. securities exemption that lets eligible companies raise money from the public online. ",
+      "An offering must be conducted through an SEC-registered broker-dealer or funding portal. It is not simply a company posting a payment link and calling it an investment. The company files disclosures, usually on Form C, and investors review those documents through the intermediary. ",
+      "Non-accredited investors are subject to aggregate investment limits across Reg CF offerings during a rolling twelve-month period. The company may raise up to five million dollars under the exemption in a twelve-month period, subject to the rules. ",
+      "Securities bought in a Reg CF offering generally cannot be resold for one year, with limited exceptions. ",
+      "The SEC filing is not an endorsement of the company or a prediction that it will succeed. Read the offering carefully, verify the intermediary, and understand that startup losses and long holding periods are possible. These rules describe Reg CF, not every kind of startup fundraising."
+    ]
+  },
+  {
+    "id": "03-investment-limits",
+    "title": "Reg CF investment limits",
+    "narration": "Reg CF investment limits depend on whether you are an accredited investor and, for non-accredited investors, on annual income and net worth. If either measure is below $124,000, the 12-month limit is the greater of $2,500 or 5% of the greater measure. If both are at least $124,000, it is 10% of the greater measure. Under either formula, the aggregate cap is $124,000 across all Reg CF offerings in any rolling 12 months. For example, with income of $50,000 and net worth of $40,000, 5% of the greater figure is $2,500, so the limit is $2,500. With income of $150,000 and net worth of $80,000, 5% of $150,000 is $7,500. Track commitments across portals, not one app. Net-worth rules exclude your primary residence and treat some related debt specially. Accredited investors are not subject to Reg CF investment limits. Verify current rules and how the intermediary calculates your limit before investing.",
+    "scenes": [
+      {
+        "headline": "Start with investor status",
+        "kicker": "Non-accredited limits use two measures",
+        "visual": "comparison",
+        "labels": [
+          "Annual income",
+          "Net worth"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Either below $124,000",
+        "kicker": "Greater of minimum or percentage",
+        "visual": "document",
+        "labels": [
+          "Greater income/net worth",
+          "5% of that figure",
+          "$2,500 minimum"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Both at least $124,000",
+        "kicker": "10% formula; either tier capped",
+        "visual": "document",
+        "labels": [
+          "10% of greater figure",
+          "Aggregate cap: $124,000",
+          "Rolling 12 months; all offerings"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Two fictional examples",
+        "kicker": "Same lower-tier formula",
+        "visual": "bars",
+        "labels": [
+          "$50k income / $40k net worth: limit ($)",
+          "$150k income / $80k net worth: limit ($)"
+        ],
+        "values": [
+          2500,
+          7500
+        ]
+      },
+      {
+        "headline": "Verify your limit",
+        "kicker": "Track across every portal",
+        "visual": "grid",
+        "labels": [
+          "All portals combined",
+          "Residence rules matter",
+          "Accredited exception",
+          "Check current calculation"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/resources-small-businesses/small-business-compliance-guides/regulation-crowdfunding-guidance-issuers",
+      "https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Reg CF investment limits depend on whether you are an accredited investor and, for non-accredited investors, on annual income and net worth. ",
+      "If either measure is below $124,000, the 12-month limit is the greater of $2,500 or 5% of the greater measure. ",
+      "If both are at least $124,000, it is 10% of the greater measure. Under either formula, the aggregate cap is $124,000 across all Reg CF offerings in any rolling 12 months. ",
+      "For example, with income of $50,000 and net worth of $40,000, 5% of the greater figure is $2,500, so the limit is $2,500. With income of $150,000 and net worth of $80,000, 5% of $150,000 is $7,500. ",
+      "Track commitments across portals, not one app. Net-worth rules exclude your primary residence and treat some related debt specially. Accredited investors are not subject to Reg CF investment limits. Verify current rules and how the intermediary calculates your limit before investing."
+    ]
+  },
+  {
+    "id": "04-total-loss-risk",
+    "title": "You can lose the entire investment",
+    "narration": "Early-stage companies are uncertain by nature. A startup can run out of cash, fail to find customers, lose a key supplier, face litigation, or be unable to raise its next round. If it closes, creditors and other security holders may have priority over you, and there may be nothing left for common shareholders or a SAFE holder. That means losing the full amount is possible, not just seeing the number temporarily fall. A startup can also keep operating while your particular security never converts, pays no distribution, or finds no buyer. Review risks that are specific to the company, not only a generic warning. Ask what must go right for the plan to work, how much cash is available, and what happens if the raise is smaller than expected. Only consider money you can afford to lose without putting essential needs at risk. Diversifying can reduce dependence on one company, but it cannot eliminate startup risk or guarantee a return.",
+    "scenes": [
+      {
+        "headline": "Business risks",
+        "kicker": "Several ways a startup can struggle",
+        "visual": "grid",
+        "labels": [
+          "Cash runs out",
+          "No customers",
+          "Supplier loss",
+          "Litigation / next round"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Who gets paid first?",
+        "kicker": "There may be nothing left",
+        "visual": "flow",
+        "labels": [
+          "Company assets",
+          "Priority claims",
+          "Any remainder to others"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Full loss is possible",
+        "kicker": "Operating does not mean investor payout",
+        "visual": "bars",
+        "labels": [
+          "Example investment ($)",
+          "Possible recovery ($)"
+        ],
+        "values": [
+          500,
+          0
+        ]
+      },
+      {
+        "headline": "Look beyond the pitch",
+        "kicker": "Review company-specific risks",
+        "visual": "document",
+        "labels": [
+          "What must go right?",
+          "Cash available",
+          "Smaller raise scenario"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Plan for possible loss",
+        "kicker": "Diversification cannot remove all risk",
+        "visual": "comparison",
+        "labels": [
+          "Essential-needs money",
+          "Money affordable to lose"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.investor.gov/introduction-investing/investing-basics/what-risk",
+      "https://www.investor.gov/introduction-investing/getting-started/five-questions-ask-you-invest"
+    ],
+    "scene_narration": [
+      "Early-stage companies are uncertain by nature. A startup can run out of cash, fail to find customers, lose a key supplier, face litigation, or be unable to raise its next round. ",
+      "If it closes, creditors and other security holders may have priority over you, and there may be nothing left for common shareholders or a SAFE holder. ",
+      "That means losing the full amount is possible, not just seeing the number temporarily fall. A startup can also keep operating while your particular security never converts, pays no distribution, or finds no buyer. ",
+      "Review risks that are specific to the company, not only a generic warning. Ask what must go right for the plan to work, how much cash is available, and what happens if the raise is smaller than expected. ",
+      "Only consider money you can afford to lose without putting essential needs at risk. Diversifying can reduce dependence on one company, but it cannot eliminate startup risk or guarantee a return."
+    ]
+  },
+  {
+    "id": "05-illiquidity",
+    "title": "Startup investments can be illiquid",
+    "narration": "Illiquidity means you may not be able to turn an investment into cash when you want. Private startup securities usually do not trade on an exchange with a continuous list of buyers. In Reg CF, resale is generally restricted for the first year, subject to limited exceptions. After that period, there is still no guarantee that anyone will buy your security, or that a transfer is allowed under the company’s documents. A company may take years to have a sale, public listing, or other event that creates a possible payout. It may never happen. For example, investing $1,000 does not mean you can request the $1,000 back next month. Plan as though the money could be tied up indefinitely and could ultimately be lost. Before investing, check transfer restrictions, any company approval requirements, and what events could create liquidity. A reported valuation or a new funding round is not the same as cash you can withdraw.",
+    "scenes": [
+      {
+        "headline": "Illiquidity",
+        "kicker": "You may not find a buyer",
+        "visual": "comparison",
+        "labels": [
+          "Public exchange: active buyers",
+          "Private security: often no market"
+        ],
+        "values": []
+      },
+      {
+        "headline": "One year is not a sale promise",
+        "kicker": "Rules and documents both matter",
+        "visual": "timeline",
+        "labels": [
+          "Purchase",
+          "Generally restricted one year",
+          "Buyer / transfer still uncertain"
+        ],
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "headline": "Possible liquidity events",
+        "kicker": "Could take years or never happen",
+        "visual": "grid",
+        "labels": [
+          "Company sale",
+          "Public listing",
+          "Other possible payout"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Not cash on demand",
+        "kicker": "$1,000 invested is not refundable cash",
+        "visual": "comparison",
+        "labels": [
+          "Invest $1,000 today",
+          "No promised $1,000 next month"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Check transfer terms",
+        "kicker": "Valuation is not withdrawable cash",
+        "visual": "document",
+        "labels": [
+          "Transfer restrictions",
+          "Company approval",
+          "Possible liquidity events",
+          "No cash from a valuation alone"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Illiquidity means you may not be able to turn an investment into cash when you want. Private startup securities usually do not trade on an exchange with a continuous list of buyers. ",
+      "In Reg CF, resale is generally restricted for the first year, subject to limited exceptions. After that period, there is still no guarantee that anyone will buy your security, or that a transfer is allowed under the company’s documents. ",
+      "A company may take years to have a sale, public listing, or other event that creates a possible payout. It may never happen. ",
+      "For example, investing $1,000 does not mean you can request the $1,000 back next month. Plan as though the money could be tied up indefinitely and could ultimately be lost. ",
+      "Before investing, check transfer restrictions, any company approval requirements, and what events could create liquidity. A reported valuation or a new funding round is not the same as cash you can withdraw."
+    ]
+  },
+  {
+    "id": "06-form-c",
+    "title": "How to read a Form C",
+    "narration": "Form C is the core offering filing for a Reg CF raise. It is not a prospectus reviewed and approved by the SEC. Use it as a structured map of the company, security, and risks. Start with the business description and team, then read the target and maximum raise, deadline, price or conversion terms, and intended use of proceeds. Check the capitalization section to see who already owns securities and whether other instruments may convert later. Review related-party transactions and the financial statements, paying attention to their date and whether they are certified, reviewed, or audited. Then read the risk factors and any attached exhibits, including the security agreement. Look for differences between the short pitch and the formal terms. A company could raise less than its maximum, or the use of proceeds could depend on the amount raised. The filing gives information to analyze; it does not certify that the business is sound. If a crucial term is unclear, pause and seek qualified advice before committing.",
+    "scenes": [
+      {
+        "headline": "Form C is a map",
+        "kicker": "Not SEC approval",
+        "visual": "document",
+        "labels": [
+          "Company",
+          "Security",
+          "Risks"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Offering essentials",
+        "kicker": "Read business and terms together",
+        "visual": "document",
+        "labels": [
+          "Business and team",
+          "Target / maximum / deadline",
+          "Price or conversion",
+          "Use of proceeds"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Capitalization and financials",
+        "kicker": "Dates and assurance matter",
+        "visual": "document",
+        "labels": [
+          "Existing and convertible securities",
+          "Related-party transactions",
+          "Financial statement date",
+          "Certified / reviewed / audited"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Compare pitch and formal terms",
+        "kicker": "Read exhibits and scenarios",
+        "visual": "document",
+        "labels": [
+          "Risk factors",
+          "Security agreement",
+          "Pitch versus terms",
+          "Proceeds if less is raised"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Information, not certification",
+        "kicker": "Pause when crucial terms are unclear",
+        "visual": "flow",
+        "labels": [
+          "Read filing",
+          "Resolve questions",
+          "Decide with evidence"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.sec.gov/about/forms/formc.pdf",
+      "https://www.ecfr.gov/current/title-17/section-227.201",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/edgar/search/"
+    ],
+    "scene_narration": [
+      "Form C is the core offering filing for a Reg CF raise. It is not a prospectus reviewed and approved by the SEC. Use it as a structured map of the company, security, and risks. ",
+      "Start with the business description and team, then read the target and maximum raise, deadline, price or conversion terms, and intended use of proceeds. ",
+      "Check the capitalization section to see who already owns securities and whether other instruments may convert later. Review related-party transactions and the financial statements, paying attention to their date and whether they are certified, reviewed, or audited. ",
+      "Then read the risk factors and any attached exhibits, including the security agreement. Look for differences between the short pitch and the formal terms. A company could raise less than its maximum, or the use of proceeds could depend on the amount raised. ",
+      "The filing gives information to analyze; it does not certify that the business is sound. If a crucial term is unclear, pause and seek qualified advice before committing."
+    ]
+  },
+  {
+    "id": "07-safes",
+    "title": "What a SAFE does and does not mean",
+    "narration": "A SAFE, or Simple Agreement for Future Equity, is a contract that may give an investor equity later if a specified event occurs. It is not the same as owning common stock today, and it is generally not a loan that promises repayment with interest. The SAFE’s exact terms control. Some convert during a qualifying equity financing; others describe what happens during a sale or shutdown. A trigger may never occur, so a SAFE may never convert. Even if it converts, the number and class of shares depend on the contract and later capitalization. Read the triggering events, valuation cap, discount, conversion mechanics, and any treatment in a sale or dissolution. Do not translate a cap into a guaranteed ownership percentage. A SAFE can be simple in name but still have important legal and economic details. Compare it with other outstanding SAFEs and future financing plans, and get qualified advice if the language is unclear.",
+    "scenes": [
+      {
+        "headline": "SAFE is a contract",
+        "kicker": "Not common stock or usually a loan",
+        "visual": "comparison",
+        "labels": [
+          "SAFE: possible future equity",
+          "Common stock: shares now"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Events control",
+        "kicker": "Read what your agreement specifies",
+        "visual": "grid",
+        "labels": [
+          "Qualifying financing",
+          "Company sale",
+          "Shutdown"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Conversion is not certain",
+        "kicker": "Shares also depend on later capitalization",
+        "visual": "comparison",
+        "labels": [
+          "No trigger: may never convert",
+          "Conversion: share count varies"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Read the mechanics",
+        "kicker": "Contract terms control",
+        "visual": "document",
+        "labels": [
+          "Events",
+          "Cap and discount",
+          "Conversion formula",
+          "Sale / dissolution treatment"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Cap is not ownership",
+        "kicker": "Compare other instruments and future rounds",
+        "visual": "document",
+        "labels": [
+          "No guaranteed percentage",
+          "Other outstanding SAFEs",
+          "Future financing plans",
+          "Clarify legal language"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-52",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "A SAFE, or Simple Agreement for Future Equity, is a contract that may give an investor equity later if a specified event occurs. It is not the same as owning common stock today, and it is generally not a loan that promises repayment with interest. The SAFE’s exact terms control. ",
+      "Some convert during a qualifying equity financing; others describe what happens during a sale or shutdown. ",
+      "A trigger may never occur, so a SAFE may never convert. Even if it converts, the number and class of shares depend on the contract and later capitalization. ",
+      "Read the triggering events, valuation cap, discount, conversion mechanics, and any treatment in a sale or dissolution. ",
+      "Do not translate a cap into a guaranteed ownership percentage. A SAFE can be simple in name but still have important legal and economic details. Compare it with other outstanding SAFEs and future financing plans, and get qualified advice if the language is unclear."
+    ]
+  },
+  {
+    "id": "08-valuation-caps-discounts",
+    "title": "Valuation caps and discounts",
+    "narration": "A valuation cap and a discount are two different ways a SAFE can set a conversion price, if its terms include them. A cap uses a stated company valuation and a capitalization definition; a discount reduces the next financing’s share price by a percentage. In a simplified example, assume a $500 SAFE, an $8 million cap, a $20 million priced round, and ten million fully diluted pre-conversion shares. The cap calculation gives $0.80 per share, while the round price is $2.00, so the cap-based illustration gives 625 shares versus 250 at the round price. That is not a guaranteed ownership percentage. It ignores new money, other instruments, option-pool changes, and contract-specific details. If a SAFE also has a 20% discount to a $2 round price, the discounted price would be $1.60. Which term governs depends on the actual agreement. Check the capitalization definition and conversion formula carefully.",
+    "scenes": [
+      {
+        "headline": "Cap versus discount",
+        "kicker": "Two conversion-price methods",
+        "visual": "comparison",
+        "labels": [
+          "Cap: valuation and share definition",
+          "Discount: lower round price"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional assumptions",
+        "kicker": "$500 SAFE; $8M cap; 10M shares",
+        "visual": "bars",
+        "labels": [
+          "Round price ($/share)"
+        ],
+        "values": [
+          2
+        ]
+      },
+      {
+        "headline": "Cap-based conversion",
+        "kicker": "Simplified arithmetic only",
+        "visual": "grid",
+        "labels": [
+          "Cap price: $0.80/share",
+          "Round price: $2.00/share",
+          "$500 / $0.80 = 625 shares",
+          "$500 / $2.00 = 250 shares"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Not guaranteed ownership",
+        "kicker": "Important effects are excluded",
+        "visual": "grid",
+        "labels": [
+          "New money",
+          "Other instruments",
+          "Option pool changes",
+          "Contract details"
+        ],
+        "values": []
+      },
+      {
+        "headline": "20% discount example",
+        "kicker": "Which term wins depends on the agreement",
+        "visual": "bars",
+        "labels": [
+          "Round price ($/share)",
+          "Discount price ($/share)"
+        ],
+        "values": [
+          2,
+          1.6
+        ]
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-52",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "A valuation cap and a discount are two different ways a SAFE can set a conversion price, if its terms include them. A cap uses a stated company valuation and a capitalization definition; a discount reduces the next financing’s share price by a percentage. ",
+      "In a simplified example, assume a $500 SAFE, an $8 million cap, a $20 million priced round, and ten million fully diluted pre-conversion shares. ",
+      "The cap calculation gives $0.80 per share, while the round price is $2.00, so the cap-based illustration gives 625 shares versus 250 at the round price. ",
+      "That is not a guaranteed ownership percentage. It ignores new money, other instruments, option-pool changes, and contract-specific details. ",
+      "If a SAFE also has a 20% discount to a $2 round price, the discounted price would be $1.60. Which term governs depends on the actual agreement. Check the capitalization definition and conversion formula carefully."
+    ]
+  },
+  {
+    "id": "09-dilution",
+    "title": "Dilution when a company issues more shares",
+    "narration": "Dilution happens when a company issues new shares or securities that convert into shares, so an existing holder owns a smaller percentage of the total. It does not automatically mean the company is worth less. Imagine you own 100 shares out of 1,000, or 10%. If the company later issues 500 new shares and you receive none, you still hold 100 shares, but now there are 1,500 total. Your percentage becomes about 6.67%. Those new shares might help fund growth, but the outcome depends on how the money is used and what the company becomes worth. SAFEs, convertible notes, employee options, and new financing rounds can all affect the share count. Some preferred shares may carry rights that differ from common shares. When reviewing an offering, look at the current capitalization table and ask what securities could convert or be issued later. A percentage today is not necessarily your percentage after future financing.",
+    "scenes": [
+      {
+        "headline": "Dilution",
+        "kicker": "A smaller slice is not automatically less value",
+        "visual": "comparison",
+        "labels": [
+          "Before new shares",
+          "After: smaller percentage"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Before issuance",
+        "kicker": "100 out of 1,000 shares = 10%",
+        "visual": "pie",
+        "labels": [
+          "Your shares",
+          "Other shares"
+        ],
+        "values": [
+          100,
+          900
+        ]
+      },
+      {
+        "headline": "500 new shares",
+        "kicker": "Your 100 shares stay unchanged",
+        "visual": "flow",
+        "labels": [
+          "1,000 existing shares",
+          "Issue 500 new shares",
+          "1,500 total shares"
+        ],
+        "values": []
+      },
+      {
+        "headline": "After issuance",
+        "kicker": "100 / 1,500 = about 6.67%",
+        "visual": "bars",
+        "labels": [
+          "Ownership after issuance (%)"
+        ],
+        "values": [
+          6.67
+        ]
+      },
+      {
+        "headline": "Read the cap table",
+        "kicker": "Future securities and rights matter",
+        "visual": "grid",
+        "labels": [
+          "SAFEs",
+          "Notes",
+          "Options and new rounds",
+          "Preferred versus common"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-52"
+    ],
+    "scene_narration": [
+      "Dilution happens when a company issues new shares or securities that convert into shares, so an existing holder owns a smaller percentage of the total. It does not automatically mean the company is worth less. ",
+      "Imagine you own 100 shares out of 1,000, or 10%. ",
+      "If the company later issues 500 new shares and you receive none, you still hold 100 shares, but now there are 1,500 total. ",
+      "Your percentage becomes about 6.67%. Those new shares might help fund growth, but the outcome depends on how the money is used and what the company becomes worth. ",
+      "SAFEs, convertible notes, employee options, and new financing rounds can all affect the share count. Some preferred shares may carry rights that differ from common shares. When reviewing an offering, look at the current capitalization table and ask what securities could convert or be issued later. A percentage today is not necessarily your percentage after future financing."
+    ]
+  },
+  {
+    "id": "10-equity-vs-convertible-notes",
+    "title": "Equity versus convertible notes",
+    "narration": "Equity means you own shares now, though the share class determines your rights. A convertible note is usually a debt instrument that may convert into shares later. It commonly has a principal amount, interest rate, maturity date, and conversion terms, but the actual document controls. If a note does not convert, the company may owe repayment, yet an early-stage company can lack the cash to pay. A SAFE is different: it is generally not debt and does not typically accrue interest or mature like a note. For a simple illustration, a $1,000 note at 6% simple annual interest for one year would accrue $60 before any repayment or conversion, assuming its terms and timing work that way. This is not a forecast of what an investor will receive. Compare current ownership rights, repayment priority, maturity, conversion triggers, and what happens in a sale or shutdown. Never assume all convertible instruments behave alike.",
+    "scenes": [
+      {
+        "headline": "Equity",
+        "kicker": "Shares now; class sets rights",
+        "visual": "document",
+        "labels": [
+          "Ownership now",
+          "Share-class rights"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Convertible note",
+        "kicker": "Debt may convert; repayment can fail",
+        "visual": "document",
+        "labels": [
+          "Principal and interest",
+          "Maturity",
+          "Conversion terms",
+          "Company may lack repayment cash"
+        ],
+        "values": []
+      },
+      {
+        "headline": "SAFE is different",
+        "kicker": "Generally no debt interest or maturity",
+        "visual": "comparison",
+        "labels": [
+          "Note: usually debt",
+          "SAFE: generally not debt"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional interest",
+        "kicker": "$1,000 at 6% simple for one year",
+        "visual": "bars",
+        "labels": [
+          "Principal ($)",
+          "Accrued interest ($)"
+        ],
+        "values": [
+          1000,
+          60
+        ]
+      },
+      {
+        "headline": "Compare the documents",
+        "kicker": "Never assume instruments behave alike",
+        "visual": "document",
+        "labels": [
+          "Ownership and priority",
+          "Maturity",
+          "Conversion triggers",
+          "Sale or shutdown"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-52",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "Equity means you own shares now, though the share class determines your rights. ",
+      "A convertible note is usually a debt instrument that may convert into shares later. It commonly has a principal amount, interest rate, maturity date, and conversion terms, but the actual document controls. If a note does not convert, the company may owe repayment, yet an early-stage company can lack the cash to pay. ",
+      "A SAFE is different: it is generally not debt and does not typically accrue interest or mature like a note. ",
+      "For a simple illustration, a $1,000 note at 6% simple annual interest for one year would accrue $60 before any repayment or conversion, assuming its terms and timing work that way. This is not a forecast of what an investor will receive. ",
+      "Compare current ownership rights, repayment priority, maturity, conversion triggers, and what happens in a sale or shutdown. Never assume all convertible instruments behave alike."
+    ]
+  },
+  {
+    "id": "11-valuation-pre-post-money",
+    "title": "Pre-money and post-money valuation",
+    "narration": "Pre-money valuation is the company’s agreed value immediately before new investment. Post-money valuation is the value after that investment is added. In a simple priced equity round, post-money equals pre-money plus the new money. If a company raises $2 million at an $8 million pre-money valuation, its post-money valuation is $10 million, and the new investors’ shares represent about 20% of that post-money amount before considering other securities and adjustments. If instead $8 million is post-money, then pre-money is $6 million and $2 million buys about 25%. Those percentages are simplified and depend on the capitalization and round terms. A valuation is a negotiated price for a transaction, not cash in the bank or an independent guarantee of fair value. Check whether a quoted figure is pre- or post-money, what share count is included, and how options, SAFEs, notes, and new shares affect the calculation.",
+    "scenes": [
+      {
+        "headline": "Pre-money",
+        "kicker": "Value before new investment",
+        "visual": "bars",
+        "labels": [
+          "Pre-money example ($ millions)"
+        ],
+        "values": [
+          8
+        ]
+      },
+      {
+        "headline": "Post-money",
+        "kicker": "Pre-money plus new money",
+        "visual": "flow",
+        "labels": [
+          "Pre-money value",
+          "Add new investment",
+          "Post-money value"
+        ],
+        "values": []
+      },
+      {
+        "headline": "$8M pre + $2M new",
+        "kicker": "Simple post-money is $10M",
+        "visual": "pie",
+        "labels": [
+          "New investors",
+          "Existing holders"
+        ],
+        "values": [
+          20,
+          80
+        ]
+      },
+      {
+        "headline": "$8M post is different",
+        "kicker": "$6M pre + $2M new; simplified",
+        "visual": "pie",
+        "labels": [
+          "New investors",
+          "Existing holders"
+        ],
+        "values": [
+          25,
+          75
+        ]
+      },
+      {
+        "headline": "Negotiated price, not cash",
+        "kicker": "Check the capitalization definition",
+        "visual": "document",
+        "labels": [
+          "Pre or post?",
+          "Included share count",
+          "Options / SAFEs / notes",
+          "Round terms"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.investor.gov/introduction-investing/getting-started/five-questions-ask-you-invest"
+    ],
+    "scene_narration": [
+      "Pre-money valuation is the company’s agreed value immediately before new investment. ",
+      "Post-money valuation is the value after that investment is added. In a simple priced equity round, post-money equals pre-money plus the new money. ",
+      "If a company raises $2 million at an $8 million pre-money valuation, its post-money valuation is $10 million, and the new investors’ shares represent about 20% of that post-money amount before considering other securities and adjustments. ",
+      "If instead $8 million is post-money, then pre-money is $6 million and $2 million buys about 25%. Those percentages are simplified and depend on the capitalization and round terms. ",
+      "A valuation is a negotiated price for a transaction, not cash in the bank or an independent guarantee of fair value. Check whether a quoted figure is pre- or post-money, what share count is included, and how options, SAFEs, notes, and new shares affect the calculation."
+    ]
+  },
+  {
+    "id": "12-diversification",
+    "title": "Diversification and startup risk",
+    "narration": "Diversification means spreading investments instead of depending on one company or one asset. It can reduce the damage caused by one investment performing badly, but it cannot guarantee that losses will not occur. Startup investments are especially uncertain, and several companies may face similar risks, such as a weak economy or limited access to funding. Consider a simple fictional illustration: someone puts $1,000 into one startup and that company fails, losing the full $1,000. Another person divides $1,000 equally across ten unrelated startups. If one fails completely and the other nine merely return the original $100 each, the second person would have $900, before fees and any tax effects. Real outcomes can be better or worse, and the companies may not be truly independent. Diversification does not make an unsuitable investment suitable. Think about your overall finances, emergency savings, time horizon, and concentration across industries and companies. Do not confuse owning several startup securities with a balanced financial plan.",
+    "scenes": [
+      {
+        "headline": "Diversification",
+        "kicker": "Less dependence, not guaranteed safety",
+        "visual": "grid",
+        "labels": [
+          "Spread investments",
+          "Losses still possible",
+          "Shared economic risks",
+          "Shared funding risks"
+        ],
+        "values": []
+      },
+      {
+        "headline": "One-company example",
+        "kicker": "$1,000 lost if that company fails",
+        "visual": "bars",
+        "labels": [
+          "Amount invested ($)",
+          "Recovery if total loss ($)"
+        ],
+        "values": [
+          1000,
+          0
+        ]
+      },
+      {
+        "headline": "Ten positions, $100 each",
+        "kicker": "Fictional allocation",
+        "visual": "grid",
+        "labels": [
+          "Position A ($100)",
+          "Position B ($100)",
+          "Position C ($100)",
+          "Position D ($100)",
+          "Position E ($100)",
+          "Position F ($100)",
+          "Position G ($100)",
+          "Position H ($100)",
+          "Position I ($100)",
+          "Position J ($100)"
+        ],
+        "values": [
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100,
+          100
+        ]
+      },
+      {
+        "headline": "One fails; nine return principal",
+        "kicker": "Illustrative, before fees and tax",
+        "visual": "bars",
+        "labels": [
+          "Original total ($)",
+          "Remaining amount ($)"
+        ],
+        "values": [
+          1000,
+          900
+        ]
+      },
+      {
+        "headline": "Your whole financial plan",
+        "kicker": "Several startups are not a balanced plan",
+        "visual": "grid",
+        "labels": [
+          "Correlated outcomes",
+          "Emergency savings",
+          "Time horizon",
+          "Industry concentration"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/getting-started/asset-allocation",
+      "https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/diversify-your-investments",
+      "https://www.investor.gov/introduction-investing/investing-basics/what-risk"
+    ],
+    "scene_narration": [
+      "Diversification means spreading investments instead of depending on one company or one asset. It can reduce the damage caused by one investment performing badly, but it cannot guarantee that losses will not occur. Startup investments are especially uncertain, and several companies may face similar risks, such as a weak economy or limited access to funding. ",
+      "Consider a simple fictional illustration: someone puts $1,000 into one startup and that company fails, losing the full $1,000. ",
+      "Another person divides $1,000 equally across ten unrelated startups. ",
+      "If one fails completely and the other nine merely return the original $100 each, the second person would have $900, before fees and any tax effects. ",
+      "Real outcomes can be better or worse, and the companies may not be truly independent. Diversification does not make an unsuitable investment suitable. Think about your overall finances, emergency savings, time horizon, and concentration across industries and companies. Do not confuse owning several startup securities with a balanced financial plan."
+    ]
+  },
+  {
+    "id": "13-due-diligence",
+    "title": "A practical due-diligence routine",
+    "narration": "Due diligence is the work of checking claims and understanding terms before making an investment decision. Start with the formal offering documents, then compare the pitch with the filing. Can you explain what the company sells, who its customers are, and why they might pay? Check the team’s relevant experience and identify what still needs to be proven. Examine the financial statements, cash needs, use of proceeds, ownership, and existing securities. Search SEC filings and read amendments. Verify that any Reg CF intermediary is registered, and use FINRA BrokerCheck or the SEC’s funding-portal information to check its status. Look for gaps, inconsistent numbers, unsupported customer or revenue claims, and unclear conflicts of interest. Due diligence cannot predict the future or uncover every problem. It is a way to make your decision based on evidence rather than excitement. If key facts are missing or you cannot understand the security, slowing down is a reasonable choice.",
+    "scenes": [
+      {
+        "headline": "Start with evidence",
+        "kicker": "Compare pitch and formal documents",
+        "visual": "comparison",
+        "labels": [
+          "Marketing pitch",
+          "Formal filing"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Understand the business",
+        "kicker": "Check what is still unproven",
+        "visual": "grid",
+        "labels": [
+          "Product",
+          "Customers",
+          "Why they pay",
+          "Team experience"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Check numbers and registration",
+        "kicker": "Use original records",
+        "visual": "document",
+        "labels": [
+          "Financials and use of proceeds",
+          "Ownership and securities",
+          "SEC filings / amendments",
+          "FINRA or SEC intermediary records"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Look for gaps",
+        "kicker": "Claims need support",
+        "visual": "grid",
+        "labels": [
+          "Inconsistent numbers",
+          "Unsupported customers",
+          "Unsupported revenue",
+          "Conflicts of interest"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Pause if facts are missing",
+        "kicker": "Diligence does not predict the future",
+        "visual": "flow",
+        "labels": [
+          "Gather evidence",
+          "Resolve missing facts",
+          "Make an informed decision"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/getting-started/five-questions-ask-you-invest",
+      "https://www.investor.gov/introduction-investing/getting-started/researching-investments",
+      "https://www.sec.gov/edgar/search/",
+      "https://brokercheck.finra.org/",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Due diligence is the work of checking claims and understanding terms before making an investment decision. Start with the formal offering documents, then compare the pitch with the filing. ",
+      "Can you explain what the company sells, who its customers are, and why they might pay? Check the team’s relevant experience and identify what still needs to be proven. ",
+      "Examine the financial statements, cash needs, use of proceeds, ownership, and existing securities. Search SEC filings and read amendments. Verify that any Reg CF intermediary is registered, and use FINRA BrokerCheck or the SEC’s funding-portal information to check its status. ",
+      "Look for gaps, inconsistent numbers, unsupported customer or revenue claims, and unclear conflicts of interest. ",
+      "Due diligence cannot predict the future or uncover every problem. It is a way to make your decision based on evidence rather than excitement. If key facts are missing or you cannot understand the security, slowing down is a reasonable choice."
+    ]
+  },
+  {
+    "id": "14-financials-burn-runway",
+    "title": "Financials, burn, and runway",
+    "narration": "A startup’s financials help you understand what it has earned, spent, and still owes. Revenue is not the same as profit, and cash on hand is not the same as available runway. Burn rate describes cash being used over time. Gross burn looks at cash operating outflows; net burn subtracts cash inflows such as receipts. Runway is a rough estimate of how long current cash might last at the current net burn. In a fictional example, a company has $180,000 in cash, spends $60,000 each month, and collects $30,000 in monthly receipts. Its net burn is $30,000 per month, so simple runway is six months. That assumes the pace stays constant and ignores timing, debt, and one-time expenses. Check the period covered by statements, unpaid bills, customer concentration, and planned use of proceeds. A runway estimate is a snapshot, not a promise that the company will raise more money or survive until the date shown.",
+    "scenes": [
+      {
+        "headline": "Read financials carefully",
+        "kicker": "Revenue, profit and cash are different",
+        "visual": "comparison",
+        "labels": [
+          "Revenue is not profit",
+          "Cash is not runway"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Gross versus net burn",
+        "kicker": "Cash used over time",
+        "visual": "comparison",
+        "labels": [
+          "Gross: operating outflows",
+          "Net: outflows minus inflows"
+        ],
+        "values": []
+      },
+      {
+        "headline": "What runway estimates",
+        "kicker": "How long current cash could last",
+        "visual": "flow",
+        "labels": [
+          "Current cash",
+          "Current net burn",
+          "Estimated time remaining"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional six-month runway",
+        "kicker": "$180k cash / $30k monthly net burn",
+        "visual": "bars",
+        "labels": [
+          "Monthly expenses ($)",
+          "Monthly receipts ($)",
+          "Monthly net burn ($)"
+        ],
+        "values": [
+          60000,
+          30000,
+          30000
+        ]
+      },
+      {
+        "headline": "Snapshot, not survival promise",
+        "kicker": "Assumptions can change",
+        "visual": "document",
+        "labels": [
+          "Timing and one-time costs",
+          "Debt and unpaid bills",
+          "Statement dates / concentration",
+          "Planned use of proceeds"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.sec.gov/about/forms/formc.pdf",
+      "https://www.ecfr.gov/current/title-17/section-227.201",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "A startup’s financials help you understand what it has earned, spent, and still owes. Revenue is not the same as profit, and cash on hand is not the same as available runway. ",
+      "Burn rate describes cash being used over time. Gross burn looks at cash operating outflows; net burn subtracts cash inflows such as receipts. ",
+      "Runway is a rough estimate of how long current cash might last at the current net burn. ",
+      "In a fictional example, a company has $180,000 in cash, spends $60,000 each month, and collects $30,000 in monthly receipts. Its net burn is $30,000 per month, so simple runway is six months. ",
+      "That assumes the pace stays constant and ignores timing, debt, and one-time expenses. Check the period covered by statements, unpaid bills, customer concentration, and planned use of proceeds. A runway estimate is a snapshot, not a promise that the company will raise more money or survive until the date shown."
+    ]
+  },
+  {
+    "id": "15-exits-liquidation-preferences",
+    "title": "Exits and liquidation preferences",
+    "narration": "An exit is a transaction that may create a path to payment, such as an acquisition or public listing, but there is no guarantee one will happen. If a company is sold, the money does not necessarily flow to every investor in proportion to ownership. Debt, transaction costs, and preferred-stock rights may be paid or applied first. A liquidation preference can give certain preferred investors priority up to a defined amount before common holders receive proceeds. In a simplified example, preferred investors put in $2 million with a one-times non-participating preference. If the company sells for $1.5 million and no higher-priority claims exist, those investors could take the available $1.5 million, leaving nothing for common shareholders. At a $12 million sale, they might choose between their $2 million preference and converting to 20%, or $2.4 million, under the assumptions. Actual outcomes depend on the documents and waterfall. Read the security class and sale terms; a headline valuation does not show what each investor receives.",
+    "scenes": [
+      {
+        "headline": "An exit may create payment",
+        "kicker": "Sale price is not your payout",
+        "visual": "flow",
+        "labels": [
+          "Sale proceeds",
+          "Debt / costs / preferred rights",
+          "Potential investor proceeds"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Liquidation preference",
+        "kicker": "Fictional $2M, 1x non-participating",
+        "visual": "document",
+        "labels": [
+          "Preferred priority",
+          "$2M invested",
+          "1x non-participating"
+        ],
+        "values": []
+      },
+      {
+        "headline": "$1.5M sale example",
+        "kicker": "Assume no senior claims",
+        "visual": "bars",
+        "labels": [
+          "Available proceeds ($M)",
+          "Preferred receives ($M)",
+          "Common receives ($M)"
+        ],
+        "values": [
+          1.5,
+          1.5,
+          0
+        ]
+      },
+      {
+        "headline": "$12M sale example",
+        "kicker": "Compare preference and 20% conversion",
+        "visual": "bars",
+        "labels": [
+          "Preference ($M)",
+          "Conversion ($M)"
+        ],
+        "values": [
+          2,
+          2.4
+        ]
+      },
+      {
+        "headline": "Read the waterfall",
+        "kicker": "Actual documents determine proceeds",
+        "visual": "document",
+        "labels": [
+          "Security class",
+          "Sale terms",
+          "Priority claims",
+          "Headline value is not payout"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.ecfr.gov/current/title-17/section-227.201"
+    ],
+    "scene_narration": [
+      "An exit is a transaction that may create a path to payment, such as an acquisition or public listing, but there is no guarantee one will happen. If a company is sold, the money does not necessarily flow to every investor in proportion to ownership. Debt, transaction costs, and preferred-stock rights may be paid or applied first. ",
+      "A liquidation preference can give certain preferred investors priority up to a defined amount before common holders receive proceeds. In a simplified example, preferred investors put in $2 million with a one-times non-participating preference. ",
+      "If the company sells for $1.5 million and no higher-priority claims exist, those investors could take the available $1.5 million, leaving nothing for common shareholders. ",
+      "At a $12 million sale, they might choose between their $2 million preference and converting to 20%, or $2.4 million, under the assumptions. ",
+      "Actual outcomes depend on the documents and waterfall. Read the security class and sale terms; a headline valuation does not show what each investor receives."
+    ]
+  },
+  {
+    "id": "16-fees",
+    "title": "Fees and how they change the math",
+    "narration": "Fees can reduce what a company receives or what an investor ultimately keeps. Depending on the offering, there may be a platform fee, payment-processing charge, administrative fee, fund expense, or other disclosed cost. The issuer may pay some fees, while an investor may pay others. Do not assume one fee model applies to every offering. Read the fee table, subscription documents, and payment screen, and distinguish a fee charged on top of your investment from one deducted from it. In a fictional example, a $1,000 commitment with a 3% investor fee plus a $1 fixed charge would add $31, making the payment $1,031. If instead the same charges were deducted from the $1,000, the amount reaching the investment would be $969. The exact calculation depends on the documents. Ask whether any ongoing costs apply after the offering closes and whether a fee is refundable if the raise fails or is cancelled.",
+    "scenes": [
+      {
+        "headline": "Costs change the math",
+        "kicker": "Look for every disclosed cost",
+        "visual": "grid",
+        "labels": [
+          "Platform",
+          "Processing",
+          "Administration",
+          "Fund / other expenses"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Who pays?",
+        "kicker": "Each offering can differ",
+        "visual": "comparison",
+        "labels": [
+          "Issuer-paid costs",
+          "Investor-paid costs"
+        ],
+        "values": []
+      },
+      {
+        "headline": "On top or deducted?",
+        "kicker": "Read fee table and payment screen",
+        "visual": "comparison",
+        "labels": [
+          "Added to investment",
+          "Deducted from commitment"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional $31 charge",
+        "kicker": "3% of $1,000 plus $1",
+        "visual": "bars",
+        "labels": [
+          "Paid if fee added ($)",
+          "Invested if fee deducted ($)"
+        ],
+        "values": [
+          1031,
+          969
+        ]
+      },
+      {
+        "headline": "Check future and refund costs",
+        "kicker": "Exact documents control",
+        "visual": "document",
+        "labels": [
+          "Ongoing costs",
+          "Failed raise refunds",
+          "Cancellation fee refunds",
+          "Calculation method"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/getting-started/understanding-fees",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11"
+    ],
+    "scene_narration": [
+      "Fees can reduce what a company receives or what an investor ultimately keeps. Depending on the offering, there may be a platform fee, payment-processing charge, administrative fee, fund expense, or other disclosed cost. ",
+      "The issuer may pay some fees, while an investor may pay others. Do not assume one fee model applies to every offering. ",
+      "Read the fee table, subscription documents, and payment screen, and distinguish a fee charged on top of your investment from one deducted from it. ",
+      "In a fictional example, a $1,000 commitment with a 3% investor fee plus a $1 fixed charge would add $31, making the payment $1,031. If instead the same charges were deducted from the $1,000, the amount reaching the investment would be $969. ",
+      "The exact calculation depends on the documents. Ask whether any ongoing costs apply after the offering closes and whether a fee is refundable if the raise fails or is cancelled."
+    ]
+  },
+  {
+    "id": "17-us-tax-basics",
+    "title": "U.S. tax basics for startup securities",
+    "narration": "U.S. tax treatment depends on the security, what happens to it, how long you hold it, and your personal situation. For a simple stock-sale example, if you buy shares for $500 and later sell them for $800, the basic difference is a $300 gain before fees and adjustments. A sale below your adjusted basis may create a loss, subject to tax rules. Holding period can affect whether a recognized gain or loss is short-term or long-term. A SAFE, conversion, distribution, acquisition, or investment becoming worthless can raise more complicated questions. Do not assume a loss is deductible simply because a company has stopped communicating or appears inactive. Keep contracts, confirmations, cost basis records, and tax forms. Do not assume a startup investment qualifies for a special tax rule based on the company’s age or its security label. This is general U.S. federal information, not advice for your return. Ask a qualified tax professional about your particular facts and state taxes.",
+    "scenes": [
+      {
+        "headline": "Tax depends on the facts",
+        "kicker": "Security, events, time and situation",
+        "visual": "grid",
+        "labels": [
+          "Security type",
+          "What happens",
+          "Holding period",
+          "Personal situation"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional stock sale",
+        "kicker": "$800 proceeds minus $500 basis",
+        "visual": "bars",
+        "labels": [
+          "Basis ($)",
+          "Proceeds ($)",
+          "Gain before adjustments ($)"
+        ],
+        "values": [
+          500,
+          800,
+          300
+        ]
+      },
+      {
+        "headline": "Holding period",
+        "kicker": "Can affect gain or loss classification",
+        "visual": "comparison",
+        "labels": [
+          "Short-term rules",
+          "Long-term rules"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Complicated events",
+        "kicker": "Inactivity alone is not a deductible loss",
+        "visual": "grid",
+        "labels": [
+          "SAFE or conversion",
+          "Distribution or acquisition",
+          "Worthless investment",
+          "Loss recognition rules"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Keep records; get tax advice",
+        "kicker": "General federal information only",
+        "visual": "document",
+        "labels": [
+          "Contracts / confirmations",
+          "Basis records / tax forms",
+          "Do not assume special rules",
+          "Your federal and state facts"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.irs.gov/taxtopics/tc409",
+      "https://www.irs.gov/publications/p550",
+      "https://www.irs.gov/instructions/i8949"
+    ],
+    "scene_narration": [
+      "U.S. tax treatment depends on the security, what happens to it, how long you hold it, and your personal situation. ",
+      "For a simple stock-sale example, if you buy shares for $500 and later sell them for $800, the basic difference is a $300 gain before fees and adjustments. A sale below your adjusted basis may create a loss, subject to tax rules. ",
+      "Holding period can affect whether a recognized gain or loss is short-term or long-term. ",
+      "A SAFE, conversion, distribution, acquisition, or investment becoming worthless can raise more complicated questions. Do not assume a loss is deductible simply because a company has stopped communicating or appears inactive. ",
+      "Keep contracts, confirmations, cost basis records, and tax forms. Do not assume a startup investment qualifies for a special tax rule based on the company’s age or its security label. This is general U.S. federal information, not advice for your return. Ask a qualified tax professional about your particular facts and state taxes."
+    ]
+  },
+  {
+    "id": "18-red-flags",
+    "title": "Red flags and claims worth checking",
+    "narration": "A red flag is a reason to verify a claim, not automatic proof of fraud. Be cautious when someone promises high returns with little risk, pressures you to act immediately, or says an opportunity is guaranteed. Other warning signs include numbers that change across materials, missing financial statements, unclear use of proceeds, a security that is hard to explain, or payment instructions that do not match the registered intermediary. Check identities, company records, and the actual offering documents. For a Reg CF investment, verify the intermediary and confirm that the offering appears through its official platform. An SEC filing is not an endorsement, and a company may be registered or have a filing without being a good investment. Ask direct questions and compare the answers with written disclosures. If an important claim cannot be verified or the person discourages you from reviewing documents, pause. Never let fear of missing out replace a careful decision.",
+    "scenes": [
+      {
+        "headline": "Pause at pressure and promises",
+        "kicker": "A red flag is not proof of fraud",
+        "visual": "grid",
+        "labels": [
+          "High returns",
+          "Little risk",
+          "Guaranteed outcome",
+          "Act immediately"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Inconsistent or missing details",
+        "kicker": "Reasons to investigate",
+        "visual": "document",
+        "labels": [
+          "Changing numbers",
+          "Missing financials",
+          "Unclear proceeds or security",
+          "Mismatched payment instructions"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Verify using official sources",
+        "kicker": "Confirm Reg CF intermediary and offering",
+        "visual": "flow",
+        "labels": [
+          "Check identities and records",
+          "Verify registered intermediary",
+          "Confirm official offering page"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Filing is not endorsement",
+        "kicker": "Compare answers with disclosures",
+        "visual": "comparison",
+        "labels": [
+          "SEC filing exists",
+          "Investment quality not certified"
+        ],
+        "values": []
+      },
+      {
+        "headline": "You can pause",
+        "kicker": "Do not let FOMO decide",
+        "visual": "flow",
+        "labels": [
+          "Identify important claim",
+          "Verify with documents",
+          "Pause if unresolved"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/protect-your-investments/fraud/how-avoid-fraud/red-flags-investment-fraud-checklist",
+      "https://www.investor.gov/protect-your-investments/fraud/types-fraud",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding",
+      "https://www.investor.gov/introduction-investing/getting-started/five-questions-ask-you-invest"
+    ],
+    "scene_narration": [
+      "A red flag is a reason to verify a claim, not automatic proof of fraud. Be cautious when someone promises high returns with little risk, pressures you to act immediately, or says an opportunity is guaranteed. ",
+      "Other warning signs include numbers that change across materials, missing financial statements, unclear use of proceeds, a security that is hard to explain, or payment instructions that do not match the registered intermediary. ",
+      "Check identities, company records, and the actual offering documents. For a Reg CF investment, verify the intermediary and confirm that the offering appears through its official platform. ",
+      "An SEC filing is not an endorsement, and a company may be registered or have a filing without being a good investment. Ask direct questions and compare the answers with written disclosures. ",
+      "If an important claim cannot be verified or the person discourages you from reviewing documents, pause. Never let fear of missing out replace a careful decision."
+    ]
+  },
+  {
+    "id": "19-founder-updates",
+    "title": "Reading founder updates",
+    "narration": "Founder updates can help investors follow progress, but an update is not a guarantee and may not be audited or complete. Look for a consistent time period and metrics that connect to the business plan: paying customers, revenue, retention, product milestones, cash, and hiring. Compare the update with earlier disclosures and note what changed. Ask whether numbers are actual results, forecasts, or goals. In Reg CF, issuers generally have annual reporting obligations, with exceptions and specific rules; an informal monthly email is not a substitute for required filings. For example, a fictional company might report 250 customers last quarter and 325 this quarter. That is an increase of 75, or 30%, but it does not show revenue per customer, churn, profitability, or whether customers paid. Watch for clear explanations of setbacks and revised plans, not only celebratory highlights. Keep copies of updates and filings so you can compare progress over time.",
+    "scenes": [
+      {
+        "headline": "Follow progress consistently",
+        "kicker": "Updates may be incomplete or unaudited",
+        "visual": "grid",
+        "labels": [
+          "Paying customers / revenue",
+          "Retention / milestones",
+          "Cash / hiring",
+          "Consistent periods"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Compare formal disclosures",
+        "kicker": "Actuals, forecasts and required filings differ",
+        "visual": "document",
+        "labels": [
+          "What changed?",
+          "Actual / forecast / goal",
+          "Annual reporting rules",
+          "Email is not required filing"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Fictional customer growth",
+        "kicker": "Prior quarter versus current",
+        "visual": "bars",
+        "labels": [
+          "Prior customers",
+          "Current customers"
+        ],
+        "values": [
+          250,
+          325
+        ]
+      },
+      {
+        "headline": "75 more customers = 30%",
+        "kicker": "Growth alone does not show economics",
+        "visual": "grid",
+        "labels": [
+          "Revenue per customer?",
+          "Churn?",
+          "Profitability?",
+          "Paid customers?"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Keep a comparable record",
+        "kicker": "Look for setbacks as well as wins",
+        "visual": "document",
+        "labels": [
+          "Setbacks and revised plans",
+          "Saved updates",
+          "Saved filings",
+          "Progress over time"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.ecfr.gov/current/title-17/section-227.203",
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.sec.gov/rules-regulations/staff-guidance/corporation-finance-interpretations/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Founder updates can help investors follow progress, but an update is not a guarantee and may not be audited or complete. Look for a consistent time period and metrics that connect to the business plan: paying customers, revenue, retention, product milestones, cash, and hiring. ",
+      "Compare the update with earlier disclosures and note what changed. Ask whether numbers are actual results, forecasts, or goals. In Reg CF, issuers generally have annual reporting obligations, with exceptions and specific rules; an informal monthly email is not a substitute for required filings. ",
+      "For example, a fictional company might report 250 customers last quarter and 325 this quarter. ",
+      "That is an increase of 75, or 30%, but it does not show revenue per customer, churn, profitability, or whether customers paid. ",
+      "Watch for clear explanations of setbacks and revised plans, not only celebratory highlights. Keep copies of updates and filings so you can compare progress over time."
+    ]
+  },
+  {
+    "id": "20-commitment-cancellation",
+    "title": "Investment commitment and cancellation",
+    "narration": "Before you press the final button, confirm the company, security, amount, fees, and payment method. In a Reg CF offering, submitting an investment generally creates a commitment, but federal rules provide a limited cancellation window. You may cancel for any reason until forty-eight hours before the offering’s deadline. During the final forty-eight hours, you generally cannot cancel for any reason, even if you committed within that period. If the company makes a material change to the offering, investors must be given five business days to reconfirm. The exact platform steps and notices matter, so read the confirmation and official disclosures. These rules apply to Reg CF and should not be assumed for every private investment. A commitment is not a casual “save for later” click. If you are uncertain, review the terms before committing rather than relying on a later cancellation. Keep a copy of the confirmation and any cancellation or reconfirmation notice.",
+    "scenes": [
+      {
+        "headline": "Before committing",
+        "kicker": "Verify the final details",
+        "visual": "document",
+        "labels": [
+          "Company and security",
+          "Amount",
+          "Fees",
+          "Payment method"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Commitment has a limited window",
+        "kicker": "Reg CF cancellation rule",
+        "visual": "timeline",
+        "labels": [
+          "Submit commitment",
+          "May cancel for any reason",
+          "Cutoff: 48 hours before deadline"
+        ],
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "headline": "Final 48 hours",
+        "kicker": "Generally no any-reason cancellation",
+        "visual": "comparison",
+        "labels": [
+          "Earlier: cancellation window",
+          "Final 48 hours: generally restricted"
+        ],
+        "values": []
+      },
+      {
+        "headline": "Material offering change",
+        "kicker": "Five business days to reconfirm",
+        "visual": "timeline",
+        "labels": [
+          "Material-change notice",
+          "Five-business-day window",
+          "Reconfirmation decision"
+        ],
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "headline": "Read notices and save records",
+        "kicker": "Not a casual save-for-later click",
+        "visual": "document",
+        "labels": [
+          "Platform steps and disclosures",
+          "Reg CF rules only",
+          "Review before commitment",
+          "Keep confirmations and notices"
+        ],
+        "values": []
+      }
+    ],
+    "sources": [
+      "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins/updated-11",
+      "https://www.ecfr.gov/current/title-17/section-227.203",
+      "https://www.sec.gov/resources-small-businesses/exempt-offerings/regulation-crowdfunding"
+    ],
+    "scene_narration": [
+      "Before you press the final button, confirm the company, security, amount, fees, and payment method. ",
+      "In a Reg CF offering, submitting an investment generally creates a commitment, but federal rules provide a limited cancellation window. You may cancel for any reason until forty-eight hours before the offering’s deadline. ",
+      "During the final forty-eight hours, you generally cannot cancel for any reason, even if you committed within that period. ",
+      "If the company makes a material change to the offering, investors must be given five business days to reconfirm. ",
+      "The exact platform steps and notices matter, so read the confirmation and official disclosures. These rules apply to Reg CF and should not be assumed for every private investment. A commitment is not a casual “save for later” click. If you are uncertain, review the terms before committing rather than relying on a later cancellation. Keep a copy of the confirmation and any cancellation or reconfirmation notice."
+    ]
+  }
+]
