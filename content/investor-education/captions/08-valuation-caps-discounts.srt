@@ -1,91 +1,90 @@
 1
-00:00:00,000 --> 00:00:04,225
+00:00:00,000 --> 00:00:03,763
 A valuation cap and a discount
 are two different ways a SAFE can
 
 2
-00:00:04,225 --> 00:00:07,525
+00:00:03,763 --> 00:00:07,216
 set a conversion price, if its terms
 include them.
 
 3
-00:00:07,525 --> 00:00:11,478
+00:00:07,216 --> 00:00:10,941
 A cap uses a stated company
 valuation and a capitalization
 
 4
-00:00:11,478 --> 00:00:14,136
+00:00:10,941 --> 00:00:15,631
 definition; a discount reduces the
-next
+next financing’s share price by a
 
 5
-00:00:14,136 --> 00:00:16,862
-financing’s share price by a
+00:00:15,631 --> 00:00:16,856
 percentage.
 
 6
-00:00:16,862 --> 00:00:22,115
+00:00:16,856 --> 00:00:22,616
 In a simplified example, assume a
 $500 SAFE, an $8 million cap, a
 
 7
-00:00:22,115 --> 00:00:24,459
-$20 million priced round, and
+00:00:22,616 --> 00:00:26,534
+$20 million priced round, and ten
+million fully diluted
 
 8
-00:00:24,459 --> 00:00:28,337
-ten million fully diluted
+00:00:26,534 --> 00:00:28,312
 pre-conversion shares.
 
 9
-00:00:28,338 --> 00:00:33,653
+00:00:28,312 --> 00:00:32,410
 The cap calculation gives $0.80
 per share, while the round price is
 
 10
-00:00:33,653 --> 00:00:37,858
+00:00:32,410 --> 00:00:36,985
 $2.00, so the cap-based
 illustration gives 625 shares
 
 11
-00:00:37,858 --> 00:00:40,238
+00:00:36,985 --> 00:00:39,807
 versus 250 at the round price.
 
 12
-00:00:40,238 --> 00:00:43,675
+00:00:39,807 --> 00:00:42,900
 That is not a guaranteed
 ownership percentage.
 
 13
-00:00:43,675 --> 00:00:47,418
+00:00:42,900 --> 00:00:46,224
 It ignores new money, other
 instruments, option-pool
 
 14
-00:00:47,418 --> 00:00:50,225
+00:00:46,224 --> 00:00:49,291
 changes, and contract-specific
 details.
 
 15
-00:00:50,225 --> 00:00:55,630
+00:00:49,291 --> 00:00:53,827
 If a SAFE also has a 20% discount
 to a $2 round price, the
 
 16
-00:00:55,630 --> 00:00:58,612
+00:00:53,827 --> 00:00:57,345
 discounted price would be $1.60.
 
 17
-00:00:58,612 --> 00:01:02,275
+00:00:57,345 --> 00:01:00,644
 Which term governs depends on
 the actual agreement.
 
 18
-00:01:02,275 --> 00:01:04,723
+00:01:00,644 --> 00:01:04,111
 Check the capitalization
-definition
+definition and conversion formula
 
 19
-00:01:04,723 --> 00:01:07,032
-and conversion formula carefully.
+00:01:04,111 --> 00:01:05,160
+carefully.
 

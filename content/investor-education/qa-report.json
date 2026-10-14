@@ -2,201 +2,201 @@
   {
     "id": "01-startup-investing",
     "title": "Startup investing basics",
-    "seconds": 61.46,
+    "seconds": 59.21,
     "width": 1080,
     "height": 1920,
     "companion_words": 232,
-    "bytes": 1651027,
-    "sha256": "78ee23b846d58d0e3508f29af7a776bb1699ce34a59dea977855c461ba766450"
+    "bytes": 1766295,
+    "sha256": "1855ac199c94399956d1128f875f01d2c94ec8a8caef6bc7c81f07f062e92e6f"
   },
   {
     "id": "02-reg-cf-basics",
     "title": "Regulation Crowdfunding basics",
-    "seconds": 70.54,
+    "seconds": 68.38,
     "width": 1080,
     "height": 1920,
     "companion_words": 243,
-    "bytes": 1850843,
-    "sha256": "cd63d0dfb9c36d38a9d8d969b332fb6c12c2d1abae9b0c5e04b814ec5ffa514b"
+    "bytes": 1999049,
+    "sha256": "62002a12c766d020120b2cda6ea31ca981da41e4052c15ca3acbe6d83d3fcfe2"
   },
   {
     "id": "03-investment-limits",
     "title": "Reg CF investment limits",
-    "seconds": 78.21,
+    "seconds": 76.25,
     "width": 1080,
     "height": 1920,
     "companion_words": 282,
-    "bytes": 2026203,
-    "sha256": "8be31e71cf5da8c644a65e2c952d69b409bb6c4b8331ac3ee398d99e37428059"
+    "bytes": 2184663,
+    "sha256": "b8c3c338dd812bdeef4a512557e4d6b3809ff763232027ee392c89fe5c364297"
   },
   {
     "id": "04-total-loss-risk",
     "title": "You can lose the entire investment",
-    "seconds": 61.62,
+    "seconds": 60.54,
     "width": 1080,
     "height": 1920,
     "companion_words": 251,
-    "bytes": 1654944,
-    "sha256": "594176ba88a5de173eda9b9f0c5cb498fcac25ffb36def9a4013bda133be7afa"
+    "bytes": 1751099,
+    "sha256": "3365cbef8fbcf1b543110d4c1888a7c5ecf43b8059d0b925045647292cd965bd"
   },
   {
     "id": "05-illiquidity",
     "title": "Startup investments can be illiquid",
-    "seconds": 62.29,
+    "seconds": 61.17,
     "width": 1080,
     "height": 1920,
     "companion_words": 237,
-    "bytes": 1709486,
-    "sha256": "b23ba6a1486d290c8cd13a6057858f3dd8d72905408728988fe854b0cfc43332"
+    "bytes": 1806478,
+    "sha256": "aae20f614c798144d014a4ee52e0187cfb1e8f0e1e8f8fd7e4bae1fa2fbcf9f5"
   },
   {
     "id": "06-form-c",
     "title": "How to read a Form C",
-    "seconds": 67.38,
+    "seconds": 66.08,
     "width": 1080,
     "height": 1920,
     "companion_words": 254,
-    "bytes": 1870978,
-    "sha256": "0b3acfdb8019410fcdbc2631f8daaf0f1f69a834b51e54a6238318de6f285ea6"
+    "bytes": 2123087,
+    "sha256": "419672b52f05964907239738e51c1fd8086da57d508fe190cfe445f08f3a5cb5"
   },
   {
     "id": "07-safes",
     "title": "What a SAFE does and does not mean",
-    "seconds": 63.25,
+    "seconds": 61.29,
     "width": 1080,
     "height": 1920,
     "companion_words": 257,
-    "bytes": 1678402,
-    "sha256": "136a437d1f03b39eeb2f62b73c912d53ac95fbe2e4fa7093cd1b36de1e11f101"
+    "bytes": 1868126,
+    "sha256": "d725781e5f171a996bf9eafb3fc7530b3406139824f241ca187ffa6fba9152f7"
   },
   {
     "id": "08-valuation-caps-discounts",
     "title": "Valuation caps and discounts",
-    "seconds": 67.62,
+    "seconds": 65.75,
     "width": 1080,
     "height": 1920,
     "companion_words": 252,
-    "bytes": 1764354,
-    "sha256": "9691274faf53f0172dfab03143a85ed13efd8b8024d0ac351d8a84a0bf3e4509"
+    "bytes": 1874431,
+    "sha256": "2ca3cb15b50375d1f34dd515eeea42f69bd61e16dd59484e825d994c5091b859"
   },
   {
     "id": "09-dilution",
     "title": "Dilution when a company issues more shares",
-    "seconds": 64.04,
+    "seconds": 62.17,
     "width": 1080,
     "height": 1920,
     "companion_words": 251,
-    "bytes": 1702170,
-    "sha256": "182807c4b58ac40eb63c157fc16f924e6d59b60e8d33ee50294deff8155e380c"
+    "bytes": 1711562,
+    "sha256": "4d9b26181d0f3167252c5d7caa7934c489b5f102b5175d6daddf789d800f3826"
   },
   {
     "id": "10-equity-vs-convertible-notes",
     "title": "Equity versus convertible notes",
-    "seconds": 61.58,
+    "seconds": 61.79,
     "width": 1080,
     "height": 1920,
     "companion_words": 257,
-    "bytes": 1591687,
-    "sha256": "a94d101869b90bec2dc9028ab3ccff9b0f522532fcedeacbea0d2d42b85cefea"
+    "bytes": 1806025,
+    "sha256": "df84ac419236301ce5e322c90ba6e353c19fb2de3953f571f89ac2b2147eb98d"
   },
   {
     "id": "11-valuation-pre-post-money",
     "title": "Pre-money and post-money valuation",
-    "seconds": 65.17,
+    "seconds": 63.46,
     "width": 1080,
     "height": 1920,
     "companion_words": 240,
-    "bytes": 1755293,
-    "sha256": "9ba651428338bdefbaeb85a28d11e65ee48a282f177b59bbe96757f9f20fe550"
+    "bytes": 1846535,
+    "sha256": "f35103ee9b398b3b0fb47f6da36ab84abca42b707f40b094c8817694b63282b1"
   },
   {
     "id": "12-diversification",
     "title": "Diversification and startup risk",
-    "seconds": 73.79,
+    "seconds": 72.54,
     "width": 1080,
     "height": 1920,
     "companion_words": 239,
-    "bytes": 2108592,
-    "sha256": "33e0230c44b62fcc074e1c9882e48dcd7248c3f2c2c112534c8985d44544fae3"
+    "bytes": 2121383,
+    "sha256": "99c790776a93e40f6a61f5597575de23bf0e87e34bb2a767dec9f86bf7df40bc"
   },
   {
     "id": "13-due-diligence",
     "title": "A practical due-diligence routine",
-    "seconds": 67.0,
+    "seconds": 64.21,
     "width": 1080,
     "height": 1920,
     "companion_words": 264,
-    "bytes": 1890087,
-    "sha256": "84c5ae500a64b9f1da5c90998021290ae2f6294a18573d8b10d7ebcb7add372a"
+    "bytes": 1954613,
+    "sha256": "bd90ec75571c00ea248cfae89dd4eac425e64b2934b99aca7d192a65aa6951b6"
   },
   {
     "id": "14-financials-burn-runway",
     "title": "Financials, burn, and runway",
-    "seconds": 65.5,
+    "seconds": 62.96,
     "width": 1080,
     "height": 1920,
     "companion_words": 249,
-    "bytes": 1846039,
-    "sha256": "7a7898b2ea3200b74acb428a27b441aa9696291615d08cb0df52b53f1ce97e33"
+    "bytes": 1957291,
+    "sha256": "352b5e5532a5b8a76caf88f8314cdc50be07ebb9ee135dde0509844f9e22d279"
   },
   {
     "id": "15-exits-liquidation-preferences",
     "title": "Exits and liquidation preferences",
-    "seconds": 71.92,
+    "seconds": 70.62,
     "width": 1080,
     "height": 1920,
     "companion_words": 251,
-    "bytes": 1909444,
-    "sha256": "dbcf0270f57d5e668df593d3a2b22aa8b10cd0e24d4e917e75189d4e4a9925e5"
+    "bytes": 2037646,
+    "sha256": "cb9c576d7a935f93f69e5e97393faf39ff0ceebdbd27d762f00e29692ff1ccbe"
   },
   {
     "id": "16-fees",
     "title": "Fees and how they change the math",
-    "seconds": 65.08,
+    "seconds": 63.33,
     "width": 1080,
     "height": 1920,
     "companion_words": 245,
-    "bytes": 1760696,
-    "sha256": "eb8ad95284052cdcd7edfc203c61dc46033be4033b78a87237e2126ea19f6c0c"
+    "bytes": 1843733,
+    "sha256": "b03bd70f7b6f4b11ae03e424a15ca984ef4b2fae59af07f28aa736c2242bc6ee"
   },
   {
     "id": "17-us-tax-basics",
     "title": "U.S. tax basics for startup securities",
-    "seconds": 68.96,
+    "seconds": 67.67,
     "width": 1080,
     "height": 1920,
     "companion_words": 266,
-    "bytes": 1915248,
-    "sha256": "cf2faf155505eaff3ea0ea6fabf3b6e1fa68fdf239ebd93d3e612c27a36f6c73"
+    "bytes": 2086286,
+    "sha256": "fe7a1113bab75ff1683d90bc1891777bdcb4badd5afd8be2fc22c6601af4b144"
   },
   {
     "id": "18-red-flags",
     "title": "Red flags and claims worth checking",
-    "seconds": 65.08,
+    "seconds": 62.62,
     "width": 1080,
     "height": 1920,
     "companion_words": 256,
-    "bytes": 1893952,
-    "sha256": "b9fb0a6342d4e6799a0ff89a8ad8f37203bedb747b19b93c0a0d0c24097cfe5d"
+    "bytes": 1974344,
+    "sha256": "4259888521ba699fe774d97f80a0a079fc6285e1e227032f07a0238b5f80cea8"
   },
   {
     "id": "19-founder-updates",
     "title": "Reading founder updates",
-    "seconds": 69.38,
+    "seconds": 66.88,
     "width": 1080,
     "height": 1920,
     "companion_words": 248,
-    "bytes": 1947122,
-    "sha256": "ce7581e5546810999f49d79b5c6cc95a96270addeb69eca3b84a19d9e4e60aba"
+    "bytes": 2118761,
+    "sha256": "3c8bc292f59a8da5b599b2c24918ad35d33f3a42a36969ee083c12e1b0f59f22"
   },
   {
     "id": "20-commitment-cancellation",
     "title": "Investment commitment and cancellation",
-    "seconds": 64.33,
+    "seconds": 62.88,
     "width": 1080,
     "height": 1920,
     "companion_words": 265,
-    "bytes": 1867430,
-    "sha256": "22d0f5a4cdf202d92f0b2921d41cf5230b537b8c85cee16de833bb45a775dc9b"
+    "bytes": 1991685,
+    "sha256": "ce3bffe20226bdc1f3b2838b628878cb9fdfa8b9ffcdcb774006b06f0da7fd89"
   }
 ]

@@ -14,6 +14,10 @@ Polish QA October 13, 2026
 
 No ElevenLabs or OpenAI credentials were present in the execution environment. Full-track listening compared the original Aria narration with Emma Multilingual; Emma was clearer and less clipped, but remains synthesized narration rather than a human recording. No paid voice service was used.
 
-Captions and scene cuts are anchored to the actual synthesized WordBoundary events. Normalized boundary text must equal the narration, and cuts must land exactly at spoken-word boundaries. Missing or mismatched events fail rendering rather than estimating timing. The audio cache includes voice, rate and boundary mode.
+Captions and scene cuts are anchored to the actual synthesized WordBoundary events, treating provider-grouped currency phrases as indivisible units. Normalized boundary text must equal the narration, and cuts must land exactly at spoken-word boundaries. Missing or mismatched events fail rendering rather than estimating timing. The audio cache includes voice, rate and boundary mode.
 
 Document visuals contain actual numbered review items instead of grey skeleton bars. Secondary labels are near-black, header tags are larger, sparse cards and diagrams use more of their visual region, and pie legends fit within that region. The progress bar is computed from the global elapsed lesson duration, not the caption or scene. Encoded-frame pixel tests check monotonicity, including around 48 seconds. Full playback reviews cover SAFE, cap/discount and diversification lessons. Animation fades still briefly introduce content before it reaches full contrast.
+
+The SAFE encoded progress endpoint at y=1704 advanced from x=776 at 47 seconds to 791 at 48, 805 at 49, 834 at 51 and 849 at 52. This is measured in decoded video pixels, not inferred from code.
+
+Static bounds validation covers 362 headlines and card labels, all 100 kicker tags, and pie legend extents. Five long kicker tags were shortened without altering narration so the enlarged 36px type fits safely. Python voice/render dependencies are pinned to tested versions.

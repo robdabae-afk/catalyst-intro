@@ -1,87 +1,87 @@
 1
-00:00:00,000 --> 00:00:03,343
+00:00:00,000 --> 00:00:03,080
 Pre-money valuation is the
 company’s agreed value
 
 2
-00:00:03,343 --> 00:00:05,662
+00:00:03,080 --> 00:00:05,631
 immediately before new
 investment.
 
 3
-00:00:05,662 --> 00:00:10,388
+00:00:05,631 --> 00:00:10,064
 Post-money valuation is the value
 after that investment is added.
 
 4
-00:00:10,388 --> 00:00:14,641
+00:00:10,064 --> 00:00:13,827
 In a simple priced equity round,
 post-money equals pre-money
 
 5
-00:00:14,641 --> 00:00:15,988
+00:00:13,827 --> 00:00:15,335
 plus the new money.
 
 6
-00:00:15,988 --> 00:00:19,987
+00:00:15,335 --> 00:00:19,420
 If a company raises $2 million at
 an $8 million pre-money
 
 7
-00:00:19,987 --> 00:00:24,126
+00:00:19,420 --> 00:00:24,265
 valuation, its post-money
 valuation is $10 million, and the
 
 8
-00:00:24,126 --> 00:00:28,336
+00:00:24,265 --> 00:00:28,144
 new investors’ shares represent
 about 20% of that post-money
 
 9
-00:00:28,336 --> 00:00:32,475
+00:00:28,144 --> 00:00:31,972
 amount before considering other
 securities and adjustments.
 
 10
-00:00:32,475 --> 00:00:37,378
+00:00:31,972 --> 00:00:35,863
 If instead $8 million is
 post-money, then pre-money is
 
 11
-00:00:37,378 --> 00:00:41,100
+00:00:35,863 --> 00:00:40,451
 $6 million and $2 million buys
 about 25%.
 
 12
-00:00:41,100 --> 00:00:45,604
+00:00:40,451 --> 00:00:44,459
 Those percentages are simplified
 and depend on the capitalization
 
 13
-00:00:45,604 --> 00:00:46,712
+00:00:44,459 --> 00:00:45,928
 and round terms.
 
 14
-00:00:46,712 --> 00:00:51,443
+00:00:45,928 --> 00:00:50,554
 A valuation is a negotiated price
 for a transaction, not cash in the
 
 15
-00:00:51,443 --> 00:00:54,712
+00:00:50,554 --> 00:00:53,866
 bank or an independent
 guarantee of fair value.
 
 16
-00:00:54,712 --> 00:00:58,859
+00:00:53,866 --> 00:00:57,345
 Check whether a quoted figure is
 pre- or post-money, what share
 
 17
-00:00:58,859 --> 00:01:02,610
+00:00:57,345 --> 00:01:00,825
 count is included, and how
 options, SAFEs, notes, and new
 
 18
-00:01:02,610 --> 00:01:04,584
+00:01:00,825 --> 00:01:02,880
 shares affect the calculation.
 

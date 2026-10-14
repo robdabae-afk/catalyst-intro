@@ -1,100 +1,100 @@
 1
-00:00:00,000 --> 00:00:02,989
+00:00:00,000 --> 00:00:02,680
 Due diligence is the work of
 checking claims and
 
 2
-00:00:02,989 --> 00:00:06,538
+00:00:02,680 --> 00:00:06,263
 understanding terms before
 making an investment decision.
 
 3
-00:00:06,538 --> 00:00:10,181
+00:00:06,263 --> 00:00:09,691
 Start with the formal offering
 documents, then compare the
 
 4
-00:00:10,181 --> 00:00:11,562
+00:00:09,691 --> 00:00:11,289
 pitch with the filing.
 
 5
-00:00:11,562 --> 00:00:15,209
+00:00:11,289 --> 00:00:14,497
 Can you explain what the
 company sells, who its customers
 
 6
-00:00:15,209 --> 00:00:17,000
+00:00:14,497 --> 00:00:16,611
 are, and why they might pay?
 
 7
-00:00:17,000 --> 00:00:21,016
+00:00:16,611 --> 00:00:20,000
 Check the team’s relevant
 experience and identify what still
 
 8
-00:00:21,016 --> 00:00:22,288
+00:00:20,000 --> 00:00:21,534
 needs to be proven.
 
 9
-00:00:22,288 --> 00:00:26,834
+00:00:21,534 --> 00:00:25,902
 Examine the financial statements,
 cash needs, use of proceeds,
 
 10
-00:00:26,834 --> 00:00:29,400
+00:00:25,902 --> 00:00:28,660
 ownership, and existing
 securities.
 
 11
-00:00:29,400 --> 00:00:33,025
+00:00:28,660 --> 00:00:31,714
 Search SEC filings and read
 amendments.
 
 12
-00:00:33,025 --> 00:00:36,910
+00:00:31,714 --> 00:00:35,644
 Verify that any Reg CF
 intermediary is registered, and
 
 13
-00:00:36,910 --> 00:00:41,299
+00:00:35,644 --> 00:00:39,485
 use FINRA BrokerCheck or the
 SEC’s funding-portal information
 
 14
-00:00:41,299 --> 00:00:42,738
+00:00:39,485 --> 00:00:41,082
 to check its status.
 
 15
-00:00:42,738 --> 00:00:46,805
+00:00:41,082 --> 00:00:44,871
 Look for gaps, inconsistent
 numbers, unsupported customer
 
 16
-00:00:46,805 --> 00:00:50,588
+00:00:44,871 --> 00:00:48,660
 or revenue claims, and unclear
 conflicts of interest.
 
 17
-00:00:50,588 --> 00:00:55,200
+00:00:48,660 --> 00:00:53,041
 Due diligence cannot predict the
 future or uncover every problem.
 
 18
-00:00:55,200 --> 00:00:56,704
-It is a way to make your
+00:00:53,041 --> 00:00:56,237
+It is a way to make your decision
+based on evidence rather than
 
 19
-00:00:56,704 --> 00:00:59,838
-decision based on evidence
-rather than excitement.
+00:00:56,237 --> 00:00:57,448
+excitement.
 
 20
-00:00:59,838 --> 00:01:04,019
+00:00:57,448 --> 00:01:01,134
 If key facts are missing or you
 cannot understand the security,
 
 21
-00:01:04,019 --> 00:01:06,408
+00:01:01,134 --> 00:01:03,648
 slowing down is a reasonable
 choice.
 

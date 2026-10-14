@@ -1,100 +1,100 @@
 1
-00:00:00,000 --> 00:00:03,795
+00:00:00,000 --> 00:00:04,369
 Regulation Crowdfunding, often
 called Reg CF, is a U.S.
 
 2
-00:00:03,795 --> 00:00:07,887
+00:00:04,369 --> 00:00:07,887
 securities exemption that lets
 eligible companies raise money
 
 3
-00:00:07,887 --> 00:00:09,429
+00:00:07,887 --> 00:00:09,639
 from the public online.
 
 4
-00:00:09,429 --> 00:00:13,116
+00:00:09,639 --> 00:00:12,809
 An offering must be conducted
 through an SEC-registered
 
 5
-00:00:13,116 --> 00:00:15,262
+00:00:12,809 --> 00:00:15,219
 broker-dealer or funding portal.
 
 6
-00:00:15,262 --> 00:00:17,544
+00:00:15,219 --> 00:00:18,982
 It is not simply a company posting
+a payment link and calling it an
 
 7
-00:00:17,544 --> 00:00:20,498
-a payment link and calling it an
+00:00:18,982 --> 00:00:20,219
 investment.
 
 8
-00:00:20,498 --> 00:00:24,711
+00:00:20,219 --> 00:00:24,704
 The company files disclosures,
 usually on Form C, and investors
 
 9
-00:00:24,711 --> 00:00:27,921
+00:00:24,704 --> 00:00:27,629
 review those documents through
 the intermediary.
 
 10
-00:00:27,921 --> 00:00:31,961
+00:00:27,629 --> 00:00:31,044
 Non-accredited investors are
 subject to aggregate investment
 
 11
-00:00:31,961 --> 00:00:33,980
+00:00:31,044 --> 00:00:34,639
 limits across Reg CF offerings
+during a rolling twelve-month
 
 12
-00:00:33,980 --> 00:00:36,471
-during a rolling twelve-month
+00:00:34,639 --> 00:00:35,606
 period.
 
 13
-00:00:36,471 --> 00:00:40,349
+00:00:35,606 --> 00:00:38,595
 The company may raise up to five
 million dollars under the
 
 14
-00:00:40,349 --> 00:00:44,160
+00:00:38,595 --> 00:00:42,693
 exemption in a twelve-month
 period, subject to the rules.
 
 15
-00:00:44,160 --> 00:00:48,041
+00:00:42,693 --> 00:00:46,224
 Securities bought in a Reg CF
 offering generally cannot be
 
 16
-00:00:48,041 --> 00:00:51,053
+00:00:46,224 --> 00:00:49,897
 resold for one year, with limited
 exceptions.
 
 17
-00:00:51,053 --> 00:00:54,807
+00:00:49,897 --> 00:00:53,350
 The SEC filing is not an
 endorsement of the company or a
 
 18
-00:00:54,807 --> 00:00:56,952
+00:00:53,350 --> 00:00:55,503
 prediction that it will succeed.
 
 19
-00:00:56,952 --> 00:01:01,495
+00:00:55,503 --> 00:00:59,613
 Read the offering carefully, verify
 the intermediary, and understand
 
 20
-00:01:01,495 --> 00:01:05,369
+00:00:59,613 --> 00:01:03,209
 that startup losses and long
 holding periods are possible.
 
 21
-00:01:05,369 --> 00:01:09,960
+00:01:03,209 --> 00:01:07,776
 These rules describe Reg CF, not
 every kind of startup fundraising.
 

@@ -8,7 +8,7 @@ for topic in json.loads((root/'curriculum.json').read_text()):
  id=topic['id'];meta=json.loads((root/'audio'/f'{id}.json').read_text());total=meta['total'];bounds=meta['bounds']
  assert meta['hash']==r.nhash(topic),id
  assert (root/'videos'/f'{id}.mp4.hash').read_text()==r.vhash(topic),id
- assert ' '.join(topic['scene_narration'])==topic['narration'],id
+ assert ''.join(topic['scene_narration'])==topic['narration'],id
  st=r.sentence_times(topic['narration'],bounds,total)
  sb=r.assign_by_text(st,topic['scene_narration'],topic['narration'],bounds,total)
  chunks=r.caption_chunks(topic['narration'],bounds,total,ImageDraw.Draw(Image.new('RGB',(10,10))))

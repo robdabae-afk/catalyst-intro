@@ -1,86 +1,86 @@
 1
-00:00:00,000 --> 00:00:02,072
+00:00:00,000 --> 00:00:03,763
 Fees can reduce what a company
+receives or what an investor
 
 2
-00:00:02,072 --> 00:00:05,250
-receives or what an investor
+00:00:03,763 --> 00:00:05,322
 ultimately keeps.
 
 3
-00:00:05,250 --> 00:00:08,955
+00:00:05,322 --> 00:00:08,582
 Depending on the offering, there
 may be a platform fee,
 
 4
-00:00:08,955 --> 00:00:12,996
+00:00:08,582 --> 00:00:12,758
 payment-processing charge,
 administrative fee, fund expense,
 
 5
-00:00:12,996 --> 00:00:14,612
+00:00:12,758 --> 00:00:14,716
 or other disclosed cost.
 
 6
-00:00:14,612 --> 00:00:19,300
+00:00:14,716 --> 00:00:19,034
 The issuer may pay some fees,
 while an investor may pay others.
 
 7
-00:00:19,300 --> 00:00:23,125
+00:00:19,034 --> 00:00:22,552
 Do not assume one fee model
 applies to every offering.
 
 8
-00:00:23,125 --> 00:00:27,073
+00:00:22,552 --> 00:00:26,546
 Read the fee table, subscription
 documents, and payment screen,
 
 9
-00:00:27,073 --> 00:00:31,085
+00:00:26,546 --> 00:00:29,794
 and distinguish a fee charged on
 top of your investment from one
 
 10
-00:00:31,085 --> 00:00:32,150
+00:00:29,794 --> 00:00:31,263
 deducted from it.
 
 11
-00:00:32,150 --> 00:00:37,851
+00:00:31,263 --> 00:00:35,876
 In a fictional example, a $1,000
 commitment with a 3% investor
 
 12
-00:00:37,851 --> 00:00:40,242
-fee plus a $1 fixed charge
+00:00:35,876 --> 00:00:40,503
+fee plus a $1 fixed charge would
+add $31, making the payment
 
 13
-00:00:40,242 --> 00:00:44,012
-would add $31, making the
-payment $1,031.
+00:00:40,503 --> 00:00:42,745
+$1,031.
 
 14
-00:00:44,012 --> 00:00:48,938
+00:00:42,745 --> 00:00:46,920
 If instead the same charges were
 deducted from the $1,000, the
 
 15
-00:00:48,938 --> 00:00:52,512
+00:00:46,920 --> 00:00:51,147
 amount reaching the investment
 would be $969.
 
 16
-00:00:52,512 --> 00:00:56,200
+00:00:51,147 --> 00:00:54,459
 The exact calculation depends on
 the documents.
 
 17
-00:00:56,200 --> 00:01:00,150
+00:00:54,459 --> 00:00:58,647
 Ask whether any ongoing costs
 apply after the offering closes
 
 18
-00:01:00,150 --> 00:01:04,488
+00:00:58,647 --> 00:01:02,736
 and whether a fee is refundable if
 the raise fails or is cancelled.
 

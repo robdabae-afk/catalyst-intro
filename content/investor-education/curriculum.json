@@ -487,7 +487,7 @@
       },
       {
         "headline": "Conversion is not certain",
-        "kicker": "Shares also depend on later capitalization",
+        "kicker": "Later capitalization affects shares",
         "visual": "comparison",
         "labels": [
           "No trigger: may never convert",
@@ -509,7 +509,7 @@
       },
       {
         "headline": "Cap is not ownership",
-        "kicker": "Compare other instruments and future rounds",
+        "kicker": "Other instruments and future rounds",
         "visual": "document",
         "labels": [
           "No guaranteed percentage",
@@ -584,7 +584,7 @@
       },
       {
         "headline": "20% discount example",
-        "kicker": "Which term wins depends on the agreement",
+        "kicker": "The agreement decides which term wins",
         "visual": "bars",
         "labels": [
           "Round price ($/share)",
@@ -615,7 +615,7 @@
     "scenes": [
       {
         "headline": "Dilution",
-        "kicker": "A smaller slice is not automatically less value",
+        "kicker": "A smaller slice can still be worth more",
         "visual": "comparison",
         "labels": [
           "Before new shares",
@@ -1424,7 +1424,7 @@
       },
       {
         "headline": "Compare formal disclosures",
-        "kicker": "Actuals, forecasts and required filings differ",
+        "kicker": "Actuals, forecasts, required filings",
         "visual": "document",
         "labels": [
           "What changed?",

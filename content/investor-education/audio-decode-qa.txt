@@ -1,0 +1,21 @@
+PASS full decode without errors 20 audio files
+01-startup-investing
+02-reg-cf-basics
+03-investment-limits
+04-total-loss-risk
+05-illiquidity
+06-form-c
+07-safes
+08-valuation-caps-discounts
+09-dilution
+10-equity-vs-convertible-notes
+11-valuation-pre-post-money
+12-diversification
+13-due-diligence
+14-financials-burn-runway
+15-exits-liquidation-preferences
+16-fees
+17-us-tax-basics
+18-red-flags
+19-founder-updates
+20-commitment-cancellation

@@ -1,98 +1,96 @@
 1
-00:00:00,000 --> 00:00:01,938
-A red flag is a reason to
+00:00:00,000 --> 00:00:04,253
+A red flag is a reason to verify a
+claim, not automatic proof of
 
 2
-00:00:01,938 --> 00:00:05,425
-verify a claim, not automatic
-proof of fraud.
+00:00:04,253 --> 00:00:05,155
+fraud.
 
 3
-00:00:05,425 --> 00:00:09,137
+00:00:05,155 --> 00:00:08,235
 Be cautious when someone
 promises high returns with little
 
 4
-00:00:09,137 --> 00:00:12,336
+00:00:08,235 --> 00:00:11,572
 risk, pressures you to act
 immediately, or says an
 
 5
-00:00:12,336 --> 00:00:14,000
+00:00:11,572 --> 00:00:13,686
 opportunity is guaranteed.
 
 6
-00:00:14,000 --> 00:00:17,396
+00:00:13,686 --> 00:00:16,482
 Other warning signs include
 numbers that change across
 
 7
-00:00:17,396 --> 00:00:20,855
+00:00:16,482 --> 00:00:20,026
 materials, missing financial
 statements, unclear use of
 
 8
-00:00:20,855 --> 00:00:24,377
+00:00:20,026 --> 00:00:23,943
 proceeds, a security that is hard
 to explain, or payment
 
 9
-00:00:24,377 --> 00:00:28,087
+00:00:23,943 --> 00:00:27,642
 instructions that do not match the
 registered intermediary.
 
 10
-00:00:28,088 --> 00:00:30,712
+00:00:27,642 --> 00:00:31,186
 Check identities, company
-records,
+records, and the actual offering
 
 11
-00:00:30,712 --> 00:00:33,338
-and the actual offering
+00:00:31,186 --> 00:00:32,410
 documents.
 
 12
-00:00:33,338 --> 00:00:37,715
+00:00:32,410 --> 00:00:36,778
 For a Reg CF investment, verify
 the intermediary and confirm that
 
 13
-00:00:37,715 --> 00:00:41,150
+00:00:36,778 --> 00:00:39,794
 the offering appears through its
 official platform.
 
 14
-00:00:41,150 --> 00:00:44,478
+00:00:39,794 --> 00:00:43,299
 An SEC filing is not an
 endorsement, and a company
 
 15
-00:00:44,478 --> 00:00:48,938
+00:00:43,299 --> 00:00:47,487
 may be registered or have a filing
 without being a good investment.
 
 16
-00:00:48,938 --> 00:00:51,164
+00:00:47,487 --> 00:00:50,271
 Ask direct questions and
-compare
+compare the answers with
 
 17
-00:00:51,164 --> 00:00:53,738
-the answers with written
-disclosures.
+00:00:50,271 --> 00:00:51,920
+written disclosures.
 
 18
-00:00:53,738 --> 00:00:57,291
+00:00:51,920 --> 00:00:55,039
 If an important claim cannot be
 verified or the person
 
 19
-00:00:57,291 --> 00:01:00,450
+00:00:55,039 --> 00:00:58,376
 discourages you from reviewing
 documents, pause.
 
 20
-00:01:00,450 --> 00:01:04,488
+00:00:58,376 --> 00:01:02,040
 Never let fear of missing out
 replace a careful decision.
 

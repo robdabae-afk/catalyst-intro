@@ -1,84 +1,84 @@
 1
-00:00:00,000 --> 00:00:03,570
+00:00:00,000 --> 00:00:03,157
 Startup investing means putting
 money into a young private
 
 2
-00:00:03,570 --> 00:00:07,017
+00:00:03,157 --> 00:00:06,701
 company in exchange for a
 security, such as shares or an
 
 3
-00:00:07,017 --> 00:00:09,788
+00:00:06,701 --> 00:00:09,523
 agreement that may convert into
 shares later.
 
 4
-00:00:09,788 --> 00:00:14,088
+00:00:09,523 --> 00:00:13,505
 You are not buying a guaranteed
 piece of a future success story.
 
 5
-00:00:14,088 --> 00:00:18,501
+00:00:13,505 --> 00:00:17,822
 The company may grow, stay
 small, change direction, or close,
 
 6
-00:00:18,501 --> 00:00:21,612
+00:00:17,822 --> 00:00:20,554
 and your investment can lose all
 its value.
 
 7
-00:00:21,612 --> 00:00:25,794
+00:00:20,554 --> 00:00:24,691
 Unlike a public stock, a private
 startup investment usually has no
 
 8
-00:00:25,794 --> 00:00:29,025
+00:00:24,691 --> 00:00:27,732
 active market where you can sell
 whenever you want.
 
 9
-00:00:29,025 --> 00:00:33,119
+00:00:27,732 --> 00:00:32,191
 Before deciding, identify exactly
 what security is offered, what
 
 10
-00:00:33,119 --> 00:00:37,341
+00:00:32,191 --> 00:00:35,606
 rights it gives, how the business
 plans to use the money, and what
 
 11
-00:00:37,341 --> 00:00:38,300
+00:00:35,606 --> 00:00:36,869
 could go wrong.
 
 12
-00:00:38,300 --> 00:00:42,450
+00:00:36,869 --> 00:00:40,799
 Think of the money as money you
 may not see again for a long time.
 
 13
-00:00:42,450 --> 00:00:46,850
+00:00:40,799 --> 00:00:45,026
 A compelling founder or product
 is only one part of the decision.
 
 14
-00:00:46,850 --> 00:00:50,443
+00:00:45,026 --> 00:00:48,119
 Read the actual offering
 documents, compare the price
 
 15
-00:00:50,443 --> 00:00:54,375
+00:00:48,119 --> 00:00:52,281
 and terms, and decide whether
 the risk fits your finances.
 
 16
-00:00:54,375 --> 00:00:57,985
+00:00:52,281 --> 00:00:55,773
 Education is not a
 recommendation to invest, and no
 
 17
-00:00:57,985 --> 00:01:00,888
+00:00:55,773 --> 00:00:58,632
 platform can promise a startup’s
 outcome.
 

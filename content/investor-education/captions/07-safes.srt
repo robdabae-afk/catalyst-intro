@@ -1,86 +1,86 @@
 1
-00:00:00,000 --> 00:00:04,414
+00:00:00,000 --> 00:00:04,214
 A SAFE, or Simple Agreement for
 Future Equity, is a contract that
 
 2
-00:00:04,414 --> 00:00:08,625
+00:00:04,214 --> 00:00:08,415
 may give an investor equity later
 if a specified event occurs.
 
 3
-00:00:08,625 --> 00:00:12,250
+00:00:08,415 --> 00:00:11,740
 It is not the same as owning
 common stock today, and it is
 
 4
-00:00:12,250 --> 00:00:15,938
+00:00:11,740 --> 00:00:15,451
 generally not a loan that promises
 repayment with interest.
 
 5
-00:00:15,938 --> 00:00:18,862
+00:00:15,451 --> 00:00:17,835
 The SAFE’s exact terms control.
 
 6
-00:00:18,862 --> 00:00:23,365
+00:00:17,835 --> 00:00:22,216
 Some convert during a qualifying
 equity financing; others describe
 
 7
-00:00:23,365 --> 00:00:26,025
+00:00:22,216 --> 00:00:24,910
 what happens during a sale or
 shutdown.
 
 8
-00:00:26,025 --> 00:00:30,200
+00:00:24,910 --> 00:00:28,892
 A trigger may never occur, so a
 SAFE may never convert.
 
 9
-00:00:30,200 --> 00:00:34,427
+00:00:28,892 --> 00:00:32,603
 Even if it converts, the number
 and class of shares depend on the
 
 10
-00:00:34,427 --> 00:00:36,638
+00:00:32,603 --> 00:00:35,348
 contract and later capitalization.
 
 11
-00:00:36,638 --> 00:00:40,304
+00:00:35,348 --> 00:00:38,827
 Read the triggering events,
 valuation cap, discount,
 
 12
-00:00:40,304 --> 00:00:44,888
+00:00:38,827 --> 00:00:43,222
 conversion mechanics, and any
 treatment in a sale or dissolution.
 
 13
-00:00:44,888 --> 00:00:46,506
-Do not translate a cap
+00:00:43,222 --> 00:00:46,186
+Do not translate a cap into a
+guaranteed ownership
 
 14
-00:00:46,506 --> 00:00:49,375
-into a guaranteed ownership
+00:00:46,186 --> 00:00:47,423
 percentage.
 
 15
-00:00:49,375 --> 00:00:51,282
-A SAFE can be simple in name
+00:00:47,423 --> 00:00:51,211
+A SAFE can be simple in name but
+still have important legal and
 
 16
-00:00:51,282 --> 00:00:54,825
-but still have important legal and
+00:00:51,211 --> 00:00:52,990
 economic details.
 
 17
-00:00:54,825 --> 00:00:58,129
+00:00:52,990 --> 00:00:55,747
 Compare it with other
 outstanding SAFEs and future
 
 18
-00:00:58,129 --> 00:01:02,688
+00:00:55,747 --> 00:01:00,696
 financing plans, and get qualified
 advice if the language is unclear.
 

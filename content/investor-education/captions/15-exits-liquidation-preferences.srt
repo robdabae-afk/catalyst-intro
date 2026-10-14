@@ -1,103 +1,101 @@
 1
-00:00:00,000 --> 00:00:04,276
+00:00:00,000 --> 00:00:04,059
 An exit is a transaction that may
 create a path to payment, such as
 
 2
-00:00:04,276 --> 00:00:06,637
+00:00:04,059 --> 00:00:07,912
 an acquisition or public listing,
-but
+but there is no guarantee one will
 
 3
-00:00:06,637 --> 00:00:09,062
-there is no guarantee one will
+00:00:07,912 --> 00:00:08,866
 happen.
 
 4
-00:00:09,062 --> 00:00:13,070
+00:00:08,866 --> 00:00:12,642
 If a company is sold, the money
 does not necessarily flow to
 
 5
-00:00:13,070 --> 00:00:15,875
+00:00:12,642 --> 00:00:15,644
 every investor in proportion to
 ownership.
 
 6
-00:00:15,875 --> 00:00:20,152
+00:00:15,644 --> 00:00:18,969
 Debt, transaction costs, and
 preferred-stock rights may be
 
 7
-00:00:20,152 --> 00:00:21,775
+00:00:18,969 --> 00:00:20,838
 paid or applied first.
 
 8
-00:00:21,775 --> 00:00:25,541
+00:00:20,838 --> 00:00:24,085
 A liquidation preference can give
 certain preferred investors
 
 9
-00:00:25,541 --> 00:00:27,023
-priority up to a defined
+00:00:24,085 --> 00:00:27,616
+priority up to a defined amount
+before common holders receive
 
 10
-00:00:27,023 --> 00:00:29,862
-amount before common holders
-receive proceeds.
+00:00:27,616 --> 00:00:28,879
+proceeds.
 
 11
-00:00:29,862 --> 00:00:34,694
+00:00:28,879 --> 00:00:33,608
 In a simplified example, preferred
 investors put in $2 million with a
 
 12
-00:00:34,694 --> 00:00:37,425
+00:00:33,608 --> 00:00:36,456
 one-times non-participating
 preference.
 
 13
-00:00:37,425 --> 00:00:41,760
+00:00:36,456 --> 00:00:40,838
 If the company sells for $1.5
 million and no higher-priority
 
 14
-00:00:41,760 --> 00:00:46,022
+00:00:40,838 --> 00:00:44,150
 claims exist, those investors
-could take the available $1.5
+could take the available
 
 15
-00:00:46,022 --> 00:00:49,562
-million, leaving nothing for
+00:00:44,150 --> 00:00:48,814
+$1.5 million, leaving nothing for
 common shareholders.
 
 16
-00:00:49,562 --> 00:00:54,639
+00:00:48,814 --> 00:00:51,997
 At a $12 million sale, they might
-choose between their $2 million
+choose between their
 
 17
-00:00:54,639 --> 00:00:57,217
-preference and converting to
-20%,
+00:00:51,997 --> 00:00:57,758
+$2 million preference and
+converting to 20%, or $2.4 million,
 
 18
-00:00:57,217 --> 00:01:00,262
-or $2.4 million, under the
-assumptions.
+00:00:57,758 --> 00:00:59,369
+under the assumptions.
 
 19
-00:01:00,262 --> 00:01:04,338
+00:00:59,369 --> 00:01:03,106
 Actual outcomes depend on the
 documents and waterfall.
 
 20
-00:01:04,338 --> 00:01:08,808
+00:01:03,106 --> 00:01:07,461
 Read the security class and sale
 terms; a headline valuation does
 
 21
-00:01:08,808 --> 00:01:11,352
+00:01:07,461 --> 00:01:10,056
 not show what each investor
 receives.
 
