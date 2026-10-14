@@ -229,14 +229,25 @@ def assign_by_text(sent_t, parts, narr, bounds, total):
     return [(a,b) for a,b,_ in timed_parts(parts,narr,bounds,total)]
 
 def caption_chunks(narr, bounds, total, probe_d):
-    """Readable chunks anchored to actual synthesized word starts, never proportional estimates."""
+    """Readable chunks at true provider events; grouped phrases remain indivisible."""
     f=font(54,650);maxw=W-2*ML;parts=[]
+    allowed={0};pos=0
+    for event in bounds:
+        if event[0]=="WordBoundary":
+            pos+=len(normalized(event[3]));allowed.add(pos)
+    absolute=0
     for sentence in split_sentences(narr):
-        cur=[]
+        atoms=[];group=[]
         for word in sentence.split():
-            if cur and len(wrap(probe_d," ".join(cur+[word]),f,maxw))>2:
+            group.append(word);absolute+=len(normalized(word))
+            if absolute in allowed:
+                atoms.append(" ".join(group));group=[]
+        if group:raise ValueError("Sentence ends inside a provider phrase")
+        cur=[]
+        for atom in atoms:
+            if cur and len(wrap(probe_d," ".join(cur+[atom]),f,maxw))>2:
                 parts.append(" ".join(cur));cur=[]
-            cur.append(word)
+            cur.append(atom)
         if cur:parts.append(" ".join(cur))
     return timed_parts(parts,narr,bounds,total)
 
