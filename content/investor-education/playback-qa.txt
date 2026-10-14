@@ -5,3 +5,5 @@ Full playback audits October13 2026
 15Liquidationpreferences final passes provider grouped currency captions2M/1.5M/12M/2.4M content and chart matching
 Progress reviewer sparseframes false reset/freeze claims superseded by decoded encodedpixel QA report. Actual globally elapsed progress continuous.
 Static geometry catches5long kicker labels not flagged by visual model; shortened beforefinal affectedlessonrerender. Actual geometric checks mandatory.
+
+Final shortened-kicker07 and08 full playbackPASS top tag width captions math and layout.
