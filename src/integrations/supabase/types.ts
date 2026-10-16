@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -483,6 +483,277 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_credit_grants: {
+        Row: {
+          grant_key: string
+          user_id: string
+        }
+        Insert: {
+          grant_key: string
+          user_id: string
+        }
+        Update: {
+          grant_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      billing_entitlements: {
+        Row: {
+          billing_interval: string
+          credit_anchor: string | null
+          expires_at: string | null
+          external_id: string
+          period_key: string | null
+          provider: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          billing_interval?: string
+          credit_anchor?: string | null
+          expires_at?: string | null
+          external_id: string
+          period_key?: string | null
+          provider: string
+          status: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          billing_interval?: string
+          credit_anchor?: string | null
+          expires_at?: string | null
+          external_id?: string
+          period_key?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      billing_events: {
+        Row: {
+          created_at: string | null
+          event_id: string
+          provider: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id: string
+          provider: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string
+          provider?: string
+        }
+        Relationships: []
+      }
+      billing_instant_sends: {
+        Row: {
+          message_id: string
+          receiver_id: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          message_id: string
+          receiver_id: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          message_id?: string
+          receiver_id?: string
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      billing_orders: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          sku: string
+          status: string
+          stripe_session_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          sku: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          sku?: string
+          status?: string
+          stripe_session_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      billing_profile_views: {
+        Row: {
+          day: string
+          profile_id: string
+          viewer_id: string
+        }
+        Insert: {
+          day: string
+          profile_id: string
+          viewer_id: string
+        }
+        Update: {
+          day?: string
+          profile_id?: string
+          viewer_id?: string
+        }
+        Relationships: []
+      }
+      billing_refund_adjustments: {
+        Row: {
+          charge_id: string
+          manual_review: boolean
+          order_id: string
+          refunded_amount: number
+          revoked_credits: number
+          unrecovered_credits: number
+          updated_at: string
+        }
+        Insert: {
+          charge_id: string
+          manual_review?: boolean
+          order_id: string
+          refunded_amount: number
+          revoked_credits?: number
+          unrecovered_credits?: number
+          updated_at?: string
+        }
+        Update: {
+          charge_id?: string
+          manual_review?: boolean
+          order_id?: string
+          refunded_amount?: number
+          revoked_credits?: number
+          unrecovered_credits?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_refund_adjustments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "billing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_refund_reviews: {
+        Row: {
+          charge_id: string
+          created_at: string
+          details: Json
+          event_id: string
+          order_id: string | null
+          reason: string
+        }
+        Insert: {
+          charge_id: string
+          created_at?: string
+          details?: Json
+          event_id: string
+          order_id?: string | null
+          reason: string
+        }
+        Update: {
+          charge_id?: string
+          created_at?: string
+          details?: Json
+          event_id?: string
+          order_id?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_refund_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "billing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_rollout_flags: {
+        Row: {
+          enforce_v2: boolean
+          id: boolean
+        }
+        Insert: {
+          enforce_v2?: boolean
+          id?: boolean
+        }
+        Update: {
+          enforce_v2?: boolean
+          id?: boolean
+        }
+        Relationships: []
+      }
+      billing_swipe_usage: {
+        Row: {
+          day: string
+          kind: string
+          target: string
+          user_id: string
+        }
+        Insert: {
+          day: string
+          kind: string
+          target: string
+          user_id: string
+        }
+        Update: {
+          day?: string
+          kind?: string
+          target?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      billing_wallets: {
+        Row: {
+          boost_until: string | null
+          boost_used_at: string | null
+          credits: number
+          user_id: string
+        }
+        Insert: {
+          boost_until?: string | null
+          boost_used_at?: string | null
+          credits?: number
+          user_id: string
+        }
+        Update: {
+          boost_until?: string | null
+          boost_used_at?: string | null
+          credits?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       cap_table_entries: {
         Row: {
           created_at: string | null
@@ -655,6 +926,53 @@ export type Database = {
           status?: string | null
         }
         Relationships: []
+      }
+      concierge_jobs: {
+        Row: {
+          created_at: string
+          fulfilled_at: string | null
+          fulfilled_by: string | null
+          fulfilled_profiles: string[] | null
+          id: string
+          match_count: number
+          note: string | null
+          order_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          fulfilled_profiles?: string[] | null
+          id?: string
+          match_count: number
+          note?: string | null
+          order_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fulfilled_at?: string | null
+          fulfilled_by?: string | null
+          fulfilled_profiles?: string[] | null
+          id?: string
+          match_count?: number
+          note?: string | null
+          order_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concierge_jobs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "billing_orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_submissions: {
         Row: {
@@ -1269,6 +1587,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      instant_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read: boolean
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+          tokens_spent: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+          tokens_spent: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read?: boolean
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+          tokens_spent?: number
+        }
+        Relationships: []
       }
       intro_requests: {
         Row: {
@@ -2440,6 +2791,42 @@ export type Database = {
         }
         Relationships: []
       }
+      token_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          id: string
+          product_type: string | null
+          related_id: string | null
+          stripe_payment_intent_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          product_type?: string | null
+          related_id?: string | null
+          stripe_payment_intent_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          product_type?: string | null
+          related_id?: string | null
+          stripe_payment_intent_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_feedback: {
         Row: {
           created_at: string
@@ -2606,6 +2993,72 @@ export type Database = {
       app_is_admin: { Args: never; Returns: boolean }
       app_owns_company: { Args: { cid: string }; Returns: boolean }
       approval_exception: { Args: { _profile_id: string }; Returns: boolean }
+      billing_accrue_annual: { Args: { p_user: string }; Returns: undefined }
+      billing_apply_purchase: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_event: string
+          p_order: string
+          p_session: string
+        }
+        Returns: undefined
+      }
+      billing_boosted_profiles: { Args: never; Returns: string[] }
+      billing_charge_swipe: {
+        Args: { p_kind: string; p_target: string; p_user: string }
+        Returns: undefined
+      }
+      billing_enforced: { Args: never; Returns: boolean }
+      billing_fulfill_concierge: {
+        Args: { p_job: string; p_note: string; p_targets: string[] }
+        Returns: undefined
+      }
+      billing_is_pro: { Args: { p_user: string }; Returns: boolean }
+      billing_legacy_instant: {
+        Args: {
+          p_content: string
+          p_request: string
+          p_target: string
+          p_user: string
+        }
+        Returns: Json
+      }
+      billing_like: { Args: { p_target: string }; Returns: Json }
+      billing_my_pro: { Args: never; Returns: boolean }
+      billing_record_view: { Args: { p_target: string }; Returns: undefined }
+      billing_refund: {
+        Args: {
+          p_amount: number
+          p_charge: string
+          p_currency: string
+          p_event: string
+          p_order: string
+          p_refunded: number
+          p_session: string
+        }
+        Returns: undefined
+      }
+      billing_send_instant: {
+        Args: { p_content: string; p_request: string; p_target: string }
+        Returns: string
+      }
+      billing_snapshot: { Args: never; Returns: Json }
+      billing_spend_message: { Args: { p_user: string }; Returns: undefined }
+      billing_sync_subscription: {
+        Args: {
+          p_event: string
+          p_expires: string
+          p_interval?: string
+          p_period: string
+          p_start?: string
+          p_status: string
+          p_subscription: string
+          p_user: string
+        }
+        Returns: undefined
+      }
+      billing_use_boost: { Args: never; Returns: undefined }
       browse_is_admin: { Args: never; Returns: boolean }
       can_view_member: { Args: { _profile_id: string }; Returns: boolean }
       generate_safe_content: { Args: { safe_id: string }; Returns: Json }
