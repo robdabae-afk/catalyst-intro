@@ -67,7 +67,7 @@ function HeroSignup() {
       </div>
       <label className="consent">
         <input type="checkbox" ref={refs.consent} checked={consent} onChange={(e) => setConsent(e.target.checked)} aria-invalid={!!errs.consent} />
-        <span>Email me Catalyst updates. Not an offer of securities. <Link to="/privacy">Privacy</Link></span>
+        <span>Email me Catalyst updates.</span>
       </label>
       {(errs.consent || errs.form) && <div className="err" aria-live="polite">{errs.consent || errs.form}</div>}
       <button className="btn" type="submit" disabled={state === "sending"}>{state === "sending" ? "Joining..." : "Join"}</button>
