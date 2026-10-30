@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const src = readFileSync("src/pages/app/AppSignupForm.tsx", "utf8");
 describe("app signup password step", () => {
+ it("minimum constant is 6", () => assert.match(src, /const MIN_PASSWORD_LENGTH = 6;/));
  it("requires the minimum length before continuing", () => assert.match(src, /password\.length >= MIN_PASSWORD_LENGTH/));
  it("input declares minLength and hint", () => {
   assert.match(src, /minLength=\{MIN_PASSWORD_LENGTH\}/);

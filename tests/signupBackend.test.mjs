@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 // consent metadata, auth call, avatar upload and legacy profile writes intact.
 const form = readFileSync(new URL('../src/pages/app/AppSignupForm.tsx', import.meta.url), 'utf8');
 const baseline = {
-  "validation": "0df33bd4703fec439ce8c93e51f07b95d50c24485ea0eb2b34cf7924314e18bc",
+  "validation": "1ce300eb4314def53287539e5717a8f50eb235f42922eb1a02c554f3ce10e4ba",
   "avatar": "168cba3776f05e23edaa9af6defbbddc75be626128399aa4ab6f8f92a6fd7f54",
   "account_creation": "28d4c27285eaddbbb578e460de88d13b05872190567d2c3247829edbbf1218fc"
 };
