@@ -48,6 +48,9 @@ const inputWrapCls = `h-14 px-4 rounded-[14px] ${glass} flex items-center gap-3 
 const inputCls =
   "flex-1 min-w-0 bg-transparent outline-none text-[16px] sm:text-[15px] text-[#0b0b0b] placeholder:text-[#9a9a93]";
 
+// Matches the live Supabase auth policy (minimum 6 characters, no required character classes).
+const MIN_PASSWORD_LENGTH = 6;
+
 function Dots({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-[6px]">
@@ -300,7 +303,7 @@ export default function AppSignupForm() {
       case 1:
         return !!role;
       case 2:
-        return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length > 0;
+        return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length >= MIN_PASSWORD_LENGTH;
       case 3:
         if (role === "founder") return startupName.trim() !== "" && hqLocation.trim() !== "" && oneLiner.trim() !== "";
         return firmName.trim() !== "" && invLocation.trim() !== "";
@@ -529,7 +532,7 @@ export default function AppSignupForm() {
               <Field label="Password" htmlFor="su-password" required>
                 <div className={inputWrapCls}>
                   <Lock className="w-[18px] h-[18px] text-[#0b0b0b] shrink-0" strokeWidth={1.5} />
-                  <input id="su-password" name="password" autoComplete="new-password" type="password" className={inputCls} placeholder="Enter a password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <input id="su-password" name="password" autoComplete="new-password" type="password" minLength={MIN_PASSWORD_LENGTH} className={inputCls} placeholder={`At least ${MIN_PASSWORD_LENGTH} characters`} value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
               </Field>
               <Field label="Referral code" htmlFor="su-ref">
