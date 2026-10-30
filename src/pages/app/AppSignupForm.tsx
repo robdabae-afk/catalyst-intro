@@ -303,7 +303,7 @@ export default function AppSignupForm() {
         return name.trim().length > 0 && /\S+@\S+\.\S+/.test(email) && password.length > 0;
       case 3:
         if (role === "founder") return startupName.trim() !== "" && hqLocation.trim() !== "" && oneLiner.trim() !== "";
-        return firmName.trim() !== "" && invLocation.trim() !== "";
+        return invLocation.trim() !== "";
       case 4:
         if (role === "founder") return !!stage && industries.length > 0;
         return !!investorType && !!accreditation && industries.length > 0 && !!typicalCheckSize;
@@ -569,12 +569,12 @@ export default function AppSignupForm() {
             <div className="flex flex-col gap-6">
               <AvatarPicker preview={avatarPreview} onFile={handleAvatar} />
               <div className="flex flex-col gap-4">
-                <Field label="Start up name" htmlFor="su-firm" required>
+                <Field label="Firm or fund name" htmlFor="su-firm">
                   <div className={inputWrapCls}>
-                    <input id="su-firm" autoComplete="organization" className={inputCls} placeholder="Aperture AI" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
+                    <input id="su-firm" autoComplete="organization" className={inputCls} placeholder="Independent angel? Leave blank" value={firmName} onChange={(e) => setFirmName(e.target.value)} />
                   </div>
                 </Field>
-                <Field label="HQ location" htmlFor="su-invloc" required>
+                <Field label="Your location" htmlFor="su-invloc" required>
                   <div className={inputWrapCls}>
                     <input id="su-invloc" className={inputCls} placeholder="San Francisco, CA" value={invLocation} onChange={(e) => setInvLocation(e.target.value)} />
                     <MapPin className="w-[18px] h-[18px] text-[#9a9a93] shrink-0" strokeWidth={1.5} />
