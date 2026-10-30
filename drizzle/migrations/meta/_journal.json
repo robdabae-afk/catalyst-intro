@@ -71,6 +71,13 @@
       "when": 1791296730011,
       "tag": "0009_app_catalog",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793392955079,
+      "tag": "0010_fix_signup_trigger_text_numbers",
+      "breakpoints": true
     }
   ]
 }
