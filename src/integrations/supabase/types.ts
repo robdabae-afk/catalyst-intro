@@ -3167,6 +3167,7 @@ export type Database = {
         Returns: boolean
       }
       responsiveness_label: { Args: { hours: number }; Returns: string }
+      safe_int: { Args: { v: string }; Returns: number }
     }
     Enums: {
       ad_profile_type: "startup" | "investment_fund" | "external"
